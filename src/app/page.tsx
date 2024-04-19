@@ -1,5 +1,9 @@
-import styles from "./page.module.css";
+import { PrimaryHeading } from "@/components/common/primary-heading";
 
 export default function Home() {
-  return <main className={styles.main}></main>;
+  return (
+    <main>
+      <PrimaryHeading>Dashboard</PrimaryHeading>
+    </main>
+  );
 }
