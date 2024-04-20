@@ -1,9 +1,9 @@
-import { PrimaryHeading } from "@/components/common/primary-heading";
+import { Heading } from "@/components/common/heading";
 
 export default function Home() {
   return (
     <main>
-      <PrimaryHeading>Dashboard</PrimaryHeading>
+      <Heading variant="h1">Dashboard</Heading>
     </main>
   );
 }
