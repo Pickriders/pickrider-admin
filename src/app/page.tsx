@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main>
       <Heading variant="h1">Dashboard</Heading>
-      <Button variant="business">Register</Button>
+      <Button variant="primary">Register</Button>
     </main>
   );
 }
