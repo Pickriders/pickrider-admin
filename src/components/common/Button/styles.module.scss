@@ -6,6 +6,7 @@
   border-radius: $rounded-lg;
   font-weight: 700;
   font-size: 1.2rem;
+  display: inline-flex;
 
   &.business {
     background-color: $business-color;
