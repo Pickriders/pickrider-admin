@@ -1,0 +1,21 @@
+@import "../../../styles/abstracts/variables";
+
+.button {
+  font-family: "ClashDisplay", "Courier New", Courier, monospace;
+  padding: 1rem 4rem;
+  border-radius: $rounded-lg;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: inline-flex;
+
+  &.business {
+    background-color: $business-color;
+    color: $white;
+  }
+
+  &.primary {
+    background-color: $black;
+    padding: 0.6rem 1.2rem;
+    color: $white;
+  }
+}
