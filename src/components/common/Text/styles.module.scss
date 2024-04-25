@@ -1,0 +1,35 @@
+@import "../../../styles/abstracts/variables";
+
+.text {
+  font-family: "Faktum Test";
+  color: $primary-color;
+  font-weight: 400;
+  letter-spacing: -0.025rem;
+  font-size: 1.2rem;
+
+  &.default {
+    line-height: 1.875rem;
+    font-size: 1.2rem;
+  }
+
+  &.statLabel {
+    font-size: 1.4rem;
+    line-height: 1.625rem;
+  }
+
+  &.statValue {
+    font-family: "ClashDisplay";
+    font-size: 2rem;
+    line-height: 1.625rem;
+    font-weight: 600;
+    line-height: 2rem;
+    color: $black;
+  }
+
+  &.heading {
+    font-size: 1.2rem;
+    line-height: 0.875rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+}
