@@ -62,6 +62,33 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Faktum Test";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Faktum Test Regular"),
+    url("../../../public/assets/fonts/faktum-test/Rene\ Bieder\ -\ Faktum\ Test\ Regular.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "Faktum Test";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Faktum Test Bold"),
+    url("../../../public/assets/fonts/faktum-test/Rene\ Bieder\ -\ Faktum\ Test\ Bold.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "Faktum Test";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Faktum Test Bold"),
+    url("../../../public/assets/fonts/faktum-test/Rene\ Bieder\ -\ Faktum\ Test\ Bold.woff")
+      format("woff");
+}
+
 *,
 *::after,
 *::before {

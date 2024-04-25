@@ -7,6 +7,9 @@
   font-weight: 700;
   font-size: 1.2rem;
   display: inline-flex;
+  align-items: stretch;
+  justify-content: center;
+  white-space: nowrap;
 
   &.business {
     background-color: $business-color;

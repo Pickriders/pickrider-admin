@@ -6,7 +6,7 @@ import { UI } from "@/components/common";
 export default function Home() {
   return (
     <main>
-      <UI.Button variant="primary">
+      <UI.Button variant="business">
         <span style={{ marginRight: 2 }}>
           <svg
             viewBox="0 0 1024 1024"
@@ -23,6 +23,7 @@ export default function Home() {
         </span>
         Register
       </UI.Button>
+      <UI.Text variant="statValue">Total Withdrawals</UI.Text>
     </main>
   );
 }
