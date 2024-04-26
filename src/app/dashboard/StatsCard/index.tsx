@@ -1,18 +1,17 @@
 import styles from "./styles.module.scss";
+import { UI } from "@/components/common";
+import { StatsCardProps } from "./statsCard.type";
+import { SVG } from "@/components/svg";
 
-interface StatsCardProps {
-  icon: string;
-  title: string;
-  value: number;
-}
-
-export const StatsCard = () => {
+export const StatsCard = ({ statLabel, statValue }: StatsCardProps) => {
   return (
     <div className={`${styles.statsCard}`}>
-      <div className="stats-card"></div>
-      <div className="stats-info">
-        <h3 className="stats-title">Total Income</h3>
-        <p className="stats-value">3,465</p>
+      <div>
+        <SVG.Message />
+      </div>
+      <div className={styles.statsCard_info}>
+        <UI.Text variant="statLabel">{statLabel}</UI.Text>
+        <UI.Text variant="statValue">{statValue}</UI.Text>
       </div>
     </div>
   );

@@ -1,2 +1,18 @@
+@import "/src/styles/abstracts/mixins";
+@import "/src/styles/abstracts/variables";
+
 .statsCard {
+  @include border-1;
+  display: flex;
+  align-items: center;
+  gap: 0 1rem;
+  padding: 1.2rem 2rem;
+  border-radius: $rounded-lg;
+  background-color: $white;
+
+  &_info {
+    > :last-child {
+      margin-top: 0.4rem;
+    }
+  }
 }
