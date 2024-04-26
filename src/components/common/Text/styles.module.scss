@@ -6,23 +6,20 @@
   font-weight: 400;
   letter-spacing: -0.025rem;
   font-size: 1.2rem;
-
-  &.default {
-    line-height: 1.875rem;
-    font-size: 1.2rem;
-  }
+  line-height: 1.875rem;
 
   &.statLabel {
     font-size: 1.4rem;
-    line-height: 1.625rem;
+    line-height: 1.6rem;
+    letter-spacing: -0.04rem;
+    text-transform: capitalize;
   }
 
   &.statValue {
     font-family: "ClashDisplay";
     font-size: 2rem;
-    line-height: 1.625rem;
     font-weight: 600;
-    line-height: 2rem;
+    line-height: 2.6rem;
     color: $black;
   }
 

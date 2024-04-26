@@ -1,1 +1,4 @@
-export const StatsCardProps = {};
+export type StatsCardProps = {
+  statLabel: string;
+  statValue: number;
+};
