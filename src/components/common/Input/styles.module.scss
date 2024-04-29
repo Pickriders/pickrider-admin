@@ -1,0 +1,77 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  @include border;
+  width: 100%;
+  border-radius: $rounded-lg;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.4rem;
+  color: $primary-color;
+  width: 100%;
+
+  &:focus {
+    outline: 1px solid $gray-200;
+    outline-offset: 0.1rem;
+  }
+
+  &:focus ~ &_label {
+    transform: scale(1) translate(0);
+  }
+
+  &:not(:placeholder-shown) ~ &_label {
+    transform: scale(1) translate(0);
+  }
+
+  &_label {
+    font-size: 1.6rem;
+    color: $primary-color;
+    font-family: "Faktum Test";
+    background-color: $white;
+    position: absolute;
+    top: -1.3rem;
+    left: 1.6rem;
+    padding: 0 0.6rem;
+    transform: scale(0.8) translateY(2.8rem);
+    transform-origin: 0;
+    pointer-events: none;
+    transition: $transition;
+  }
+
+  &_icon {
+    @include center-element;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    pointer-events: none;
+  }
+
+  &_rightIcon {
+    right: 1.5rem;
+  }
+
+  &_leftIcon {
+    left: 1.5rem;
+  }
+
+  &_withLeftIcon {
+    padding-left: 5rem;
+  }
+  &_withRightIcon {
+    padding-right: 5rem;
+  }
+}
+
+.label {
+  font-weight: 700;
+  color: $main-color;
+
+  &::placeholder {
+    color: transparent;
+  }
+}

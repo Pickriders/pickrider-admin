@@ -7,7 +7,7 @@ export const StatsCard = ({ statLabel, statValue }: StatsCardProps) => {
   return (
     <div className={`${styles.statsCard}`}>
       <div>
-        <SVG.Message />
+        <SVG.MessageIcon />
       </div>
       <div className={styles.statsCard_info}>
         <UI.Text variant="statLabel">{statLabel}</UI.Text>

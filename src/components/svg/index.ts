@@ -1,5 +1,7 @@
-import { Message } from "./Message";
+import { MessageIcon } from "./MessageIcon";
+import { SearchIcon } from "./SearchIcon";
 
 export const SVG = {
-  Message,
+  MessageIcon,
+  SearchIcon,
 };
