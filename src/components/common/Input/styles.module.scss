@@ -48,18 +48,29 @@
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
-    left: 1.5rem;
     pointer-events: none;
   }
 
-  &_withIcon {
+  &_rightIcon {
+    right: 1.5rem;
+  }
+
+  &_leftIcon {
+    left: 1.5rem;
+  }
+
+  &_withLeftIcon {
     padding-left: 5rem;
+  }
+  &_withRightIcon {
+    padding-right: 5rem;
   }
 }
 
 .label {
   font-weight: 700;
   color: $main-color;
+
   &::placeholder {
     color: transparent;
   }

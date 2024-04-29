@@ -15,9 +15,8 @@ export default function Home() {
     >
       <UI.Input
         type="text"
-        hasIcon={false}
+        rightIcon={<SVG.MessageIcon />}
         placeholder="Search anything"
-        label="Search anything"
       />
       <StatsCard statLabel="Total Income" statValue={3500} />
     </main>
