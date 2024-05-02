@@ -41,6 +41,7 @@
     transform-origin: 0;
     pointer-events: none;
     transition: $transition;
+    text-transform: capitalize;
   }
 
   &_icon {
