@@ -17,7 +17,7 @@ export const Select = ({ items, id, placeholder, onChange }: SelectProps) => {
         {items.map((item, i) => {
           return (
             <SelectItem key={i} value={`${item.value}`}>
-              {item.value}
+              {item.label}
             </SelectItem>
           );
         })}

@@ -1,7 +1,13 @@
 import { InputProps } from "./Input.type";
 import style from "./styles.module.scss";
 
-export const Input = ({ label, rightIcon, leftIcon, ...rest }: InputProps) => {
+export const Input = ({
+  label,
+  rightIcon,
+  leftIcon,
+  placeholder,
+  ...rest
+}: InputProps) => {
   const className = `${style.input} ${rightIcon && style.input_withRightIcon} ${
     leftIcon && style.input_withLeftIcon
   } ${label && style.label}`;
@@ -10,7 +16,7 @@ export const Input = ({ label, rightIcon, leftIcon, ...rest }: InputProps) => {
     <div className={style.inputContainer}>
       {leftIcon && (
         <span className={`${style.input_leftIcon} ${style.input_icon}`}>
-          {rightIcon}
+          {leftIcon}
         </span>
       )}
 
@@ -20,7 +26,11 @@ export const Input = ({ label, rightIcon, leftIcon, ...rest }: InputProps) => {
         </span>
       )}
 
-      <input className={className} {...rest} />
+      <input
+        className={className}
+        {...rest}
+        placeholder={placeholder || label}
+      />
       <label className={style.input_label}>{label}</label>
     </div>
   );

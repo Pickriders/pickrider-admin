@@ -1,5 +1,6 @@
 @import "../../../styles/abstracts/variables";
 @import "../../../styles/abstracts/mixins";
+@import "../../../styles/base/animations";
 
 .trigger {
   @include border-1;
@@ -27,12 +28,19 @@
   border-radius: $rounded-md;
   background-color: $white;
   box-shadow: $shadow-md;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 
   &_viewport {
     padding: 0.7rem;
     height: var(--radix-select-trigger-height);
     width: 100%;
     min-width: var(--radix-select-trigger-width);
+  }
+
+  &[data-state="open"] {
+    animation-name: animate-in;
   }
 }
 
@@ -44,7 +52,7 @@
   user-select: none;
   place-items: center;
   border-radius: $rounded-md;
-  padding: 0.7rem 0.8rem 0.6rem 2rem;
+  padding: 0.7rem 0.8rem 0.6rem 0.8rem;
   font-size: 1.4rem;
   outline: none;
   color: $primary-color;
