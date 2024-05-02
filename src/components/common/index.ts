@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./Dropdown";
+import { Switch } from "./Switch";
 
 export const UI = {
   Button,
@@ -20,4 +21,5 @@ export const UI = {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  Switch,
 };

@@ -1,3 +1,5 @@
+"use client";
+
 import { UI } from "@/components/common";
 import { StatsCard } from "./dashboard/StatsCard";
 import { SVG } from "@/components/svg";
@@ -40,6 +42,8 @@ export default function Home() {
       </UI.DropdownMenu>
 
       <div style={{ display: "grid", gap: "1rem" }}>
+        <UI.Switch defaultChecked onCheckedChange={(e) => console.log(e)} />
+
         <UI.Select items={mode} placeholder={"modes"} />
         <UI.Input
           type="text"
