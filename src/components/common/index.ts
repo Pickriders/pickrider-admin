@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./Dropdown";
-import { Checkbox } from "./Checkbox";
+import { Switch } from "./Switch";
 
 export const UI = {
   Button,
@@ -17,9 +17,9 @@ export const UI = {
   Text,
   Input,
   Select,
-  Checkbox,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  Switch,
 };
