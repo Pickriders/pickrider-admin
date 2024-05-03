@@ -21,6 +21,7 @@ export default function Home() {
         padding: "1rem",
       }}
     >
+      <UI.Checkbox defaultChecked />
       <UI.DropdownMenu>
         <UI.DropdownMenuTrigger asChild>
           <button className="IconButton" aria-label="Customise options">

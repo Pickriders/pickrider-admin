@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./Dropdown";
+import { Checkbox } from "./Checkbox";
 
 export const UI = {
   Button,
@@ -16,6 +17,7 @@ export const UI = {
   Text,
   Input,
   Select,
+  Checkbox,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
