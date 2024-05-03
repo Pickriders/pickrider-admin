@@ -1,3 +1,4 @@
+import { CheckIcon } from "./CheckIcon";
 import { ChevronDown } from "./ChevronDown";
 import { FilterIcon } from "./FilterIcon";
 import { MessageIcon } from "./MessageIcon";
@@ -8,4 +9,5 @@ export const SVG = {
   SearchIcon,
   ChevronDown,
   FilterIcon,
+  CheckIcon,
 };
