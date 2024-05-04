@@ -3,13 +3,9 @@ import { Input } from "./Input";
 import { Text } from "./Text";
 import { Heading } from "./Heading";
 import { Select } from "./Select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./Dropdown";
+
 import { Switch } from "./Switch";
+import { Dropdown } from "./Dropdown";
 
 export const UI = {
   Button,
@@ -17,9 +13,6 @@ export const UI = {
   Text,
   Input,
   Select,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
   Switch,
+  Dropdown,
 };
