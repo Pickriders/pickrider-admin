@@ -5,11 +5,11 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-export const Dropdown = ({ trigger, content }: DropdownProps) => {
+export const Dropdown = ({ trigger, children }: DropdownProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent>{content}</DropdownMenuContent>
+      <DropdownMenuContent>{children}</DropdownMenuContent>
     </DropdownMenu>
   );
 };

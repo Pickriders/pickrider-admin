@@ -29,15 +29,9 @@ export default function Home() {
             <SVG.FilterIcon />
           </button>
         }
-        content={
-          <div className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla magni
-            facilis mollitia, ipsam doloribus cum modi incidunt aliquid
-            voluptatibus expedita praesentium vel reiciendis aut aliquam
-            inventore quam nesciunt quia! Quam!
-          </div>
-        }
-      />
+      >
+        <div className="">fake man</div>
+      </UI.Dropdown>
 
       <div style={{ display: "grid", gap: "1rem" }}>
         <UI.Switch defaultChecked onCheckedChange={(e) => console.log(e)} />
