@@ -21,3 +21,17 @@
   display: grid;
   place-items: center;
 }
+
+// Mixin to simplify media queries for min-width
+@mixin respond-to-min($breakpoint) {
+  @media only screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Mixin to simplify media queries for max-width
+@mixin respond-to-max($breakpoint) {
+  @media only screen and (max-width: $breakpoint) {
+    @content;
+  }
+}
