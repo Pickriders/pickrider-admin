@@ -5,6 +5,7 @@ import { Heading } from "./Heading";
 import { Select } from "./Select";
 
 import { Switch } from "./Switch";
+import { Checkbox } from "./Checkbox";
 import { Container } from "./Container";
 import { Dropdown } from "./Dropdown";
 
@@ -16,6 +17,7 @@ export const UI = {
   Input,
   Select,
   Switch,
+  Checkbox,
   Container,
   Dropdown,
 };

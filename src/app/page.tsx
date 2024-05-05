@@ -23,6 +23,9 @@ export default function Home() {
         padding: "1rem",
       }}
     >
+      <UI.Checkbox />
+      <UI.DropdownMenu>
+        <UI.DropdownMenuTrigger asChild>
       <UI.Container display="grid" gap={8} columns={2} placeItems="center">
         <UI.Container
           height={200}
