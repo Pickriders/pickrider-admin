@@ -47,8 +47,7 @@ export default function Home() {
       </UI.Container>
 
       {/* <UI.Checkbox defaultChecked /> */}
-      <UI.DropdownMenu>
-        <UI.DropdownMenuTrigger asChild>
+
       <UI.Dropdown
         trigger={
           <button className="IconButton" aria-label="Customise options">
