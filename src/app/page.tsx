@@ -23,6 +23,31 @@ export default function Home() {
         padding: "1rem",
       }}
     >
+      <UI.Container display="grid" gap={8} columns={2} placeItems="center">
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+      </UI.Container>
+
+      {/* <UI.Checkbox defaultChecked /> */}
+
       <UI.Dropdown
         trigger={
           <button className="IconButton" aria-label="Customise options">
