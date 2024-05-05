@@ -26,21 +26,40 @@ export default function Home() {
       <UI.Checkbox />
       <UI.DropdownMenu>
         <UI.DropdownMenuTrigger asChild>
+      <UI.Container display="grid" gap={8} columns={2} placeItems="center">
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+      </UI.Container>
+
+      {/* <UI.Checkbox defaultChecked /> */}
+
+      <UI.Dropdown
+        trigger={
           <button className="IconButton" aria-label="Customise options">
             <SVG.FilterIcon />
           </button>
-        </UI.DropdownMenuTrigger>
-        <UI.DropdownMenuContent>
-          <UI.DropdownMenuItem>light moder</UI.DropdownMenuItem>
-          <UI.DropdownMenuItem>Send Email</UI.DropdownMenuItem>
-          <div className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla magni
-            facilis mollitia, ipsam doloribus cum modi incidunt aliquid
-            voluptatibus expedita praesentium vel reiciendis aut aliquam
-            inventore quam nesciunt quia! Quam!
-          </div>
-        </UI.DropdownMenuContent>
-      </UI.DropdownMenu>
+        }
+      >
+        <div className="">fake man</div>
+      </UI.Dropdown>
 
       <div style={{ display: "grid", gap: "1rem" }}>
         <UI.Switch defaultChecked onCheckedChange={(e) => console.log(e)} />
