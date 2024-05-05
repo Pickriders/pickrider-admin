@@ -23,43 +23,27 @@ export default function Home() {
         padding: "1rem",
       }}
     >
-      <UI.Container display="grid" gap={8} columns={2} justifyContent="center">
-        <div
-          style={{
-            border: "1px solid gray",
-            borderRadius: "8px",
-            boxShadow: "0 6px 10px #00000056",
-            height: "5rem",
-            width: "8rem",
-          }}
-        ></div>
-        <div
-          style={{
-            border: "1px solid gray",
-            borderRadius: "8px",
-            boxShadow: "0 6px 10px #00000056",
-            height: "5rem",
-            width: "8rem",
-          }}
-        ></div>
-        <div
-          style={{
-            border: "1px solid gray",
-            borderRadius: "8px",
-            boxShadow: "0 6px 10px #00000056",
-            height: "5rem",
-            width: "8rem",
-          }}
-        ></div>
-        <div
-          style={{
-            border: "1px solid gray",
-            borderRadius: "8px",
-            boxShadow: "0 6px 10px #00000056",
-            height: "5rem",
-            width: "8rem",
-          }}
-        ></div>
+      <UI.Container display="grid" gap={8} columns={2} placeItems="center">
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
+        <UI.Container
+          height={200}
+          width={200}
+          backgroundColor="greenyellow"
+        ></UI.Container>
       </UI.Container>
 
       {/* <UI.Checkbox defaultChecked /> */}
