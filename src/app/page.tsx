@@ -49,21 +49,15 @@ export default function Home() {
       {/* <UI.Checkbox defaultChecked /> */}
       <UI.DropdownMenu>
         <UI.DropdownMenuTrigger asChild>
+      <UI.Dropdown
+        trigger={
           <button className="IconButton" aria-label="Customise options">
             <SVG.FilterIcon />
           </button>
-        </UI.DropdownMenuTrigger>
-        <UI.DropdownMenuContent>
-          <UI.DropdownMenuItem>light moder</UI.DropdownMenuItem>
-          <UI.DropdownMenuItem>Send Email</UI.DropdownMenuItem>
-          <div className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla magni
-            facilis mollitia, ipsam doloribus cum modi incidunt aliquid
-            voluptatibus expedita praesentium vel reiciendis aut aliquam
-            inventore quam nesciunt quia! Quam!
-          </div>
-        </UI.DropdownMenuContent>
-      </UI.DropdownMenu>
+        }
+      >
+        <div className="">fake man</div>
+      </UI.Dropdown>
 
       <div style={{ display: "grid", gap: "1rem" }}>
         <UI.Switch defaultChecked onCheckedChange={(e) => console.log(e)} />
