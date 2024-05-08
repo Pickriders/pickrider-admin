@@ -1,4 +1,4 @@
-export type StatsCardProps = {
+type StatsCardProps = {
   statLabel: string;
   statValue: number;
 };

@@ -1,4 +1,3 @@
-import { HeadingProps } from "./heading.type";
 import styles from "./styles.module.scss";
 
 export const Heading = ({ children, variant }: HeadingProps) => {

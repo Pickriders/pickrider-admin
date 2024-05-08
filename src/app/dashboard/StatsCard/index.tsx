@@ -1,6 +1,5 @@
 import styles from "./styles.module.scss";
 import { UI } from "@/components/common";
-import { StatsCardProps } from "./statsCard.type";
 import { SVG } from "@/components/svg";
 
 export const StatsCard = ({ statLabel, statValue }: StatsCardProps) => {

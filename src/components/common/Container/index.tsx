@@ -1,13 +1,12 @@
 import { CSSProperties } from "react";
-import { ContainerProps } from "./Container.type";
 import style from "./styles.module.scss";
 
-export const Container = ({
+export const Container: React.FC<ContainerProps> = ({
   display,
   children,
   columns,
   ...rest
-}: ContainerProps) => {
+}) => {
   let containerStyle: CSSProperties = {
     display: display,
     gridTemplateColumns: columns && `repeat(${columns}, minmax(0, 1fr));`,

@@ -4,7 +4,6 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import React from "react";
 import style from "./styles.module.scss";
 import { SVG } from "@/components/svg";
-import { Check } from "lucide-react";
 
 const Select = SelectPrimitive.Root;
 

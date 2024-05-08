@@ -1,4 +1,3 @@
-import { SelectProps } from "./Select.type";
 import {
   Select as SelectContainer,
   SelectContent,

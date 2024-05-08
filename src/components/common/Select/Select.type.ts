@@ -1,11 +1,11 @@
 type StringOrNumber = string | number;
 
-export interface ItemProps {
+interface ItemProps {
   value: StringOrNumber;
   label: StringOrNumber;
 }
 
-export type SelectProps = {
+type SelectProps = {
   items: ItemProps[];
   placeholder?: StringOrNumber;
   id?: string;
