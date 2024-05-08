@@ -1,4 +1,3 @@
-import { DropdownProps } from "./Dropdown.type";
 import {
   DropdownMenu,
   DropdownMenuContent,

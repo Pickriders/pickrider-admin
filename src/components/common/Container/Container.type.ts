@@ -1,21 +1,19 @@
-import { CSSProperties } from "react";
-
-export type ContainerProps = {
+type ContainerProps = {
   children?: React.ReactNode;
   display?: "grid" | "flex";
-  gap?: CSSProperties["gap"];
-  rowGap?: CSSProperties["rowGap"];
-  columnGap?: CSSProperties["columnGap"];
-  width?: CSSProperties["width"];
-  maxWidth?: CSSProperties["maxWidth"];
-  height?: CSSProperties["height"];
-  padding?: CSSProperties["padding"];
-  margin?: CSSProperties["margin"];
+  gap?: React.CSSProperties["gap"];
+  rowGap?: React.CSSProperties["rowGap"];
+  columnGap?: React.CSSProperties["columnGap"];
+  width?: React.CSSProperties["width"];
+  maxWidth?: React.CSSProperties["maxWidth"];
+  height?: React.CSSProperties["height"];
+  padding?: React.CSSProperties["padding"];
+  margin?: React.CSSProperties["margin"];
   columns?: number;
-  justifyContent?: CSSProperties["justifyContent"];
-  flexDirection?: CSSProperties["flexDirection"];
-  alignItems?: CSSProperties["alignItems"];
-  placeItems?: CSSProperties["placeItems"];
-  backgroundColor?: CSSProperties["backgroundColor"];
+  justifyContent?: React.CSSProperties["justifyContent"];
+  flexDirection?: React.CSSProperties["flexDirection"];
+  alignItems?: React.CSSProperties["alignItems"];
+  placeItems?: React.CSSProperties["placeItems"];
+  backgroundColor?: React.CSSProperties["backgroundColor"];
   element?: React.ElementType;
 };

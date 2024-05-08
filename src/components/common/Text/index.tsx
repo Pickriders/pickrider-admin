@@ -1,5 +1,4 @@
 import styles from "./styles.module.scss";
-import { TextProps } from "./Text.type";
 
 export const Text = ({ children, style, variant = "default" }: TextProps) => {
   return (

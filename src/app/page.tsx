@@ -1,7 +1,6 @@
 "use client";
 
 import { UI } from "@/components/common";
-import { ItemProps } from "@/components/common/Select/Select.type";
 
 export default function Home() {
   return (

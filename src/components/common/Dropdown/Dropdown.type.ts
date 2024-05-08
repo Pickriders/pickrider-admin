@@ -1,6 +1,6 @@
 type ReactNodeProps = React.ReactNode;
 
-export type DropdownProps = {
+type DropdownProps = {
   trigger: ReactNodeProps;
   children?: ReactNodeProps;
 };
