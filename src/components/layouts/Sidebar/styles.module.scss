@@ -1,0 +1,26 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+
+.sidebar {
+  @include respond-to-min($breakpoint-md) {
+    position: sticky;
+    left: 0;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.link {
+  font-size: 1.6rem;
+  font-family: "ClashDisplay";
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  column-gap: 1.5rem;
+  padding: 1rem 2.5rem;
+  color: $primary-color;
+}
