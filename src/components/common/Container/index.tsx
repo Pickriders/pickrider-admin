@@ -1,10 +1,10 @@
 import { CSSProperties } from "react";
-import style from "./styles.module.scss";
 
 export const Container: React.FC<ContainerProps> = ({
   display,
   children,
   columns,
+  element: Comp = "div",
   ...rest
 }) => {
   let containerStyle: CSSProperties = {
@@ -13,9 +13,5 @@ export const Container: React.FC<ContainerProps> = ({
     ...rest,
   };
 
-  return (
-    <div className={`${style.container} `} style={containerStyle}>
-      {children}
-    </div>
-  );
+  return <Comp style={containerStyle}>{children}</Comp>;
 };

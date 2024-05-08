@@ -2,11 +2,18 @@ type ContainerProps = {
   children?: React.ReactNode;
   display?: "grid" | "flex";
   gap?: React.CSSProperties["gap"];
+  rowGap?: React.CSSProperties["rowGap"];
+  columnGap?: React.CSSProperties["columnGap"];
   width?: React.CSSProperties["width"];
+  maxWidth?: React.CSSProperties["maxWidth"];
   height?: React.CSSProperties["height"];
+  padding?: React.CSSProperties["padding"];
+  margin?: React.CSSProperties["margin"];
   columns?: number;
   justifyContent?: React.CSSProperties["justifyContent"];
+  flexDirection?: React.CSSProperties["flexDirection"];
   alignItems?: React.CSSProperties["alignItems"];
   placeItems?: React.CSSProperties["placeItems"];
   backgroundColor?: React.CSSProperties["backgroundColor"];
+  element?: React.ElementType;
 };
