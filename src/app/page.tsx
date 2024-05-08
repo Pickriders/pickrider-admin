@@ -1,10 +1,5 @@
 "use client";
 
-import { UI } from "@/components/common";
-import { StatsCard } from "./dashboard/StatsCard";
-import { SVG } from "@/components/svg";
-import { ItemProps } from "@/components/common/Select/Select.type";
-
 const mode: ItemProps[] = [
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },

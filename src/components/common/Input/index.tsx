@@ -1,4 +1,3 @@
-import { InputProps } from "./Input.type";
 import style from "./styles.module.scss";
 
 export const Input = ({

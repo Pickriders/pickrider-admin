@@ -1,14 +1,12 @@
-import { CSSProperties } from "react";
-
-export type ContainerProps = {
+type ContainerProps = {
   children?: React.ReactNode;
   display?: "grid" | "flex";
-  gap?: CSSProperties["gap"];
-  width?: CSSProperties["width"];
-  height?: CSSProperties["height"];
+  gap?: React.CSSProperties["gap"];
+  width?: React.CSSProperties["width"];
+  height?: React.CSSProperties["height"];
   columns?: number;
-  justifyContent?: CSSProperties["justifyContent"];
-  alignItems?: CSSProperties["alignItems"];
-  placeItems?: CSSProperties["placeItems"];
-  backgroundColor?: CSSProperties["backgroundColor"];
+  justifyContent?: React.CSSProperties["justifyContent"];
+  alignItems?: React.CSSProperties["alignItems"];
+  placeItems?: React.CSSProperties["placeItems"];
+  backgroundColor?: React.CSSProperties["backgroundColor"];
 };
