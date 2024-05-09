@@ -21,4 +21,9 @@
     padding: 0.6rem 1.2rem;
     color: $white;
   }
+  &.ghost {
+    background-color: transparent;
+    padding: 0.6rem 1.2rem;
+    color: $white;
+  }
 }

@@ -1,9 +1,18 @@
 import styles from "./styles.module.scss";
 
-export const Text = ({ children, style, variant = "default" }: TextProps) => {
+export const Text = ({
+  children,
+  style,
+  variant = "default",
+  Element = "p",
+  className,
+}: TextProps) => {
   return (
-    <p style={style} className={`${styles.text} ${styles[variant]}`}>
+    <Element
+      style={style}
+      className={` ${styles.text} ${styles[variant]} ${className}`}
+    >
       {children}
-    </p>
+    </Element>
   );
 };

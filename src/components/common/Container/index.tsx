@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 
 export const Container: React.FC<ContainerProps> = ({
+  className,
   display,
   children,
   columns,
@@ -13,5 +14,9 @@ export const Container: React.FC<ContainerProps> = ({
     ...rest,
   };
 
-  return <Comp style={containerStyle}>{children}</Comp>;
+  return (
+    <Comp className={className} style={containerStyle}>
+      {children}
+    </Comp>
+  );
 };

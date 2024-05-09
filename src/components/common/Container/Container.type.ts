@@ -9,6 +9,7 @@ type ContainerProps = {
   height?: React.CSSProperties["height"];
   padding?: React.CSSProperties["padding"];
   margin?: React.CSSProperties["margin"];
+  marginTop?: React.CSSProperties["marginTop"];
   columns?: number;
   justifyContent?: React.CSSProperties["justifyContent"];
   flexDirection?: React.CSSProperties["flexDirection"];
@@ -16,4 +17,5 @@ type ContainerProps = {
   placeItems?: React.CSSProperties["placeItems"];
   backgroundColor?: React.CSSProperties["backgroundColor"];
   element?: React.ElementType;
+  className?: string;
 };
