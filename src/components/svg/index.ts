@@ -8,6 +8,7 @@ import { FilterIcon } from "./FilterIcon";
 import { LogoIcon } from "./LogoIcon";
 import { MenuIcon } from "./MenuIcon";
 import { MessageIcon } from "./MessageIcon";
+import { NotificationIcon } from "./NotificationIcon";
 import { PersonAcceptIcon } from "./PersonAcceptIcon";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
@@ -32,4 +33,5 @@ export const SVG = {
   AirpodIcon,
   SelectorIcon,
   LogoIcon,
+  NotificationIcon,
 };

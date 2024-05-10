@@ -1,5 +1,5 @@
 type ButtonProps = {
-  variant: "business" | "primary" | "secondary" | "ghost";
+  variant: "business" | "primary" | "ghost" | "outline";
   type?: "button" | "submit";
   children: React.ReactNode;
   className?: string;

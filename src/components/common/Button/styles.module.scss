@@ -7,7 +7,7 @@
   font-weight: 700;
   font-size: 1.2rem;
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   white-space: nowrap;
 
@@ -22,8 +22,16 @@
     color: $white;
   }
   &.ghost {
+    font-family: "Faktum Test";
     background-color: transparent;
     padding: 0.6rem 1.2rem;
     color: $white;
+  }
+
+  &.outline {
+    font-family: "Faktum Test";
+    background-color: transparent;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid $gray-100;
   }
 }
