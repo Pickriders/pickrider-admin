@@ -4,14 +4,14 @@ import { SVG } from "@/components/svg";
 
 export const StatsCard = ({ statLabel, statValue }: StatsCardProps) => {
   return (
-    <div className={`${styles.statsCard}`}>
-      <div>
+    <UI.Container className={`${styles.statsCard}`}>
+      <UI.Container>
         <SVG.MessageIcon />
-      </div>
-      <div className={styles.statsCard_info}>
+      </UI.Container>
+      <UI.Container className={styles.statsCard_info}>
         <UI.Text variant="statLabel">{statLabel}</UI.Text>
         <UI.Text variant="statValue">{statValue}</UI.Text>
-      </div>
-    </div>
+      </UI.Container>
+    </UI.Container>
   );
 };
