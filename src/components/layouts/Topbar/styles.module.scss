@@ -1,0 +1,15 @@
+@import "../../../styles/abstracts/variables";
+
+.topbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 9.6rem;
+  width: 100%;
+  background-color: $white;
+  padding-right: 3rem;
+  z-index: 50;
+}

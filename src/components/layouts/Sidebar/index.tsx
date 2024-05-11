@@ -5,22 +5,14 @@ import style from "./styles.module.scss";
 
 export const Sidebar = () => {
   return (
-    <UI.Container
-      element={"aside"}
-      height={"100vh"}
-      width={250}
-      className={style.sidebar}
-    >
-      <UI.Container display="flex" marginTop={4} alignItems="center">
-        <UI.Text Element={"span"} className={style.border} />
-        <UI.Button variant="ghost">
-          <SVG.ChevronLeftIcon />
-        </UI.Button>
+    <UI.Container element={"aside"} className={style.sidebar}>
+      <UI.Container className={style.logo}>
+        <SVG.LogoIcon />
       </UI.Container>
 
       <UI.Container element={"ul"} className={style.list}>
         <SidebarLink
-          path="dashboard"
+          path="/dashboard"
           label="dashboard"
           icon={<SVG.CategoryIcon />}
         />

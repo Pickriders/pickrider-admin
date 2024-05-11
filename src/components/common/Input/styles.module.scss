@@ -45,7 +45,7 @@
   }
 
   &_icon {
-    @include center-element;
+    @include gridCenter;
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
