@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 export const SidebarLink = ({ path, icon, label }: LinkProps) => {
   const pathname = usePathname();
   const active = pathname === path;
-  console.log(path);
 
   return (
     <li>

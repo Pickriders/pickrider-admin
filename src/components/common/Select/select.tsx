@@ -11,9 +11,16 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger ref={ref} className={style.trigger} {...props}>
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
+    width?: string;
+  }
+>(({ className, children, width, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    style={{ width }}
+    className={style.trigger}
+    {...props}
+  >
     {children}
     <SelectPrimitive.Icon asChild>
       <SVG.ChevronDown />

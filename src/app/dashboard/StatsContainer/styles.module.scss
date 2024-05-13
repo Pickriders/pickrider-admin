@@ -1,0 +1,21 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  column-gap: 1.5rem;
+  row-gap: 1.5rem;
+
+  @include respond-to-min($breakpoint-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include respond-to-min($breakpoint-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include respond-to-min($breakpoint-xl) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

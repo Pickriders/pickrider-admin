@@ -6,10 +6,16 @@ import {
   SelectValue,
 } from "./select";
 
-export const Select = ({ items, id, placeholder, onChange }: SelectProps) => {
+export const Select = ({
+  items,
+  id,
+  placeholder,
+  onChange,
+  width,
+}: SelectProps) => {
   return (
     <SelectContainer onValueChange={onChange}>
-      <SelectTrigger id={id}>
+      <SelectTrigger width={width} id={id}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

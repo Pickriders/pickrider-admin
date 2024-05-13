@@ -16,9 +16,11 @@
   left: 0;
   min-width: 230px;
   flex-shrink: 0;
+  display: none;
 
   @include respond-to-min($breakpoint-md) {
     position: sticky;
+    display: block;
   }
 }
 

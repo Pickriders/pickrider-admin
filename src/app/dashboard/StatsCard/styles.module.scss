@@ -12,6 +12,7 @@
   width: 100%;
 
   &_info {
+    overflow: hidden;
     > :last-child {
       margin-top: 0.7rem;
     }

@@ -14,9 +14,9 @@ export default function Dashboard({
 }>) {
   return (
     <UI.Container width={"100%"} element={"section"} backgroundColor="#F3F3F3">
-      <UI.Container display="flex">
+      <UI.Container display="flex" minHeight={"100vh"}>
         <Layout.Sidebar />
-        <UI.Container>
+        <UI.Container width={"100%"}>
           <Layout.Topbar />
           {children}
         </UI.Container>

@@ -7,6 +7,9 @@
   letter-spacing: -0.025rem;
   font-size: 1.2rem;
   line-height: 1.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &.statLabel {
     font-size: 1.4rem;

@@ -9,5 +9,6 @@ type SelectProps = {
   items: ItemProps[];
   placeholder?: StringOrNumber;
   id?: string;
+  width?: string;
   onChange?: (e: string | number) => void;
 };
