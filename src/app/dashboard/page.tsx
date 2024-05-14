@@ -11,6 +11,35 @@ export default function Home() {
         inventore enim, repellat debitis temporibus, facilis maiores delectus
         dignissimos consectetur et minima.
       </p>
+
+      {/* TABLE USAGE */}
+      <UI.Table
+        actionBar={<></>}
+        head={{
+          id: "ID/NO",
+          customerName: "Customer Name",
+          age: "Age",
+          actions: (
+            <UI.Container>
+              <UI.Text>Actions</UI.Text>
+            </UI.Container>
+          ),
+        }}
+        data={[
+          {
+            id: "Some ID",
+            customerName: "Okechukwu",
+            age: "28",
+            actions: <>Some Actions</>,
+          },
+          {
+            id: "Some ID",
+            customerName: "Okechukwu",
+            age: "28",
+            actions: <>Some Actions</>,
+          },
+        ]}
+      />
     </UI.Container>
   );
 }
