@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Container } from "../Container";
 
-const Table = <T extends {}>(props: TableProps<T>) => {
+const Table = <T extends { [key: string]: string | React.ReactNode }>(
+  props: TableProps<T>
+) => {
   return (
     <Container>
       <table className="table">

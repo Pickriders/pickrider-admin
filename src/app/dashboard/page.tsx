@@ -36,7 +36,7 @@ export default function Home() {
             id: "Some ID",
             customerName: "Okechukwu",
             age: "28",
-            actions: <>Some Actions</>,
+            actions: <>Some action</>,
           },
         ]}
       />
