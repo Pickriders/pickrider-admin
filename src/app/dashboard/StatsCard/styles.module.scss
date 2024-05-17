@@ -9,7 +9,6 @@
   padding: 1.2rem 2rem;
   border-radius: $rounded-lg;
   background-color: $white;
-  width: 100%;
 
   &_info {
     overflow: hidden;
@@ -17,4 +16,10 @@
       margin-top: 0.7rem;
     }
   }
+}
+
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

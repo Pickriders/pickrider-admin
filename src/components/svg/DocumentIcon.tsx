@@ -1,9 +1,16 @@
-export const DocumentIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const DocumentIcon = ({
+  className,
+  height = 22,
+  width = 20,
+}: SvgProps) => {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="22"
+      width={width}
+      height={height}
       viewBox="0 0 20 22"
       fill="none"
     >

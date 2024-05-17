@@ -1,9 +1,11 @@
-export const ChevronDown = () => {
+import { SvgProps } from "./Svg.type";
+
+export const ChevronDown = ({ height = 6, width = 10 }: SvgProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="10"
-      height="6"
+      width={width}
+      height={height}
       viewBox="0 0 10 6"
       fill="none"
     >

@@ -1,3 +1,5 @@
+import style from "./styles.module.scss";
+
 import { CSSProperties } from "react";
 
 export const Container: React.FC<ContainerProps> = ({
@@ -15,7 +17,7 @@ export const Container: React.FC<ContainerProps> = ({
   };
 
   return (
-    <Comp className={className} style={containerStyle}>
+    <Comp className={`${className ? className : ""}`} style={containerStyle}>
       {children}
     </Comp>
   );

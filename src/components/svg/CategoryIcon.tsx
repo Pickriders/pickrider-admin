@@ -1,9 +1,16 @@
-export const CategoryIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const CategoryIcon = ({
+  className,
+  height = 18,
+  width = 18,
+}: SvgProps) => {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
+      width={width}
+      height={height}
       viewBox="0 0 18 18"
       fill="none"
     >
