@@ -8,17 +8,10 @@
   font-size: 1.2rem;
   line-height: 1.875rem;
 
-  &.statLabel {
+  &.label {
     font-size: 1.4rem;
     letter-spacing: -0.04rem;
     text-transform: capitalize;
-  }
-
-  &.statValue {
-    font-family: "ClashDisplay";
-    font-size: 2rem;
-    font-weight: 600;
-    color: $black;
   }
 
   &.heading {

@@ -1,4 +1,5 @@
 type StatsCardProps = {
   statLabel: string;
-  statValue: number;
+  statValue: string;
+  className?: string;
 };

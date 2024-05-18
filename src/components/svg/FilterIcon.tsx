@@ -1,9 +1,16 @@
-export const FilterIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const FilterIcon = ({
+  className,
+  height = 16,
+  width = 18,
+}: SvgProps) => {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="16"
+      width={width}
+      height={height}
       viewBox="0 0 18 16"
       fill="none"
     >

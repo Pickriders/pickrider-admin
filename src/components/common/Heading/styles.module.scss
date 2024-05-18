@@ -2,11 +2,15 @@
 
 .heading {
   font-family: "ClashDisplay", "Courier New", Courier, monospace;
+  font-weight: 600;
+  line-height: 30px;
+  color: $main-color;
 
   &.h1 {
+    font-size: 2rem;
+  }
+
+  &.h2 {
     font-size: 1.6rem;
-    font-weight: 600;
-    line-height: 30px;
-    color: $main-color;
   }
 }

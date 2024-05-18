@@ -1,5 +1,5 @@
 type TextProps = {
-  variant?: "default" | "statLabel" | "statValue" | "heading";
+  variant?: "default" | "label" | "heading";
   children?: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;

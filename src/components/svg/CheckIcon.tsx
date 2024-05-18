@@ -1,9 +1,12 @@
-export const CheckIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const CheckIcon = ({ height = 7, width = 9, className }: SvgProps) => {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="9"
-      height="7"
+      width={width}
+      height={height}
       viewBox="0 0 9 7"
       fill="none"
     >

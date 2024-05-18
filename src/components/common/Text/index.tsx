@@ -10,7 +10,7 @@ export const Text = ({
   return (
     <Element
       style={style}
-      className={` ${styles.text} ${styles[variant]} ${className}`}
+      className={`${styles.text} ${styles[variant]} ${className}`}
     >
       {children}
     </Element>

@@ -126,3 +126,8 @@ a {
 ul {
   list-style: none;
 }
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}

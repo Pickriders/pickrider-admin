@@ -1,9 +1,16 @@
-export const ChevronLeftIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const ChevronLeftIcon = ({
+  className,
+  height = 8,
+  width = 4,
+}: SvgProps) => {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="4"
-      height="8"
+      width={width}
+      height={height}
       viewBox="0 0 4 8"
       fill="none"
     >
