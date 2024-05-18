@@ -1,2 +1,1 @@
-export * from "./months";
-export * from "./year";
+export * from "./select";

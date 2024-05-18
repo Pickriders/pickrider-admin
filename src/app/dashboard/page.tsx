@@ -1,8 +1,7 @@
 "use client";
 
 import { UI } from "@/components/common";
-import { months } from "@/constant/months";
-import { years } from "@/constant/year";
+import { months, years } from "@/constant";
 import { StatsContainer } from "./StatsContainer";
 
 export default function Home() {
