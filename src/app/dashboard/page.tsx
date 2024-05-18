@@ -14,8 +14,7 @@ export default function Home() {
           <UI.Select items={years} width="91px" placeholder={"Year"} />
         </UI.Container>
       </UI.Container>
-
       <StatsContainer />
-    </UI.Container>
+   
   );
 }
