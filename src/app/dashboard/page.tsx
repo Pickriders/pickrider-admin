@@ -15,6 +15,6 @@ export default function Home() {
         </UI.Container>
       </UI.Container>
       <StatsContainer />
-   
+    </UI.Container>
   );
 }
