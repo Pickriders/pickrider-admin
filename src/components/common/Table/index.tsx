@@ -1,17 +1,24 @@
 import * as React from "react";
 import { Container } from "../Container";
+import { Text } from "../Text";
+import style from "./styles.module.scss";
+import "@/styles/layout/_grid.scss";
 
 const Table = <T extends { [key: string]: string | React.ReactNode }>(
   props: TableProps<T>
 ) => {
   return (
-    <Container>
-      <table className="table">
-        <Container>
+    <Container backgroundColor="#ffff" borderRadius={8}>
+      {props.actionBar}
+
+      <Container overflowX="auto">
+        <table className={style.table}>
           <thead>
             <tr>
               {Object.values(props.head).map((item, i) => (
-                <th key={`${i}`}>{item as any}</th>
+                <th style={{ border: "none" }} key={`${i}`}>
+                  <Text variant="heading">{item as any}</Text>
+                </th>
               ))}
             </tr>
           </thead>
@@ -25,8 +32,8 @@ const Table = <T extends { [key: string]: string | React.ReactNode }>(
               </tr>
             ))}
           </tbody>
-        </Container>
-      </table>
+        </table>
+      </Container>
     </Container>
   );
 };

@@ -14,9 +14,11 @@ type ContainerProps = {
   marginRight?: React.CSSProperties["marginRight"];
   marginLeft?: React.CSSProperties["marginLeft"];
   overflow?: React.CSSProperties["overflow"];
+  overflowX?: React.CSSProperties["overflowX"];
   columns?: number;
   justifyContent?: React.CSSProperties["justifyContent"];
   flexDirection?: React.CSSProperties["flexDirection"];
+  flexShrink?: React.CSSProperties["flexShrink"];
   alignItems?: React.CSSProperties["alignItems"];
   placeItems?: React.CSSProperties["placeItems"];
   borderRadius?: React.CSSProperties["borderRadius"];

@@ -10,5 +10,6 @@ type SelectProps = {
   placeholder?: StringOrNumber;
   id?: string;
   width?: string;
+  defaultValue?: string;
   onChange?: (e: string | number) => void;
 };

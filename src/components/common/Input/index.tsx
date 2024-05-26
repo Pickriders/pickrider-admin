@@ -30,6 +30,7 @@ export const Input = ({
         {...rest}
         placeholder={placeholder || label}
       />
+
       <label className={style.input_label}>{label}</label>
     </div>
   );

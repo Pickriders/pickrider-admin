@@ -3,8 +3,8 @@
 
 .checkbox {
   @include border-1;
-  width: 16px;
-  height: 16px;
+  width: 1.6rem;
+  height: 1.6rem;
   flex-shrink: 0;
   border-radius: 2px;
 }

@@ -22,6 +22,7 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     {children}
+
     <SelectPrimitive.Icon asChild>
       <SVG.ChevronDown />
     </SelectPrimitive.Icon>

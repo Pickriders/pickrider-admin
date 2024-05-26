@@ -1,0 +1,31 @@
+@import "../../../styles/abstracts/variables";
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: table;
+
+  thead {
+    background-color: #fcfcfc;
+    border-top: 1px solid $gray-100;
+    border-bottom: 1px solid $gray-100;
+  }
+
+  th {
+    text-align: start;
+    padding: 1rem 2.5rem;
+    text-wrap: nowrap;
+  }
+
+  td {
+    font-family: "Faktum Test";
+    color: $primary-color;
+    font-weight: 400;
+    letter-spacing: -0.025rem;
+    font-size: 1.2rem;
+    line-height: 1.875rem;
+    padding: 1rem 2.5rem;
+    text-wrap: nowrap;
+  }
+}

@@ -17,7 +17,7 @@ export const Sidebar = () => {
           icon={<SVG.CategoryIcon />}
         />
         <SidebarLink
-          path="customers"
+          path="/dashboard/customers"
           label="Customers"
           icon={<SVG.PersonGropBoldIcon />}
         />

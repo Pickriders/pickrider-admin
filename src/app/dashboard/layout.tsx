@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { UI } from "@/components/common";
 import { Layout } from "@/components/layouts";
+import "@/styles/layout/_grid.scss";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -16,7 +17,8 @@ export default function Dashboard({
     <UI.Container width={"100%"} element={"section"} backgroundColor="#F3F3F3">
       <UI.Container display="flex" minHeight={"100vh"}>
         <Layout.Sidebar />
-        <UI.Container width={"100%"}>
+
+        <UI.Container className="main" element={"main"}>
           <Layout.Topbar />
           {children}
         </UI.Container>
