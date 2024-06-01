@@ -3,7 +3,7 @@ import { Container } from "../Container";
 import { TableUserProps } from "./TableUser.type";
 import { Text } from "../Text";
 
-export const TableUser = ({ username, userEmail, userImg }: TableUserProps) => {
+export const TableUser = ({ userName, userEmail, userImg }: TableUserProps) => {
   return (
     <Container display="flex" alignItems="center" columnGap={8}>
       <Container
@@ -13,10 +13,10 @@ export const TableUser = ({ username, userEmail, userImg }: TableUserProps) => {
         borderRadius={9999}
         flexShrink={0}
       >
-        {userImg && <Image src={userImg} alt={username} />}
+        {userImg && <Image src={userImg} alt={`${userName}`} />}
       </Container>
       <Container>
-        <Text>{username}</Text>
+        <Text>{userName}</Text>
       </Container>
     </Container>
   );

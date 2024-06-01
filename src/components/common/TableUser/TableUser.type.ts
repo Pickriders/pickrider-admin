@@ -1,5 +1,5 @@
 export type TableUserProps = {
   userImg?: string;
-  username: string;
+  userName: string;
   userEmail?: string;
 };

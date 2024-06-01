@@ -1,11 +1,12 @@
 "use client";
 
-import style from "./styles.module.scss";
 import { useState } from "react";
 import { Input } from "../Input";
 import { SVG } from "@/components/svg";
 
-export const SearchInput = () => {
+export const TableSearchInput = ({
+  ...rest
+}: React.InputHTMLAttributes<HTMLInputElement>) => {
   const [showInput, setShowInput] = useState(false);
 
   const handleIconClick = () => {
@@ -23,6 +24,7 @@ export const SearchInput = () => {
           autoFocus={true}
           onBlur={handleInputBlur}
           leftIcon={<SVG.SearchIcon />}
+          {...rest}
         />
       ) : (
         <button onClick={handleIconClick}>

@@ -1,34 +1,5 @@
-type ContainerProps = {
+interface ContainerProps extends React.CSSProperties {
   children?: React.ReactNode;
-  display?: "grid" | "flex";
-  gap?: React.CSSProperties["gap"];
-  rowGap?: React.CSSProperties["rowGap"];
-  columnGap?: React.CSSProperties["columnGap"];
-  width?: React.CSSProperties["width"];
-  maxWidth?: React.CSSProperties["maxWidth"];
-  height?: React.CSSProperties["height"];
-  minHeight?: React.CSSProperties["minHeight"];
-  padding?: React.CSSProperties["padding"];
-  margin?: React.CSSProperties["margin"];
-  marginTop?: React.CSSProperties["marginTop"];
-  marginRight?: React.CSSProperties["marginRight"];
-  marginLeft?: React.CSSProperties["marginLeft"];
-  overflow?: React.CSSProperties["overflow"];
-  overflowX?: React.CSSProperties["overflowX"];
-  columns?: number;
-  justifyContent?: React.CSSProperties["justifyContent"];
-  flexDirection?: React.CSSProperties["flexDirection"];
-  flexShrink?: React.CSSProperties["flexShrink"];
-  alignItems?: React.CSSProperties["alignItems"];
-  placeItems?: React.CSSProperties["placeItems"];
-  borderRadius?: React.CSSProperties["borderRadius"];
-  position?: React.CSSProperties["position"];
-  top?: React.CSSProperties["top"];
-  left?: React.CSSProperties["left"];
-  right?: React.CSSProperties["right"];
-  bottom?: React.CSSProperties["bottom"];
-  backgroundColor?: React.CSSProperties["backgroundColor"];
-  color?: React.CSSProperties["color"];
   element?: React.ElementType;
   className?: string;
-};
+}

@@ -3,105 +3,34 @@
 import { UI } from "@/components/common";
 import { SVG } from "@/components/svg";
 import React from "react";
+import { Statusunion } from "./Customerstable.type";
 
-const tableData = [
+const customersData = [
   {
-    actions: <UI.Checkbox />,
     serialNumber: "1",
     balance: "#43,650.02",
-    user: <UI.TableUser username="Nnamani Kester" />,
-    verified: (
-      <UI.Container
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        columnGap={15}
-      >
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick />
-          <UI.Text>Phone</UI.Text>
-        </UI.Container>
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick color="#F3F3F3" />
-          <UI.Text>KYC</UI.Text>
-        </UI.Container>
-      </UI.Container>
-    ),
-    status: <UI.TableStatus status="active" />,
-    lastLogin: (
-      <UI.Text>
-        <UI.Text Element={"span"} style={{ display: "block" }}>
-          9:42pm
-        </UI.Text>
-        <UI.Text Element={"span"}>12/04/23</UI.Text>
-      </UI.Text>
-    ),
+    user: { userName: "Nnamani Kester", img: "" },
+    verified: "",
+    status: "active" as Statusunion,
+    lastLogin: "",
     orders: "345 completed",
   },
   {
-    actions: <UI.Checkbox />,
-    serialNumber: "2",
+    serialNumber: "1",
     balance: "#43,650.02",
-    user: <UI.TableUser username="Nnamani Kester" />,
-    verified: (
-      <UI.Container
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        columnGap={15}
-      >
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick />
-          <UI.Text>Phone</UI.Text>
-        </UI.Container>
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick color="#F3F3F3" />
-          <UI.Text>KYC</UI.Text>
-        </UI.Container>
-      </UI.Container>
-    ),
-    status: <UI.TableStatus status="declined" />,
-    lastLogin: (
-      <UI.Text>
-        <UI.Text Element={"span"} style={{ display: "block" }}>
-          9:42pm
-        </UI.Text>
-        <UI.Text Element={"span"}>12/04/23</UI.Text>
-      </UI.Text>
-    ),
+    user: { userName: "Nnamani Kester", img: "" },
+    verified: "",
+    status: "pending" as Statusunion,
+    lastLogin: "",
     orders: "345 completed",
   },
   {
-    actions: <UI.Checkbox />,
-    serialNumber: "3",
+    serialNumber: "1",
     balance: "#43,650.02",
-    user: <UI.TableUser username="Nnamani Kester" />,
-    verified: (
-      <UI.Container
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        columnGap={15}
-      >
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick />
-          <UI.Text>Phone</UI.Text>
-        </UI.Container>
-        <UI.Container display="flex" alignItems="center" columnGap={5}>
-          <SVG.GreenTick color="#F3F3F3" />
-          <UI.Text>KYC</UI.Text>
-        </UI.Container>
-      </UI.Container>
-    ),
-    status: <UI.TableStatus status="active" />,
-    lastLogin: (
-      <UI.Text>
-        <UI.Text Element={"span"} style={{ display: "block" }}>
-          9:42pm
-        </UI.Text>
-        <UI.Text Element={"span"}>12/04/23</UI.Text>
-      </UI.Text>
-    ),
+    user: { userName: "Nnamani Kester", img: "" },
+    verified: "",
+    status: "verified" as Statusunion,
+    lastLogin: "",
     orders: "345 completed",
   },
 ];
@@ -122,7 +51,7 @@ export const CustomersTable = () => {
     if (selectAll) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(tableData.map((_, index) => index));
+      setSelectedRows(customersData.map((_, index) => index));
     }
     setSelectAll(!selectAll);
   };
@@ -132,7 +61,7 @@ export const CustomersTable = () => {
       <UI.Table
         actionBar={<UI.TableActionBar />}
         head={{
-          actions: <UI.Checkbox />,
+          actions: <UI.Checkbox onCheckedChange={handleSelectAll} />,
           serialNumber: "S/N",
           balance: "Balance",
           user: <>User</>,
@@ -141,11 +70,45 @@ export const CustomersTable = () => {
           lastLogin: <>Last Login</>,
           orders: "Orders",
         }}
-        data={tableData}
-        onRowSelect={handleRowSelect}
-        onSelectAll={handleSelectAll}
-        selectedRows={selectedRows}
-        isSelectAllChecked={selectAll}
+        data={customersData.map((customer, i) => ({
+          actions: (
+            <UI.Checkbox
+              checked={selectedRows.includes(i)}
+              onCheckedChange={() => handleRowSelect(i)}
+            />
+          ),
+          serialNumber: customer.serialNumber,
+          balance: customer.balance,
+          user: <UI.TableUser userName={customer.user.userName} />,
+
+          verified: (
+            <UI.Container
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              columnGap={15}
+            >
+              <UI.Container display="flex" alignItems="center" columnGap={5}>
+                <SVG.GreenTick />
+                <UI.Text>Phone</UI.Text>
+              </UI.Container>
+              <UI.Container display="flex" alignItems="center" columnGap={5}>
+                <SVG.GreenTick color="#F3F3F3" />
+                <UI.Text>KYC</UI.Text>
+              </UI.Container>
+            </UI.Container>
+          ),
+          status: <UI.TableStatus status={customer.status} />,
+          lastLogin: (
+            <UI.Text>
+              <UI.Text Element={"span"} style={{ display: "block" }}>
+                9:42pm
+              </UI.Text>
+              <UI.Text Element={"span"}>12/04/23</UI.Text>
+            </UI.Text>
+          ),
+          orders: customer.orders,
+        }))}
       />
     </UI.Container>
   );
