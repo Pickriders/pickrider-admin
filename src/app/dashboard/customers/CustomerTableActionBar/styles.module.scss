@@ -1,30 +1,10 @@
 @import "/src/styles/abstracts/mixins";
 @import "/src/styles/abstracts/variables";
 
-.actionDropdown {
-  border: 1px solid #f3f3f3;
-  padding: 1rem;
-  font-size: 1.2rem;
-  color: $primary-color;
-  font-family: "Faktum Test";
-  border-radius: $rounded-lg;
-  width: 106px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fcfcfc;
-}
-
 .dropdown {
   &_filterHeading {
     font-size: 1.4rem;
     padding: 1rem 2rem;
     border-bottom: 1px solid $gray-100;
   }
-}
-
-.dropdownItem {
-  font-family: "Faktum Test";
-  font-size: 1.2rem;
-  color: $primary-color;
 }

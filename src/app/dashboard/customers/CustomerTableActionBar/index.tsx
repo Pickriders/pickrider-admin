@@ -14,27 +14,7 @@ export const TableActionBar = () => {
       padding={"1.8rem 2.5rem"}
     >
       <UI.Container display="flex" columnGap={10}>
-        <UI.Dropdown
-          trigger={
-            <button className={style.actionDropdown}>
-              <span>Bulk Action</span>
-              <SVG.ChevronDown />
-            </button>
-          }
-        >
-          <UI.Container width={106}>
-            <UI.DropdownMenuItem className={style.dropdownItem}>
-              Send Email
-            </UI.DropdownMenuItem>
-            <UI.DropdownMenuItem className={style.dropdownItem}>
-              Suspend
-            </UI.DropdownMenuItem>
-            <UI.DropdownMenuItem className={style.dropdownItem}>
-              Delete
-            </UI.DropdownMenuItem>
-          </UI.Container>
-        </UI.Dropdown>
-
+        <UI.TableBulkActionDropdown />
         <UI.Button variant="outline">Apply</UI.Button>
       </UI.Container>
 

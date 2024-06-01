@@ -14,6 +14,7 @@ import { TableUser } from "./TableUser";
 import { DropdownMenuItem } from "./Dropdown/dropdown-menu";
 import { TableStatus } from "./TableStatus";
 import { TableSearchInput } from "./TableSearchInput";
+import { TableBulkActionDropdown } from "./TableBulkActionDropdown";
 
 export const UI = {
   Button,
@@ -31,4 +32,5 @@ export const UI = {
   TableUser,
   TableStatus,
   TableSearchInput,
+  TableBulkActionDropdown,
 };
