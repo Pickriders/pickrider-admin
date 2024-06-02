@@ -1,7 +1,5 @@
 import { SVG } from "@/components/svg";
-
 import style from "./styles.module.scss";
-
 import { actionBarStatus, actionBarType } from "@/constant";
 import { UI } from "@/components/common";
 
