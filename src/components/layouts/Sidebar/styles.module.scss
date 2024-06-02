@@ -55,6 +55,11 @@
     background-color: $gray-50;
   }
 
+  &.active {
+    font-weight: 700;
+    color: $black;
+  }
+
   .selectorIcon {
     position: absolute;
     left: 0;

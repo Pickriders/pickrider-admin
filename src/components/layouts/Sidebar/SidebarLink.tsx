@@ -12,7 +12,7 @@ export const SidebarLink = ({ path, icon, label }: LinkProps) => {
 
   return (
     <li>
-      <Link href={path} className={style.link}>
+      <Link href={path} className={`${style.link}  ${active && style.active}`}>
         {active && (
           <span className={style.selectorIcon}>
             <SVG.SelectorIcon />
