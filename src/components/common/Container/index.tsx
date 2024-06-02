@@ -1,5 +1,3 @@
-import style from "./styles.module.scss";
-
 import { CSSProperties } from "react";
 
 export const Container: React.FC<ContainerProps> = ({

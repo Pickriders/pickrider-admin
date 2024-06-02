@@ -18,3 +18,16 @@ export const years = [
   { value: 2023, label: "2023" },
   { value: 2024, label: "2024" },
 ];
+
+export const actionBarType = [
+  { value: "all", label: "All" },
+  { value: "customers", label: "Customers" },
+  { value: "riders", label: "Riders" },
+  { value: "businesses", label: "Businesses" },
+];
+
+export const actionBarStatus = [
+  { value: "Any", label: "Any" },
+  { value: "Active", label: "Active" },
+  { value: "Suspended", label: "Suspended" },
+];

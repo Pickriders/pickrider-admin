@@ -80,3 +80,11 @@
     width: calc((20% - 1.3rem) - (1.3rem / 5));
   }
 }
+
+.main {
+  width: 100%;
+
+  @include respond-to-min($breakpoint-lg) {
+    width: calc(100% - 240px);
+  }
+}

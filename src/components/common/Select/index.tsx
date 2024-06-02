@@ -12,6 +12,7 @@ export const Select = ({
   placeholder,
   onChange,
   width,
+  defaultValue,
 }: SelectProps) => {
   return (
     <SelectContainer onValueChange={onChange}>
@@ -21,7 +22,7 @@ export const Select = ({
       <SelectContent>
         {items.map((item, i) => {
           return (
-            <SelectItem key={i} value={`${item.value}`}>
+            <SelectItem defaultValue={"all"} key={i} value={`${item.value}`}>
               {item.label}
             </SelectItem>
           );

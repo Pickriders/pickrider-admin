@@ -14,11 +14,11 @@
   height: 100vh;
   top: 0;
   left: 0;
-  min-width: 230px;
+  width: 240px;
   flex-shrink: 0;
   display: none;
 
-  @include respond-to-min($breakpoint-md) {
+  @include respond-to-min($breakpoint-lg) {
     position: sticky;
     display: block;
   }

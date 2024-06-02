@@ -42,7 +42,11 @@ const DropdownMenuItem = React.forwardRef<
     inset?: boolean;
   }
 >(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Item ref={ref} className={style.menuItem} {...props} />
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={`${style.menuItem} ${className}`}
+    {...props}
+  />
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 

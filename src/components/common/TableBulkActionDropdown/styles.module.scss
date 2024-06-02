@@ -1,0 +1,21 @@
+@import "/src/styles/abstracts/variables";
+
+.actionDropdown {
+  border: 1px solid #f3f3f3;
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: $primary-color;
+  font-family: "Faktum Test";
+  border-radius: $rounded-lg;
+  width: 106px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fcfcfc;
+}
+
+.dropdownItem {
+  font-family: "Faktum Test";
+  font-size: 1.2rem;
+  color: $primary-color;
+}
