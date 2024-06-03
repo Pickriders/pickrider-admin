@@ -16,8 +16,7 @@
   width: 100%;
 
   &:focus {
-    outline: 1px solid $gray-200;
-    outline-offset: 0.1rem;
+    outline: none;
   }
 
   &:focus ~ &_label {

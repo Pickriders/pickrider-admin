@@ -131,3 +131,22 @@ ul {
   display: flex;
   flex-wrap: wrap;
 }
+
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  &::-moz-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d8d5d5;
+  }
+  &::-moz-scrollbar-thumb {
+    background-color: #d8d5d5;
+  }
+}

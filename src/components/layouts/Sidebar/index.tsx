@@ -10,7 +10,7 @@ export const Sidebar = () => {
         <SVG.LogoIcon />
       </UI.Container>
 
-      <UI.Container element={"ul"} className={style.list}>
+      <UI.Container element={"ul"} className={`${style.list} custom-scrollbar`}>
         <SidebarLink
           path="/dashboard"
           label="dashboard"
@@ -27,7 +27,7 @@ export const Sidebar = () => {
           icon={<SVG.CategoryIcon />}
         />
         <SidebarLink
-          path="couriers"
+          path="/dashboard/couriers"
           label="Couriers"
           icon={<SVG.PersonAcceptIcon />}
         />

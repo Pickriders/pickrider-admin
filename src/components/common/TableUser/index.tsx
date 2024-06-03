@@ -16,7 +16,8 @@ export const TableUser = ({ userName, userEmail, userImg }: TableUserProps) => {
         {userImg && <Image src={userImg} alt={`${userName}`} />}
       </Container>
       <Container>
-        <Text>{userName}</Text>
+        <Text fontWeight={userEmail ? 700 : ""}>{userName}</Text>
+        {userEmail && <Text>{userEmail}</Text>}
       </Container>
     </Container>
   );

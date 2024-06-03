@@ -25,11 +25,11 @@
   &.ghost {
     font-family: "Faktum Test";
     background-color: transparent;
-    padding: 0.7rem 2rem;
+    padding: 0.7rem 1rem;
     color: $black;
 
     &:hover {
-      background-color: $gray-100;
+      background-color: $gray-50;
     }
   }
 
