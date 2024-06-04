@@ -6,10 +6,16 @@ export const Text = ({
   variant = "default",
   Element = "p",
   className,
+  ...rest
 }: TextProps) => {
+  const elementStyles = {
+    style,
+    ...rest,
+  };
+
   return (
     <Element
-      style={style}
+      style={elementStyles}
       className={`${styles.text} ${styles[variant]} ${className}`}
     >
       {children}

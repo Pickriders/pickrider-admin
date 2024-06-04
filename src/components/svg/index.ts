@@ -4,6 +4,7 @@ import { CheckIcon } from "./CheckIcon";
 import { ChevronDown } from "./ChevronDown";
 import { ChevronLeftIcon } from "./ChevronLeftIcon";
 import { DocumentIcon } from "./DocumentIcon";
+import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
 import { LogoIcon } from "./LogoIcon";
@@ -40,4 +41,5 @@ export const SVG = {
   PlusIcon,
   GreenTick,
   StatusIcon,
+  EditIcon,
 };

@@ -4,6 +4,8 @@ import { UI } from "@/components/common";
 import { SVG } from "@/components/svg";
 import React from "react";
 import { Statusunion } from "./Customerstable.type";
+import { useRowSelection } from "@/hooks";
+import { CustomerActionBar } from "./CustomersActionBar";
 
 const customersData = [
   {
@@ -36,32 +38,18 @@ const customersData = [
 ];
 
 export const CustomersTable = () => {
-  const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
-  const [selectAll, setSelectAll] = React.useState(false);
-
-  const handleRowSelect = (index: number) => {
-    if (selectedRows.includes(index)) {
-      setSelectedRows(selectedRows.filter((rowIndex) => rowIndex !== index));
-    } else {
-      setSelectedRows([...selectedRows, index]);
-    }
-  };
-
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(customersData.map((_, index) => index));
-    }
-    setSelectAll(!selectAll);
-  };
+  const { selectedRows, handleRowSelect, handleSelectAll } = useRowSelection();
 
   return (
     <UI.Container marginTop={20}>
       <UI.Table
-        actionBar={<UI.TableActionBar />}
+        actionBar={<CustomerActionBar />}
         head={{
-          actions: <UI.Checkbox onCheckedChange={handleSelectAll} />,
+          actions: (
+            <UI.Checkbox
+              onCheckedChange={() => handleSelectAll(customersData.length)}
+            />
+          ),
           serialNumber: "S/N",
           balance: "Balance",
           user: <>User</>,

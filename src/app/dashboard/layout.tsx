@@ -20,7 +20,9 @@ export default function Dashboard({
 
         <UI.Container className="main" element={"main"}>
           <Layout.Topbar />
-          {children}
+          <UI.Container maxWidth={1202} margin={"0 auto"}>
+            {children}
+          </UI.Container>
         </UI.Container>
       </UI.Container>
     </UI.Container>

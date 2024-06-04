@@ -11,7 +11,7 @@ const Table = <T extends { [key: string]: string | React.ReactNode }>(
     <Container backgroundColor="#ffff" borderRadius={8}>
       {props.actionBar}
 
-      <Container overflowX="auto">
+      <Container overflowX="auto" className="custom-scrollbar">
         <table className={style.table}>
           <thead>
             <tr>
