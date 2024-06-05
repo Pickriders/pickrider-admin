@@ -85,6 +85,6 @@
   width: 100%;
 
   @include respond-to-min($breakpoint-lg) {
-    width: calc(100% - 240px);
+    width: calc(100% - 250px);
   }
 }
