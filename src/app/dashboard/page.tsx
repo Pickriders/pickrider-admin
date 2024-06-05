@@ -7,7 +7,11 @@ import { StatsContainer } from "./StatsContainer";
 export default function Home() {
   return (
     <UI.Container padding={"3rem 2rem 0 2rem"}>
-      <UI.Container display="flex" justifyContent="space-between">
+      <UI.Container
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
         <UI.Heading variant="h2">Dashboard</UI.Heading>
         <UI.Container display="flex" columnGap={"1rem"}>
           <UI.Select items={months} width="91px" placeholder={"Month"} />

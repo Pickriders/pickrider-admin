@@ -22,7 +22,7 @@ export const Sidebar = () => {
           icon={<SVG.PersonGropBoldIcon />}
         />
         <SidebarLink
-          path="inventory"
+          path="/dashboard/inventory"
           label="Inventory"
           icon={<SVG.CategoryIcon />}
         />

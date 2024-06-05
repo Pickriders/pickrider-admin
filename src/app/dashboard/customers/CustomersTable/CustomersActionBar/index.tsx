@@ -5,8 +5,8 @@ export const CustomerActionBar = () => {
     <UI.Container
       display="flex"
       height={"7rem"}
-      justifyContent="space-between"
       padding={"1.8rem 2.5rem"}
+      justifyContent="space-between"
     >
       <UI.Container display="flex" columnGap={10}>
         <UI.TableBulkActionDropdown />
