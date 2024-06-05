@@ -27,6 +27,11 @@ export const Sidebar = () => {
           icon={<SVG.CategoryIcon />}
         />
         <SidebarLink
+          path="/dashboard/business-management"
+          label="Business Management"
+          icon={<SVG.CategoryIcon />}
+        />
+        <SidebarLink
           path="/dashboard/couriers"
           label="Couriers"
           icon={<SVG.PersonAcceptIcon />}
