@@ -37,6 +37,11 @@ export const Sidebar = () => {
           icon={<SVG.PersonAcceptIcon />}
         />
         <SidebarLink
+          path="/dashboard/kyb-management"
+          label="KYB Management"
+          icon={<SVG.MenuSubIcon />}
+        />
+        <SidebarLink
           path="payout/charges"
           label="Payout/Charges"
           icon={<SVG.DocumentIcon />}

@@ -13,7 +13,7 @@ export const TableSearchInput = ({
     setShowInput(true);
   };
 
-  const handleInputBlur = () => {
+  const handleInputClose = () => {
     setShowInput(false);
   };
 
@@ -22,8 +22,11 @@ export const TableSearchInput = ({
       {showInput ? (
         <Input
           autoFocus={true}
-          onBlur={handleInputBlur}
-          leftIcon={<SVG.SearchIcon />}
+          leftIcon={
+            <button onClick={handleInputClose}>
+              <SVG.XIcon />
+            </button>
+          }
           {...rest}
         />
       ) : (

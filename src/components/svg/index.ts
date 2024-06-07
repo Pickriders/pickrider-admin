@@ -9,6 +9,7 @@ import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
 import { LogoIcon } from "./LogoIcon";
 import { MenuIcon } from "./MenuIcon";
+import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
 import { NotificationIcon } from "./NotificationIcon";
 import { PersonAcceptIcon } from "./PersonAcceptIcon";
@@ -19,6 +20,7 @@ import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
 import { StatusIcon } from "./StatusIcon";
+import { XIcon } from "./XIcon";
 
 export const SVG = {
   MessageIcon,
@@ -42,4 +44,6 @@ export const SVG = {
   GreenTick,
   StatusIcon,
   EditIcon,
+  MenuSubIcon,
+  XIcon,
 };
