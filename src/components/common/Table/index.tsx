@@ -1,9 +1,10 @@
+"use client";
+
 import * as React from "react";
 import { Container } from "../Container";
 import { Text } from "../Text";
 import style from "./styles.module.scss";
 import "@/styles/layout/_grid.scss";
-import { useRowSelection } from "@/hooks";
 
 const Table = <T extends { [key: string]: string | React.ReactNode }>(
   props: TableProps<T>
