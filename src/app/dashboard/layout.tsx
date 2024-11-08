@@ -14,17 +14,22 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <UI.Container width={"100%"} element={"section"} backgroundColor="#F3F3F3">
-      <UI.Container display="flex" minHeight={"100vh"}>
-        <Layout.Sidebar />
-
-        <UI.Container className="main" element={"main"}>
-          <Layout.Topbar />
-          <UI.Container maxWidth={1202} margin={"0 auto"}>
-            {children}
-          </UI.Container>
-        </UI.Container>
-      </UI.Container>
-    </UI.Container>
+    <div>
+      <Layout.Sidebar />
+    </div>
   );
 }
+
+// @DEPERICATED DESIGN
+// <UI.Container width={"100%"} element={"section"} backgroundColor="#F3F3F3">
+//   <UI.Container display="flex" minHeight={"100vh"}>
+//     <Layout.Sidebar />
+
+//     <UI.Container className="main" element={"main"}>
+//       <Layout.Topbar />
+//       <UI.Container maxWidth={1202} margin={"0 auto"}>
+//         {children}
+//       </UI.Container>
+//     </UI.Container>
+//   </UI.Container>
+// </UI.Container>
