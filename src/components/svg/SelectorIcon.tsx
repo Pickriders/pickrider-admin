@@ -13,7 +13,7 @@ export const SelectorIcon = () => {
       />
       <path
         d="M0 0C1.65685 0 3 1.34315 3 3V29C3 30.6569 1.65685 32 0 32V0Z"
-        fill="#1E1F1F"
+        fill="#FFFFFF"
       />
     </svg>
   );

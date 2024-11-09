@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { UI } from "@/components/common";
 import { Layout } from "@/components/layouts";
 import "@/styles/layout/_grid.scss";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -14,9 +15,14 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <Layout.Sidebar />
-    </div>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <div className="bg-primary-foreground min-h-screen">
+        <Layout.Header />
+        <div>
+          <Layout.Sidebar />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
