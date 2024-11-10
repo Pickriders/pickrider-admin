@@ -1,15 +1,75 @@
+"use client";
+
 import { UI } from "@/components/common";
 import { SVG } from "@/components/svg";
 import { SidebarLink } from "./SidebarLink";
-import style from "./styles.module.scss";
-import Link from "next/link";
+import { useTheme } from "next-themes";
+
+const SIDEBAR_LINKS = [
+  {
+    activeIcon: <SVG.HomeIconFill />,
+    icon: <SVG.HomeIcon />,
+    label: "Dashboard",
+    href: "/dashboard",
+  },
+  {
+    icon: <SVG.PersonGropBoldIcon />,
+    label: "Customers",
+    href: "/customers",
+  },
+  {
+    icon: <SVG.PepleGroup />,
+    label: "Business",
+    href: "/business",
+  },
+  {
+    icon: <SVG.PersonAcceptIcon />,
+    label: "Couriers",
+    href: "/couriers",
+  },
+  {
+    icon: <SVG.CategoryIcon />,
+    label: "Inventory",
+    href: "/inventory",
+  },
+  {
+    icon: <SVG.AirpodIcon />,
+    label: "Finances",
+    href: "/finances",
+  },
+  {
+    icon: <SVG.MenuIcon />,
+    label: "Orders",
+    href: "/orders",
+  },
+  {
+    icon: <SVG.ReportIcon />,
+    label: "Reports & Complaints",
+    href: "/reports",
+  },
+];
 
 export const Sidebar = () => {
+  const { setTheme } = useTheme();
+
   return (
-    <aside>
-      <Link href={"/dashboard"} className="px-6 inline-block">
-        <SVG.LogoIcon />
-      </Link>
+    <aside className="w-[15rem] sticky top-0 left-0 bg-background  h-[calc(100vh-6.2rem)] pt-6">
+      {/* <button onClick={() => setTheme("dark")}>Dark</button>
+      <button onClick={() => setTheme("light")}>light</button> */}
+      <ul className=" max-h-full ">
+        {SIDEBAR_LINKS.map((link, i) => {
+          return (
+            <li key={i}>
+              <SidebarLink
+                path={link.href}
+                label={link.label}
+                icon={link.icon}
+                activeIcon={link.activeIcon}
+              />
+            </li>
+          );
+        })}
+      </ul>
     </aside>
   );
 };

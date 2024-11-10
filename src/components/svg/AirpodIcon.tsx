@@ -1,7 +1,7 @@
 import { SvgProps } from "./Svg.type";
 
 export const AirpodIcon = ({
-  height = 18,
+  height = 17,
   width = 22,
   className,
 }: SvgProps) => {

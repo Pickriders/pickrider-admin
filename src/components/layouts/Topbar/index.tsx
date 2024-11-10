@@ -1,8 +1,7 @@
-import style from "./styles.module.scss";
-
 import { UI } from "@/components/common";
 import { SVG } from "@/components/svg";
 import Link from "next/link";
+import style from "./styles.module.scss";
 
 export const Topbar = () => {
   return (

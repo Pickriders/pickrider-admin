@@ -7,11 +7,14 @@ import { DocumentIcon } from "./DocumentIcon";
 import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
+import { HomeIcon } from "./HomeIcon";
+import { HomeIconFill } from "./HomeIconFill";
 import { LogoIcon } from "./LogoIcon";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
 import { NotificationIcon } from "./NotificationIcon";
+import { PepleGroup } from "./PepleGroup";
 import { PersonAcceptIcon } from "./PersonAcceptIcon";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
 import { PlusIcon } from "./PlusIcon";
@@ -33,6 +36,7 @@ export const SVG = {
   MenuIcon,
   PersonAcceptIcon,
   PersonGropBoldIcon,
+  PepleGroup,
   DocumentIcon,
   ReceiptIcon,
   ReportIcon,
@@ -46,4 +50,6 @@ export const SVG = {
   EditIcon,
   MenuSubIcon,
   XIcon,
+  HomeIcon,
+  HomeIconFill,
 };

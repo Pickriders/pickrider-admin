@@ -2,26 +2,34 @@
 
 import Link from "next/link";
 import { LinkProps } from "./Sidebar.type";
-import style from "./styles.module.scss";
+// import style from "./styles.module.scss";
 import { SVG } from "@/components/svg";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-export const SidebarLink = ({ path, icon, label }: LinkProps) => {
+export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();
   const active = pathname === path;
 
   return (
-    <li>
-      <Link href={path} className={`${style.link}  ${active && style.active}`}>
-        {active && (
-          <span className={style.selectorIcon}>
-            <SVG.SelectorIcon />
-          </span>
-        )}
+    <Link
+      href={path}
+      className={cn(
+        "px-6 py-4 font-clash-display relative font-medium  flex items-center gap-x-4",
+        active
+          ? "bg-[#1E1F1F] text-primary text-white"
+          : "hover:bg-primary-foreground text-primary-gray"
+      )}
+    >
+      {active && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2">
+          <SVG.SelectorIcon />
+        </span>
+      )}
 
-        <span className={style.linkIcon}>{icon}</span>
-        {label}
-      </Link>
-    </li>
+      {active ? <span>{activeIcon}</span> : <span>{icon}</span>}
+
+      <span className={"text-sm "}>{label}</span>
+    </Link>
   );
 };

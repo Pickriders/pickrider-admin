@@ -14,9 +14,12 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <Layout.Sidebar />
-    </div>
+      <div className="bg-primary-foreground min-h-screen">
+        <Layout.Header />
+        <div>
+          <Layout.Sidebar />
+        </div>
+      </div>
   );
 }
 
