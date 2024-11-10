@@ -10,6 +10,7 @@ import { GreenTick } from "./GreenTick";
 import { HomeIcon } from "./HomeIcon";
 import { HomeIconFill } from "./HomeIconFill";
 import { LockIcon } from "./LockIcon";
+
 import { LogoIcon } from "./LogoIcon";
 import { LogoutIcon } from "./LogoutIcon";
 import { MenuIcon } from "./MenuIcon";
@@ -41,6 +42,7 @@ export const SVG = {
   PersonGropBoldIcon,
   PepleGroup,
   PersonEdit,
+
   DocumentIcon,
   ReceiptIcon,
   ReportIcon,
@@ -58,4 +60,5 @@ export const SVG = {
   HomeIconFill,
   LockIcon,
   LogoutIcon,
+
 };
