@@ -1,15 +1,10 @@
-import { SVG } from "../../svg";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+import { SVG } from "@/components/svg";
+import { UI } from "@/components/ui";
 
 export const UserMenu = () => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <UI.DropdownMenu>
+      <UI.DropdownMenuTrigger asChild>
         <div role="button" className="flex items-center gap-x-2.5">
           <div className="size-[2.3rem] font-clash-display rounded-full bg-primary-black text-white text-lg grid place-items-center font-semibold">
             P
@@ -24,27 +19,27 @@ export const UserMenu = () => {
             <SVG.ChevronDown />
           </span>
         </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent sideOffset={20} className="w-[215px]">
-        <DropdownMenuItem>
+      </UI.DropdownMenuTrigger>
+      <UI.DropdownMenuContent sideOffset={20} className="w-[215px]">
+        <UI.DropdownMenuItem>
           <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
             <SVG.PersonEdit />
             Profile
           </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+        </UI.DropdownMenuItem>
+        <UI.DropdownMenuItem>
           <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
             <SVG.LockIcon />
             Reset Password
           </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+        </UI.DropdownMenuItem>
+        <UI.DropdownMenuItem>
           <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
             <SVG.LogoutIcon />
             Logout
           </div>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </UI.DropdownMenuItem>
+      </UI.DropdownMenuContent>
+    </UI.DropdownMenu>
   );
 };

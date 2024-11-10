@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { LinkProps } from "./Sidebar.type";
 // import style from "./styles.module.scss";
 import { SVG } from "@/components/svg";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { LinkProps } from "../Sidebar.type";
 
 export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();

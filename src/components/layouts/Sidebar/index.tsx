@@ -1,6 +1,5 @@
 "use client";
 
-import { UI } from "@/components/common";
 import { SVG } from "@/components/svg";
 import { SidebarLink } from "./SidebarLink";
 import { useTheme } from "next-themes";
