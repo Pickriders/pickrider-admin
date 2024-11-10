@@ -2,6 +2,7 @@ import { SVG } from "@/components/svg";
 import Link from "next/link";
 import { UserMenu } from "./UserMenu";
 
+
 export const Header = () => {
   return (
     <header className="h-[6.2rem] py-3 pl-6 pr-9 bg-background flex items-center justify-between">
@@ -13,6 +14,7 @@ export const Header = () => {
           <SVG.NotificationIcon />
         </button>
         <UserMenu />
+
       </div>
     </header>
   );
