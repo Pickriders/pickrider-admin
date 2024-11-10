@@ -1,5 +1,6 @@
 import { SVG } from "@/components/svg";
 import Link from "next/link";
+import { UserMenu } from "./UserMenu";
 
 export const Header = () => {
   return (
@@ -7,10 +8,11 @@ export const Header = () => {
       <Link href={"/dashboard"} className=" pt-2 inline-block mb-0">
         <SVG.LogoIcon />
       </Link>
-      <div>
+      <div className="flex items-center gap-x-4">
         <button className="size-[2.3rem] grid place-items-center border rounded-full">
           <SVG.NotificationIcon />
         </button>
+        <UserMenu />
       </div>
     </header>
   );
