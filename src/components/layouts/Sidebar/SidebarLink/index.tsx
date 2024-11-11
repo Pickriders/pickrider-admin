@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { LinkProps } from "./Sidebar.type";
 // import style from "./styles.module.scss";
 import { SVG } from "@/components/svg";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { LinkProps } from "../Sidebar.type";
 
 export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();
@@ -17,7 +17,8 @@ export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
       className={cn(
         "px-6 py-4 font-clash-display relative font-medium  flex items-center gap-x-4",
         active
-          ? "bg-[#1E1F1F] text-primary text-white"
+          ? "bg-primary-black text-primary text-white"
+
           : "hover:bg-primary-foreground text-primary-gray"
       )}
     >

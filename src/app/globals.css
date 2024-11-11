@@ -30,7 +30,10 @@
     --radius: 0.5rem;
 
     /* COLORS */
-    --primary-gray: "#505582";
+    --primary-gray: #505582;
+    --primary-black: #1e1f1f;
+    --primary-purple: #2e1030;
+
   }
 
   .dark {
@@ -58,6 +61,11 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* COLORS */
+    --primary-gray: #d4d4d4;
+    --primary-black: #1e1f1f;
+    --primary-purple: #fff;
   }
 }
 
