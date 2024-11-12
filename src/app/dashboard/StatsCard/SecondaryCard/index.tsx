@@ -1,5 +1,5 @@
-import { SecondaryCardProps } from "../statsCard.type";
-import { SvgPattern } from "../Svg";
+import { SecondaryCardProps } from "../StatsCard.type";
+import { SvgCardBgPattern } from "../SvgCardBgPattern";
 
 export const SecondaryCard = ({ icon, title, value }: SecondaryCardProps) => {
   return (
@@ -10,7 +10,7 @@ export const SecondaryCard = ({ icon, title, value }: SecondaryCardProps) => {
       <span className="font-semibold font-clash-display ">{title}</span>
       <span className="font-semibold font-clash-display text-xl">{value}</span>
       <div className="absolute right-0 top-0 transition-all duration-700 ease-in group-hover:translate-y-[-25px] group-hover:translate-x-[-25px] ">
-        <SvgPattern />
+        <SvgCardBgPattern />
       </div>
     </div>
   );

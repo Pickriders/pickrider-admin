@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { PrimaryCardProps, Variant } from "../statsCard.type";
+import { PrimaryCardProps, Variant } from "../StatsCard.type";
 import { SVG } from "@/components/svg";
 
 export const PrimaryStatsCard = ({

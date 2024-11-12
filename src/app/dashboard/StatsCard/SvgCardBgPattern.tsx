@@ -1,4 +1,4 @@
-export function SvgPattern() {
+export function SvgCardBgPattern() {
   return (
     <svg
       width="125"
