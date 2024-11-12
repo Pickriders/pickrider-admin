@@ -1,3 +1,4 @@
+import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 
 export const clashDisplay = localFont({
@@ -19,4 +20,10 @@ export const clashDisplay = localFont({
     },
   ],
   variable: "--font-clash-display",
+});
+
+export const montserrat = Montserrat({
+  weight: ["100", "200", "300", "400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-montserrat",
 });
