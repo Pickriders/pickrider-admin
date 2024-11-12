@@ -14,12 +14,15 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-      <div className="bg-primary-foreground min-h-screen">
-        <Layout.Header />
+    <div className="bg-primary-foreground min-h-screen">
+      <Layout.Header />
+      <div className="grid grid-cols-[auto_1fr]">
         <div>
           <Layout.Sidebar />
         </div>
+        <main className="pt-6 px-7 pb-10">{children}</main>
       </div>
+    </div>
   );
 }
 

@@ -13,13 +13,13 @@ module.exports = {
     extend: {
       fontFamily: {
         "clash-display": ["var(--font-clash-display)"],
+        montserrat: ["var(--font-montserrat)"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-
 
       colors: {
         background: "hsl(var(--background))",
@@ -38,7 +38,6 @@ module.exports = {
           gray: "var(--primary-gray)",
           black: "var(--primary-black)",
           purple: "var(--primary-purple)",
-
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -70,4 +69,5 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+ 
 };

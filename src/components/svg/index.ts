@@ -1,8 +1,11 @@
 import { AirpodIcon } from "./AirpodIcon";
+import { BalanceIcon } from "./BalanceIcon";
 import { CategoryIcon } from "./CategoryIcon";
+import { ChartIcon } from "./ChartIcon";
 import { CheckIcon } from "./CheckIcon";
 import { ChevronDown } from "./ChevronDown";
 import { ChevronLeftIcon } from "./ChevronLeftIcon";
+import { CloseIcon } from "./CloseIcon";
 import { DocumentIcon } from "./DocumentIcon";
 import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
@@ -16,11 +19,15 @@ import { LogoutIcon } from "./LogoutIcon";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
+import { MoveUpRightArrowIcon } from "./MoveUpRightArrowIcon";
 import { NotificationIcon } from "./NotificationIcon";
+import { PeopleGroupFill } from "./PeopleGroupFill";
 import { PepleGroup } from "./PepleGroup";
+import { PersonAcceptFillIcon } from "./PersonAcceptFillIcon";
 import { PersonAcceptIcon } from "./PersonAcceptIcon";
 import { PersonEdit } from "./PersonEdit";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
+import { PersonGroupBoldFillIcon } from "./PersonGroupBoldFillIcon";
 import { PlusIcon } from "./PlusIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
@@ -39,8 +46,11 @@ export const SVG = {
   CategoryIcon,
   MenuIcon,
   PersonAcceptIcon,
+  PersonAcceptFillIcon,
   PersonGropBoldIcon,
+  PersonGroupBoldFillIcon,
   PepleGroup,
+  PeopleGroupFill,
   PersonEdit,
 
   DocumentIcon,
@@ -60,5 +70,8 @@ export const SVG = {
   HomeIconFill,
   LockIcon,
   LogoutIcon,
-
+  CloseIcon,
+  ChartIcon,
+  MoveUpRightArrowIcon,
+  BalanceIcon,
 };

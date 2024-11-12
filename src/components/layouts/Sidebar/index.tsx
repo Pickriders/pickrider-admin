@@ -2,7 +2,6 @@
 
 import { SVG } from "@/components/svg";
 import { SidebarLink } from "./SidebarLink";
-import { useTheme } from "next-themes";
 
 const SIDEBAR_LINKS = [
   {
@@ -49,12 +48,8 @@ const SIDEBAR_LINKS = [
 ];
 
 export const Sidebar = () => {
-  const { setTheme } = useTheme();
-
   return (
-    <aside className="w-[15rem] sticky top-0 left-0 bg-background  h-[calc(100vh-6.2rem)] pt-6">
-      {/* <button onClick={() => setTheme("dark")}>Dark</button>
-      <button onClick={() => setTheme("light")}>light</button> */}
+    <aside className="w-[15rem] sticky top-[6.2rem] left-0 bg-background  h-[calc(100vh-6.2rem)] pt-6">
       <ul className=" max-h-full ">
         {SIDEBAR_LINKS.map((link, i) => {
           return (
