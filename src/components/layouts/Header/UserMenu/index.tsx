@@ -22,19 +22,19 @@ export const UserMenu = () => {
       </UI.DropdownMenuTrigger>
       <UI.DropdownMenuContent sideOffset={20} className="w-[215px]">
         <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
+          <div className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray">
             <SVG.PersonEdit />
             Profile
           </div>
         </UI.DropdownMenuItem>
         <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
+          <div className="flex items-center gap-x-2 text-sm font-semibold font-montserrat text-primary-gray">
             <SVG.LockIcon />
             Reset Password
           </div>
         </UI.DropdownMenuItem>
         <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-semibold text-primary-gray">
+          <div className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray">
             <SVG.LogoutIcon />
             Logout
           </div>
