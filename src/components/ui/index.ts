@@ -1,4 +1,3 @@
-import { Calendar } from "./Calendar";
 import {
   Card,
   CardContent,
@@ -7,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./Card";
+import { DateCalendar } from "./DateCalender";
 
 import {
   DropdownMenu,
@@ -34,8 +34,9 @@ export const UI = {
   CardHeader,
   CardFooter,
   PrimaryHeading,
+
   Popover,
   PopoverTrigger,
   PopoverContent,
-  Calendar,
+  DateCalendar,
 };

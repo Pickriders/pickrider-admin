@@ -28,7 +28,7 @@ export const FilterDyDate = () => {
             <SVG.CloseIcon />
           </button>
         </div>
-        <UI.Calendar
+        <UI.DateCalendar
           mode="single"
           selected={date}
           onSelect={setDate}
@@ -36,6 +36,5 @@ export const FilterDyDate = () => {
         />
       </UI.PopoverContent>
     </UI.Popover>
-
   );
 };
