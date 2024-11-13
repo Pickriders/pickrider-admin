@@ -3,13 +3,13 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import React from "react";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 
 export const FilterDyDate = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [open, setOpen] = React.useState(false);
 
-  const formattedDate = format(date ?? new Date(), "MMM d, yyyy");
+  const formattedDate = dayjs(date ?? new Date()).format("MMM D, YYYY");
 
   return (
     <UI.Popover open={open} onOpenChange={setOpen}>
