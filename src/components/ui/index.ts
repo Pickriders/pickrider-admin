@@ -6,6 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "./Card";
+import { DateCalendar } from "./DateCalender";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -14,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "./DropdownMenu";
 import { Overlay } from "./Overlay";
+import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
+
 import { PrimaryHeading } from "./PrimaryHeading";
 
 export const UI = {
@@ -30,4 +34,9 @@ export const UI = {
   CardHeader,
   CardFooter,
   PrimaryHeading,
+
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  DateCalendar,
 };

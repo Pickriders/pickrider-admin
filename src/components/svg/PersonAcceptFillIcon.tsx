@@ -8,8 +8,9 @@ export const PersonAcceptFillIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
+
         d="M7.75 0.59375C5.45457 0.59375 3.59375 2.45457 3.59375 4.75C3.59375 7.04543 5.45457 8.90625 7.75 8.90625C10.0454 8.90625 11.9063 7.04543 11.9063 4.75C11.9063 2.45457 10.0454 0.59375 7.75 0.59375Z"
         fill="white"
       />
