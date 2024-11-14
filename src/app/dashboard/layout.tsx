@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Layout } from "@/components/layouts";
 import { LogoutModal } from "./LogoutModal";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -22,7 +23,9 @@ export default function Dashboard({
         <main className="pt-6 px-7 pb-10">{children}</main>
       </div>
       {/* Modals */}
-      <LogoutModal />
+      <Suspense>
+        <LogoutModal />
+      </Suspense>
     </div>
   );
 }
