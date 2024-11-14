@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { UI } from "@/components/common";
 import { Layout } from "@/components/layouts";
-import "@/styles/layout/_grid.scss";
+import { LogoutModal } from "./LogoutModal";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -22,6 +21,8 @@ export default function Dashboard({
         </div>
         <main className="pt-6 px-7 pb-10">{children}</main>
       </div>
+      {/* Modals */}
+      <LogoutModal />
     </div>
   );
 }

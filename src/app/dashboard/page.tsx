@@ -16,19 +16,3 @@ export default function Home() {
     </div>
   );
 }
-
-// @DEPERICATED DESIGN
-// <UI.Container padding={"3rem 2rem 0 2rem"}>
-//   <UI.Container
-//     display="flex"
-//     alignItems="center"
-//     justifyContent="space-between"
-//   >
-//     <UI.Heading variant="h2">Dashboard</UI.Heading>
-//     <UI.Container display="flex" columnGap={"1rem"}>
-//       <UI.Select items={months} width="91px" placeholder={"Month"} />
-//       <UI.Select items={years} width="91px" placeholder={"Year"} />
-//     </UI.Container>
-//   </UI.Container>
-//   <StatsContainer />
-// </UI.Container>
