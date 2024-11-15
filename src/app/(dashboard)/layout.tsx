@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Layout } from "@/components/layouts";
-import { LogoutModal } from "./LogoutModal";
 import { Suspense } from "react";
+import { LogoutModal } from "./LogoutModal";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -29,17 +29,3 @@ export default function Dashboard({
     </div>
   );
 }
-
-// @DEPERICATED DESIGN
-// <UI.Container width={"100%"} element={"section"} backgroundColor="#F3F3F3">
-//   <UI.Container display="flex" minHeight={"100vh"}>
-//     <Layout.Sidebar />
-
-//     <UI.Container className="main" element={"main"}>
-//       <Layout.Topbar />
-//       <UI.Container maxWidth={1202} margin={"0 auto"}>
-//         {children}
-//       </UI.Container>
-//     </UI.Container>
-//   </UI.Container>
-// </UI.Container>

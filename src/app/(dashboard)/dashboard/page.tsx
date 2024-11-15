@@ -1,8 +1,6 @@
-"use client";
-
 import { UI } from "@/components/ui";
-import { StatsContainer } from "./StatsContainer";
 import { FilterDyDate } from "./FilterByDate";
+import { StatsContainer } from "./StatsContainer";
 
 export default function Home() {
   return (

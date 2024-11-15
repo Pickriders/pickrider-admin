@@ -14,37 +14,37 @@ const SIDEBAR_LINKS = [
   {
     icon: <SVG.PersonGropBoldIcon />,
     label: "Customers",
-    href: "/dashboard/customers",
+    href: "/customers",
   },
   {
     icon: <SVG.PepleGroup />,
     label: "Business",
-    href: "/dashboard/business",
+    href: "/business",
   },
   {
     icon: <SVG.PersonAcceptIcon />,
     label: "Couriers",
-    href: "/dashboard/couriers",
+    href: "/couriers",
   },
   {
     icon: <SVG.CategoryIcon />,
     label: "Inventory",
-    href: "/dashboard/inventory",
+    href: "/inventory",
   },
   {
     icon: <SVG.AirpodIcon />,
     label: "Finances",
-    href: "/dashboard/finances",
+    href: "/finances",
   },
   {
     icon: <SVG.MenuIcon />,
     label: "Orders",
-    href: "/dashboard/orders",
+    href: "/orders",
   },
   {
     icon: <SVG.ReportIcon />,
     label: "Reports & Complaints",
-    href: "/dashboard/reports",
+    href: "/reports",
   },
 ];
 
