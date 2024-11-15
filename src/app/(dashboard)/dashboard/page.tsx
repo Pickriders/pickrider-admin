@@ -1,6 +1,6 @@
 import { UI } from "@/components/ui";
-import { FilterDyDate } from "./FilterByDate";
 import { StatsContainer } from "./StatsContainer";
+import { FilterDyDate } from "./FilterByDate";
 
 export default function Home() {
   return (

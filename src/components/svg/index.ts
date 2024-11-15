@@ -5,6 +5,7 @@ import { ChartIcon } from "./ChartIcon";
 import { CheckIcon } from "./CheckIcon";
 import { ChevronDown } from "./ChevronDown";
 import { ChevronLeftIcon } from "./ChevronLeftIcon";
+import { ChevronRightIcon } from "./ChevronRightIcon";
 import { CloseIcon } from "./CloseIcon";
 import { DocumentIcon } from "./DocumentIcon";
 import { EditIcon } from "./EditIcon";
@@ -42,6 +43,7 @@ export const SVG = {
   SearchIcon,
   ChevronDown,
   ChevronLeftIcon,
+  ChevronRightIcon,
   FilterIcon,
   CheckIcon,
   CategoryIcon,

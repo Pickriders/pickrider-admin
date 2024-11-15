@@ -1,23 +1,40 @@
+"use client";
+
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { useQueryModal } from "@/hooks";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export const Notification = () => {
+  const { closeModal, isOpen } = useQueryModal("notification");
+
   return (
     <div className="relative">
-      <button className="size-[2.3rem]  grid place-items-center border rounded-full">
+      <Link
+        href={"?notification=true"}
+        className="size-[2.3rem] hover:bg-gray-50 dark:hover:bg-gray-50/10 transition-colors duration-300  grid place-items-center border rounded-full"
+      >
         <SVG.NotificationIcon />
-      </button>
-      {/* <UI.Card className="w-[316px]  -left-[20rem] rounded-lg top-[145%] h-[372px] absolute z-50">
+      </Link>
+
+      <UI.Card
+        className={cn(
+          "w-[316px] -left-[20rem] rounded-lg top-[145%] h-[372px] absolute z-[70]",
+          isOpen
+            ? "opacity-100 animate-in fade-in-0 visible zoom-in-95"
+            : "opacity-0 animate-out fade-out-0 invisible zoom-out-95"
+        )}
+      >
         <UI.CardHeader className="flex-row items-center justify-between">
           <UI.CardTitle className="font-clash-display text-sm text-primary-purple">
             Notifications
           </UI.CardTitle>
-          <button className="grid place-items-center !m-0">
+          <button onClick={closeModal} className="grid place-items-center !m-0">
             <SVG.CloseIcon />
           </button>
         </UI.CardHeader>
-        <UI.CardContent className="h-[72%] space-y-3 overflow-auto">
+        <UI.CardContent className="h-[70%] space-y-3 overflow-auto">
           {Array(5)
             .fill(0)
             .map((_, i) => {
@@ -36,14 +53,15 @@ export const Notification = () => {
               );
             })}
         </UI.CardContent>
+
         <UI.CardFooter>
-          <button className="w-full text-[#956810] text-xs">
+          <button className="w-full text-[#956810] text-xs hover:bg-[#9569100d] py-2 rounded-lg transition-colors duration-300">
             Mark All as Read
           </button>
         </UI.CardFooter>
       </UI.Card>
 
-      <UI.Overlay /> */}
+      <UI.Overlay open={isOpen} />
     </div>
   );
 };
