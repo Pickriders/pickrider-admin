@@ -34,6 +34,7 @@ import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
 import { StatusIcon } from "./StatusIcon";
+import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
@@ -74,4 +75,5 @@ export const SVG = {
   ChartIcon,
   MoveUpRightArrowIcon,
   BalanceIcon,
+  WarningIcon,
 };

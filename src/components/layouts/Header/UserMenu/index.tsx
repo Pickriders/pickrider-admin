@@ -1,5 +1,6 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import Link from "next/link";
 
 export const UserMenu = () => {
   return (
@@ -33,11 +34,14 @@ export const UserMenu = () => {
             Reset Password
           </div>
         </UI.DropdownMenuItem>
-        <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray">
+        <UI.DropdownMenuItem asChild>
+          <Link
+            href={"?logout=true"}
+            className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray"
+          >
             <SVG.LogoutIcon />
             Logout
-          </div>
+          </Link>
         </UI.DropdownMenuItem>
       </UI.DropdownMenuContent>
     </UI.DropdownMenu>

@@ -1,4 +1,14 @@
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+} from "./AlertDialog";
+
+import {
   Card,
   CardContent,
   CardDescription,
@@ -17,6 +27,7 @@ import {
 } from "./DropdownMenu";
 import { Overlay } from "./Overlay";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
+import { PrimaryButton } from "./PrimaryButton";
 
 import { PrimaryHeading } from "./PrimaryHeading";
 
@@ -39,4 +50,13 @@ export const UI = {
   PopoverTrigger,
   PopoverContent,
   DateCalendar,
+
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  PrimaryButton,
 };
