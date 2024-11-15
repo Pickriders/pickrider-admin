@@ -36,7 +36,7 @@ export const UserMenu = () => {
         </UI.DropdownMenuItem>
         <UI.DropdownMenuItem asChild>
           <Link
-            href={"?logout-modal=true"}
+            href={"?logout=true"}
             className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray"
           >
             <SVG.LogoutIcon />

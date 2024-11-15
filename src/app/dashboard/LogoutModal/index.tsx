@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 export const LogoutModal = () => {
   const searchParams = useSearchParams();
-  const isLogout = searchParams.get("logout-modal");
+  const isLogout = searchParams.get("logout");
   const pathname = usePathname();
   const router = useRouter();
 

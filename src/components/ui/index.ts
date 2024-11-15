@@ -6,7 +6,8 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogTitle,
-} from "./Alert-dialog";
+} from "./AlertDialog";
+
 import {
   Card,
   CardContent,
