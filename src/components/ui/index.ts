@@ -7,6 +7,14 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
 } from "./AlertDialog";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./BreadCrumb";
 
 import {
   Card,
@@ -59,4 +67,11 @@ export const UI = {
   AlertDialogDescription,
   AlertDialogTitle,
   PrimaryButton,
+
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
 };

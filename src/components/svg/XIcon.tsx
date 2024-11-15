@@ -1,8 +1,10 @@
-export const XIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const XIcon = ({ height = 21, width = 21 }: SvgProps) => {
   return (
     <svg
-      width="21"
-      height="21"
+      width={width}
+      height={height}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -22,11 +22,14 @@ export const UserMenu = () => {
         </div>
       </UI.DropdownMenuTrigger>
       <UI.DropdownMenuContent sideOffset={20} className="w-[215px]">
-        <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray">
+        <UI.DropdownMenuItem asChild>
+          <Link
+            href={"/dashboard/profile"}
+            className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray"
+          >
             <SVG.PersonEdit />
             Profile
-          </div>
+          </Link>
         </UI.DropdownMenuItem>
         <UI.DropdownMenuItem>
           <div className="flex items-center gap-x-2 text-sm font-semibold font-montserrat text-primary-gray">
