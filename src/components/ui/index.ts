@@ -33,6 +33,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./DropdownMenu";
+import { Input } from "./Input";
 import { Overlay } from "./Overlay";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
@@ -74,4 +75,6 @@ export const UI = {
   BreadcrumbList,
   BreadcrumbSeparator,
   BreadcrumbPage,
+
+  Input,
 };

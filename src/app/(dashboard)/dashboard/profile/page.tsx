@@ -1,6 +1,8 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
+import { UserDetailsForm } from "./UserDetailsForm";
+import { UserProfilePic } from "./UserProfilePic";
 
 const ProfilePage = () => {
   return (
@@ -19,7 +21,7 @@ const ProfilePage = () => {
         </UI.Breadcrumb>
         <Link
           href={"/dashboard"}
-          className="font-semibold flex items-center gap-x-2 text-sm text-[#1E1F1F] font-clash-display"
+          className="font-semibold flex items-center gap-x-2 text-sm text-foreground font-clash-display"
         >
           <SVG.XIcon width={18} />
           Close
@@ -37,18 +39,14 @@ const ProfilePage = () => {
               P
             </div>
 
-            <div className="grid place-items-center mt-5">
-              <input type="file" name="" id="profile-pic" className="hidden" />
-              <label
-                htmlFor="profile-pic"
-                className="flex cursor-pointer items-center text-primary-gray text-sm font-montserrat font-semibold px-2 py-2 rounded-full bg-[#F3F3F3] gap-x-3"
-              >
-                <SVG.UploadIcon />
-                Upload Profile Picture
-              </label>
+            <div className="mt-5">
+              <UserProfilePic />
             </div>
           </div>
-          <form action="" className="mt-3"></form>
+
+          <div className="mt-7">
+            <UserDetailsForm />
+          </div>
         </div>
       </section>
     </div>

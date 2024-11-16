@@ -11,7 +11,7 @@ export const XIcon = ({ height = 21, width = 21 }: SvgProps) => {
     >
       <path
         d="M5 5L19 19M5.00003 19L12 12L19 5"
-        stroke="#2D264B"
+        className="stroke-foreground"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
