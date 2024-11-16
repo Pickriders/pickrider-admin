@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import { useQueryModal } from "@/hooks";
 
 export const LogoutModal = () => {
-  const { closeModal, isOpen } = useQueryModal("logout");
+  const { closeModal, isOpen } = useQueryModal([
+    { key: "logout", value: true },
+  ]);
 
   return (
     <UI.AlertDialog open={isOpen}>

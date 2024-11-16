@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export const Notification = () => {
-  const { closeModal, isOpen } = useQueryModal("notification");
+  const { closeModal, isOpen } = useQueryModal([
+    { key: "notification", value: true },
+  ]);
 
   return (
     <div className="relative">
