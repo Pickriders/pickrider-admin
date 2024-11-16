@@ -2,6 +2,7 @@ import { SVG } from "@/components/svg";
 import Link from "next/link";
 import { UserMenu } from "./UserMenu";
 import { Notification } from "./Notification";
+import { Suspense } from "react";
 
 export const Header = () => {
   return (
@@ -10,7 +11,9 @@ export const Header = () => {
         <SVG.LogoIcon />
       </Link>
       <div className="flex items-center gap-x-4">
-        <Notification />
+        <Suspense>
+          <Notification />
+        </Suspense>
         <UserMenu />
       </div>
     </header>

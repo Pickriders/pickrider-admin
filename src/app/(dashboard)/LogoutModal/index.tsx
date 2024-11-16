@@ -2,21 +2,16 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { useQueryModal } from "@/hooks";
 
 export const LogoutModal = () => {
-  const searchParams = useSearchParams();
-  const isLogout = searchParams.get("logout");
-  const pathname = usePathname();
-  const router = useRouter();
-
-  function closeModal() {
-    router.replace(`${pathname}`);
-  }
+  const { closeModal, isOpen } = useQueryModal([
+    { key: "logout", value: true },
+  ]);
 
   return (
-    <UI.AlertDialog open={isLogout ? true : false}>
+    <UI.AlertDialog open={isOpen}>
       <UI.AlertDialogContent className="text-center w-[25rem]">
         <UI.AlertDialogDescription />
         <div className="grid place-items-center">
