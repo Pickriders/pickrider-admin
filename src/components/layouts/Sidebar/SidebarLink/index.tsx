@@ -9,7 +9,7 @@ import { LinkProps } from "../Sidebar.type";
 
 export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();
-  const active = pathname === path;
+  const active = pathname.includes(path);
 
   return (
     <Link
@@ -18,7 +18,6 @@ export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
         "px-6 py-4 font-clash-display relative font-medium  flex items-center gap-x-4",
         active
           ? "bg-primary-black text-primary text-white"
-
           : "hover:bg-primary-foreground text-primary-gray"
       )}
     >
