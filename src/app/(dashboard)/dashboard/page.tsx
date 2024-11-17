@@ -4,7 +4,7 @@ import { FilterDyDate } from "./FilterByDate";
 
 export default function Home() {
   return (
-    <div className="2xl:max-w-[73rem] xl:max-w-[70rem] mx-auto ">
+    <div>
       <div className="flex items-center justify-between">
         <UI.PrimaryHeading text="Dashboard" />
         <FilterDyDate />
