@@ -20,7 +20,11 @@ export default function Dashboard({
         <div>
           <Layout.Sidebar />
         </div>
-        <main className="pt-6 px-7 pb-10">{children}</main>
+        <main className="pt-6 px-7 pb-10">
+          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] mx-auto ">
+            {children}
+          </div>
+        </main>
       </div>
       {/* Modals */}
       <Suspense>

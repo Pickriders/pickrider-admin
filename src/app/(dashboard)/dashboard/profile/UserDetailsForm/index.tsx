@@ -5,10 +5,17 @@ export const UserDetailsForm = () => {
     <form className="space-y-5">
       <UI.Input
         type="text"
-        id="full name"
-        placeholder="Full Name"
-        defaultValue={"Nnamani Kester"}
-        labelValue="Full Name"
+        id="first name"
+        placeholder="First Name"
+        defaultValue={"Nnamani"}
+        labelValue="First Name"
+      />
+      <UI.Input
+        type="text"
+        id="last name"
+        placeholder="Last Name"
+        defaultValue={"Kester"}
+        labelValue="Last Name"
       />
       <UI.Input
         type="email"
