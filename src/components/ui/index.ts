@@ -15,6 +15,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./BreadCrumb";
+import { BreadCrumbNav } from "./BreadCrumbNav";
 
 import {
   Card,
@@ -75,6 +76,7 @@ export const UI = {
   BreadcrumbList,
   BreadcrumbSeparator,
   BreadcrumbPage,
+  BreadCrumbNav,
 
   Input,
 };
