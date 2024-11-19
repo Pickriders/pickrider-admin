@@ -51,7 +51,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./Select";
-import { TableBulkAction } from "./TableBulkAction";
 import { TableFilter } from "./TableFilter";
 import { TableSearchInput } from "./TableSearchInput";
 
@@ -106,5 +105,4 @@ export const UI = {
 
   TableFilter,
   TableSearchInput,
-  TableBulkAction,
 };
