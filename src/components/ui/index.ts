@@ -15,6 +15,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./BreadCrumb";
+import { Button } from "./Button";
 
 import {
   Card,
@@ -24,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./Card";
+import { Checkbox } from "./Checkbox";
 import { DateCalendar } from "./DateCalender";
 
 import {
@@ -39,6 +41,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
 
 import { PrimaryHeading } from "./PrimaryHeading";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./Select";
+import { TableBulkAction } from "./TableBulkAction";
+import { TableFilter } from "./TableFilter";
+import { TableSearchInput } from "./TableSearchInput";
 
 export const UI = {
   DropdownMenu,
@@ -77,4 +91,18 @@ export const UI = {
   BreadcrumbPage,
 
   Input,
+  Button,
+  Checkbox,
+
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+
+  TableFilter,
+  TableSearchInput,
+  TableBulkAction,
 };

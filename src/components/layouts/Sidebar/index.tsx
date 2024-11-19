@@ -12,6 +12,7 @@ const SIDEBAR_LINKS = [
     href: "/dashboard",
   },
   {
+    activeIcon: <SVG.PersonGroupBoldFillIcon width={25} height={25} />,
     icon: <SVG.PersonGropBoldIcon />,
     label: "Customers",
     href: "/customers",

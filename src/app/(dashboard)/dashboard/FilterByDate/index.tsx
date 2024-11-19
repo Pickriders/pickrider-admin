@@ -14,10 +14,11 @@ export const FilterDyDate = () => {
   return (
     <UI.Popover open={open} onOpenChange={setOpen}>
       <UI.PopoverTrigger asChild>
-        <button className="font-clash-display flex items-center gap-x-3 text-sm font-semibold rounded-lg text-primary-gray px-4 bg-background py-1.5">
+      
+        <UI.Button variant={"outline"}>
           {formattedDate}
           <SVG.ChevronDown />
-        </button>
+        </UI.Button>
       </UI.PopoverTrigger>
       <UI.PopoverContent side="bottom" className="mr-12 w-[23rem]">
         <div className="mb-5 flex items-center justify-between">
