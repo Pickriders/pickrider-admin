@@ -8,7 +8,7 @@ import { LinkProps } from "../Sidebar.type";
 
 export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();
-  const active = pathname === path;
+  const active = pathname.includes(path);
 
   return (
     <Link

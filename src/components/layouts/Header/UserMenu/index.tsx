@@ -31,11 +31,14 @@ export const UserMenu = () => {
             Profile
           </Link>
         </UI.DropdownMenuItem>
-        <UI.DropdownMenuItem>
-          <div className="flex items-center gap-x-2 text-sm font-semibold font-montserrat text-primary-gray">
+        <UI.DropdownMenuItem asChild>
+          <Link
+            href={"/dashboard/change-password"}
+            className="flex items-center gap-x-2 text-sm font-semibold font-montserrat text-primary-gray"
+          >
             <SVG.LockIcon />
             Reset Password
-          </div>
+          </Link>
         </UI.DropdownMenuItem>
         <UI.DropdownMenuItem asChild>
           <Link
