@@ -21,6 +21,7 @@ import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
 import { MoveUpRightArrowIcon } from "./MoveUpRightArrowIcon";
+import { NegativeXIcon } from "./NegativeXIcon";
 import { NotificationIcon } from "./NotificationIcon";
 import { PeopleGroupFill } from "./PeopleGroupFill";
 import { PepleGroup } from "./PepleGroup";
@@ -30,6 +31,7 @@ import { PersonEdit } from "./PersonEdit";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
 import { PersonGroupBoldFillIcon } from "./PersonGroupBoldFillIcon";
 import { PlusIcon } from "./PlusIcon";
+import { PositiveTickIcon } from "./PositiveTickIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
@@ -80,4 +82,6 @@ export const SVG = {
   BalanceIcon,
   WarningIcon,
   UploadIcon,
+  PositiveTickIcon,
+  NegativeXIcon,
 };

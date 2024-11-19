@@ -17,6 +17,7 @@ import {
 } from "./BreadCrumb";
 import { Button } from "./Button";
 
+
 import {
   Card,
   CardContent,
@@ -89,6 +90,7 @@ export const UI = {
   BreadcrumbList,
   BreadcrumbSeparator,
   BreadcrumbPage,
+  BreadCrumbNav,
 
   Input,
   Button,
