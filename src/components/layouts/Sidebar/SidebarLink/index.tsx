@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-// import style from "./styles.module.scss";
 import { SVG } from "@/components/svg";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,7 +14,7 @@ export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
     <Link
       href={path}
       className={cn(
-        "px-6 py-4 font-clash-display relative font-medium  flex items-center gap-x-4",
+        "px-6 py-4 font-clash-display transition-colors duration-300 relative font-medium  flex items-center gap-x-4",
         active
           ? "bg-primary-black text-primary text-white"
           : "hover:bg-primary-foreground text-primary-gray"

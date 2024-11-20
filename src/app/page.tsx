@@ -1,6 +1,5 @@
 "use client";
 
-import { UI } from "@/components/common";
 import Link from "next/link";
 
 export default function Home() {
