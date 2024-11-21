@@ -39,7 +39,7 @@ export const CustomersTableFilter = () => {
             <div>
               <label
                 htmlFor="TYPE"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
+                className="text-primary-gray  text-xs font-faktum-test font-semibold"
               >
                 TYPE
               </label>
@@ -59,7 +59,7 @@ export const CustomersTableFilter = () => {
             <div>
               <label
                 htmlFor="STATUS"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
+                className="text-primary-gray text-xs font-faktum-test font-semibold"
               >
                 STATUS
               </label>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { clashDisplay, montserrat } from "@/styles/fonts";
+import { clashDisplay, faktumTest, montserrat } from "@/styles/fonts";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,11 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(clashDisplay.variable, montserrat.variable)}
+      className={cn(
+        clashDisplay.variable,
+        montserrat.variable,
+        faktumTest.variable
+      )}
     >
       <body className={inter.className}>
         <ThemeProvider

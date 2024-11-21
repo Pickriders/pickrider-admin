@@ -1,0 +1,14 @@
+export const ActiveIcon = () => {
+  return (
+    <svg
+      width="13"
+      height="12"
+      viewBox="0 0 13 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="6.82129" cy="6" r="6" fill="#3E7DF6" fill-opacity="0.12" />
+      <circle cx="6.82129" cy="6" r="3" fill="#3E7DF6" />
+    </svg>
+  );
+};
