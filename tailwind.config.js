@@ -14,6 +14,7 @@ module.exports = {
       fontFamily: {
         "clash-display": ["var(--font-clash-display)"],
         montserrat: ["var(--font-montserrat)"],
+        "faktum-test": ["var(--font-faktum-test)"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -69,5 +70,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
- 
 };

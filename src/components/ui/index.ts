@@ -38,6 +38,7 @@ import {
 } from "./DropdownMenu";
 import { Input } from "./Input";
 import { Overlay } from "./Overlay";
+import { PaginationBtns } from "./PaginationBtns";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -51,8 +52,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./Select";
+import { Switch } from "./Switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./Table";
 import { TableFilter } from "./TableFilter";
 import { TableSearchInput } from "./TableSearchInput";
+import { TableStatus } from "./TableStatus";
+import { TableUser } from "./TableUser";
 
 export const UI = {
   DropdownMenu,
@@ -105,4 +117,16 @@ export const UI = {
 
   TableFilter,
   TableSearchInput,
+  TableUser,
+  TableStatus,
+  PaginationBtns,
+
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+
+  Switch,
 };
