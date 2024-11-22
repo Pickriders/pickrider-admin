@@ -14,7 +14,7 @@ const Customers = () => {
           Add Customer
         </UI.Button>
       </div>
-      <section className="mt-[2rem] bg-background rounded-2xl pb-6">
+      <section className="mt-[2rem] bg-background rounded-lg pb-6">
         <div className="px-[1.4rem] py-5 flex items-center justify-between">
           <CustomersTableBulkAction />
           <div className="flex items-center gap-x-2">
