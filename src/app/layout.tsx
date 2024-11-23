@@ -28,14 +28,14 @@ export default function RootLayout({
       )}
     >
       <body className={inter.className}>
-        {/* <ThemeProvider
+        <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        > */}
-        {children}
-        {/* </ThemeProvider> */}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
