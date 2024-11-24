@@ -4,7 +4,7 @@ import { DataTableProps } from "./CustomersTable.type";
 
 export const CustomersTable = ({}: DataTableProps) => {
   return (
-    <div className="w-full">
+    <div className="overflow-x-auto">
       <UI.Table>
         <UI.TableHeader>
           <UI.TableRow>

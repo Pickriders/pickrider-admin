@@ -1,5 +1,6 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import Link from "next/link";
 
 export const CustomersTableBulkAction = () => {
   return (
@@ -17,7 +18,9 @@ export const CustomersTableBulkAction = () => {
           <UI.DropdownMenuItem>Delete</UI.DropdownMenuItem>
         </UI.DropdownMenuContent>
       </UI.DropdownMenu>
-      <UI.Button>Next</UI.Button>
+      <UI.Button asChild>
+        <Link href={"/customers/push-notification"}>Next</Link>
+      </UI.Button>
     </div>
   );
 };

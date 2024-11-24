@@ -65,6 +65,7 @@ import { TableFilter } from "./TableFilter";
 import { TableSearchInput } from "./TableSearchInput";
 import { TableStatus } from "./TableStatus";
 import { TableUser } from "./TableUser";
+import { Tag } from "./Tag";
 
 export const UI = {
   DropdownMenu,
@@ -129,4 +130,5 @@ export const UI = {
   TableRow,
 
   Switch,
+  Tag,
 };
