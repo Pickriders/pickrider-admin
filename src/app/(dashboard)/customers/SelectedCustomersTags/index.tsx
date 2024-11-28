@@ -5,7 +5,7 @@ import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import { SelectedCustomersList } from "../SelectedCustomersList";
 
 export const SelectedCustomersTag = () => {
@@ -23,7 +23,9 @@ export const SelectedCustomersTag = () => {
       >
         +30 more <SVG.ChevronDown width={12} height={12} />
       </Link>
-      <SelectedCustomersList />
+      <Suspense>
+        <SelectedCustomersList />
+      </Suspense>
     </div>
   );
 };
