@@ -27,7 +27,7 @@ export default function RootLayout({
         faktumTest.variable
       )}
     >
-      <body className={inter.className}>
+      <body suppressHydrationWarning className={inter.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

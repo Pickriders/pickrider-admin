@@ -3,6 +3,7 @@ import { UI } from "@/components/ui";
 import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
 import { CustomersTableFilter } from "./CustomersTableFilter";
 import { CustomersTable } from "./CustomersTable";
+import { customersColumns, CustomersProps } from "./CustomersColumn";
 
 const Customers = () => {
   return (
@@ -22,7 +23,7 @@ const Customers = () => {
             <CustomersTableFilter />
           </div>
         </div>
-        <CustomersTable />
+        <CustomersTable columns={customersColumns} data={Array(20).fill(0)} />
         <div className="mt-3 flex justify-end px-[1.5rem]">
           <UI.PaginationBtns currentPage={2} totalPages={4} />
         </div>
