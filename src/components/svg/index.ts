@@ -13,6 +13,7 @@ import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
 import { HomeIcon } from "./HomeIcon";
 import { HomeIconFill } from "./HomeIconFill";
+import { LinkIcon } from "./LinkIcon";
 import { LockIcon } from "./LockIcon";
 
 import { LogoIcon } from "./LogoIcon";
@@ -84,4 +85,5 @@ export const SVG = {
   UploadIcon,
   PositiveTickIcon,
   NegativeXIcon,
+  LinkIcon,
 };

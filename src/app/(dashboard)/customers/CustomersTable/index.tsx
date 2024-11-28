@@ -1,59 +1,82 @@
+"use client";
+
 import { UI } from "@/components/ui";
 import { CustomerPhoneVerified } from "../CustomersPhoneVerified";
-import { DataTableProps } from "./CustomersTable.type";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import React from "react";
+// import { DataTableProps } from "./CustomersTable.type";
 
-export const CustomersTable = ({}: DataTableProps) => {
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+export const CustomersTable = <TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) => {
+  const [rowSelection, setRowSelection] = React.useState({});
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
+  });
+
   return (
     <div className="overflow-x-auto">
       <UI.Table>
         <UI.TableHeader>
-          <UI.TableRow>
-            <UI.TableHead>
-              <UI.Checkbox />
-            </UI.TableHead>
-            <UI.TableHead>S/N</UI.TableHead>
-            <UI.TableHead>Balance</UI.TableHead>
-            <UI.TableHead>User</UI.TableHead>
-            <UI.TableHead>Verified</UI.TableHead>
-            <UI.TableHead>Status</UI.TableHead>
-            <UI.TableHead>Last Login</UI.TableHead>
-            <UI.TableHead>Orders</UI.TableHead>
-            <UI.TableHead>Action</UI.TableHead>
-          </UI.TableRow>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <UI.TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <UI.TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </UI.TableHead>
+                );
+              })}
+            </UI.TableRow>
+          ))}
         </UI.TableHeader>
         <UI.TableBody>
-          {Array(10)
-            .fill(0)
-            .map((_, i) => {
-              return (
-                <UI.TableRow key={i}>
-                  <UI.TableCell>
-                    <UI.Checkbox />
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <UI.TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <UI.TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </UI.TableCell>
-                  <UI.TableCell>1.</UI.TableCell>
-                  <UI.TableCell>#43,650.02</UI.TableCell>
-                  <UI.TableCell>
-                    <UI.TableUser />
-                  </UI.TableCell>
-                  <UI.TableCell>
-                    <CustomerPhoneVerified />
-                  </UI.TableCell>
-                  <UI.TableCell>
-                    <UI.TableStatus />
-                  </UI.TableCell>
-                  <UI.TableCell>
-                    <p>9:42pm</p>
-                    <p className="mt-1">12/04/23</p>
-                  </UI.TableCell>
-                  <UI.TableCell>
-                    <p>345 completed</p>
-                  </UI.TableCell>
-                  <UI.TableCell>
-                    <UI.Switch />
-                  </UI.TableCell>
-                </UI.TableRow>
-              );
-            })}
+                ))}
+              </UI.TableRow>
+            ))
+          ) : (
+            <UI.TableRow>
+              <UI.TableCell
+                colSpan={columns.length}
+                className="h-24 text-center font-faktum-test font-semibold"
+              >
+                No results.
+              </UI.TableCell>
+            </UI.TableRow>
+          )}
         </UI.TableBody>
       </UI.Table>
     </div>

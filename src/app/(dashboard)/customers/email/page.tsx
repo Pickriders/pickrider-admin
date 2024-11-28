@@ -1,15 +1,14 @@
 import { UI } from "@/components/ui";
-import { SVG } from "@/components/svg";
 import { MessageForm } from "./MessageForm";
 import { SelectedCustomersTag } from "../SelectedCustomersTags";
 
-const PushNotificationPage = () => {
+const EmailPage = () => {
   return (
     <div>
       <UI.BreadCrumbNav
         linkPage="Customers"
         rootPageLink="/customers"
-        currentPage="Push Notification"
+        currentPage="Email"
       />
       <section className="bg-background mt-10 px-7 py-6 rounded-lg">
         <h2 className="font-montserrat text-xs font-semibold text-foreground">
@@ -24,4 +23,4 @@ const PushNotificationPage = () => {
     </div>
   );
 };
-export default PushNotificationPage;
+export default EmailPage;
