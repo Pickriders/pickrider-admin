@@ -6,6 +6,7 @@ import { UI } from "@/components/ui";
 import Link from "next/link";
 import React, { Suspense } from "react";
 import { SelectedCustomersList } from "../SelectedCustomersList";
+import { selectedCustomersColumns } from "../SelectedCustomersList/SelectedCustomersColumns";
 
 export const SelectedCustomersTag = () => {
   return (
@@ -23,7 +24,10 @@ export const SelectedCustomersTag = () => {
         +30 more <SVG.ChevronDown width={12} height={12} />
       </Link>
       <Suspense>
-        <SelectedCustomersList />
+        <SelectedCustomersList
+          columns={selectedCustomersColumns}
+          data={Array(20).fill(0)}
+        />
       </Suspense>
     </div>
   );
