@@ -2,8 +2,7 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { useQueryModal } from "@/hooks";
-import { cn } from "@/lib/utils";
+
 import Link from "next/link";
 import React, { Suspense } from "react";
 import { SelectedCustomersList } from "../SelectedCustomersList";
