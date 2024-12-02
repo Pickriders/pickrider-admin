@@ -4,6 +4,9 @@ import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
 import { CustomersTableFilter } from "./CustomersTableFilter";
 import { CustomersTable } from "./CustomersTable";
 import { customersColumns, CustomersProps } from "./CustomersColumn";
+import { DeleteCustomersModal } from "./DeleteCustomersModal";
+import { SuspendCustomersModal } from "./SuspendcustomersModal";
+import { Suspense } from "react";
 
 const Customers = () => {
   return (
@@ -28,6 +31,14 @@ const Customers = () => {
           <UI.PaginationBtns currentPage={2} totalPages={4} />
         </div>
       </section>
+
+      {/* Modals */}
+      <Suspense>
+        <DeleteCustomersModal />
+      </Suspense>
+      <Suspense>
+        <SuspendCustomersModal />
+      </Suspense>
     </div>
   );
 };
