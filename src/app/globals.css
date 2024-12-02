@@ -77,3 +77,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .scroll-bar {
+    overflow-y: auto;
+    scrollbar-width: 7px;
+  }
+
+  .scroll-bar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .scroll-bar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 10px;
+  }
+  .scroll-bar::-webkit-scrollbar-track {
+    background: hsl(var(--accent));
+    border-radius: 8px;
+  }
+}
