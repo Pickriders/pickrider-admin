@@ -1,8 +1,10 @@
-export const PeopleGroupFill = () => {
+import { SvgProps } from "./Svg.type";
+
+export const PeopleGroupFill = ({ width = 21, height = 15 }: SvgProps) => {
   return (
     <svg
-      width="21"
-      height="15"
+      width={width}
+      height={height}
       viewBox="0 0 21 15"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

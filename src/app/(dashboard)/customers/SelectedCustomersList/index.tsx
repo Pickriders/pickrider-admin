@@ -56,7 +56,7 @@ export const SelectedCustomersList = <TData, TValue>({
         <UI.TableSearchInput className="w-[15rem]" />
       </div>
 
-      <div className="mt-7 pr-3   pb-32 pt-2 h-full scroll-bar">
+      <div className="mt-7 pr-3   pb-32 pt-2 h-full overflow-y-auto scroll-bar">
         <UI.Table>
           <UI.TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

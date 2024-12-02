@@ -35,7 +35,7 @@ export const selectedCustomersColumns: ColumnDef<SelectedCustomersProps>[] = [
   {
     accessorKey: "user",
     header: "User",
-    cell: ({ row }) => <UI.TableUser />,
+    cell: ({ row }) => <UI.TableUser name="Nnamani Kester" />,
   },
   {
     accessorKey: "status",
