@@ -58,11 +58,6 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
     cell: ({ row }) => "N240,000",
   },
   {
-    accessorKey: "debt",
-    header: "Debt",
-    cell: ({ row }) => "-40,000",
-  },
-  {
     accessorKey: "motorbikes",
     header: "Motorbikes",
     cell: ({ row }) => (
