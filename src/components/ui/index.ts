@@ -5,6 +5,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
 } from "./AlertDialog";
 import {
@@ -66,6 +67,7 @@ import { TableSearchInput } from "./TableSearchInput";
 import { TableStatus } from "./TableStatus";
 import { TableUser } from "./TableUser";
 import { Tag } from "./Tag";
+import { TextArea } from "./Textarea";
 
 export const UI = {
   DropdownMenu,
@@ -94,6 +96,7 @@ export const UI = {
   AlertDialogFooter,
   AlertDialogDescription,
   AlertDialogTitle,
+  AlertDialogHeader,
   PrimaryButton,
 
   Breadcrumb,
@@ -121,6 +124,7 @@ export const UI = {
   TableUser,
   TableStatus,
   PaginationBtns,
+  TextArea,
 
   Table,
   TableBody,

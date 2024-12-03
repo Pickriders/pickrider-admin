@@ -2,6 +2,7 @@ import { UI } from "@/components/ui";
 import { NameLabel } from "../NameLabel";
 import { VerifyAccordion } from "../VerifyAccordion";
 import Image from "next/image";
+import Link from "next/link";
 
 export const VerificationPanel = () => {
   const verified = true;
@@ -51,7 +52,9 @@ export const VerificationPanel = () => {
               ) : (
                 <div className="flex items-center gap-x-4">
                   <UI.PrimaryButton>Verify</UI.PrimaryButton>
-                  <UI.PrimaryButton variant="outline">Reject</UI.PrimaryButton>
+                  <UI.PrimaryButton variant="outline" asChild>
+                    <Link href={"?reject-business=true"}>Reject</Link>
+                  </UI.PrimaryButton>{" "}
                 </div>
               )}
             </div>
@@ -102,7 +105,9 @@ export const VerificationPanel = () => {
               ) : (
                 <div className="flex items-center gap-x-4">
                   <UI.PrimaryButton>Verify</UI.PrimaryButton>
-                  <UI.PrimaryButton variant="outline">Reject</UI.PrimaryButton>
+                  <UI.PrimaryButton variant="outline" asChild>
+                    <Link href={"?reject-business=true"}>Reject</Link>
+                  </UI.PrimaryButton>
                 </div>
               )}
             </div>
