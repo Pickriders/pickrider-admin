@@ -18,7 +18,7 @@ export const SecondaryCard = ({ icon, title, value }: SecondaryCardProps) => {
         <SvgCardBgPattern />
       </div>
       <button className="absolute  grid place-items-center top-1/2 bg-[#27272a] -translate-y-1/2 size-[1.7rem] right-6 rounded-full">
-        <SVG.ChevronRightIcon />
+        <SVG.ChevronRightIcon className="fill-white" />
       </button>
     </Link>
   );
