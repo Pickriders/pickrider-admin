@@ -3,6 +3,25 @@
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 
+const REASONS = [
+  {
+    label: "License not valid",
+    value: "License not valid",
+  },
+  {
+    label: "License mismatch",
+    value: "License mismatch",
+  },
+  {
+    label: "Unable to verify license number",
+    value: "Unable to verify license number",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+];
+
 export const RejectModal = () => {
   const { closeModal, isOpen } = useQueryModal([
     { key: "reject-business", value: true },
@@ -19,43 +38,17 @@ export const RejectModal = () => {
           </UI.AlertDialogHeader>
 
           <ul className="space-y-4">
-            <li className="flex items-center gap-x-3">
-              <UI.Checkbox id="License not valid" />
-              <label
-                className="text-sm font-semibold text-primary-gray"
-                htmlFor="License not valid"
-              >
-                License not valid
-              </label>
-            </li>
-            <li className="flex items-center gap-x-3">
-              <UI.Checkbox id="License mismatch" />
-              <label
-                className="text-sm font-semibold text-primary-gray"
-                htmlFor="License mismatch"
-              >
-                {" "}
-                License mismatch
-              </label>
-            </li>
-            <li className="flex items-center gap-x-3">
-              <UI.Checkbox id="license number" />
-              <label
-                className="text-sm font-semibold text-primary-gray"
-                htmlFor="license number"
-              >
-                Unable to verify license number
-              </label>
-            </li>
-            <li className="flex items-center gap-x-3">
-              <UI.Checkbox id="Other" />
-              <label
-                className="text-sm font-semibold text-primary-gray"
-                htmlFor="Other"
-              >
-                Other
-              </label>
-            </li>
+            {REASONS.map((reason, i) => (
+              <li key={i} className="flex items-center gap-x-3">
+                <UI.Checkbox id={reason.value} />
+                <label
+                  className="text-sm font-semibold text-primary-gray"
+                  htmlFor={reason.value}
+                >
+                  {reason.label}
+                </label>
+              </li>
+            ))}
           </ul>
 
           <UI.TextArea className="h-40" placeholder="Specify..." />
