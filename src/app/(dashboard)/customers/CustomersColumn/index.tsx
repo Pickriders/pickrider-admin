@@ -16,7 +16,7 @@ export type CustomersProps = {
 
 export const customersColumns: ColumnDef<CustomersProps>[] = [
   {
-    id: "select",
+    id: "customers-select",
     header: ({ table }) => (
       <UI.Checkbox
         checked={
@@ -46,7 +46,7 @@ export const customersColumns: ColumnDef<CustomersProps>[] = [
   {
     accessorKey: "user",
     header: "User",
-    cell: ({ row }) => <UI.TableUser />,
+    cell: ({ row }) => <UI.TableUser name="Nnamani Kester" />,
   },
   {
     accessorKey: "verified",

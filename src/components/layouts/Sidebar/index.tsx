@@ -18,6 +18,7 @@ const SIDEBAR_LINKS = [
     href: "/customers",
   },
   {
+    activeIcon: <SVG.PeopleGroupFill width={23} height={17} />,
     icon: <SVG.PepleGroup />,
     label: "Business",
     href: "/business",
@@ -53,8 +54,6 @@ export const Sidebar = () => {
   const { setTheme } = useTheme();
   return (
     <aside className="w-[15rem] sticky top-[6.2rem] left-0 bg-background border-r  h-[calc(100vh-6.2rem)] pt-6">
-      {/* <button onClick={() => setTheme("light")}>light</button>
-      <button onClick={() => setTheme("dark")}>dark</button> */}
       <ul className=" max-h-full ">
         {SIDEBAR_LINKS.map((link, i) => {
           return (
