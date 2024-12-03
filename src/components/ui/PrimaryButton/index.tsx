@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { PrimaryButtonProps, Variant } from "./PrimaryButton.type";
+import { Slot } from "@radix-ui/react-slot";
 
 export const buttonVariant: Record<Variant, string> = {
   default: "bg-primary  text-primary-foreground shadow hover:bg-primary/90",
@@ -12,18 +13,21 @@ export const PrimaryButton = ({
   children,
   variant = "default",
   className,
+  asChild = false,
   ...props
 }: PrimaryButtonProps) => {
+  const Comp = asChild ? Slot : "button";
+
   return (
-    <button
+    <Comp
       className={cn(
-        "w-full h-[2.4rem] disabled:cursor-not-allowed disabled:opacity-45  py-2  rounded-lg font-clash-display font-semibold text-sm",
+        "w-full h-[2.4rem] inline-flex justify-center disabled:cursor-not-allowed disabled:opacity-45  py-2  rounded-lg font-clash-display font-semibold text-sm",
         buttonVariant[variant],
         className
       )}
       {...props}
     >
       {children}
-    </button>
+    </Comp>
   );
 };

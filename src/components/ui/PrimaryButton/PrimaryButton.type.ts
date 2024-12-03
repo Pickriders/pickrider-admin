@@ -4,6 +4,7 @@ export type Variant = "outline" | "destructive" | "default";
 
 export interface PrimaryButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
+  asChild?: boolean;
   variant?: Variant;
+  children: ReactNode;
 }
