@@ -79,8 +79,7 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
       <div className="flex items-center gap-x-1">
         32{" "}
         <Link
-          href={`/business/${row.index}/verification`}
-
+          href={`/business/${row.index}/couriers-details`}
           className="text-[#956810] hover:bg-[#956810]/10 rounded-lg transition-colors duration-200 font-bold py-1 px-1.5"
         >
           View
@@ -99,10 +98,13 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
     cell: ({ row }) => {
       const isVerified = row.getValue("verified") ?? true;
       return (
-        <>
+        <Link href={`/business/${row.index}/verification`} className="group">
           {isVerified ? (
-            <div className="flex items-center font-bold gap-x-2">
-              <SVG.VerificationBadgeIcon /> Yes <Eye size={15} />
+            <div className="flex items-center font-bold gap-x-4">
+              <SVG.VerificationBadgeIcon /> Yes
+              <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
+                <Eye size={15} />
+              </div>
             </div>
           ) : (
             <div className="flex items-center font-bold gap-x-2">
@@ -110,7 +112,7 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
               No <Eye size={15} />
             </div>
           )}
-        </>
+        </Link>
       );
     },
   },
@@ -123,9 +125,12 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
           <UI.Button
             size={"icon"}
             variant={"outline"}
-            className="rounded-full size-6 [&_svg]:size-2"
+            className="rounded-full shrink-0 size-6 [&_svg]:size-2"
+            asChild
           >
-            <SVG.ChevronRightIcon />
+            <Link href={`/business/${row.index}/business-details`}>
+              <SVG.ChevronRightIcon />
+            </Link>
           </UI.Button>
         </div>
       );

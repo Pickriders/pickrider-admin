@@ -37,6 +37,7 @@ import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
+import { ShieldUser } from "./ShieldUser";
 import { StatusIcon } from "./StatusIcon";
 import { UploadIcon } from "./UploadIcon";
 import { VerificationBadgeIcon } from "./VerificationBadgeIcon";
@@ -88,4 +89,5 @@ export const SVG = {
   NegativeXIcon,
   LinkIcon,
   VerificationBadgeIcon,
+  ShieldUser,
 };
