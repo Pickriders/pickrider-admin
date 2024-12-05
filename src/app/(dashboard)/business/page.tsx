@@ -4,6 +4,7 @@ import { BusinessTable } from "./BusinessTable";
 import { businessTableColumn } from "./BusinessTableColumn";
 import { DeleteBusinessModal } from "./DeleteBusinessModal";
 import { SuspendBusinessModal } from "./SuspendBusinessModal";
+import { Suspense } from "react";
 
 const BusinessPage = () => {
   return (
@@ -21,8 +22,10 @@ const BusinessPage = () => {
       </section>
 
       {/* Modals */}
-      <DeleteBusinessModal />
-      <SuspendBusinessModal />
+      <Suspense>
+        <DeleteBusinessModal />
+        <SuspendBusinessModal />
+      </Suspense>
     </div>
   );
 };
