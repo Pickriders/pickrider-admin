@@ -45,6 +45,9 @@ export const OrdersTable = () => {
           </UI.TableBody>
         </UI.Table>
       </div>
+      <div className="flex justify-end mt-5">
+        <UI.PaginationBtns totalPages={4} currentPage={1} />
+      </div>
     </div>
   );
 };
