@@ -33,7 +33,7 @@ const BusinessDetailsPage = ({ params }: { params: { id: string } }) => {
           <BusinessBalance />
           <Link
             href={"#"}
-            className="group bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
+            className="group [&_svg]:dark:stroke-black bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
           >
             <SVG.ShieldUser />{" "}
             <span className="font-montserrat text-xs font-semibold">
