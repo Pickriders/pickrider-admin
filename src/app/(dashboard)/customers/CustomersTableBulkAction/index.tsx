@@ -35,8 +35,8 @@ export const CustomersTableBulkAction = () => {
   const router = useRouter();
   const [action, setAction] = React.useState<BulkActionProps | "">("");
 
-  function openDeleteCustomersModal() {
-    router.push("?delete-customers=true");
+  function openDeletebusinessModal() {
+    router.push("?delete-business=true");
   }
   function openSuspendCustomersModal() {
     router.push("?suspend-customers=true");
@@ -55,7 +55,7 @@ export const CustomersTableBulkAction = () => {
   function excuteAction() {
     if (!action) return;
     if (action === "delete") {
-      openDeleteCustomersModal();
+      openDeletebusinessModal();
     } else if (action === "send push notification") {
       pushNotification();
     } else if (action === "send email") {
