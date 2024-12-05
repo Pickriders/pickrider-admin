@@ -7,7 +7,7 @@ const ProfilePage = () => {
     <div>
       <UI.BreadCrumbNav
         currentPage="Profile"
-        linkPage="Dashboard"
+        pageLinks={[{ href: "/dashboard", label: "Dashboard" }]}
         rootPageLink="/dashboard"
       />
 

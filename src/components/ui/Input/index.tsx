@@ -5,7 +5,16 @@ import { InputProps } from "./Input.type";
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type, labelValue, errorMessage, rightIcon, id, ...props },
+    {
+      className,
+      type,
+      labelValue,
+      errorMessage,
+      rightIcon,
+      id,
+      labelClassName,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -13,7 +22,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {labelValue && (
           <label
             htmlFor={id}
-            className="text-primary-gray font-clash-display font-semibold text-xs"
+            className={cn(
+              "text-primary-gray font-clash-display font-semibold text-xs",
+              labelClassName
+            )}
           >
             {labelValue}
           </label>

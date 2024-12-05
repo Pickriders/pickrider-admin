@@ -6,7 +6,7 @@ const EmailPage = () => {
   return (
     <div>
       <UI.BreadCrumbNav
-        linkPage="Customers"
+        pageLinks={[{ href: "/customers", label: "Customers" }]}
         rootPageLink="/customers"
         currentPage="Email"
       />

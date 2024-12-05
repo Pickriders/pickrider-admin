@@ -22,7 +22,7 @@ const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
       <UI.BreadCrumbNav
         currentPage="Verification"
         rootPageLink="/business"
-        linkPage="Business"
+        pageLinks={[{ href: "/business", label: "Business" }]}
       />
 
       <div className="mt-9">

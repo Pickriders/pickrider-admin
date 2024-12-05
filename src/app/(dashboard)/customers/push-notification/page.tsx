@@ -1,5 +1,4 @@
 import { UI } from "@/components/ui";
-import { SVG } from "@/components/svg";
 import { MessageForm } from "./MessageForm";
 import { SelectedCustomersTag } from "../SelectedCustomersTags";
 
@@ -7,7 +6,7 @@ const PushNotificationPage = () => {
   return (
     <div>
       <UI.BreadCrumbNav
-        linkPage="Customers"
+        pageLinks={[{ href: "/customers", label: "Customers" }]}
         rootPageLink="/customers"
         currentPage="Push Notification"
       />

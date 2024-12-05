@@ -24,7 +24,7 @@ const BusinessDetailsPage = ({ params }: { params: { id: string } }) => {
     <div>
       <UI.BreadCrumbNav
         currentPage="Peterson Corp"
-        linkPage="Business"
+        pageLinks={[{ href: "/business", label: "Business" }]}
         rootPageLink="/business"
       />
 
@@ -32,7 +32,7 @@ const BusinessDetailsPage = ({ params }: { params: { id: string } }) => {
         <div className="flex items-center justify-between">
           <BusinessBalance />
           <Link
-            href={"#"}
+            href={"edit"}
             className="group [&_svg]:dark:stroke-black bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
           >
             <SVG.ShieldUser />{" "}
