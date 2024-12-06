@@ -1,0 +1,45 @@
+import { UI } from "@/components/ui";
+import { notFound } from "next/navigation";
+import { VechiclesTable } from "./VehiclesTable";
+import { vehicleTableColumn } from "./VehiclesTableColumn";
+import { Suspense } from "react";
+import { DeleteVehicleModal } from "./DeleteModal";
+import { SuspendVehicleModal } from "./SuspendModal";
+
+export async function generateStaticParams() {
+  return Array(20)
+    .fill(0)
+    .map((_, id) => ({
+      id: `${id}`,
+    }));
+}
+
+const VehiclesPage = ({ params }: { params: { id: string } }) => {
+  if (!params.id) {
+    notFound();
+  }
+  return (
+    <div>
+      <UI.BreadCrumbNav
+        pageLinks={[
+          { href: "/business", label: "Business" },
+          { href: "business-details", label: "Peterson Corp" },
+        ]}
+        currentPage="Vehicles"
+        rootPageLink="/business"
+      />
+
+      <div className="mt-10">
+        <VechiclesTable columns={vehicleTableColumn} data={Array(13).fill(0)} />
+      </div>
+
+      {/* Modals */}
+      <Suspense>
+        <DeleteVehicleModal />
+        <SuspendVehicleModal />
+      </Suspense>
+    </div>
+  );
+};
+
+export default VehiclesPage;

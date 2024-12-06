@@ -40,7 +40,7 @@ export const selectedCustomersColumns: ColumnDef<SelectedCustomersProps>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <UI.TableStatus />,
+    cell: ({ row }) => <UI.TableStatus status="active" />,
   },
   {
     accessorKey: "lastLogin",
