@@ -90,6 +90,10 @@ export const VechiclesTable = <TData, TValue>({
           </UI.TableBody>
         </UI.Table>
       </div>
+      {/* Pagination */}
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <UI.PaginationBtns currentPage={0} totalPages={4} />
+      </div>
     </div>
   );
 };

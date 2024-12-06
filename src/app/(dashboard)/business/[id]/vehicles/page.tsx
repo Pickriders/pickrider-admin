@@ -20,7 +20,7 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
       <UI.BreadCrumbNav
         pageLinks={[
           { href: "/business", label: "Business" },
-          { href: "/business-details", label: "Peterson Corp" },
+          { href: "business-details", label: "Peterson Corp" },
         ]}
         currentPage="Vehicles"
         rootPageLink="/business"
