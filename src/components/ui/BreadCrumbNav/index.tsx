@@ -10,26 +10,31 @@ import {
 import { SVG } from "@/components/svg";
 
 interface BreadCrumbNavProps {
-  linkPage: string;
   currentPage: string;
   rootPageLink: string;
+  pageLinks: Array<{ href: string; label: string }>;
 }
 
 export const BreadCrumbNav = ({
   currentPage,
-  linkPage,
   rootPageLink,
+  pageLinks,
 }: BreadCrumbNavProps) => {
   return (
     <div className="flex items-center justify-between">
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={rootPageLink}>{linkPage}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
+          {pageLinks.map((link) => (
+            <>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href={link.href}>{link.label}</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+            </>
+          ))}
+
           <BreadcrumbItem>
             <BreadcrumbPage>{currentPage}</BreadcrumbPage>
           </BreadcrumbItem>

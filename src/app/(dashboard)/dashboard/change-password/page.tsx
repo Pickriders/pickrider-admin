@@ -7,7 +7,7 @@ const ChangePasswordPage = () => {
       <UI.BreadCrumbNav
         rootPageLink="/dashboard"
         currentPage="Change Password"
-        linkPage="Dashboard"
+        pageLinks={[{ href: "/dashboard", label: "Dashboard" }]}
       />
       <section className="mt-[3rem] bg-background rounded-2xl py-14 px-8">
         <div className="w-[25rem] mx-auto ">
