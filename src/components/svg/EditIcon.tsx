@@ -1,8 +1,10 @@
-export const EditIcon = () => {
+import { SvgProps } from "./Svg.type";
+
+export const EditIcon = ({ width = 20, height = 20 }: SvgProps) => {
   return (
     <svg
-      width="24"
-      height="25"
+      width={width}
+      height={height}
       viewBox="0 0 24 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

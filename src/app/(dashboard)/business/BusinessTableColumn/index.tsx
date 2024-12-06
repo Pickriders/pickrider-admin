@@ -64,7 +64,7 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
       <div className="flex items-center gap-x-1">
         32{" "}
         <Link
-          href={"#"}
+          href={`/business/${row.index}/vehicles`}
           className="text-[#956810] hover:bg-[#956810]/10 rounded-lg transition-colors duration-200 font-bold py-1 px-1.5"
         >
           View
@@ -90,7 +90,7 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <UI.TableStatus />,
+    cell: ({ row }) => <UI.TableStatus status="active" />,
   },
   {
     accessorKey: "verified",

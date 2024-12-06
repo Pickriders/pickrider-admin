@@ -1,4 +1,10 @@
-export const ActiveIcon = () => {
+import { cn } from "@/lib/utils";
+
+interface ActiveIconProps {
+  className?: string;
+}
+
+export const ActiveIcon = ({ className }: ActiveIconProps) => {
   return (
     <svg
       width="13"
@@ -7,8 +13,19 @@ export const ActiveIcon = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="6.82129" cy="6" r="6" fill="#3E7DF6" fill-opacity="0.12" />
-      <circle cx="6.82129" cy="6" r="3" fill="#3E7DF6" />
+      <circle
+        cx="6.82129"
+        cy="6"
+        r="6"
+        className={cn("fill-[#3E7DF6]", className)}
+        fill-opacity="0.12"
+      />
+      <circle
+        cx="6.82129"
+        cy="6"
+        r="3"
+        className={cn("fill-[#3E7DF6]", className)}
+      />
     </svg>
   );
 };
