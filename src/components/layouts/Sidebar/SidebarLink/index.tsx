@@ -8,8 +8,7 @@ import { LinkProps } from "../Sidebar.type";
 
 export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
   const pathname = usePathname();
-  const rootLink = pathname.split("/")[1];
-  const active = path.startsWith(`/${rootLink}`);
+  const active = pathname.startsWith(`${path}`);
 
   return (
     <Link
