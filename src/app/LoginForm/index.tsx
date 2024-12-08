@@ -3,20 +3,28 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import React from "react";
 import { ToastMessage } from "./Toast";
 
 export const LoginForm = () => {
   const [errorToast, setErrorToast] = React.useState(false);
+  const router = useRouter();
 
-  const formAction = () => {
-    redirect("/dashboard");
-    // setErrorToast(true);
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    // DEMO TEST
+    event.preventDefault();
+    const email = new FormData(event.currentTarget).get("email");
+
+    if (email !== "example@gmail.com") {
+      return setErrorToast(true);
+    }
+
+    router.push("/dashboard");
   };
 
   return (
-    <form action={formAction} className="relative">
+    <form onSubmit={onSubmit} className="relative">
       <ToastMessage showToast={errorToast} close={() => setErrorToast(false)} />
       <h1 className="font-semibold text-2xl font-clash-display">
         Welcome back!
@@ -26,12 +34,15 @@ export const LoginForm = () => {
           labelValue="Email Address"
           id="email"
           type="email"
+          name="email"
+          defaultValue={"example@gmail.com"}
           leftIcon={<SVG.Mail />}
         />
         <UI.Input
           labelValue="Password"
           id="Password"
           type="password"
+          name="password"
           placeholder="Enter password"
           leftIcon={<SVG.LockIcon />}
           showToggle

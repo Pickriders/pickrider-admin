@@ -42,7 +42,7 @@ export const ToastMessage = ({ showToast, close }: ToastPops) => {
       </p>
 
       <button type="button" onClick={close}>
-        <SVG.XIcon width={16} />
+        <SVG.XIcon width={16} className="dark:stroke-black" />
       </button>
     </motion.div>
   );

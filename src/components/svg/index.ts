@@ -32,6 +32,7 @@ import { PersonAcceptIcon } from "./PersonAcceptIcon";
 import { PersonEdit } from "./PersonEdit";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
 import { PersonGroupBoldFillIcon } from "./PersonGroupBoldFillIcon";
+import { PickridersLogo } from "./PickridersLogo";
 import { PlusIcon } from "./PlusIcon";
 import { PositiveTickIcon } from "./PositiveTickIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
@@ -92,4 +93,5 @@ export const SVG = {
   VerificationBadgeIcon,
   ShieldUser,
   Mail,
+  PickridersLogo,
 };
