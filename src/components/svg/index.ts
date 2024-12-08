@@ -11,6 +11,7 @@ import { DocumentIcon } from "./DocumentIcon";
 import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
+import { HelpIcon } from "./HelpIcon";
 import { HomeIcon } from "./HomeIcon";
 import { HomeIconFill } from "./HomeIconFill";
 import { LinkIcon } from "./LinkIcon";
@@ -94,4 +95,5 @@ export const SVG = {
   ShieldUser,
   Mail,
   PickridersLogo,
+  HelpIcon,
 };
