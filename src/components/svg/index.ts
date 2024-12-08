@@ -18,6 +18,7 @@ import { LockIcon } from "./LockIcon";
 
 import { LogoIcon } from "./LogoIcon";
 import { LogoutIcon } from "./LogoutIcon";
+import { Mail } from "./Mail";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
@@ -90,4 +91,5 @@ export const SVG = {
   LinkIcon,
   VerificationBadgeIcon,
   ShieldUser,
+  Mail,
 };

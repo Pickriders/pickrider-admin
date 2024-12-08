@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "./DropdownMenu";
 import { Input } from "./Input";
+import { Label } from "./Label";
 import { Overlay } from "./Overlay";
 import { PaginationBtns } from "./PaginationBtns";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
@@ -135,4 +136,5 @@ export const UI = {
 
   Switch,
   Tag,
+  Label,
 };
