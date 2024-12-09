@@ -2,28 +2,27 @@
 
 import { UI } from "@/components/ui";
 
-import { DataTableProps } from "@/components/ui/Table/Table.type";
 import React from "react";
 import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { CouriersTableBulkActions } from "../CouriersTableBulkActions";
-import { CouriersTableFilter } from "../CouriersTableFilter";
-import { Eye } from "lucide-react";
-import { SVG } from "@/components/svg";
-import Link from "next/link";
+import { VehiclesTableBulkActions } from "./VehiclesTableBulkActions";
+import { VehicleTableFilter } from "./VehicleTableFilter";
+import { vehicleTableColumn as columns } from "./VehiclesTableColumn";
 
-export const CouriersTable = <TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) => {
+interface DataTableProps<TData> {
+  data: TData[];
+}
+
+export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns as ColumnDef<TData>[],
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
@@ -35,14 +34,15 @@ export const CouriersTable = <TData, TValue>({
     <div className="bg-background rounded-lg pb-6">
       {/* Query components */}
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
-        <CouriersTableBulkActions />
+        <VehiclesTableBulkActions />
         <div className="flex items-center gap-x-2">
           <UI.TableSearchInput />
-          <CouriersTableFilter />
+          <VehicleTableFilter />
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto scroll-bar">
+      {/* Table date */}
+      <div>
         <UI.Table>
           <UI.TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -62,7 +62,6 @@ export const CouriersTable = <TData, TValue>({
               </UI.TableRow>
             ))}
           </UI.TableHeader>
-
           <UI.TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -95,7 +94,7 @@ export const CouriersTable = <TData, TValue>({
       </div>
       {/* Pagination */}
       <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={2} totalPages={4} />
+        <UI.PaginationBtns currentPage={0} totalPages={4} />
       </div>
     </div>
   );

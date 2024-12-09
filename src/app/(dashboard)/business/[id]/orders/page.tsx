@@ -1,9 +1,9 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
+
 import { Suspense } from "react";
-import { SuspendCourierModal } from "./SuspendModal";
-import { DeleteCourierModal } from "./DeleteModal";
-import { CouriersTable } from "@/components/CouriersTable";
+import { DeleteOrdersModal } from "./DeleteModal";
+import { OrdersTable } from "@/components/OrdersTable";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -13,7 +13,7 @@ export async function generateStaticParams() {
     }));
 }
 
-const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
+const OrdersPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();
   }
@@ -25,19 +25,18 @@ const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
           { href: "/business", label: "Business" },
           { href: "business-details", label: "Peterson Corp" },
         ]}
-        currentPage="Courier"
+        currentPage="Orders"
         rootPageLink="/business"
       />
-      <div className="mt-10">
-        <CouriersTable data={Array(13).fill(0)} />
-      </div>
+      <section className="mt-10">
+        <OrdersTable data={Array(20).fill(0)} />
+      </section>
 
-      {/* Modals */}
+      {/* Modal */}
       <Suspense>
-        <SuspendCourierModal />
-        <DeleteCourierModal />
+        <DeleteOrdersModal />
       </Suspense>
     </div>
   );
 };
-export default BusinessCourierPage;
+export default OrdersPage;

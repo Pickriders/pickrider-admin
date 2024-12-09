@@ -1,26 +1,29 @@
 "use client";
 
-import { UI } from "@/components/ui";
-import { VehiclesTableBulkActions } from "../VehiclesTableBulkActions";
-import { VehicleTableFilter } from "../VehicleTableFilter";
-
-import { DataTableProps } from "@/components/ui/Table/Table.type";
 import React from "react";
 import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { OrdersTableBulkActions } from "./OrdersTableBulkActions";
+import { UI } from "../ui";
+import Link from "next/link";
+import { OrdersTableFilter } from "./OrdersTableFilter";
+import { ordersTableColumn as columns } from "./OrdersTableColumn";
+import { SVG } from "../svg";
 
-export const VechiclesTable = <TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) => {
+interface DataTableProps<TData> {
+  data: TData[];
+}
+
+export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns as ColumnDef<TData>[],
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
@@ -32,15 +35,22 @@ export const VechiclesTable = <TData, TValue>({
     <div className="bg-background rounded-lg pb-6">
       {/* Query components */}
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
-        <VehiclesTableBulkActions />
+        <div className="flex items-center gap-x-3">
+          <OrdersTableBulkActions />
+          <UI.Button asChild>
+            <Link href={""} className="flex items-center gap-x-2">
+              View Analysis
+              <SVG.Analysis />
+            </Link>
+          </UI.Button>
+        </div>
         <div className="flex items-center gap-x-2">
           <UI.TableSearchInput />
-          <VehicleTableFilter />
+          <OrdersTableFilter />
         </div>
       </div>
 
-      {/* Table date */}
-      <div>
+      <div className="w-full overflow-x-auto">
         <UI.Table>
           <UI.TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -92,7 +102,7 @@ export const VechiclesTable = <TData, TValue>({
       </div>
       {/* Pagination */}
       <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={0} totalPages={4} />
+        <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
     </div>
   );
