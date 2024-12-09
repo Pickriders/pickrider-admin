@@ -19,6 +19,7 @@ import { LockIcon } from "./LockIcon";
 
 import { LogoIcon } from "./LogoIcon";
 import { LogoutIcon } from "./LogoutIcon";
+import { Mail } from "./Mail";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
@@ -32,6 +33,7 @@ import { PersonAcceptIcon } from "./PersonAcceptIcon";
 import { PersonEdit } from "./PersonEdit";
 import { PersonGropBoldIcon } from "./PersonGropBoldIcon";
 import { PersonGroupBoldFillIcon } from "./PersonGroupBoldFillIcon";
+import { PickridersLogo } from "./PickridersLogo";
 import { PlusIcon } from "./PlusIcon";
 import { PositiveTickIcon } from "./PositiveTickIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
@@ -91,5 +93,7 @@ export const SVG = {
   LinkIcon,
   VerificationBadgeIcon,
   ShieldUser,
+  Mail,
+  PickridersLogo,
   HelpIcon,
 };

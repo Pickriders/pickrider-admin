@@ -37,12 +37,10 @@ export const CustomersTableFilter = () => {
 
           <div className="mt-4 flex items-center justify-between">
             <div>
-              <label
-                htmlFor="TYPE"
-                className="text-primary-gray  text-xs font-faktum-test font-semibold"
-              >
+              <UI.Label htmlFor="TYPE" className="text-xs font-faktum-test">
                 TYPE
-              </label>
+              </UI.Label>
+
               <UI.Select defaultValue="all">
                 <UI.SelectTrigger id="TYPE" className="w-[6rem]">
                   <UI.SelectValue />
@@ -57,12 +55,10 @@ export const CustomersTableFilter = () => {
               </UI.Select>
             </div>
             <div>
-              <label
-                htmlFor="STATUS"
-                className="text-primary-gray text-xs font-faktum-test font-semibold"
-              >
+              <UI.Label htmlFor="STATUS" className="text-xs font-faktum-test">
                 STATUS
-              </label>
+              </UI.Label>
+
               <UI.Select defaultValue="all">
                 <UI.SelectTrigger id="STATUS" className="w-[6rem]">
                   <UI.SelectValue />
