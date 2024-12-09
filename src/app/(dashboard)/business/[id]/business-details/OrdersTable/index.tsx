@@ -4,7 +4,9 @@ export const OrdersTable = () => {
   return (
     <div>
       <div className="flex items-center gap-x-4">
-        <h4 className="text-primary-gray  font-semibold text-xs">ORDERS</h4>{" "}
+        <h4 className="text-primary-gray  font-semibold text-xs">
+          RECENT ORDERS
+        </h4>{" "}
         <span className="w-full flex-1 h-[1px] bg-gray-200 dark:bg-gray-100/20" />
       </div>
 
@@ -21,11 +23,12 @@ export const OrdersTable = () => {
             </UI.TableRow>
           </UI.TableHeader>
         </UI.Table>
-        <div className="scroll-bar overflow-y-auto h-[15rem]">
+        <div className="scroll-bar overflow-y-auto h-[17rem]">
           <UI.Table>
             <UI.TableBody>
-              {Array(10)
+              {Array(15)
                 .fill(0)
+                .slice(0, 10)
                 .map((_, i) => {
                   return (
                     <UI.TableRow key={i}>
@@ -48,9 +51,6 @@ export const OrdersTable = () => {
             </UI.TableBody>
           </UI.Table>
         </div>
-      </div>
-      <div className="flex justify-end mt-5">
-        <UI.PaginationBtns totalPages={4} currentPage={1} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { AirpodIcon } from "./AirpodIcon";
+import { Analysis } from "./Analysis";
 import { BalanceIcon } from "./BalanceIcon";
 import { CategoryIcon } from "./CategoryIcon";
 import { ChartIcon } from "./ChartIcon";
@@ -92,4 +93,5 @@ export const SVG = {
   VerificationBadgeIcon,
   ShieldUser,
   HelpIcon,
+  Analysis,
 };

@@ -1,10 +1,9 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { CouriersTable } from "./CouriersTable";
-import { couriersTableColumn } from "./CouriersTableColumn";
 import { Suspense } from "react";
 import { SuspendCourierModal } from "./SuspendModal";
 import { DeleteCourierModal } from "./DeleteModal";
+import { CouriersTable } from "@/components/CouriersTable";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -30,7 +29,7 @@ const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <div className="mt-10">
-        <CouriersTable columns={couriersTableColumn} data={Array(13).fill(0)} />
+        <CouriersTable data={Array(13).fill(0)} />
       </div>
 
       {/* Modals */}

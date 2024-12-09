@@ -1,9 +1,9 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { OrdersTable } from "./OrdersTable";
-import { ordersTableColumn } from "./OrdersTableColumn";
+
 import { Suspense } from "react";
 import { DeleteOrdersModal } from "./DeleteModal";
+import { OrdersTable } from "@/components/OrdersTable";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -17,6 +17,7 @@ const OrdersPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();
   }
+
   return (
     <div>
       <UI.BreadCrumbNav
@@ -28,7 +29,7 @@ const OrdersPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <section className="mt-10">
-        <OrdersTable columns={ordersTableColumn} data={Array(20).fill(0)} />
+        <OrdersTable data={Array(20).fill(0)} />
       </section>
 
       {/* Modal */}
