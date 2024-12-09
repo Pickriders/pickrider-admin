@@ -1,4 +1,5 @@
 import { SVG } from "@/components/svg";
+import Link from "next/link";
 
 export const BusinessStats = () => {
   return (
@@ -19,7 +20,8 @@ export const BusinessStats = () => {
             08123456789
           </p>
         </div>
-        <div className="space-y-2">
+
+        <Link href={"orders"} className="space-y-2">
           <h4 className="font-semibold text-primary-gray text-xs">
             Total Orders
           </h4>
@@ -27,7 +29,7 @@ export const BusinessStats = () => {
             245
             <SVG.MoveUpRightArrowIcon width={13} height={13} />
           </p>
-        </div>
+        </Link>
         <div className="space-y-2">
           <h4 className="font-semibold text-primary-gray text-xs">
             Average Rating
