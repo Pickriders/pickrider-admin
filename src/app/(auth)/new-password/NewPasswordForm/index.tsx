@@ -28,77 +28,79 @@ export const NewPasswordForm = () => {
   };
 
   return (
-    <FormWrapper>
-      <Formik
-        initialValues={{ newPassword: "", confirmPassword: "" }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting, touched, errors }) => (
-          <Form>
-            <div className="space-y-4">
-              <div>
-                <Field name="newPassword">
-                  {({ field }: any) => (
-                    <UI.Input
-                      id="newPassword"
-                      labelValue="Create New Password"
-                      placeholder="Enter password"
-                      leftIcon={<SVG.LockIcon />}
-                      type="password"
-                      showToggle
-                      className={`${
-                        touched.newPassword && errors.newPassword
-                          ? "focus-visible:ring-[#FF5244]/60"
-                          : ""
-                      }`}
-                      {...field}
-                    />
-                  )}
-                </Field>
-                <ErrorMessage
-                  name="newPassword"
-                  component="div"
-                  className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1"
-                />
+    <div>
+      <FormWrapper>
+        <Formik
+          initialValues={{ newPassword: "", confirmPassword: "" }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, touched, errors }) => (
+            <Form>
+              <div className="space-y-4">
+                <div>
+                  <Field name="newPassword">
+                    {({ field }: any) => (
+                      <UI.Input
+                        id="newPassword"
+                        labelValue="Create New Password"
+                        placeholder="Enter password"
+                        leftIcon={<SVG.LockIcon />}
+                        type="password"
+                        showToggle
+                        className={`${
+                          touched.newPassword && errors.newPassword
+                            ? "focus-visible:ring-[#FF5244]/60"
+                            : ""
+                        }`}
+                        {...field}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="newPassword"
+                    component="div"
+                    className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1"
+                  />
+                </div>
+                <div>
+                  <Field name="confirmPassword">
+                    {({ field }: any) => (
+                      <UI.Input
+                        id="confirmPassword"
+                        labelValue="Confirm New Password"
+                        placeholder="Enter password again"
+                        leftIcon={<SVG.LockIcon />}
+                        type="password"
+                        showToggle
+                        className={`${
+                          touched.confirmPassword && errors.confirmPassword
+                            ? "focus-visible:ring-[#FF5244]/60 "
+                            : ""
+                        }`}
+                        {...field}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1"
+                  />
+                </div>
               </div>
-              <div>
-                <Field name="confirmPassword">
-                  {({ field }: any) => (
-                    <UI.Input
-                      id="confirmPassword"
-                      labelValue="Confirm New Password"
-                      placeholder="Enter password again"
-                      leftIcon={<SVG.LockIcon />}
-                      type="password"
-                      showToggle
-                      className={`${
-                        touched.confirmPassword && errors.confirmPassword
-                          ? "focus-visible:ring-[#FF5244]/60 "
-                          : ""
-                      }`}
-                      {...field}
-                    />
-                  )}
-                </Field>
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1"
-                />
+              <div className="space-y-3 mt-10">
+                <UI.PrimaryButton type="submit" disabled={isSubmitting}>
+                  Save & Proceed
+                </UI.PrimaryButton>
+                <UI.PrimaryButton variant="outline" asChild>
+                  <Link href={"/verify-otp"}>Cancel</Link>
+                </UI.PrimaryButton>
               </div>
-            </div>
-            <div className="space-y-3 mt-10">
-              <UI.PrimaryButton type="submit" disabled={isSubmitting}>
-                Save & Proceed
-              </UI.PrimaryButton>
-              <UI.PrimaryButton variant="outline" asChild>
-                <Link href={"/verify-otp"}>Cancel</Link>
-              </UI.PrimaryButton>
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </FormWrapper>
+            </Form>
+          )}
+        </Formik>
+      </FormWrapper>
+    </div>
   );
 };
