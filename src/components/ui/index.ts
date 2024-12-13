@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "./DropdownMenu";
 import { Input } from "./Input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "./InputOtp";
 import { Label } from "./Label";
 import { Overlay } from "./Overlay";
 import { PaginationBtns } from "./PaginationBtns";
@@ -137,4 +138,8 @@ export const UI = {
   Switch,
   Tag,
   Label,
+
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
 };
