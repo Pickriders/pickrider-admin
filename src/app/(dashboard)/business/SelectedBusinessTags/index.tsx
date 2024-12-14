@@ -7,7 +7,7 @@ import { UI } from "@/components/ui";
 import Link from "next/link";
 import React, { Suspense } from "react";
 
-export const SelectedCustomersTag = () => {
+export const SelectedBusinessTag = () => {
   return (
     <div className="flex items-center gap-x-4">
       {Array(10)
