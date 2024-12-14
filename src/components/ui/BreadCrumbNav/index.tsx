@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -8,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "../BreadCrumb";
 import { SVG } from "@/components/svg";
+import React from "react";
 
 interface BreadCrumbNavProps {
   currentPage: string;
@@ -24,15 +27,15 @@ export const BreadCrumbNav = ({
     <div className="flex items-center justify-between">
       <Breadcrumb>
         <BreadcrumbList>
-          {pageLinks.map((link) => (
-            <>
+          {pageLinks.map((link, i) => (
+            <React.Fragment key={i}>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href={link.href}>{link.label}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-            </>
+            </React.Fragment>
           ))}
 
           <BreadcrumbItem>

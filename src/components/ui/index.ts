@@ -46,6 +46,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
 
 import { PrimaryHeading } from "./PrimaryHeading";
+import { SectionHeader } from "./SectionHeader";
 import {
   Select,
   SelectContent,
@@ -142,4 +143,6 @@ export const UI = {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
+
+  SectionHeader,
 };
