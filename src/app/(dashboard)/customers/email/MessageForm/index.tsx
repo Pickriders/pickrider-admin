@@ -1,10 +1,11 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import { TextArea } from "../../TextArea";
-import { InputText } from "../../InputText";
+
 import React from "react";
 import { SVG } from "@/components/svg";
+import { TextInputWithCounter } from "@/components/ui/InputTextCounter";
+import { TextAreaWithCounter } from "@/components/ui/TextAreaWithCounter";
 
 export const MessageForm = () => {
   const [title, setTitle] = React.useState("");
@@ -12,8 +13,8 @@ export const MessageForm = () => {
 
   return (
     <form className="mt-10  space-y-8">
-      <InputText setValue={setTitle} value={title} />
-      <TextArea setValue={setMessage} value={message} />
+      <TextInputWithCounter setValue={setTitle} value={title} />
+      <TextAreaWithCounter setValue={setMessage} value={message} />
       <label
         htmlFor="attachment"
         className="w-full gap-x-2 cursor-pointer border-[1.5px] text-muted-foreground px-2 text-sm flex justify-center items-center font-montserrat font-semibold py-2.5 rounded-[4px] bg-muted dark:bg-transparent border-[#C7CBE0] dark:border-neutral-800 hover:bg-gray-200 dark:hover:bg-transparent"

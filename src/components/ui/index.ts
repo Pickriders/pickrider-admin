@@ -143,6 +143,6 @@ export const UI = {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-
   SectionHeader,
+
 };
