@@ -1,13 +1,11 @@
-// "use client";
-
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { BusinessBalance } from "./BusinessBalance";
 import Link from "next/link";
 import { SVG } from "@/components/svg";
+
 import { RidersStats } from "./RiderStats";
 import { VehicleStats } from "./vehicleStats";
-import dynamic from "next/dynamic";
 import { OrdersTable } from "./OrdersTable";
 import { RiderMap } from "./RiderMap";
 
