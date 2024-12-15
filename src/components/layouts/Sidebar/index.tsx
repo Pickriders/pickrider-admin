@@ -24,6 +24,7 @@ const SIDEBAR_LINKS = [
     href: "/business",
   },
   {
+    activeIcon: <SVG.PersonAcceptFillIcon width={23} height={17} />,
     icon: <SVG.PersonAcceptIcon />,
     label: "Couriers",
     href: "/couriers",

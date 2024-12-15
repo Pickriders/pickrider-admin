@@ -1,14 +1,10 @@
 import { SVG } from "@/components/svg";
+import { UI } from "@/components/ui";
 
 export const GeneralStats = () => {
   return (
     <div className="font-montserrat">
-      <div className="flex items-center gap-x-4">
-        <h4 className="text-primary-gray  font-semibold text-xs">
-          GENERAL STATS
-        </h4>{" "}
-        <span className="w-full flex-1 h-[1px] bg-gray-200 dark:bg-gray-100/20" />
-      </div>
+      <UI.SectionHeader text=" GENERAL STATS" />
 
       <div className="mt-5  grid grid-cols-2 gap-x-14 gap-y-8 w-[19rem] ">
         <div className="space-y-2">

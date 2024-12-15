@@ -2,7 +2,7 @@
 
 import { UI } from "@/components/ui";
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -12,6 +12,8 @@ import {
 import { CouriersTableBulkActions } from "./CouriersTableBulkActions";
 import { CouriersTableFilter } from "./CouriersTableFilter";
 import { couriersTableColumn as columns } from "./CouriersTableColumn";
+import { DeleteCourierModal } from "./DeleteModal";
+import { SuspendCourierModal } from "./SuspendModal";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -96,6 +98,12 @@ export const CouriersTable = <TData,>({ data }: DataTableProps<TData>) => {
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
+
+      {/* Modals */}
+      <Suspense>
+        <SuspendCourierModal />
+        <DeleteCourierModal />
+      </Suspense>
     </div>
   );
 };

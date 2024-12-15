@@ -31,12 +31,6 @@ const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
       <div className="mt-10">
         <CouriersTable data={Array(13).fill(0)} />
       </div>
-
-      {/* Modals */}
-      <Suspense>
-        <SuspendCourierModal />
-        <DeleteCourierModal />
-      </Suspense>
     </div>
   );
 };

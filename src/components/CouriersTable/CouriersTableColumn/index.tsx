@@ -96,7 +96,7 @@ export const couriersTableColumn: ColumnDef<CouriersProps>[] = [
             className="rounded-full shrink-0 size-6 [&_svg]:size-2"
             asChild
           >
-            <Link href={""}>
+            <Link href={`/couriers/${row.index}/details`}>
               <SVG.ChevronRightIcon />
             </Link>
           </UI.Button>

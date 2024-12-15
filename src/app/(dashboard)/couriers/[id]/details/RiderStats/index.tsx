@@ -2,10 +2,10 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
 
-export const BusinessStats = () => {
+export const RidersStats = () => {
   return (
-    <div className="font-montserrat">
-      <UI.SectionHeader text="BUSINESS STATS" />
+    <div>
+      <UI.SectionHeader text="RIDER STATS" />
       <div className="mt-5  grid grid-cols-2 gap-x-14 gap-y-8 w-[19rem] ">
         <div className="space-y-2">
           <h4 className="font-semibold text-primary-gray text-xs">
