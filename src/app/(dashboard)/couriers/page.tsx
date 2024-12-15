@@ -1,6 +1,7 @@
 import { CouriersTable } from "@/components/CouriersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { notFound } from "next/navigation";
 
 const CouriersPage = () => {
   return (
