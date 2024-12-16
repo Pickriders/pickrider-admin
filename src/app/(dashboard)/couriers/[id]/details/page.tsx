@@ -39,7 +39,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
             >
               <ShieldCheck />
               <span className="font-montserrat text-xs font-semibold">
-                couriers verification
+                Couriers Verification
               </span>
             </Link>
             <Link
