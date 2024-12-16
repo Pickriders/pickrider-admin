@@ -15,7 +15,7 @@ export const useQueryModal = (params: QueryParam[]) => {
   );
 
   const closeModal = () => {
-    router.replace(pathname);
+    router.replace(pathname, { scroll: false });
   };
 
   return { isOpen, closeModal };

@@ -22,9 +22,9 @@ const REASONS = [
   },
 ];
 
-export const RejectModal = () => {
+export const RejectVerificationModal = () => {
   const { closeModal, isOpen } = useQueryModal([
-    { key: "reject-business", value: true },
+    { key: "reject-verification", value: true },
   ]);
 
   return (

@@ -1,7 +1,8 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { VerificationPanel } from "./VerificationPanels";
+
 import { Suspense } from "react";
+import { VerificationPanel } from "./VerificationPanel";
 import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
 export async function generateStaticParams() {
@@ -12,7 +13,7 @@ export async function generateStaticParams() {
     }));
 }
 
-const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
+const VerificationPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();
   }
@@ -21,19 +22,19 @@ const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
     <div>
       <UI.BreadCrumbNav
         currentPage="Verification"
-        rootPageLink="/business"
-        pageLinks={[{ href: "/business", label: "Business" }]}
+        rootPageLink="/couriers"
+        pageLinks={[{ href: "/couriers", label: "Couriers" }]}
       />
 
-      <div className="mt-14">
+      <div className="mt-16">
         <VerificationPanel />
       </div>
 
-      {/* Modal */}
+      {/* Preview */}
       <Suspense>
         <RejectVerificationModal />
       </Suspense>
     </div>
   );
 };
-export default BusinessVerificationPage;
+export default VerificationPage;
