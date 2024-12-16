@@ -61,7 +61,7 @@ export const couriersTableColumn: ColumnDef<CouriersProps>[] = [
     cell: ({ row }) => {
       const isVerified = row.getValue("liscenceVerified") ?? true;
       return (
-        <div>
+        <Link href={`/couriers/${row.index}/verification`} className="group">
           {isVerified ? (
             <div className="flex items-center font-bold gap-x-4">
               <SVG.VerificationBadgeIcon /> Yes
@@ -75,7 +75,7 @@ export const couriersTableColumn: ColumnDef<CouriersProps>[] = [
               No <Eye size={15} />
             </div>
           )}
-        </div>
+        </Link>
       );
     },
   },

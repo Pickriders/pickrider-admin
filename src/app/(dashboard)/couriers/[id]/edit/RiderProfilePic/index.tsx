@@ -1,11 +1,9 @@
-"use client";
-
 import { SVG } from "@/components/svg";
 
-export const UserProfilePic = () => {
+export const RiderProfilePic = () => {
   return (
-    <div className="grid  place-items-center ">
-      <div className="size-[10rem] rounded-full bg-primary-black mx-auto mt-[2rem] text-7xl font-semibold font-clash-display grid place-items-center text-white">
+    <div className="grid">
+      <div className="size-[10rem] rounded-full bg-primary-black mx-auto  text-7xl font-semibold font-clash-display grid place-items-center text-white">
         P
       </div>
       <div className="mt-5">

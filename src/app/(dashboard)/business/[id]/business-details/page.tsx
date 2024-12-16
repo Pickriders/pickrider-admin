@@ -6,6 +6,7 @@ import { BusinessBalance } from "./BusinessBalance";
 import { BusinessStats } from "./BusinessStats";
 import { GeneralStats } from "./GeneralStats";
 import { OrdersTable } from "./OrdersTable";
+import { ShieldCheck } from "lucide-react";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -31,15 +32,26 @@ const BusinessDetailsPage = ({ params }: { params: { id: string } }) => {
       <section className="bg-background rounded-2xl p-10 mt-10">
         <div className="flex items-center justify-between">
           <BusinessBalance />
-          <Link
-            href={"edit"}
-            className="group [&_svg]:dark:stroke-black bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
-          >
-            <SVG.ShieldUser />{" "}
-            <span className="font-montserrat text-xs font-semibold">
-              Edit business details
-            </span>
-          </Link>
+          <div className="flex items-center gap-x-3">
+            <Link
+              href={"verification"}
+              className="group [&_svg]:dark:stroke-black bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
+            >
+              <ShieldCheck />
+              <span className="font-montserrat text-xs font-semibold">
+               Business Verification
+              </span>
+            </Link>
+            <Link
+              href={"edit"}
+              className="group [&_svg]:dark:stroke-black bg-accent-foreground hover:bg-accent-foreground/80 rounded-lg transition-all duration-500 text-primary-foreground p-3.5 flex items-center gap-x-2"
+            >
+              <SVG.ShieldUser />{" "}
+              <span className="font-montserrat text-xs font-semibold">
+                Edit business details
+              </span>
+            </Link>
+          </div>
         </div>
 
         <div className="flex mt-12 gap-x-12">
