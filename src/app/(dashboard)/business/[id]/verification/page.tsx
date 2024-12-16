@@ -25,7 +25,7 @@ const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
         pageLinks={[{ href: "/business", label: "Business" }]}
       />
 
-      <div className="mt-9">
+      <div className="mt-14">
         <VerificationPanel />
       </div>
 

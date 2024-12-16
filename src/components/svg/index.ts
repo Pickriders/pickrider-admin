@@ -1,5 +1,6 @@
 import { AirpodIcon } from "./AirpodIcon";
 import { Analysis } from "./Analysis";
+import { ArrowExpand } from "./ArrowExpand";
 import { BalanceIcon } from "./BalanceIcon";
 import { CategoryIcon } from "./CategoryIcon";
 import { ChartIcon } from "./ChartIcon";
@@ -98,4 +99,5 @@ export const SVG = {
   PickridersLogo,
   HelpIcon,
   Analysis,
+  ArrowExpand,
 };
