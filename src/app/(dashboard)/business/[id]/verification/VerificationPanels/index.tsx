@@ -1,11 +1,19 @@
+"use client";
+
 import { UI } from "@/components/ui";
 import { NameLabel } from "../NameLabel";
 import { VerifyAccordion } from "../VerifyAccordion";
 import Image from "next/image";
 import Link from "next/link";
+import { SVG } from "@/components/svg";
+import { motion } from "framer-motion";
+import { VerificationModalPeview } from "@/components/VerificationModalPreview";
+import { useState } from "react";
 
 export const VerificationPanel = () => {
+  const [previewDoc, setPreviewDoc] = useState<string | null>(null);
   const verified = true;
+
   return (
     <div className="bg-background  divide-y rounded-2xl py-5 px-6  font-montserrat">
       <VerifyAccordion
@@ -34,14 +42,25 @@ export const VerificationPanel = () => {
                   <span className="w-full flex-1 h-[1px] bg-gray-100 dark:bg-gray-100/50" />
                 </div>
 
-                <div className="mt-5">
+                <motion.div
+                  layoutId="preview-KYC"
+                  className="mt-5 relative w-[26rem]"
+                >
                   <Image
                     alt="demo"
                     src={"/demo-linc.svg"}
                     width={395}
                     height={240}
                   />
-                </div>
+                  <button
+                    onClick={() => setPreviewDoc("preview-KYC")}
+                    className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-2 right-3"
+                  >
+                    <span className="group-hover:scale-105 transition-all">
+                      <SVG.ArrowExpand />
+                    </span>
+                  </button>
+                </motion.div>
               </div>
             </div>
             <div className="mt-3">
@@ -53,7 +72,9 @@ export const VerificationPanel = () => {
                 <div className="flex items-center gap-x-4">
                   <UI.PrimaryButton>Verify</UI.PrimaryButton>
                   <UI.PrimaryButton variant="outline" asChild>
-                    <Link href={"?reject-business=true"}>Reject</Link>
+                    <Link scroll={false} href={"?reject-verification=true"}>
+                      Reject
+                    </Link>
                   </UI.PrimaryButton>{" "}
                 </div>
               )}
@@ -87,14 +108,25 @@ export const VerificationPanel = () => {
                   <span className="w-full flex-1 h-[1px] bg-gray-100 dark:bg-gray-100/50" />
                 </div>
 
-                <div className="mt-5">
+                <motion.div
+                  layoutId="preview-KYB"
+                  className="mt-5 relative w-[26rem]"
+                >
                   <Image
                     alt="demo"
                     src={"/demo-cert.svg"}
-                    width={395}
+                    width={400}
                     height={240}
                   />
-                </div>
+                  <button
+                    onClick={() => setPreviewDoc("preview-KYB")}
+                    className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-6 right-3"
+                  >
+                    <span className="group-hover:scale-105 transition-all">
+                      <SVG.ArrowExpand />
+                    </span>
+                  </button>
+                </motion.div>
               </div>
             </div>
             <div className="mt-3">
@@ -112,6 +144,15 @@ export const VerificationPanel = () => {
               )}
             </div>
           </div>
+        }
+      />
+
+      {/* Modal */}
+      <VerificationModalPeview
+        closeModal={() => setPreviewDoc(null)}
+        layoutId={previewDoc}
+        previewImage={
+          previewDoc === "preview-KYC" ? "/demo-linc.svg" : "/demo-cert.svg"
         }
       />
     </div>

@@ -1,30 +1,24 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { UI } from "../ui";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { useQueryModal } from "@/hooks";
 import { motion } from "framer-motion";
 
 interface VerificationModalPeviewProps {
   previewImage: string;
-  layoutId: string;
+  layoutId: string | null;
+  closeModal: () => void;
 }
 
 export const VerificationModalPeview = ({
   previewImage,
   layoutId,
+  closeModal,
 }: VerificationModalPeviewProps) => {
-  const { isOpen, closeModal } = useQueryModal([
-    { key: "verification-preview", value: true },
-  ]);
-
   return (
-    // <motion.div className="fixed inset-0">
-    <UI.Overlay open={isOpen}>
-      {isOpen && (
-        <motion.div layoutId={layoutId} className="  ">
+    <UI.Overlay open={layoutId ? true : false}>
+      {layoutId && (
+        <motion.div layoutId={layoutId}>
           <UI.Card className={cn("pt-1 px-2 pb-10")}>
             <div className="flex justify-end">
               <UI.Button onClick={closeModal} size={"icon"}>

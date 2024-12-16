@@ -18,13 +18,7 @@ const ProfilePage = () => {
           </h1>
 
           <div>
-            <div className="size-[10rem] rounded-full bg-primary-black mx-auto mt-[2rem] text-7xl font-semibold font-clash-display grid place-items-center text-white">
-              P
-            </div>
-
-            <div className="mt-5">
-              <UserProfilePic />
-            </div>
+            <UserProfilePic />
           </div>
 
           <div className="mt-7">

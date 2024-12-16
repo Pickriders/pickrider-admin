@@ -1,10 +1,9 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { VerificationPanel } from "./VerificationPanel";
-import Image from "next/image";
-import { X } from "lucide-react";
-import { VerificationModalPeview } from "@/components/VerificationModalPreview";
+
 import { Suspense } from "react";
+import { VerificationPanel } from "./VerificationPanel";
+import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -33,10 +32,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
 
       {/* Preview */}
       <Suspense>
-        <VerificationModalPeview
-          layoutId="verification-modal"
-          previewImage="/demo-linc.svg"
-        />
+        <RejectVerificationModal />
       </Suspense>
     </div>
   );

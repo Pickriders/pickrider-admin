@@ -1,8 +1,8 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { VerificationPanel } from "./VerificationPanels";
-import { RejectModal } from "./RejectModal";
 import { Suspense } from "react";
+import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -31,7 +31,7 @@ const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
 
       {/* Modal */}
       <Suspense>
-        <RejectModal />
+        <RejectVerificationModal />
       </Suspense>
     </div>
   );
