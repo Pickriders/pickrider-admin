@@ -19,15 +19,21 @@ export const VerificationModalPeview = ({
     <UI.Overlay open={layoutId ? true : false}>
       {layoutId && (
         <motion.div layoutId={layoutId}>
-          <UI.Card className={cn("pt-1 px-2 pb-10")}>
+          <UI.Card className={cn("pt-1 px-2 pb-10 ")}>
             <div className="flex justify-end">
               <UI.Button onClick={closeModal} size={"icon"}>
                 <X />
               </UI.Button>
             </div>
             <UI.CardContent className="!p-0 mt-1">
-              <div className="w-[40rem]">
-                <Image alt="demo" src={previewImage} width={707} height={507} />
+              <div className="w-[40rem] h-[29rem]">
+                <Image
+                  alt="demo"
+                  src={previewImage}
+                  width={707}
+                  height={507}
+                  className="w-full h-full"
+                />
               </div>
             </UI.CardContent>
           </UI.Card>

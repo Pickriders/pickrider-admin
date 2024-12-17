@@ -1,8 +1,6 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { DeleteVehicleModal } from "./DeleteModal";
-import { SuspendVehicleModal } from "./SuspendModal";
+
 import { VechiclesTable } from "@/components/VehiclesTable";
 
 export async function generateStaticParams() {
@@ -31,12 +29,6 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
       <div className="mt-10">
         <VechiclesTable data={Array(13).fill(0)} />
       </div>
-
-      {/* Modals */}
-      <Suspense>
-        <DeleteVehicleModal />
-        <SuspendVehicleModal />
-      </Suspense>
     </div>
   );
 };

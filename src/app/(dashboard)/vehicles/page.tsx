@@ -1,21 +1,21 @@
-import { CouriersTable } from "@/components/CouriersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { VechiclesTable } from "@/components/VehiclesTable";
 
-const CouriersPage = () => {
+const VehiclesPage = () => {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <UI.PrimaryHeading text="Courier Management" />
+        <UI.PrimaryHeading text="Vehicle Management" />
         <UI.Button>
           <SVG.PlusIcon />
-          Add Driver
+          Add Vehicle
         </UI.Button>
       </div>
       <section className="mt-[2rem] w-full">
-        <CouriersTable data={Array(10).fill(0)} />
+        <VechiclesTable data={Array(7).fill(0)} />
       </section>
     </div>
   );
 };
-export default CouriersPage;
+export default VehiclesPage;

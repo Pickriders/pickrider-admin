@@ -2,7 +2,7 @@
 
 import { UI } from "@/components/ui";
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -12,6 +12,8 @@ import {
 import { VehiclesTableBulkActions } from "./VehiclesTableBulkActions";
 import { VehicleTableFilter } from "./VehicleTableFilter";
 import { vehicleTableColumn as columns } from "./VehiclesTableColumn";
+import { DeleteVehicleModal } from "./DeleteModal";
+import { SuspendVehicleModal } from "./SuspendModal";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -93,9 +95,17 @@ export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
         </UI.Table>
       </div>
       {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={0} totalPages={4} />
-      </div>
+      {data.length > 10 && (
+        <div className="mt-3 flex justify-end px-[1.5rem]">
+          <UI.PaginationBtns currentPage={0} totalPages={4} />
+        </div>
+      )}
+
+      {/* Modals */}
+      <Suspense>
+        <DeleteVehicleModal />
+        <SuspendVehicleModal />
+      </Suspense>
     </div>
   );
 };

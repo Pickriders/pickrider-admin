@@ -41,14 +41,33 @@ export const vehicleTableColumn: ColumnDef<VehicleProps>[] = [
   {
     accessorKey: "plateNumber",
     header: "Plate Number",
-    cell: ({ row }) => (
-      <div className="flex items-center font-bold gap-x-4">
-        <SVG.VerificationBadgeIcon /> AE225EA
-        <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
-          <Eye size={15} />
-        </div>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isVerified = row.getValue("plateNumber") ?? true;
+
+      return (
+        <Link href={`/vehicles/${row.index}/verification`} className="group">
+          {isVerified ? (
+            <div className="flex items-center font-bold gap-x-4">
+              <SVG.VerificationBadgeIcon /> AE225EA
+              <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
+                <Eye size={15} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center font-bold gap-x-2">
+              <SVG.HelpIcon />
+              No <Eye size={15} />
+            </div>
+          )}
+        </Link>
+      );
+      // <div className="flex items-center font-bold gap-x-4">
+      //   <SVG.VerificationBadgeIcon /> AE225EA
+      //   <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
+      //     <Eye size={15} />
+      //   </div>
+      // </div>
+    },
   },
   {
     accessorKey: "AssignedTo",

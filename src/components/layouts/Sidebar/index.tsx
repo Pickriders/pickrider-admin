@@ -30,9 +30,10 @@ const SIDEBAR_LINKS = [
     href: "/couriers",
   },
   {
+    activeIcon: <SVG.CategoryFill />,
     icon: <SVG.CategoryIcon />,
-    label: "Inventory",
-    href: "/inventory",
+    label: "Vehicles",
+    href: "/vehicles",
   },
   {
     icon: <SVG.AirpodIcon />,
