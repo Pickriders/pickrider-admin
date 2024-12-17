@@ -71,7 +71,6 @@
 @layer base {
   * {
     @apply border-border;
-    /* font-size: 62.5%; */
   }
   body {
     @apply bg-background text-foreground;
@@ -81,12 +80,11 @@
 @layer components {
   .scroll-bar {
     scrollbar-width: 7px;
-    /* scrollbar-color: hsl(var(--primary)) hsl(var(--accent)); */
   }
 
   .scroll-bar::-webkit-scrollbar {
     width: 5px;
-    height: 2px;
+    height: 5px;
   }
 
   .scroll-bar::-webkit-scrollbar-thumb {

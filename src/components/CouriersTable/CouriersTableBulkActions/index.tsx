@@ -31,12 +31,18 @@ export const CouriersTableBulkActions = () => {
   const router = useRouter();
   const [action, setAction] = React.useState<BulkActionProps | "">("");
 
-  function openDeleteVehicleModal() {
+  function openDelete() {
     router.push("?delete-courier=true");
   }
 
-  function openSuspendVehicleModal() {
+  function openSuspend() {
     router.push("?suspend-courier=true");
+  }
+  function pushNotification() {
+    router.push("/couriers/push-notification");
+  }
+  function email() {
+    router.push("/couriers/email");
   }
 
   function handleActionSelect(value: BulkActionProps) {
@@ -46,9 +52,13 @@ export const CouriersTableBulkActions = () => {
   function excuteAction() {
     if (!action) return;
     if (action === "delete") {
-      openDeleteVehicleModal();
+      openDelete();
+    } else if (action === "send push notification") {
+      pushNotification();
+    } else if (action === "send email") {
+      email();
     } else if (action === "suspend") {
-      openSuspendVehicleModal();
+      openSuspend();
     }
   }
 

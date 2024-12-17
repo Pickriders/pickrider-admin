@@ -1,8 +1,14 @@
+"use client";
+
 import { UI } from "@/components/ui";
-import { SelectedBusinessTag } from "../SelectedBusinessTags";
-import { MessageForm } from "./MessageForm";
+import { SelectedTags } from "@/components/SelectedTags";
+import React from "react";
+import { FormMessage } from "@/components/FormMessage";
 
 const PushNotification = () => {
+  const [title, setTitle] = React.useState("");
+  const [message, setMessage] = React.useState("");
+
   return (
     <div>
       <UI.BreadCrumbNav
@@ -16,9 +22,14 @@ const PushNotification = () => {
           Push Notification
         </h2>
         <div className="mt-9 ">
-          <SelectedBusinessTag />
+          <SelectedTags />
         </div>
-        <MessageForm />
+        <FormMessage
+          message={message}
+          onMessageChange={setMessage}
+          title={title}
+          onTitleChange={setTitle}
+        />
       </section>
     </div>
   );

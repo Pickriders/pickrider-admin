@@ -33,7 +33,7 @@ export const CouriersTable = <TData,>({ data }: DataTableProps<TData>) => {
   });
 
   return (
-    <div className="bg-background rounded-lg pb-6">
+    <div className="bg-background rounded-lg pb-6 w-full">
       {/* Query components */}
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <CouriersTableBulkActions />
@@ -94,6 +94,7 @@ export const CouriersTable = <TData,>({ data }: DataTableProps<TData>) => {
           </UI.TableBody>
         </UI.Table>
       </div>
+
       {/* Pagination */}
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <UI.PaginationBtns currentPage={2} totalPages={4} />

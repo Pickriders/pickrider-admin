@@ -5,19 +5,15 @@ import { SelectedTags } from "@/components/SelectedTags";
 import { FormMessage } from "@/components/FormMessage";
 import React from "react";
 
-const EmailPage = () => {
+const PushNotification = () => {
   const [title, setTitle] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [attachment, setAttachment] = React.useState<File | undefined>(
-    undefined
-  );
-
   return (
     <div>
       <UI.BreadCrumbNav
-        pageLinks={[{ href: "/business", label: "Business" }]}
-        rootPageLink="/business"
-        currentPage="Email"
+        pageLinks={[{ href: "/couriers", label: "Couriers" }]}
+        rootPageLink="/couriers"
+        currentPage="Push Notification"
       />
 
       <section className="bg-background mt-10 px-7 py-6 rounded-lg">
@@ -28,8 +24,6 @@ const EmailPage = () => {
           <SelectedTags />
         </div>
         <FormMessage
-          attachment={true}
-          onAttachmentChange={setAttachment}
           message={message}
           onMessageChange={setMessage}
           title={title}
@@ -39,4 +33,4 @@ const EmailPage = () => {
     </div>
   );
 };
-export default EmailPage;
+export default PushNotification;

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { LoginForm } from "./LoginForm";
 import { SVG } from "@/components/svg";
 import { HeadLogo } from "./HeadLogo";

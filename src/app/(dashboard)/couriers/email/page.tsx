@@ -2,8 +2,8 @@
 
 import { UI } from "@/components/ui";
 import { SelectedTags } from "@/components/SelectedTags";
-import { FormMessage } from "@/components/FormMessage";
 import React from "react";
+import { FormMessage } from "@/components/FormMessage";
 
 const EmailPage = () => {
   const [title, setTitle] = React.useState("");
@@ -15,12 +15,12 @@ const EmailPage = () => {
   return (
     <div>
       <UI.BreadCrumbNav
-        pageLinks={[{ href: "/business", label: "Business" }]}
-        rootPageLink="/business"
+        pageLinks={[{ href: "/couriers", label: "Couriers" }]}
+        rootPageLink="/couriers"
         currentPage="Email"
       />
 
-      <section className="bg-background mt-10 px-7 py-6 rounded-lg">
+      <section className="bg-background mt-14 px-7 py-10 rounded-lg">
         <h2 className="font-montserrat text-xs font-semibold text-foreground">
           Push Notification
         </h2>

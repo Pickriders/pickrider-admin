@@ -16,12 +16,12 @@ export default function Dashboard({
   return (
     <div className="bg-primary-foreground min-h-screen">
       <Layout.Header />
-      <div className="grid grid-cols-[auto_1fr]">
-        <div>
+      <div className="grid xl:grid-cols-[auto_1fr] grid-cols-1">
+        <div className="xl:block hidden">
           <Layout.Sidebar />
         </div>
         <main className="pt-6 px-7 pb-10">
-          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] mx-auto ">
+          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] w-full mx-auto ">
             {children}
           </div>
         </main>

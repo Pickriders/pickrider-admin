@@ -18,7 +18,7 @@ export const ActiveIcon = ({ className }: ActiveIconProps) => {
         cy="6"
         r="6"
         className={cn("fill-[#3E7DF6]", className)}
-        fill-opacity="0.12"
+        fillOpacity="0.12"
       />
       <circle
         cx="6.82129"
