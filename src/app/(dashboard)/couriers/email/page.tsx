@@ -1,8 +1,17 @@
+"use client";
+
 import { UI } from "@/components/ui";
-import { MessageForm } from "./MessageForm";
-import { SelectedBusinessTag } from "../SelectedBusinessTags";
+import { SelectedTags } from "@/components/SelectedTags";
+import React from "react";
+import { FormMessage } from "@/components/FormMessage";
 
 const EmailPage = () => {
+  const [title, setTitle] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [attachment, setAttachment] = React.useState<File | undefined>(
+    undefined
+  );
+
   return (
     <div>
       <UI.BreadCrumbNav
@@ -16,9 +25,16 @@ const EmailPage = () => {
           Push Notification
         </h2>
         <div className="mt-9 ">
-          <SelectedBusinessTag />
+          <SelectedTags />
         </div>
-        <MessageForm />
+        <FormMessage
+          attachment={true}
+          onAttachmentChange={setAttachment}
+          message={message}
+          onMessageChange={setMessage}
+          title={title}
+          onTitleChange={setTitle}
+        />
       </section>
     </div>
   );

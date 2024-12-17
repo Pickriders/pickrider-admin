@@ -5,11 +5,12 @@ import Link from "next/link";
 import { LoginForm } from "./LoginForm";
 import { SVG } from "@/components/svg";
 import { HeadLogo } from "./HeadLogo";
+import { CouriersTable } from "@/components/CouriersTable";
 
 export default function Home() {
   return (
     <div className="h-screen p-5 overflow-y-hidden flex  items-center">
-      <div className="rounded-2xl bg-[#F3F3F3] dark:bg-[#1e1f1f]  w-[33rem] h-full pt-8 px-5">
+      {/* <div className="rounded-2xl bg-[#F3F3F3] dark:bg-[#1e1f1f]  w-[33rem] h-full pt-8 px-5">
         <div className="grid place-items-center">
           <SVG.PickridersLogo />
         </div>
@@ -31,7 +32,10 @@ export default function Home() {
 
       <div className="max-w-[35rem] z-40 w-full mx-auto ">
         <LoginForm />
-      </div>
+      </div> */}
+      {/* <div className="w-full overflow-x-auto"> */}
+      <CouriersTable data={Array(5).fill(0)} />
+      {/* </div> */}
     </div>
   );
 }

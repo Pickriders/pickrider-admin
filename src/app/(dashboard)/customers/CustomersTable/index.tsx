@@ -28,7 +28,7 @@ export const CustomersTable = <TData, TValue>({
   });
 
   return (
-    <div className="bg-background rounded-lg pb-6">
+    <div className="bg-background rounded-lg pb-6 w-full">
       {/* Query components */}
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <CustomersTableBulkAction />
@@ -39,7 +39,7 @@ export const CustomersTable = <TData, TValue>({
       </div>
 
       {/* Table data */}
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
           <UI.TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
