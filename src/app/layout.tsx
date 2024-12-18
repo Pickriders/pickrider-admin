@@ -25,6 +25,7 @@ export default function RootLayout({
         montserrat.variable,
         faktumTest.variable
       )}
+      suppressHydrationWarning
     >
       <body className={inter.className}>
         <ThemeProvider
@@ -32,6 +33,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          // storageKey="pickriders-theme"
         >
           {children}
         </ThemeProvider>
