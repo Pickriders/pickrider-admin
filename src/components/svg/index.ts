@@ -2,6 +2,7 @@ import { AirpodIcon } from "./AirpodIcon";
 import { Analysis } from "./Analysis";
 import { ArrowExpand } from "./ArrowExpand";
 import { BalanceIcon } from "./BalanceIcon";
+import { CategoryFill } from "./CategoryFill";
 import { CategoryIcon } from "./CategoryIcon";
 import { ChartIcon } from "./ChartIcon";
 import { CheckIcon } from "./CheckIcon";
@@ -100,4 +101,5 @@ export const SVG = {
   HelpIcon,
   Analysis,
   ArrowExpand,
+  CategoryFill,
 };

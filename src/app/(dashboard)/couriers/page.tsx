@@ -4,7 +4,7 @@ import { UI } from "@/components/ui";
 
 const CouriersPage = () => {
   return (
-    <div className="w-full">
+    <div>
       <div className="flex items-center justify-between">
         <UI.PrimaryHeading text="Courier Management" />
         <UI.Button>
