@@ -20,14 +20,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
       className={cn(
         clashDisplay.variable,
         montserrat.variable,
         faktumTest.variable
       )}
     >
-      <body suppressHydrationWarning className={inter.className}>
+      <body className={inter.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
