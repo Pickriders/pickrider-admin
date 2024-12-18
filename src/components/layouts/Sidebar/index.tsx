@@ -54,11 +54,9 @@ const SIDEBAR_LINKS = [
 
 export const Sidebar = () => {
   const { setTheme, theme } = useTheme();
-  // console.log(theme ===);
 
   return (
     <aside className="w-[15rem] sticky top-[6.2rem] left-0 bg-background border-r  h-[calc(100vh-6.2rem)] pt-6">
-      {/* <button onClick={() => setTheme("")}>light</button> */}
       <ul className=" max-h-full ">
         {SIDEBAR_LINKS.map((link, i) => {
           return (
