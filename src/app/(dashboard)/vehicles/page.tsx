@@ -12,7 +12,7 @@ const VehiclesPage = () => {
           Add Vehicle
         </UI.Button>
       </div>
-      <section className="mt-[2rem] w-full">
+      <section className="mt-[2.5rem] w-full">
         <VechiclesTable data={Array(7).fill(0)} />
       </section>
     </div>
