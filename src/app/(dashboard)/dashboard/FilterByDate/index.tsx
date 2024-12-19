@@ -33,7 +33,6 @@ export const FilterDyDate = () => {
           mode="single"
           selected={date}
           onSelect={setDate}
-          className=" "
         />
       </UI.PopoverContent>
     </UI.Popover>

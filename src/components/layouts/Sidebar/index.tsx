@@ -36,7 +36,8 @@ const SIDEBAR_LINKS = [
     href: "/vehicles",
   },
   {
-    icon: <SVG.AirpodIcon />,
+    activeIcon: <SVG.CardFill />,
+    icon: <SVG.Card />,
     label: "Finances",
     href: "/finances",
   },
