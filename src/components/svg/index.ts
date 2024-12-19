@@ -11,6 +11,7 @@ import { ChevronLeftIcon } from "./ChevronLeftIcon";
 import { ChevronRightIcon } from "./ChevronRightIcon";
 import { CloseIcon } from "./CloseIcon";
 import { DocumentIcon } from "./DocumentIcon";
+import { DownLoad } from "./DownLoad";
 import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
 import { GreenTick } from "./GreenTick";
@@ -26,6 +27,7 @@ import { Mail } from "./Mail";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
+import { MoneySend } from "./MoneySend";
 import { MoveUpRightArrowIcon } from "./MoveUpRightArrowIcon";
 import { NegativeXIcon } from "./NegativeXIcon";
 import { NotificationIcon } from "./NotificationIcon";
@@ -45,6 +47,7 @@ import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
 import { ShieldUser } from "./ShieldUser";
 import { StatusIcon } from "./StatusIcon";
+import { SvgCardBgPattern } from "./SvgCardBgPattern";
 import { UploadIcon } from "./UploadIcon";
 import { VerificationBadgeIcon } from "./VerificationBadgeIcon";
 import { WarningIcon } from "./WarningIcon";
@@ -102,4 +105,7 @@ export const SVG = {
   Analysis,
   ArrowExpand,
   CategoryFill,
+  MoneySend,
+  DownLoad,
+  SvgCardBgPattern,
 };

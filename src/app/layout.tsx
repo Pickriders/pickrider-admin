@@ -28,15 +28,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={inter.className}>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
           // storageKey="pickriders-theme"
-        >
-          {children}
-        </ThemeProvider>
+        > */}
+        {children}
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );
