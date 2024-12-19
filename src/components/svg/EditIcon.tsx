@@ -1,6 +1,6 @@
 import { SvgProps } from "./Svg.type";
 
-export const EditIcon = ({ width = 20, height = 20 }: SvgProps) => {
+export const EditIcon = ({ width = 20, height = 20, className }: SvgProps) => {
   return (
     <svg
       width={width}
@@ -8,6 +8,7 @@ export const EditIcon = ({ width = 20, height = 20 }: SvgProps) => {
       viewBox="0 0 24 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         fillRule="evenodd"
