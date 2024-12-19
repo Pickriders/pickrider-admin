@@ -6,10 +6,10 @@ export const FilterIcon = () => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="stroke-primary-gray"
     >
       <path
         d="M6.85746 10.5061C4.36901 8.6456 2.59564 6.59915 1.62734 5.44867C1.3276 5.09253 1.22938 4.8319 1.17033 4.3728C0.968111 2.8008 0.867011 2.0148 1.32795 1.5074C1.7889 1 2.60404 1 4.23433 1H15.7657C17.396 1 18.2111 1 18.672 1.5074C19.133 2.0148 19.0319 2.8008 18.8297 4.37281C18.7706 4.83191 18.6724 5.09254 18.3726 5.44867C17.403 6.60062 15.6261 8.6507 13.1326 10.5135C12.907 10.6821 12.7583 10.9567 12.7307 11.2614C12.4837 13.992 12.2559 15.4876 12.1141 16.2442C11.8853 17.4657 10.1532 18.2006 9.226 18.8563C8.6741 19.2466 8.0043 18.782 7.93278 18.1778C7.79643 17.0261 7.53961 14.6864 7.25927 11.2614C7.23409 10.9539 7.08486 10.6761 6.85746 10.5061Z"
-        stroke="#505582"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -27,13 +27,14 @@ export const CheckedIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <circle cx="12" cy="12" r="12" fill="#A7DCF3" />
-    <circle cx="12" cy="12" r="12" fill="#1E1F1F" />
+    <circle cx="12" cy="12" r="12" fill="#1E1F1F" className="dark:fill-white" />
     <path
       d="M8.33334 13.332L10.6667 15.6654L17.6667 8.33203"
       stroke="white"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      className="dark:stroke-black"
     />
   </svg>
 );

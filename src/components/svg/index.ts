@@ -1,7 +1,8 @@
-import { AirpodIcon } from "./AirpodIcon";
 import { Analysis } from "./Analysis";
 import { ArrowExpand } from "./ArrowExpand";
 import { BalanceIcon } from "./BalanceIcon";
+import { Card } from "./Card";
+import { CardFill } from "./CardFill";
 import { CategoryFill } from "./CategoryFill";
 import { CategoryIcon } from "./CategoryIcon";
 import { ChartIcon } from "./ChartIcon";
@@ -74,7 +75,6 @@ export const SVG = {
   DocumentIcon,
   ReceiptIcon,
   ReportIcon,
-  AirpodIcon,
   SelectorIcon,
   LogoIcon,
   NotificationIcon,
@@ -108,4 +108,6 @@ export const SVG = {
   MoneySend,
   DownLoad,
   SvgCardBgPattern,
+  Card,
+  CardFill,
 };

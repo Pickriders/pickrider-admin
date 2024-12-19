@@ -20,23 +20,22 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         clashDisplay.variable,
         montserrat.variable,
         faktumTest.variable
       )}
-      suppressHydrationWarning
     >
-      <body className={inter.className}>
-        {/* <ThemeProvider
+      <body suppressHydrationWarning className={inter.className}>
+        <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-          // storageKey="pickriders-theme"
-        > */}
-        {children}
-        {/* </ThemeProvider> */}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

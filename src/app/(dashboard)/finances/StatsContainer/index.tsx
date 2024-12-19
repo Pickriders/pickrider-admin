@@ -17,12 +17,12 @@ export const StatsContainer = () => {
       </div>
       <div className="rounded-lg bg-[#DEF4F2] py-4 flex-1 px-4 h-[130px]">
         <div>
-          <span className="font-montserrat text-sm text-primary-gray font-semibold">
+          <span className="font-montserrat text-sm text-primary-gray dark:text-stone-950 font-semibold">
             Total Revenue
           </span>
           <div className="flex mt-2 items-center gap-x-5">
             <div className="h-[2.1rem] w-[4px] rounded-2xl bg-[#32BA7C]" />
-            <span className="font-semibold font-clash-display text-2xl">
+            <span className="font-semibold font-clash-display  dark:text-stone-950 text-2xl">
               $0
             </span>
           </div>

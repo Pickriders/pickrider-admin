@@ -1,10 +1,6 @@
 import { SvgProps } from "./Svg.type";
 
-export const AirpodIcon = ({
-  height = 17,
-  width = 22,
-  className,
-}: SvgProps) => {
+export const Card = ({ height = 17, width = 22, className }: SvgProps) => {
   return (
     <svg
       className={className}
