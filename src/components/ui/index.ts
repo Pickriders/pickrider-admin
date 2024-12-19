@@ -144,5 +144,4 @@ export const UI = {
   InputOTPGroup,
   InputOTPSlot,
   SectionHeader,
-
 };

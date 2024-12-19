@@ -21,7 +21,7 @@ export const PrimaryButton = ({
   return (
     <Comp
       className={cn(
-        "w-full h-[2.4rem] inline-flex justify-center disabled:cursor-not-allowed disabled:opacity-45  py-2  rounded-lg font-clash-display font-semibold text-sm",
+        "w-full h-[2.4rem] px-4 inline-flex justify-center disabled:cursor-not-allowed disabled:opacity-45  py-2  rounded-lg font-clash-display font-semibold text-sm",
         buttonVariant[variant],
         className
       )}

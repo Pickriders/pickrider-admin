@@ -2,6 +2,7 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { StatsContainer } from "./StatsContainer";
 import { HistoryTable } from "./HistoryTable";
+import Link from "next/link";
 
 const FinancesPage = () => {
   return (
@@ -9,9 +10,11 @@ const FinancesPage = () => {
       <div className="flex items-center justify-between">
         <UI.PrimaryHeading text="Courier Management" />
         <div className="flex items-center gap-x-2">
-          <UI.Button className="font-montserrat">
-            Withdraw
-            <SVG.DownLoad />
+          <UI.Button className="font-montserrat" asChild>
+            <Link href={"/finances/withdraw"}>
+              Withdraw
+              <SVG.DownLoad />
+            </Link>
           </UI.Button>
           <UI.Button className="font-montserrat">
             Initiate Payout
