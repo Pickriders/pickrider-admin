@@ -22,7 +22,7 @@ export const columns: ColumnDef<FinancesProps>[] = [
     cell: ({ row }) => {
       return (
         <div>
-          <p className="text-[#FF5244]">#1234567890</p>
+          <p className="text-[#FF5244]">Payout</p>
         </div>
       );
     },
