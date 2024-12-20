@@ -75,6 +75,22 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Remove spinner arrows in Webkit browsers (Chrome, Safari) */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Remove arrows in Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+  }
+
+  input[type="number"] {
+    appearance: none; 
+  }
 }
 
 @layer components {

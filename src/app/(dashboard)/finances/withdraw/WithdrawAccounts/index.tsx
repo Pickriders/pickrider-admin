@@ -3,6 +3,8 @@
 import { UI } from "@/components/ui";
 import { Account } from "./Account";
 import React from "react";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export const WithdrawAccounts = () => {
   const [selectedBankAccount, setSelectedBankAccount] =
@@ -42,6 +44,17 @@ export const WithdrawAccounts = () => {
             ))}
         </div>
       </div>
+      <UI.PrimaryButton
+        variant="outline"
+        className="w-fit mt-5 mx-auto flex items-center gap-x-2 font-normal font-faktum-test"
+        asChild
+      >
+        <Link href={"add-withdrawal-account"}>
+          <Plus size={14} />
+          Add Withdrawal Account
+        </Link>
+      </UI.PrimaryButton>
+      <UI.PrimaryButton className="mt-5">Withdraw</UI.PrimaryButton>
     </div>
   );
 };
