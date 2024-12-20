@@ -8,7 +8,7 @@ const FinancesPage = () => {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <UI.PrimaryHeading text="Courier Management" />
+        <UI.PrimaryHeading text="Finances" />
         <div className="flex items-center gap-x-2">
           <UI.Button className="font-montserrat" asChild>
             <Link href={"/finances/withdraw"}>
@@ -16,9 +16,11 @@ const FinancesPage = () => {
               <SVG.DownLoad />
             </Link>
           </UI.Button>
-          <UI.Button className="font-montserrat">
-            Initiate Payout
-            <SVG.MoneySend />
+          <UI.Button className="font-montserrat" asChild>
+            <Link href={"/finances/initiate-payout"}>
+              Initiate Payout
+              <SVG.MoneySend />
+            </Link>
           </UI.Button>
         </div>
       </div>

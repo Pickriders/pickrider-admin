@@ -48,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={inputType}
             className={cn(
-              "peer flex h-9 w-full rounded-lg font-clash-display border border-input bg-transparent px-3 py-1 text-primary-gray font-semibold  shadow-sm transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40 duration-200  disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              "peer flex h-9 w-full  rounded-lg font-clash-display border border-input bg-transparent px-3 py-1 text-primary-gray font-semibold  shadow-sm transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40 duration-200  disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
               className,
               leftIcon ? "pl-10" : "",
               rightIcon && "pr-14"
