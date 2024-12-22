@@ -51,7 +51,7 @@ export const ordersTableColumn: ColumnDef<OrdersProps>[] = [
   {
     accessorKey: "date",
     header: "Date/Time	",
-    cell: ({ row }) => <p>09/11/24 (20:08)</p>,
+    cell: ({ row }) => <p className="text-nowrap">09/11/24 (20:08)</p>,
   },
   {
     accessorKey: "liscenceVerified",
@@ -88,7 +88,7 @@ export const ordersTableColumn: ColumnDef<OrdersProps>[] = [
             className="rounded-full shrink-0 size-6 [&_svg]:size-2"
             asChild
           >
-            <Link href={""}>
+            <Link href={`/orders/${row.index}`}>
               <SVG.ChevronRightIcon />
             </Link>
           </UI.Button>

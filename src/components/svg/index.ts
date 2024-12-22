@@ -25,12 +25,15 @@ import { LockIcon } from "./LockIcon";
 import { LogoIcon } from "./LogoIcon";
 import { LogoutIcon } from "./LogoutIcon";
 import { Mail } from "./Mail";
+import { MapSearch } from "./MapSearch";
 import { MenuIcon } from "./MenuIcon";
 import { MenuSubIcon } from "./MenuSubIcon";
 import { MessageIcon } from "./MessageIcon";
 import { MoneySend } from "./MoneySend";
 import { MoveUpRightArrowIcon } from "./MoveUpRightArrowIcon";
+import { NavigatorTrack } from "./NavigatorTrack";
 import { NegativeXIcon } from "./NegativeXIcon";
+import { NightShield } from "./NightShield";
 import { NotificationIcon } from "./NotificationIcon";
 import { PeopleGroupFill } from "./PeopleGroupFill";
 import { PepleGroup } from "./PepleGroup";
@@ -50,11 +53,16 @@ import { ShieldUser } from "./ShieldUser";
 import { StatusIcon } from "./StatusIcon";
 import { SvgCardBgPattern } from "./SvgCardBgPattern";
 import { UploadIcon } from "./UploadIcon";
+import { UserSwitch } from "./UserSwitch";
 import { VerificationBadgeIcon } from "./VerificationBadgeIcon";
 import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  NightShield,
+  NavigatorTrack,
+  UserSwitch,
+  MapSearch,
   MessageIcon,
   SearchIcon,
   ChevronDown,

@@ -42,6 +42,7 @@ const SIDEBAR_LINKS = [
     href: "/finances",
   },
   {
+    activeIcon: <SVG.MenuIcon className="fill-white" />,
     icon: <SVG.MenuIcon />,
     label: "Orders",
     href: "/orders",
