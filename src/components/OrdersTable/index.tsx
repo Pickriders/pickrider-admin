@@ -13,6 +13,7 @@ import Link from "next/link";
 import { OrdersTableFilter } from "./OrdersTableFilter";
 import { ordersTableColumn as columns } from "./OrdersTableColumn";
 import { SVG } from "../svg";
+import { usePathname } from "next/navigation";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -20,6 +21,7 @@ interface DataTableProps<TData> {
 
 export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
   const [rowSelection, setRowSelection] = React.useState({});
+  const pathname = usePathname();
 
   const table = useReactTable({
     data,
@@ -37,12 +39,14 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <OrdersTableBulkActions />
-          <UI.Button asChild>
-            <Link href={""} className="flex items-center gap-x-2">
-              View Analysis
-              <SVG.Analysis />
-            </Link>
-          </UI.Button>
+          {!pathname.startsWith("/orders") && (
+            <UI.Button asChild>
+              <Link href={""} className="flex items-center gap-x-2">
+                View Analysis
+                <SVG.Analysis />
+              </Link>
+            </UI.Button>
+          )}
         </div>
         <div className="flex items-center gap-x-2">
           <UI.TableSearchInput />

@@ -13,7 +13,7 @@ export const PaginationBtns = ({
   return (
     <div className="flex items-center gap-x-3">
       <Button variant={"outline"} size={"icon"} className="rounded-full">
-        <ChevronLeft />
+        <ChevronLeft size={15} />
       </Button>
       {Array(totalPages)
         .fill(0)
@@ -31,7 +31,7 @@ export const PaginationBtns = ({
         })}
 
       <Button variant={"outline"} size={"icon"} className="rounded-full">
-        <ChevronRight />
+        <ChevronRight size={15} />
       </Button>
     </div>
   );
