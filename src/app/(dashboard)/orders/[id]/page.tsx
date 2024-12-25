@@ -6,6 +6,7 @@ import { FooterControl } from "./FooterControl";
 import { OrderLocations } from "./OrderLocations";
 import { DropOff } from "./DropOff";
 import { OrderDetails } from "./OrderDetails";
+import { PickupDetails } from "./PickupDetails";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -19,6 +20,7 @@ const OrderPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();
   }
+
   return (
     <div>
       <UI.BreadCrumbNav
@@ -29,6 +31,7 @@ const OrderPage = ({ params }: { params: { id: string } }) => {
 
       <section className="bg-background p-6 mt-12 rounded-lg flex gap-x-14  *:font-montserrat">
         <div className="flex-1">
+          {/* <PickupDetails /> */}
           <UI.SectionHeader text="Order details" />
           <div className="mt-3">
             <OrderDetails />
@@ -40,10 +43,10 @@ const OrderPage = ({ params }: { params: { id: string } }) => {
           </div>
           <CourierDetails />
           <div className="mt-20">
-            <FooterControl />
+            <FooterControl id={params.id} />
           </div>
         </div>
-        <div className="w-[27rem]">
+        <div className="w-[27rem] h-[33rem]">
           <Map />
         </div>
       </section>
