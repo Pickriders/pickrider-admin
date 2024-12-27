@@ -1,13 +1,21 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { ChevronLeft, Info, MapPin, Phone } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 export const PickupDetails = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <div className="*:font-montserrat h-full flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-x-3">
-          <UI.Button size={"icon"} variant={"ghost"}>
+          <UI.Button
+            onClick={() => router.replace(pathname)}
+            size={"icon"}
+            variant={"ghost"}
+          >
             <ChevronLeft size={24} />
           </UI.Button>
           <UI.PrimaryHeading text="Pickup  Details" />

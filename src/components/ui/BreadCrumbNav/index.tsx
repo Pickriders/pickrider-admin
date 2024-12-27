@@ -13,7 +13,7 @@ import { SVG } from "@/components/svg";
 import React from "react";
 
 interface BreadCrumbNavProps {
-  currentPage: string;
+  currentPage: string | null;
   rootPageLink: string;
   pageLinks: Array<{ href: string; label: string }>;
 }

@@ -3,14 +3,9 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { Check, LoaderCircle } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
-interface FooterControlProps {
-  id: string;
-}
-
-export const FooterControl = ({ id }: FooterControlProps) => {
+export const FooterControl = () => {
   const [state, setState] = React.useState<"idle" | "loading" | "completed">(
     "idle"
   );
@@ -52,10 +47,10 @@ export const FooterControl = ({ id }: FooterControlProps) => {
           className="border-primary text-primary"
           asChild
         >
-          <Link href={`/orders/${id}/track-order`}>
+          <button>
             <SVG.NavigatorTrack />
             Track Rider
-          </Link>
+          </button>
         </UI.Button>
         <UI.Button>
           <SVG.NightShield />
