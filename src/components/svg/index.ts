@@ -49,6 +49,8 @@ import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
+import { ShieldKey } from "./ShieldKey";
+import { ShieldKeyFill } from "./ShieldKeyFill";
 import { ShieldUser } from "./ShieldUser";
 import { StatusIcon } from "./StatusIcon";
 import { SvgCardBgPattern } from "./SvgCardBgPattern";
@@ -59,6 +61,8 @@ import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  ShieldKeyFill,
+  ShieldKey,
   NightShield,
   NavigatorTrack,
   UserSwitch,
