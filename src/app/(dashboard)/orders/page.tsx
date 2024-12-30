@@ -9,7 +9,7 @@ const OrdersPage = () => {
       <div className="flex items-center justify-between">
         <UI.PrimaryHeading text="Orders" />
         <UI.Button asChild>
-          <Link href={""} className="flex items-center gap-x-2">
+          <Link href={"/orders/analysis"} className="flex items-center gap-x-2">
             View Analysis
             <SVG.Analysis />
           </Link>

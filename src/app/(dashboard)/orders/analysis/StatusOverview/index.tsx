@@ -1,0 +1,233 @@
+import { SVG } from "@/components/svg";
+import { UI } from "@/components/ui";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+
+export const StatusOverview = () => {
+  return (
+    <div>
+      <h2 className="text-primary-gray font-semibold font-clash-display">
+        Status Overview
+      </h2>
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="bg-[#F3F3F3] dark:bg-[#1e1f1f]  px-7 py-3 rounded-lg">
+          <h2 className="text-primary-gray text-sm font-montserrat font-semibold">
+            Completed Orders
+          </h2>
+          <div className="flex items-center gap-x-4 mt-3">
+            <CompletedOrderIcon />
+            <span className="font-clash-display font-semibold text-2xl ">
+              60
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <SVG.ChartIcon className="fill-[#32BA7C]" />
+            <span className="text-[#32BA7C] font-semibold font-montserrat text-xs">
+              + 5.06%
+            </span>
+          </div>
+        </div>
+        <div className="bg-[#F3F3F3] dark:bg-[#1e1f1f]  px-7 py-3 rounded-lg">
+          <h2 className="text-primary-gray text-sm font-montserrat font-semibold">
+            Canceled Order
+          </h2>
+          <div className="flex items-center gap-x-4 mt-3">
+            <CancledOrderIcon />
+            <span className="font-clash-display font-semibold text-2xl ">
+              60
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <SVG.ChartIcon className="fill-[#32BA7C]" />
+            <span className="text-[#32BA7C] font-semibold font-montserrat text-xs">
+              + 5.06%
+            </span>
+          </div>
+        </div>
+        <div className="bg-[#F3F3F3] dark:bg-[#1e1f1f]  px-7 py-3 rounded-lg">
+          <h2 className="text-primary-gray text-sm font-montserrat font-semibold">
+            Rejected Delivery
+          </h2>
+          <div className="flex items-center gap-x-4 mt-3">
+            <RejectedIcon />
+            <span className="font-clash-display font-semibold text-2xl ">
+              20
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <SVG.ChartIcon className="fill-[#FF5244]" />
+            <span className="text-[#FF5244] font-semibold font-montserrat text-xs">
+              - 5.06%
+            </span>
+          </div>
+        </div>
+        <div className="bg-[#F3F3F3] dark:bg-[#1e1f1f]  px-7 py-3 rounded-lg">
+          <h2 className="text-primary-gray text-sm font-montserrat font-semibold">
+            Missed Pickup
+          </h2>
+          <div className="flex items-center gap-x-4 mt-3">
+            <MissedIcon />
+            <span className="font-clash-display font-semibold text-2xl ">
+              20
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <SVG.ChartIcon className="fill-[#32BA7C]" />
+            <span className="text-[#32BA7C] font-semibold font-montserrat text-xs">
+              + 5.06%
+            </span>
+          </div>
+        </div>
+      </div>
+      <UI.Button variant={"ghost"} className="mt-5" asChild>
+        <Link href={""}>
+          More details <ChevronRight size={15} />
+        </Link>
+      </UI.Button>
+    </div>
+  );
+};
+
+const MissedIcon = () => (
+  <svg
+    width="47"
+    height="46"
+    viewBox="0 0 47 46"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="23.9854" cy="23" r="23" fill="#000" />
+    <circle cx="23.9854" cy="23" r="23" fill="#000" />
+    <path
+      d="M23.9854 33C23.1672 33 22.3856 32.6646 20.8223 31.9939C16.931 30.3243 14.9854 29.4895 14.9854 28.0853V18.7475M23.9854 33C24.8036 33 25.5852 32.6646 27.1485 31.9939C31.0398 30.3243 32.9854 29.4895 32.9854 28.0853V18.7475M23.9854 33V23.1707M14.9854 18.7475C14.9854 19.3512 15.7869 19.7325 17.3901 20.495L20.3113 21.8844C22.1142 22.7419 23.0157 23.1707 23.9854 23.1707M14.9854 18.7475C14.9854 18.1438 15.7869 17.7625 17.3901 17M32.9854 18.7475C32.9854 19.3512 32.1838 19.7325 30.5807 20.495L27.6595 21.8844C25.8566 22.7419 24.9551 23.1707 23.9854 23.1707M32.9854 18.7475C32.9854 18.1438 32.1838 17.7625 30.5807 17M18.3174 24.311L20.3113 25.2594"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M23.9854 13V15M27.9854 14L26.4854 16M19.9854 14L21.4854 16"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const RejectedIcon = () => (
+  <svg
+    width="47"
+    height="46"
+    viewBox="0 0 47 46"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="23.0479" cy="23" r="23" fill="#505582" />
+    <path
+      d="M23.0479 33C22.2297 33 21.4481 32.6708 19.8848 32.0123C15.9935 30.3734 14.0479 29.5539 14.0479 28.1754V18.5423M23.0479 33C23.8661 33 24.6477 32.6708 26.211 32.0123C30.1023 30.3734 32.0479 29.5539 32.0479 28.1754V18.5423M23.0479 33V23.0292M14.0479 18.5423C14.0479 19.1548 14.8494 19.5415 16.4526 20.315L19.3738 21.7244C21.1767 22.5943 22.0782 23.0292 23.0479 23.0292M14.0479 18.5423C14.0479 17.9299 14.8494 17.5432 16.4526 16.7697L18.0479 16M32.0479 18.5423C32.0479 19.1548 31.2463 19.5415 29.6432 20.315L26.722 21.7244C24.9191 22.5943 24.0176 23.0292 23.0479 23.0292M32.0479 18.5423C32.0479 17.9299 31.2463 17.5432 29.6432 16.7697L28.0479 16M17.0479 24.0263L19.0479 25.0234"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.0479 13L23.0479 15M23.0479 15L25.0479 17M23.0479 15L21.0479 17M23.0479 15L25.0479 13"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const CompletedOrderIcon = () => (
+  <svg
+    width="47"
+    height="46"
+    viewBox="0 0 47 46"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="23.0479" cy="23" r="23" fill="#32BA7C" />
+    <path
+      d="M32.0479 18V23M14.0479 18C14.0479 21.0645 14.0479 27.7742 14.0479 28.1613C14.0479 29.5438 15.9935 30.3657 19.8848 32.0095C21.4481 32.6698 22.2297 33 23.0479 33V22.3548"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M26.0479 30C26.0479 30 26.9229 30 27.7979 32C27.7979 32 30.5773 27 33.0479 26"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3738 20.6914L16.4526 19.2779C14.8494 18.5021 14.0479 18.1142 14.0479 17.5C14.0479 16.8858 14.8494 16.4979 16.4526 15.7221L19.3738 14.3086C21.1767 13.4362 22.0782 13 23.0479 13C24.0176 13 24.9191 13.4362 26.722 14.3086L29.6432 15.7221C31.2463 16.4979 32.0479 16.8858 32.0479 17.5C32.0479 18.1142 31.2463 18.5021 29.6432 19.2779L26.722 20.6914C24.9191 21.5638 24.0176 22 23.0479 22C22.0782 22 21.1767 21.5638 19.3738 20.6914Z"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M17.0479 23L19.0479 24"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M28.0479 15L18.0479 20"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const CancledOrderIcon = () => (
+  <svg
+    width="47"
+    height="46"
+    viewBox="0 0 47 46"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="23.9854" cy="23" r="23" fill="#FF5244" />
+    <path
+      d="M22.9854 33C22.1672 33 21.3855 32.6698 19.8223 32.0095C15.931 30.3657 13.9854 29.5438 13.9854 28.1613C13.9854 27.7742 13.9854 21.0645 13.9854 18M22.9854 33V22.3548M22.9854 33C23.6021 33 24.1054 32.8124 24.9854 32.4372M31.9854 18V23"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M27.9854 26L30.9854 29M30.9854 29L33.9854 32M30.9854 29L27.9854 32M30.9854 29L33.9854 26"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path
+      d="M19.3113 20.6914L16.3901 19.2779C14.7869 18.5021 13.9854 18.1142 13.9854 17.5C13.9854 16.8858 14.7869 16.4979 16.3901 15.7221L19.3113 14.3086C21.1142 13.4362 22.0157 13 22.9854 13C23.9551 13 24.8566 13.4362 26.6595 14.3086L29.5807 15.7221C31.1838 16.4979 31.9854 16.8858 31.9854 17.5C31.9854 18.1142 31.1838 18.5021 29.5807 19.2779L26.6595 20.6914C24.8566 21.5638 23.9551 22 22.9854 22C22.0157 22 21.1142 21.5638 19.3113 20.6914Z"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.9854 23L18.9854 24"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M27.9854 15L17.9854 20"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
