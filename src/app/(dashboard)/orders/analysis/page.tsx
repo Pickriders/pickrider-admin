@@ -1,5 +1,3 @@
-"use client";
-
 import { UI } from "@/components/ui";
 import { ChevronLeft } from "lucide-react";
 import { CalenderDate } from "./Date";

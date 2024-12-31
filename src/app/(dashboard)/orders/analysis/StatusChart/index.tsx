@@ -8,14 +8,7 @@ import {
 } from "@/components/ui/Chart";
 import React from "react";
 import { useSearchParams } from "next/navigation";
-
-type Entry = {
-  day: string;
-  completed: number | null;
-  rejected: number | null;
-  cancelled: number | null;
-  missed: number | null;
-};
+import { Entry, Status, StatusParams } from "./StatusChart.type";
 
 const initialData = [
   { day: "21", completed: 4, rejected: 7, cancelled: 3, missed: 4 },
@@ -26,12 +19,6 @@ const initialData = [
   { day: "26", completed: 7, rejected: 4, cancelled: 1, missed: 5 },
   { day: "27", completed: 5, rejected: 8, cancelled: 3, missed: 6 },
 ];
-
-type Status = "completed" | "rejected" | "cancelled" | "missed";
-
-type StatusParams = {
-  [key in Status]: boolean;
-};
 
 export const StatusChart = () => {
   const searchParams = useSearchParams();
