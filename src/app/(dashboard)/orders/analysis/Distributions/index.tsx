@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Crosshair } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
