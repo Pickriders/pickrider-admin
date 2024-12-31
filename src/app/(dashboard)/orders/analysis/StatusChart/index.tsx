@@ -5,9 +5,19 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/components/ui/Chart";
+import React from "react";
+import { useSearchParams } from "next/navigation";
 
-const data = [
+type Entry = {
+  day: string;
+  completed: number | null;
+  rejected: number | null;
+  cancelled: number | null;
+  missed: number | null;
+};
+
+const initialData = [
   { day: "21", completed: 4, rejected: 7, cancelled: 3, missed: 4 },
   { day: "22", completed: 9, rejected: 4, cancelled: 2, missed: 8 },
   { day: "23", completed: 7, rejected: 3, cancelled: 4, missed: 4 },
@@ -17,7 +27,65 @@ const data = [
   { day: "27", completed: 5, rejected: 8, cancelled: 3, missed: 6 },
 ];
 
+type Status = "completed" | "rejected" | "cancelled" | "missed";
+
+type StatusParams = {
+  [key in Status]: boolean;
+};
+
 export const StatusChart = () => {
+  const searchParams = useSearchParams();
+
+  const { cancelled, completed, missed, rejected }: Partial<StatusParams> =
+    Object.fromEntries(
+      [...searchParams.entries()].map(([key, value]) => [
+        key as Status,
+        value === "true",
+      ])
+    );
+
+  const filteredDataFunc = () => {
+    let filteredData = initialData.map((entry) => {
+      let updatedEntry = { ...(entry as Entry) };
+
+      if (searchParams.has("cancelled") && !cancelled) {
+        updatedEntry.cancelled = null;
+      }
+
+      if (searchParams.has("completed") && !completed) {
+        updatedEntry.completed = null;
+      }
+
+      if (searchParams.has("missed") && !missed) {
+        updatedEntry.missed = null;
+      }
+
+      if (searchParams.has("rejected") && !rejected) {
+        updatedEntry.rejected = null;
+      }
+
+      if (searchParams.has("cancelled") && cancelled) {
+        updatedEntry.cancelled = entry.cancelled;
+      }
+
+      if (searchParams.has("completed") && completed) {
+        updatedEntry.completed = entry.completed;
+      }
+
+      if (searchParams.has("missed") && missed) {
+        updatedEntry.missed = entry.missed;
+      }
+
+      if (searchParams.has("rejected") && rejected) {
+        updatedEntry.rejected = entry.rejected;
+      }
+
+      return updatedEntry;
+    });
+
+    return filteredData;
+  };
+
   return (
     <div>
       <h2 className="text-primary-gray font-semibold font-clash-display">
@@ -45,7 +113,7 @@ export const StatusChart = () => {
           }}
           className="h-[353px] w-full"
         >
-          <BarChart data={data}>
+          <BarChart data={filteredDataFunc()}>
             <CartesianGrid vertical={false} strokeDasharray="4" />
             <XAxis
               dataKey="day"

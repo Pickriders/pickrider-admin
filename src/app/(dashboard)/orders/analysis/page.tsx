@@ -1,3 +1,5 @@
+"use client";
+
 import { UI } from "@/components/ui";
 import { ChevronLeft } from "lucide-react";
 import { CalenderDate } from "./Date";
@@ -6,6 +8,7 @@ import { StatusChart } from "./StatusChart";
 import { Distributions } from "./Distributions";
 import { TypeOverview } from "./TypeOverview";
 import { TypeChart } from "./TypeChart";
+import React, { Suspense } from "react";
 
 const OrderAnalysis = () => {
   return (
@@ -32,10 +35,14 @@ const OrderAnalysis = () => {
             <StatusOverview />
           </div>
           <div className="flex-1 w-[30rem]">
-            <StatusChart />
+            <Suspense>
+              <StatusChart />
+            </Suspense>
           </div>
         </div>
-        <Distributions />
+        <Suspense>
+          <Distributions />
+        </Suspense>
         <div className="w-full border my-9" />
         <div className="mt-5 flex  gap-x-8 justify-between">
           <div className="w-[35rem]">
