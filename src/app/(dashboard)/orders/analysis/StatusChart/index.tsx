@@ -92,6 +92,9 @@ export const StatusChart = () => {
         Status Chart
       </h2>
       <div className="mt-4">
+        <p className="text-[10px] pl-9 text-primary-gray font-montserrat font-semibold ">
+          No of Orders
+        </p>
         <ChartContainer
           config={{
             completed: {
@@ -111,22 +114,20 @@ export const StatusChart = () => {
               color: "#2E1030",
             },
           }}
-          className="h-[353px] w-full"
+          className="h-[353px]  w-full"
         >
-          <BarChart data={filteredDataFunc()}>
+          <BarChart data={filteredDataFunc()} className="w-[30rem]">
             <CartesianGrid vertical={false} strokeDasharray="4" />
             <XAxis
               dataKey="day"
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}`}
-              label={{ value: "Day", position: "bottom", offset: 0 }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}`}
-              label={{ value: "No of Orders", angle: -90, position: "top" }}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar
@@ -155,6 +156,9 @@ export const StatusChart = () => {
             />
           </BarChart>
         </ChartContainer>
+        <p className="text-[10px] text-primary-gray font-montserrat font-semibold text-end">
+          Day
+        </p>
       </div>
     </div>
   );
