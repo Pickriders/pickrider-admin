@@ -8,7 +8,7 @@ import { TypeOverview } from "./TypeOverview";
 import { TypeChart } from "./TypeChart";
 import React, { Suspense } from "react";
 
-const OrderAnalysis = () => {
+const OrderAnalysisPage = () => {
   return (
     <div>
       <UI.BreadCrumbNav
@@ -54,4 +54,4 @@ const OrderAnalysis = () => {
     </div>
   );
 };
-export default OrderAnalysis;
+export default OrderAnalysisPage;

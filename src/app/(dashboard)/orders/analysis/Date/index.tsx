@@ -8,7 +8,6 @@ import { DateRange } from "react-day-picker";
 
 export const CalenderDate = () => {
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
-  const [open, setOpen] = React.useState(false);
 
   const formattedDate = date
     ? date.from && date.to
