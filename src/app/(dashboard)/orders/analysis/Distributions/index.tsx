@@ -30,6 +30,8 @@ export const Distributions = () => {
     router.push(`?${newParams.toString()}`, { scroll: false });
   };
 
+  console.log(cancelled);
+
   return (
     <div className="mt-5">
       <h2 className="font-bold font-montserrat text-xs text-end">
@@ -40,7 +42,7 @@ export const Distributions = () => {
           onClick={() => toggleURLStatus("completed")}
           className={cn(
             "flex items-center gap-x-3",
-            completed ? "opacity-100" : "opacity-30"
+            completed === false ? "opacity-30" : ""
           )}
         >
           <div className="size-[10px] rounded-full bg-[#32BA7C]" />
@@ -53,7 +55,7 @@ export const Distributions = () => {
           onClick={() => toggleURLStatus("cancelled")}
           className={cn(
             "flex items-center gap-x-3",
-            cancelled ? "opacity-100" : "opacity-30"
+            cancelled === false ? "opacity-30" : ""
           )}
         >
           <div className="size-[10px] rounded-full bg-[#FF5244]" />
@@ -66,7 +68,7 @@ export const Distributions = () => {
           onClick={() => toggleURLStatus("rejected")}
           className={cn(
             "flex items-center gap-x-3",
-            rejected ? "opacity-100" : "opacity-30"
+            rejected === false ? "opacity-30" : ""
           )}
         >
           <div className="size-[10px] rounded-full bg-[#505582]" />
@@ -79,7 +81,7 @@ export const Distributions = () => {
           onClick={() => toggleURLStatus("missed")}
           className={cn(
             "flex items-center gap-x-3",
-            missed ? "opacity-100" : "opacity-30"
+            missed === false ? "opacity-30" : ""
           )}
         >
           <div className="size-[10px] rounded-full bg-[#1E1F1F]" />
