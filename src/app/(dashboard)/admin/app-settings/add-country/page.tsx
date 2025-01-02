@@ -33,6 +33,16 @@ const AddCountry = () => {
               labelValue="Currency symbol"
               id="Currency symbol"
               className="w-[21rem]"
+              placeholder="$"
+            />
+            <UI.Input
+              labelValue="Exchange rate"
+              id="Exchange rate"
+              className="w-[21rem]"
+              leftIcon="$"
+              rightIcon={
+                <UI.Button className="text-xs font-bold">N 1,700</UI.Button>
+              }
             />
           </div>
         </div>
