@@ -9,13 +9,10 @@ import { motion } from "framer-motion";
 
 const statusList = ["single", "batch delivery", "bulk pickup"];
 
-type OrderStatus = "single" | "batch delivery" | "bulk pickup";
-
 export const Tables = () => {
   const searchParams = useSearchParams();
 
-  const orderStatus =
-    (searchParams.get("order-type") as OrderStatus) || "single";
+  const orderStatus = searchParams.get("order-type") || "single";
 
   const datas: { [key: string]: number[] } = {
     single: Array(10).fill(0),
@@ -38,10 +35,10 @@ export const Tables = () => {
             href={`?order-type=${status}`}
             scroll={false}
             className={cn(
-              "inline-block  relative capitalize text-center hover:text-primary transition-colors duration-150   py-2 px-10 w-[13.1rem] font-clash-display font-semibold",
+              "inline-block  relative capitalize text-center  transition-colors duration-150   py-2 px-10 w-[13.1rem] font-clash-display font-semibold",
               orderStatus === status
-                ? "text-primary"
-                : "dark:text-neutral-600 text-neutral-400 "
+                ? "text-white "
+                : "text-neutral-400  dark:text-neutral-600"
             )}
           >
             {status}
