@@ -7,14 +7,17 @@ import { useSearchParams } from "next/navigation";
 import { DataTable } from "./DataTable";
 import { motion } from "framer-motion";
 
-const statusList = ["total", "single", "batch delivery", "bulk pickup"];
+const statusList = ["single", "batch delivery", "bulk pickup"];
+
+type OrderStatus = "single" | "batch delivery" | "bulk pickup";
 
 export const Tables = () => {
   const searchParams = useSearchParams();
-  const orderStatus = searchParams.get("order-type") || "total";
+
+  const orderStatus =
+    (searchParams.get("order-type") as OrderStatus) || "single";
 
   const datas: { [key: string]: number[] } = {
-    total: Array(7).fill(0),
     single: Array(10).fill(0),
     "batch delivery": Array(5).fill(0),
     "bulk pickup": Array(8).fill(0),
