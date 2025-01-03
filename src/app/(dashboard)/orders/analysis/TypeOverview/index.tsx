@@ -89,7 +89,7 @@ export const TypeOverview = () => {
         </div>
       </div>
       <UI.Button variant={"ghost"} className="mt-5" asChild>
-        <Link href={""}>
+        <Link href={"/orders/more-orders-types"}>
           More details <ChevronRight size={15} />
         </Link>
       </UI.Button>
