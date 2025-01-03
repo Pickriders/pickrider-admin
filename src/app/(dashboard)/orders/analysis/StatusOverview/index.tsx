@@ -3,7 +3,6 @@ import { UI } from "@/components/ui";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-
 export const StatusOverview = () => {
   return (
     <div>
@@ -89,7 +88,7 @@ export const StatusOverview = () => {
         </div>
       </div>
       <UI.Button variant={"ghost"} className="mt-5" asChild>
-        <Link href={""}>
+        <Link href={"/orders/more-orders"}>
           More details <ChevronRight size={15} />
         </Link>
       </UI.Button>
