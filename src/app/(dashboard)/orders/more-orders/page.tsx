@@ -2,6 +2,7 @@ import { UI } from "@/components/ui";
 import { ChevronLeft } from "lucide-react";
 import { Tables } from "./Tables";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const MoreOrdersPage = () => {
   return (
@@ -23,7 +24,9 @@ const MoreOrdersPage = () => {
         </div>
 
         <div className="mt-4">
-          <Tables />
+          <Suspense>
+            <Tables />
+          </Suspense>
         </div>
       </section>
     </div>
