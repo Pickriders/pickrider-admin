@@ -36,7 +36,9 @@ export const Tables = () => {
             scroll={false}
             className={cn(
               "inline-block  relative capitalize text-center hover:text-primary transition-colors duration-150   py-2 px-10 w-[13.1rem] font-clash-display font-semibold",
-              orderStatus === status ? "text-primary" : "text-neutral-600 "
+              orderStatus === status
+                ? "text-primary"
+                : "dark:text-neutral-600 text-neutral-400 "
             )}
           >
             {status}
