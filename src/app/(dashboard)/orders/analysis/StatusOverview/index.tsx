@@ -2,12 +2,7 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import {
-  CancledOrderIcon,
-  CompletedOrderIcon,
-  MissedIcon,
-  RejectedIcon,
-} from "./Svg";
+
 
 export const StatusOverview = () => {
   return (
@@ -21,7 +16,9 @@ export const StatusOverview = () => {
             Completed Orders
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <CompletedOrderIcon />
+            <div className="size-[2.9rem] grid place-items-center bg-[#32BA7C] rounded-full">
+              <SVG.PackageDelivered />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               60
             </span>
@@ -38,7 +35,9 @@ export const StatusOverview = () => {
             Canceled Order
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <CancledOrderIcon />
+            <div className="size-[2.9rem] grid place-items-center bg-[#FF5244] rounded-full">
+              <SVG.PackageRemove />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               60
             </span>
@@ -55,7 +54,9 @@ export const StatusOverview = () => {
             Rejected Delivery
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <RejectedIcon />
+            <div className="size-[2.9rem] grid place-items-center bg-[#505582] rounded-full">
+              <SVG.PackageOutOfStock />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               20
             </span>
@@ -72,7 +73,9 @@ export const StatusOverview = () => {
             Missed Pickup
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <MissedIcon />
+            <div className="size-[2.9rem] grid place-items-center bg-[#000] rounded-full">
+              <SVG.PackageOpen />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               20
             </span>

@@ -2,7 +2,6 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { BatchIcon, BulkIcon, SingleOrderIcon, TypeOrderIcon } from "./Svg";
 
 export const TypeOverview = () => {
   return (
@@ -16,7 +15,9 @@ export const TypeOverview = () => {
             Total Orders
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <TypeOrderIcon />
+            <div className="size-[2.9rem] grid place-items-center rounded-full bg-[#000]">
+              <SVG.DeliveryBox />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               60
             </span>
@@ -33,7 +34,9 @@ export const TypeOverview = () => {
             Single Order
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <SingleOrderIcon />
+            <div className="size-[2.9rem] grid place-items-center rounded-full bg-[#505582]">
+              <SVG.DeliveryBox />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               60
             </span>
@@ -50,7 +53,10 @@ export const TypeOverview = () => {
             Batch Delivery
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <BatchIcon />
+            {/* <BatchIcon /> */}
+            <div className="size-[2.9rem] grid place-items-center rounded-full bg-[#3FA49F]">
+              <SVG.DeliveryBox />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               20
             </span>
@@ -67,7 +73,9 @@ export const TypeOverview = () => {
             Bulk Pickup
           </h2>
           <div className="flex items-center gap-x-4 mt-3">
-            <BulkIcon />
+            <div className="size-[2.9rem] grid place-items-center rounded-full bg-[#2282C8]">
+              <SVG.DeliveryBox />
+            </div>
             <span className="font-clash-display font-semibold text-2xl ">
               20
             </span>

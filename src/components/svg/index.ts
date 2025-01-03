@@ -11,6 +11,7 @@ import { ChevronDown } from "./ChevronDown";
 import { ChevronLeftIcon } from "./ChevronLeftIcon";
 import { ChevronRightIcon } from "./ChevronRightIcon";
 import { CloseIcon } from "./CloseIcon";
+import { DeliveryBox } from "./DeliveryBox";
 import { DocumentIcon } from "./DocumentIcon";
 import { DownLoad } from "./DownLoad";
 import { EditIcon } from "./EditIcon";
@@ -35,6 +36,10 @@ import { NavigatorTrack } from "./NavigatorTrack";
 import { NegativeXIcon } from "./NegativeXIcon";
 import { NightShield } from "./NightShield";
 import { NotificationIcon } from "./NotificationIcon";
+import { PackageDelivered } from "./PackageDelivered";
+import { PackageOpen } from "./PackageOpen";
+import { PackageOutOfStock } from "./PackageOutOfStock";
+import { PackageRemove } from "./PackageRemove";
 import { PeopleGroupFill } from "./PeopleGroupFill";
 import { PepleGroup } from "./PepleGroup";
 import { PersonAcceptFillIcon } from "./PersonAcceptFillIcon";
@@ -59,6 +64,11 @@ import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  DeliveryBox,
+  PackageRemove,
+  PackageDelivered,
+  PackageOpen,
+  PackageOutOfStock,
   NightShield,
   NavigatorTrack,
   UserSwitch,
