@@ -13,8 +13,8 @@ export const Header = () => {
       <div className="flex items-center gap-x-4">
         <Suspense>
           <Notification />
+          <UserMenu />
         </Suspense>
-        <UserMenu />
       </div>
     </header>
   );

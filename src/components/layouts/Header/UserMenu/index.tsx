@@ -1,8 +1,13 @@
+"use client";
+
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { useQueryModal } from "@/hooks";
 import Link from "next/link";
 
 export const UserMenu = () => {
+  const { setParam } = useQueryModal();
+
   return (
     <UI.DropdownMenu>
       <UI.DropdownMenuTrigger asChild>
@@ -40,14 +45,12 @@ export const UserMenu = () => {
             Reset Password
           </Link>
         </UI.DropdownMenuItem>
-        <UI.DropdownMenuItem asChild>
-          <Link
-            href={"?logout=true"}
-            className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray"
-          >
-            <SVG.LogoutIcon />
-            Logout
-          </Link>
+        <UI.DropdownMenuItem
+          onClick={() => setParam("logout", "true")}
+          className="flex items-center gap-x-2 text-sm font-montserrat font-semibold text-primary-gray"
+        >
+          <SVG.LogoutIcon />
+          Logout
         </UI.DropdownMenuItem>
       </UI.DropdownMenuContent>
     </UI.DropdownMenu>
