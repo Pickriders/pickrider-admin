@@ -16,6 +16,7 @@ import { DocumentIcon } from "./DocumentIcon";
 import { DownLoad } from "./DownLoad";
 import { EditIcon } from "./EditIcon";
 import { FilterIcon } from "./FilterIcon";
+import { FilterIcon2 } from "./FilterIcon2";
 import { GreenTick } from "./GreenTick";
 import { HelpIcon } from "./HelpIcon";
 import { HomeIcon } from "./HomeIcon";
@@ -57,6 +58,7 @@ import { SelectorIcon } from "./SelectorIcon";
 import { ShieldUser } from "./ShieldUser";
 import { StatusIcon } from "./StatusIcon";
 import { SvgCardBgPattern } from "./SvgCardBgPattern";
+import { TrackingIcon } from "./TrackingIcon";
 import { UploadIcon } from "./UploadIcon";
 import { UserSwitch } from "./UserSwitch";
 import { VerificationBadgeIcon } from "./VerificationBadgeIcon";
@@ -64,6 +66,8 @@ import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  FilterIcon2,
+  TrackingIcon,
   DeliveryBox,
   PackageRemove,
   PackageDelivered,
