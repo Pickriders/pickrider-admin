@@ -23,7 +23,7 @@ export const SettingsNavigation = () => {
 
       {/* App Settings */}
       <NavigationLinks
-        headIcon={<SVG.UserShield />}
+        headIcon={<SVG.AppSettingicon />}
         bgPatternIcon={<SVG.SettingsIcon />}
         href="/admin/app-settings"
         title="App Settings"

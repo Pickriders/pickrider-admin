@@ -15,6 +15,7 @@ export const CountryForm = () => {
           />
           <UI.Input labelValue="Code" id="Code" className="w-[21rem]" />
         </div>
+
         <div className="flex items-center mt-6 gap-x-8">
           <UI.Input
             labelValue="Currency name"
