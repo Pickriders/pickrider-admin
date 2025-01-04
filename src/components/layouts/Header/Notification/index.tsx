@@ -7,18 +7,18 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export const Notification = () => {
-  const { closeModal, isOpen } = useQueryModal([
+  const { closeModal, isOpen, setParam } = useQueryModal([
     { key: "notification", value: true },
   ]);
 
   return (
     <div className="relative">
-      <Link
-        href={"?notification=true"}
+      <button
+        onClick={() => setParam("notification", "true")}
         className="size-[2.3rem] hover:bg-gray-50 dark:hover:bg-gray-50/10 transition-colors duration-300  grid place-items-center border rounded-full"
       >
         <SVG.NotificationIcon />
-      </Link>
+      </button>
 
       <UI.Card
         className={cn(

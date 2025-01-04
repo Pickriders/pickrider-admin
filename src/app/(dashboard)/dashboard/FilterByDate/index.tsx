@@ -8,13 +8,11 @@ import dayjs from "dayjs";
 export const FilterDyDate = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [open, setOpen] = React.useState(false);
-
   const formattedDate = dayjs(date ?? new Date()).format("MMM D, YYYY");
 
   return (
     <UI.Popover open={open} onOpenChange={setOpen}>
       <UI.PopoverTrigger asChild>
-      
         <UI.Button variant={"outline"}>
           {formattedDate}
           <SVG.ChevronDown />
@@ -29,11 +27,7 @@ export const FilterDyDate = () => {
             <SVG.CloseIcon />
           </button>
         </div>
-        <UI.DateCalendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-        />
+        <UI.DateCalendar mode="single" selected={date} onSelect={setDate} />
       </UI.PopoverContent>
     </UI.Popover>
   );
