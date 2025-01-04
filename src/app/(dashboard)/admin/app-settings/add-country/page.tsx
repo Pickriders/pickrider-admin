@@ -1,4 +1,5 @@
 import { UI } from "@/components/ui";
+import { CountryForm } from "./CountryForm";
 
 const AddCountry = () => {
   return (
@@ -13,39 +14,7 @@ const AddCountry = () => {
       />
 
       <section className="mt-11 bg-background rounded-2xl p-6">
-        <UI.PrimaryHeading text="Configuration" />
-        <div className="mt-8">
-          <div className="flex items-center gap-x-8">
-            <UI.Input
-              labelValue="Country name"
-              id="Country name"
-              className="w-[21rem]"
-            />
-            <UI.Input labelValue="Code" id="Code" className="w-[21rem]" />
-          </div>
-          <div className="flex items-center mt-6 gap-x-8">
-            <UI.Input
-              labelValue="Currency name"
-              id="Currency name"
-              className="w-[21rem]"
-            />
-            <UI.Input
-              labelValue="Currency symbol"
-              id="Currency symbol"
-              className="w-[21rem]"
-              placeholder="$"
-            />
-            <UI.Input
-              labelValue="Exchange rate"
-              id="Exchange rate"
-              className="w-[21rem]"
-              leftIcon="$"
-              rightIcon={
-                <UI.Button className="text-xs font-bold">N 1,700</UI.Button>
-              }
-            />
-          </div>
-        </div>
+        <CountryForm />
       </section>
     </div>
   );
