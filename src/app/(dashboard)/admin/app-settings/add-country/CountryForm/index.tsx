@@ -46,33 +46,6 @@ export const CountryForm = () => {
           <UI.PrimaryButton className="w-[10rem]">Save</UI.PrimaryButton>
         </div>
       </div>
-
-      <div className="mt-8">
-        <div className="flex items-center justify-between">
-          <UI.PrimaryHeading text="Add State" />
-          <UI.Button asChild>
-            <Link href={"add-state"}>
-              <Plus size={13} /> Add State
-            </Link>
-          </UI.Button>
-        </div>
-        <ul className="mt-8">
-          <li className="flex items-center justify-between">
-            <div className="flex items-center gap-x-6 text-sm font-semibold font-montserrat">
-              <span>1.</span>
-              <p>Enugu</p>
-            </div>
-            <div className="flex items-center gap-x-2">
-              <UI.Button size={"icon"} variant={"ghost"}>
-                <Trash2 color="#FF5244" size={20} />
-              </UI.Button>
-              <button className="size-[1.3rem] grid place-items-center rounded-full border">
-                <ChevronRight size={12} />
-              </button>
-            </div>
-          </li>
-        </ul>
-      </div>
     </div>
   );
 };

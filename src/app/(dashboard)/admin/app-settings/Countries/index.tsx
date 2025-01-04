@@ -1,6 +1,8 @@
 import { UI } from "@/components/ui";
-import { ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
+import { columns } from "./Column";
+import { DataTable } from "./DataTable";
 
 export const Countries = () => {
   return (
@@ -13,30 +15,9 @@ export const Countries = () => {
           </Link>
         </UI.Button>
       </div>
-      <ul className="mt-8 space-y-4">
-        {Array(5)
-          .fill(0)
-          .map((_, i) => (
-            <li key={i} className="flex items-center justify-between">
-              <div className="flex items-center gap-x-6 text-sm font-semibold font-montserrat">
-                <UI.Checkbox />
-                <span>1.</span>
-                <p>Nigeria</p>
-              </div>
-              <div className="flex items-center gap-x-2">
-                <UI.Button size={"icon"} variant={"ghost"}>
-                  <Trash2 color="#FF5244" size={20} />
-                </UI.Button>
-                <Link
-                  href={`app-settings/${i}/country-details`}
-                  className="size-[1.3rem] grid place-items-center rounded-full border"
-                >
-                  <ChevronRight size={12} />
-                </Link>
-              </div>
-            </li>
-          ))}
-      </ul>
+      <div className="mt-8">
+        <DataTable columns={columns} data={Array(4).fill(0)} />
+      </div>
     </div>
   );
 };

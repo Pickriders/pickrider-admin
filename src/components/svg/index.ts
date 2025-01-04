@@ -1,4 +1,8 @@
+import { AddUserIcon } from "./AddUserIcon";
 import { Analysis } from "./Analysis";
+import { AppSettingicon } from "./AppSettingicon";
+import { ArchiveIcon } from "./ArchiveIcon";
+import { ArchivesSettingIcon } from "./ArchivesSettingIcon";
 import { ArrowExpand } from "./ArrowExpand";
 import { BalanceIcon } from "./BalanceIcon";
 import { Card } from "./Card";
@@ -11,6 +15,8 @@ import { ChevronDown } from "./ChevronDown";
 import { ChevronLeftIcon } from "./ChevronLeftIcon";
 import { ChevronRightIcon } from "./ChevronRightIcon";
 import { CloseIcon } from "./CloseIcon";
+import { Cloudicon } from "./CloudIcon";
+import { DataBaseicon } from "./DataBaseIcon";
 import { DeliveryBox } from "./DeliveryBox";
 import { DocumentIcon } from "./DocumentIcon";
 import { DownLoad } from "./DownLoad";
@@ -55,6 +61,8 @@ import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SelectorIcon } from "./SelectorIcon";
+import { SettingsIcon } from "./SettingsIcon";
+import { Shield } from "./Shield";
 import { ShieldKey } from "./ShieldKey";
 import { ShieldKeyFill } from "./ShieldKeyFill";
 import { ShieldUser } from "./ShieldUser";
@@ -62,12 +70,24 @@ import { StatusIcon } from "./StatusIcon";
 import { SvgCardBgPattern } from "./SvgCardBgPattern";
 import { TrackingIcon } from "./TrackingIcon";
 import { UploadIcon } from "./UploadIcon";
+import { UserShield } from "./UserShield";
 import { UserSwitch } from "./UserSwitch";
+import { UserSwitchIcon } from "./UserSwitchIcon";
 import { VerificationBadgeIcon } from "./VerificationBadgeIcon";
 import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  UserSwitchIcon,
+  Shield,
+  AddUserIcon,
+  SettingsIcon,
+  AppSettingicon,
+  UserShield,
+  ArchiveIcon,
+  ArchivesSettingIcon,
+  Cloudicon,
+  DataBaseicon,
   ShieldKeyFill,
   ShieldKey,
   FilterIcon2,
