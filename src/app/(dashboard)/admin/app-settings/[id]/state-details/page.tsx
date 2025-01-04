@@ -28,7 +28,7 @@ const StateDetails = ({ params }: { params: { id: string } }) => {
 
       <section className="mt-11 bg-background rounded-2xl p-6">
         <form action="/add-country">
-          <UI.PrimaryHeading text="Add State" />
+          <UI.PrimaryHeading text="State Details" />
           <div className="mt-8 flex items-center gap-x-4">
             <UI.Input
               labelValue="State name"
