@@ -1,8 +1,11 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { Info, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const OrderLocations = ({ locations = Array(6).fill(0) }) => {
+  const router = useRouter();
+
   return (
     <div className="space-y-4 h-[9.4rem] pr-4 scroll-bar overflow-y-auto">
       {locations.map((location, i) => (
@@ -22,7 +25,11 @@ export const OrderLocations = ({ locations = Array(6).fill(0) }) => {
             <UI.Button size="icon" variant={"ghost"}>
               <SVG.MapSearch className="!size-[20px]" />
             </UI.Button>
-            <UI.Button size="icon" variant={"ghost"}>
+            <UI.Button
+              onClick={() => router.push(`?pickup-details=${i}`)}
+              size="icon"
+              variant={"ghost"}
+            >
               <Info className="!size-[20px]" />
             </UI.Button>
           </div>

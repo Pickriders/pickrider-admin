@@ -48,7 +48,7 @@ export const SuspendCustomersModal = () => {
             Cancel
           </UI.PrimaryButton>
           <UI.PrimaryButton variant="destructive" className="w-[9rem]">
-            Delete
+            Suspend
           </UI.PrimaryButton>
         </UI.AlertDialogFooter>
       </UI.AlertDialogContent>

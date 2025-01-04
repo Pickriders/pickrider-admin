@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -14,6 +14,7 @@ import { OrdersTableFilter } from "./OrdersTableFilter";
 import { ordersTableColumn as columns } from "./OrdersTableColumn";
 import { SVG } from "../svg";
 import { usePathname } from "next/navigation";
+import { DeleteOrdersModal } from "./DeleteModal";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -108,6 +109,11 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
+
+      {/* Modals */}
+      <Suspense>
+        <DeleteOrdersModal />
+      </Suspense>
     </div>
   );
 };

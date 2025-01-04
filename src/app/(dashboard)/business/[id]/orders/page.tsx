@@ -1,8 +1,6 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 
-import { Suspense } from "react";
-import { DeleteOrdersModal } from "./DeleteModal";
 import { OrdersTable } from "@/components/OrdersTable";
 
 export async function generateStaticParams() {
@@ -31,11 +29,6 @@ const OrdersPage = ({ params }: { params: { id: string } }) => {
       <section className="mt-10">
         <OrdersTable data={Array(20).fill(0)} />
       </section>
-
-      {/* Modal */}
-      <Suspense>
-        <DeleteOrdersModal />
-      </Suspense>
     </div>
   );
 };
