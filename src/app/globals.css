@@ -75,7 +75,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Remove spinner arrows in Webkit browsers (Chrome, Safari) */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -89,7 +89,7 @@
   }
 
   input[type="number"] {
-    appearance: none; 
+    appearance: none;
   }
 }
 
@@ -110,5 +110,27 @@
   .scroll-bar::-webkit-scrollbar-track {
     background: hsl(var(--accent));
     border-radius: 8px;
+  }
+}
+
+.redraw-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s ease-out;
+}
+
+.setting-nav-card:hover .redraw-path {
+  animation: redraw 1.5s ease-out forwards;
+}
+
+@keyframes redraw {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
   }
 }

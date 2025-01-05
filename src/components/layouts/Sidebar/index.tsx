@@ -52,6 +52,12 @@ const SIDEBAR_LINKS = [
     label: "Reports & Complaints",
     href: "/reports",
   },
+  {
+    activeIcon: <SVG.ShieldKeyFill />,
+    icon: <SVG.ShieldKey />,
+    label: "Admin",
+    href: "/admin",
+  },
 ];
 
 export const Sidebar = () => {
