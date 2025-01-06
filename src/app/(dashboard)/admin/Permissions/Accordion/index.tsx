@@ -24,6 +24,7 @@ export const PermissionAccordion = ({
       <div className="flex items-center gap-x-3  px-2 ">
         <UI.Switch />
         <button
+          type="button"
           onClick={() => setOpen(!open)}
           className="flex items-center justify-between py-5 w-full"
         >
