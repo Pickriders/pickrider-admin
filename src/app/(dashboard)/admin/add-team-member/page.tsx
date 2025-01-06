@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import { AlertModal } from "./AlertModal";
 import React, { Suspense } from "react";
 import { useQueryModal } from "@/hooks";
+import { useRouter } from "next/navigation";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -16,7 +17,10 @@ const validationSchema = Yup.object({
 });
 
 const AddTeamMemberPage = () => {
-  const { setParam } = useQueryModal();
+  const router = useRouter();
+
+  const setParam = (key: string, value: string) =>
+    router.push(`?${key}=${value}`, { scroll: false });
 
   const formik = useFormik({
     initialValues: {
