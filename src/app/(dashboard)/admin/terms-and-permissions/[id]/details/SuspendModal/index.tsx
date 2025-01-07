@@ -4,11 +4,7 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 import { motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
-
-type SuspendModalProps = {
-  onComfirm?: () => void;
-};
+import { SuspendModalProps } from "./SuspendModal.type";
 
 export const SuspendModal = ({ onComfirm }: SuspendModalProps) => {
   const { closeModal, isOpen } = useQueryModal([

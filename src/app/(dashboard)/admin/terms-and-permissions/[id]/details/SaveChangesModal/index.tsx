@@ -4,10 +4,7 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 import { motion } from "framer-motion";
-
-type SuspendModalProps = {
-  onComfirm?: () => void;
-};
+import { SuspendModalProps } from "./SaveChangesModal.type";
 
 export const SaveChangesModal = ({ onComfirm }: SuspendModalProps) => {
   const { closeModal, isOpen } = useQueryModal([{ key: "save", value: true }]);
@@ -42,9 +39,9 @@ export const SaveChangesModal = ({ onComfirm }: SuspendModalProps) => {
         </div>
         <UI.AlertDialogFooter>
           <UI.PrimaryButton onClick={closeModal} variant="outline">
-            Save
+            Cancel
           </UI.PrimaryButton>
-          <UI.PrimaryButton onClick={onComfirm}>Suspend</UI.PrimaryButton>
+          <UI.PrimaryButton onClick={onComfirm}>Save</UI.PrimaryButton>
         </UI.AlertDialogFooter>
       </UI.AlertDialogContent>
     </UI.AlertDialog>
