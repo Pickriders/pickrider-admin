@@ -30,7 +30,9 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
       />
       <section className="bg-background flex  items-start rounded-lg px-14 gap-x-6 py-12 mt-11 ">
         <div className="flex-1">
-          <DetailsForm />
+          <Suspense>
+            <DetailsForm />
+          </Suspense>
         </div>
         <div className="flex-1 ">
           <Permissions />
@@ -46,4 +48,5 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
     </div>
   );
 };
+
 export default DetailsPage;
