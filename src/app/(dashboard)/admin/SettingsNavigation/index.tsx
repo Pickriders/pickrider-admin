@@ -17,7 +17,7 @@ export const SettingsNavigation = () => {
       <NavigationLinks
         bgPatternIcon={<SVG.Shield />}
         headIcon={<SVG.UserShield />}
-        href="/admin/terms-and-permissions"
+        href="/admin/teams-and-permissions"
         title="Permissions"
       />
 
