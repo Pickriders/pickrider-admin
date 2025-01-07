@@ -26,7 +26,7 @@ export const useQueryModal = (params?: QueryParam[]) => {
 
   const setParam = useCallback(
     (name: string, value: string) => {
-      router.push(`?${createQueryString(name, value)}`);
+      router.push(`?${createQueryString(name, value)}`, { scroll: false });
     },
     [router, createQueryString]
   );
