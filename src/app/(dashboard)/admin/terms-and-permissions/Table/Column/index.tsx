@@ -75,7 +75,7 @@ export const columns: ColumnDef<Rows>[] = [
           <Trash2 color="#FF5244" size={20} />
         </UI.Button>
         <Link
-          href={`app-settings/${row.index}/details`}
+          href={`/admin/terms-and-permissions/${row.index}/details`}
           className="size-[1.3rem] grid place-items-center rounded-full border"
         >
           <ChevronRight size={12} />
