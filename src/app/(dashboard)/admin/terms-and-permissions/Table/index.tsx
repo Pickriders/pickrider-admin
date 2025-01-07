@@ -10,7 +10,9 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
+import React, { Suspense } from "react";
+import { RemoveModal } from "./RemoveModal";
+import { SuspendModal } from "./SuspendModal";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -100,6 +102,13 @@ export function DataTable<TData, TValue>({
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
+
+      {/* Modals */}
+
+      <Suspense>
+        <RemoveModal />
+        <SuspendModal />
+      </Suspense>
     </div>
   );
 }

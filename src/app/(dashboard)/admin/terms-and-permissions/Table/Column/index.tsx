@@ -54,7 +54,7 @@ export const columns: ColumnDef<Rows>[] = [
   {
     header: "Email Address",
     accessorKey: "email",
-    cell: ({ row }) => <p>admin</p>,
+    cell: ({ row }) => <p>example@gmail.com</p>,
   },
   {
     header: "Phone Number",

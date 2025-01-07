@@ -4,13 +4,10 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 import { motion } from "framer-motion";
-
-type SuspendModalProps = {
-  onComfirm?: () => void;
-};
-
-export const SaveChangesModal = ({ onComfirm }: SuspendModalProps) => {
-  const { closeModal, isOpen } = useQueryModal([{ key: "save", value: true }]);
+export const RemoveModal = () => {
+  const { closeModal, isOpen } = useQueryModal([
+    { key: "remove", value: true },
+  ]);
 
   return (
     <UI.AlertDialog open={isOpen}>
@@ -28,23 +25,30 @@ export const SaveChangesModal = ({ onComfirm }: SuspendModalProps) => {
             }}
             className="inline-block"
           >
-            <SVG.WarningIcon className="stroke-primary" />
+            <SVG.WarningIcon />
           </motion.span>
-          <UI.AlertDialogTitle className="text-primary mt-1 font-semibold font-clash-display">
-            Save Changes
+          <UI.AlertDialogTitle className="text-[#FF5244] mt-1 font-semibold font-clash-display">
+            Remove!
           </UI.AlertDialogTitle>
         </div>
-        <div className="space-y-1.5">
+
+        <div className="space-y-3">
+          <p className="text-xs font-bold font-montserrat">Are you sure?</p>
           <p className="text-xs text-primary-gray font-semibold font-montserrat">
-            Changes would be effected immediately. These permissions can be
-            revoked anytime.
+            Removed cannot be recovered.
           </p>
         </div>
-        <UI.AlertDialogFooter>
-          <UI.PrimaryButton onClick={closeModal} variant="outline">
-            Save
+        <UI.AlertDialogFooter className="justify-center">
+          <UI.PrimaryButton
+            onClick={closeModal}
+            variant="outline"
+            className="w-[9rem]"
+          >
+            Cancel
           </UI.PrimaryButton>
-          <UI.PrimaryButton onClick={onComfirm}>Suspend</UI.PrimaryButton>
+          <UI.PrimaryButton variant="destructive" className="w-[9rem]">
+            Remove
+          </UI.PrimaryButton>
         </UI.AlertDialogFooter>
       </UI.AlertDialogContent>
     </UI.AlertDialog>

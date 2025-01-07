@@ -36,7 +36,7 @@ export const DetailsForm = () => {
   });
 
   return (
-    <form className="max-w-[24rem]">
+    <form onSubmit={formik.handleSubmit} className="max-w-[24rem]">
       <UI.PrimaryHeading text="Details" />
 
       <div className="mt-3">
@@ -57,23 +57,25 @@ export const DetailsForm = () => {
           labelValue="Full Name"
           id="Full Name"
           defaultValue={"Nnamani Kester"}
+          {...formik.getFieldProps("fullName")}
         />
         <UI.Input
           labelValue="Email"
           type="email"
           id="Email"
           defaultValue={"example@gmail.com"}
+          {...formik.getFieldProps("email")}
+          errorMessage={formik.touched.email && formik.errors.email}
         />
         <UI.Input
           labelValue="Phone"
           id="Phone"
           type="tel"
           defaultValue={"09012345678"}
+          {...formik.getFieldProps("phone")}
         />
       </div>
-      <UI.PrimaryButton className="mt-5" disabled>
-        Save
-      </UI.PrimaryButton>
+      <UI.PrimaryButton className="mt-5">Save</UI.PrimaryButton>
       <div className="mt-7 flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <UI.Switch
