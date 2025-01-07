@@ -2,7 +2,7 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 
 import { CustomersTable } from "./CustomersTable";
-import { customersColumns, CustomersProps } from "./CustomersColumn";
+import { customersColumns } from "./CustomersColumn";
 import { DeleteCustomersModal } from "./DeleteCustomersModal";
 import { SuspendCustomersModal } from "./SuspendcustomersModal";
 import { Suspense } from "react";

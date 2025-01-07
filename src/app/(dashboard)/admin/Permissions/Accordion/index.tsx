@@ -2,15 +2,10 @@
 
 import { UI } from "@/components/ui";
 import { ChevronDown } from "lucide-react";
-import React, { ReactNode } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-interface PermissionAccordionProps {
-  triggerIcon: ReactNode;
-  triggertext: string;
-  permissions: string[];
-}
+import { PermissionAccordionProps } from "./Accordion.type";
 
 export const PermissionAccordion = ({
   triggerIcon,
