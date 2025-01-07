@@ -60,6 +60,7 @@ import { PositiveTickIcon } from "./PositiveTickIcon";
 import { ReceiptIcon } from "./ReceiptIcon";
 import { ReportIcon } from "./ReportIcon";
 import { SearchIcon } from "./SearchIcon";
+import { SearchListIcon } from "./SearchListIcon";
 import { SelectorIcon } from "./SelectorIcon";
 import { SettingsIcon } from "./SettingsIcon";
 import { Shield } from "./Shield";
@@ -78,6 +79,7 @@ import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  SearchListIcon,
   UserSwitchIcon,
   Shield,
   AddUserIcon,
