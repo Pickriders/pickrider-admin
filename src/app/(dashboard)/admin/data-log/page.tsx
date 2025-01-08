@@ -1,5 +1,6 @@
 import { UI } from "@/components/ui";
 import { DataTable } from "./Table";
+import { columns } from "./Table/Columns";
 
 const DataLog = () => {
   return (
@@ -10,7 +11,7 @@ const DataLog = () => {
         currentPage="Data Log"
       />
       <section className="mt-11">
-        <DataTable />
+        <DataTable columns={columns} data={Array(5).fill(0)} />
       </section>
     </div>
   );

@@ -7,9 +7,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { Suspense } from "react";
+import React from "react";
 import { Filter } from "./Filter";
-import { SVG } from "@/components/svg";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -20,7 +19,12 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    state: {},
+  });
 
   return (
     <div className="bg-background rounded-xl pb-4 border">
@@ -31,42 +35,58 @@ export function DataTable<TData, TValue>({
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
           <UI.TableHeader>
-            <UI.TableHead>User</UI.TableHead>
-            <UI.TableHead>Timestamp</UI.TableHead>
-            <UI.TableHead>Action</UI.TableHead>
-            <UI.TableHead>Resource</UI.TableHead>
-            <UI.TableHead>Status</UI.TableHead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <UI.TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <UI.TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </UI.TableHead>
+                  );
+                })}
+              </UI.TableRow>
+            ))}
           </UI.TableHeader>
+
           <UI.TableBody>
-            <UI.TableRow>
-              <UI.TableCell>
-                <UI.TableUser name="Nnamani Kester" subText="Customer" />
-              </UI.TableCell>
-              <UI.TableCell>
-                <div>
-                  <p>29 Jun 2024</p>
-                  <span>21:09</span>
-                </div>
-              </UI.TableCell>
-              <UI.TableCell>
-                <UI.Button variant={"ghost"}>Create</UI.Button>
-              </UI.TableCell>
-              <UI.TableCell>Batch Delivery</UI.TableCell>
-              <UI.TableCell>
-                <span className="text-[#32BA7C]">Success</span>
-              </UI.TableCell>
-              <UI.TableCell>
-                <UI.Button
-                  variant={"ghost"}
-                  className="text-[#2282C8] hover:text-[#2282C8]"
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <UI.TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
                 >
-                  <SVG.SearchListIcon />
-                  Query
-                </UI.Button>
-              </UI.TableCell>
-            </UI.TableRow>
+                  {row.getVisibleCells().map((cell) => (
+                    <UI.TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </UI.TableCell>
+                  ))}
+                </UI.TableRow>
+              ))
+            ) : (
+              <UI.TableRow>
+                <UI.TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center font-faktum-test font-semibold"
+                >
+                  No results.
+                </UI.TableCell>
+              </UI.TableRow>
+            )}
           </UI.TableBody>
         </UI.Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
     </div>
   );
