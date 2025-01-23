@@ -11,7 +11,7 @@ export const OtpForm = () => {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push("/new-password");
+    router.push("/auth/new-password");
   };
 
   return (
@@ -45,7 +45,7 @@ export const OtpForm = () => {
         <div className="mt-9 space-y-3">
           <UI.PrimaryButton>Confirm</UI.PrimaryButton>
           <UI.PrimaryButton variant="outline" asChild>
-            <Link href={"/reset-password"}>Cancel</Link>
+            <Link href={"/auth/reset-password"}>Cancel</Link>
           </UI.PrimaryButton>
         </div>
       </form>

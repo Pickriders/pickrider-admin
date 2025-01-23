@@ -29,7 +29,7 @@ export const SendOtpForm = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, formikHelpers) => {
-      router.push("/verify-otp");
+      router.push("/auth/verify-otp");
       formikHelpers.setSubmitting(false);
     },
   });
@@ -67,7 +67,7 @@ export const SendOtpForm = () => {
             Send O.T.P
           </UI.PrimaryButton>
           <UI.PrimaryButton variant="outline" asChild>
-            <Link href={"/"}>Cancel</Link>
+            <Link href={"/auth/login"}>Cancel</Link>
           </UI.PrimaryButton>
         </div>
       </form>

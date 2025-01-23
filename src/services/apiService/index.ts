@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/constant";
+import { BASE_URL, STORAGE } from "@/constant";
 import { AxiosError } from "axios";
 import { getCookie } from "cookies-next";
 import { Api } from "./Api";
@@ -17,13 +17,10 @@ const apiService = new Api({
   timeout: 60000,
   timeoutErrorMessage: "Network error",
   securityWorker: async (securityData: SecurityDataType | null) => {
-    const accessToken = getCookie("accessToken")?.toString();
+    const accessToken = getCookie(STORAGE.accessToken)?.toString();
 
-    const auth = {
-      access_token: accessToken,
-    }; // TODO:  get auth from redux store
     const headers: HeadersType = {
-      Authorization: `Bearer ${auth.access_token}`,
+      Authorization: `Bearer ${accessToken}`,
     };
 
     for (let key in securityData) {

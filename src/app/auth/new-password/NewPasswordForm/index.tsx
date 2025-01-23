@@ -94,7 +94,7 @@ export const NewPasswordForm = () => {
                   Save & Proceed
                 </UI.PrimaryButton>
                 <UI.PrimaryButton variant="outline" asChild>
-                  <Link href={"/verify-otp"}>Cancel</Link>
+                  <Link href={"/auth/verify-otp"}>Cancel</Link>
                 </UI.PrimaryButton>
               </div>
             </Form>

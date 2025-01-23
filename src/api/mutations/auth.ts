@@ -21,9 +21,10 @@ import { useApiMutation } from "@/hooks/useApiMutation";
 import { toast } from "sonner";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { STORAGE } from "@/constant";
 
 export const useLoginMn = (
-  options?: MutationOptions<LoginData, any, LoginRequestDto>
+  options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>
 ) => {
   const router = useRouter();
 
@@ -31,15 +32,14 @@ export const useLoginMn = (
     ...options,
     mutationFn: (varaibles) => apiService.loginAdmins(varaibles),
     onError(error, variables, context) {
+      toast.error(error.response?.data?.message ?? error?.message);
       if (error?.code === "UNVERIFIED") {
         // TODO: Redirect the user to verification screen
-        options?.onError?.(error, variables, context);
       }
-      toast.error(error.response?.data?.message ?? error?.message);
+      options?.onError?.(error, variables, context);
     },
     onSuccess(data, variables, context) {
-      // TODO: Save the token to storage
-      setCookie("accessToken", data.accessToken, {
+      setCookie(STORAGE.accessToken, data.accessToken, {
         maxAge: 24 * 60 * 60,
         path: "/",
         secure: process.env.NODE_ENV === "production",

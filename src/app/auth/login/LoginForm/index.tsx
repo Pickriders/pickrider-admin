@@ -78,7 +78,7 @@ export const LoginForm = () => {
             <p className="font-montserrat font-semibold text-primary-gray text-sm">
               Forgot Password?{" "}
               <Link
-                href={"/reset-password"}
+                href={"/auth/reset-password"}
                 className="text-primary hover:underline"
               >
                 Reset
