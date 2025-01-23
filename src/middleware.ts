@@ -6,7 +6,15 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get(STORAGE.accessToken)?.value;
   const pathname = request.nextUrl.pathname;
 
-  // Handle auth routes
+  // Skip middleware for public assets and API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname === "/"
+  ) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/auth")) {
     if (accessToken) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
@@ -24,15 +32,10 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Protected routes that require authentication
-    "/auth/:path*",
-    "/dashboard/:path*",
-    "/customers/:path*",
-    "/orders/:path*",
-    "/vehicles/:path*",
-    "/business/:path*",
-    "/finances/:path*",
-    "/couriers/:path*",
-    "/admin/:path*",
+    /*
+     * Match all paths except static files
+     * /:path* matches all routes after the root /
+     */
+    "/:path*",
   ],
 };
