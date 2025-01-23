@@ -22,7 +22,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect all other routes
   if (!accessToken) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
