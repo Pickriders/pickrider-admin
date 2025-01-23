@@ -767,8 +767,6 @@ export interface Transaction {
     | "BANK_DEPOSIT";
   purpose: "DEPOSIT" | "WITHDRAWAL" | "TRANSFER" | "REVERSAL";
   status: "PROCESSING" | "FAILED" | "SUCCESS";
-  /** @default true */
-  isDefault: boolean;
   /** @default {} */
   metadata?: object;
   _id: string;
@@ -776,6 +774,16 @@ export interface Transaction {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+}
+
+export interface ListTransactionResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: Transaction[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
 }
 
 export interface UpdatePhoneRequestDto {
@@ -997,16 +1005,6 @@ export interface WalletCreateRequestDto {
   entityType: EntityType;
 }
 
-export interface ListTransactionResponseDto {
-  nextPage?: number | null;
-  previousPage?: number | null;
-  currentPage: number;
-  results: Transaction[];
-  perPageLimit: number;
-  totalRecords: number;
-  totalPages: number;
-}
-
 export enum CouponType {
   FIXED = "FIXED",
   PERCENTAGE = "PERCENTAGE",
@@ -1137,6 +1135,12 @@ export enum NotificationType {
   PUSH = "PUSH",
   SMS = "SMS",
   EMAIL = "EMAIL",
+}
+
+/** @default "USER" */
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
 }
 
 /** @default "SINGLE" */
@@ -1675,6 +1679,22 @@ export interface GetAllReferralsParams {
 
 export type GetAllReferralsData = ListUserResponseDto;
 
+export interface GetUserTransactionsParams {
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+  /** transaction type filter. commap separated list of TransactionType */
+  type?: string;
+  /** transaction category filter. commap separated list of TransactionCategory */
+  category?: string;
+  /** transaction status filter. comma separated list of TransactionStatus */
+  status?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type GetUserTransactionsData = ListTransactionResponseDto;
+
 export type GetUserTransactionData = Transaction;
 
 export type DeleteUserAccountData = MessageResponseDto;
@@ -1750,6 +1770,26 @@ export interface GetTransactionsParams {
 
 export type GetTransactionsData = ListTransactionResponseDto;
 
+export interface GetTransactions2Params {
+  /** provide a user (entity) id to get transactions for a user */
+  entityId?: string;
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+  /** transaction type filter. commap separated list of TransactionType */
+  type?: string;
+  /** transaction category filter. commap separated list of TransactionCategory */
+  category?: string;
+  /** transaction status filter. comma separated list of TransactionStatus */
+  status?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type GetTransactions2Data = ListTransactionResponseDto;
+
+export type GetTransactionData = Transaction;
+
 export type CreateCouponData = object;
 
 export type CreateGroupData = object;
@@ -1761,10 +1801,16 @@ export type RemoveGroupUsersData = object;
 export type DeactivateCouponData = any;
 
 export interface GetBanksParams {
-  /** Acceptable values are: ghana, kenya, nigeria, and south africa.  */
-  country?: string;
-  /** A flag to filter for available banks a customer can make a transfer to complete a payment */
-  pay_with_bank_transfer?: boolean;
+  /** A cursor key to fetch the previous page of the list after an intial next request */
+  previous?: any;
+  /** A cursor that indicates your place in the list. It can be used to fetch the next page of the list */
+  next?: any;
+  /** Flag to enable cursor pagination */
+  use_cursor?: boolean;
+  /** The number of objects to return per page. Defaults to 50, and limited to 100 records per page. */
+  perPage?: any;
+  /** Acceptable values are: ghana, kenya, nigeria, and south africa. */
+  country?: any;
 }
 
 export type GetBanksData = GetBankResponseDto;

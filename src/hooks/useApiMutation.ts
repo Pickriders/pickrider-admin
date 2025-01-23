@@ -1,9 +1,17 @@
-import { DefaultError, useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  DefaultError,
+  useMutation,
+  UseMutationOptions,
+} from "@tanstack/react-query";
 
-export const useApiMutation = <TData = unknown, TError = DefaultError, TVariables = void, TContext = unknown>(
+export const useApiMutation = <
+  TData = unknown,
+  TError = DefaultError,
+  TVariables = void,
+  TContext = unknown
+>(
   options: UseMutationOptions<TData, TError, TVariables, TContext>
 ) => {
-
   return useMutation({
     ...options,
     onError(error, variables, context) {

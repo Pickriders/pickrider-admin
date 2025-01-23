@@ -15,7 +15,7 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="h-screen p-5 overflow-y-hidden flex  items-center">
-      <div className="rounded-2xl bg-[#F3F3F3] dark:bg-[#1e1f1f]  w-[33rem] h-full pt-8 px-5">
+      <div className="rounded-2xl bg-[#F3F3F3] lg:block hidden  dark:bg-[#1e1f1f]  w-[33rem] h-full pt-8 px-5">
         <div className="grid place-items-center">
           <SVG.PickridersLogo />
         </div>

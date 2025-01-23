@@ -4,6 +4,8 @@ import "./globals.css";
 import { clashDisplay, faktumTest, montserrat } from "@/styles/fonts";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
+import Provider from "@/providers/provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,13 +30,11 @@ export default function RootLayout({
       )}
     >
       <body suppressHydrationWarning className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Provider>
+            <Toaster position="top-center" richColors />
+            {children}
+          </Provider>
         </ThemeProvider>
       </body>
     </html>

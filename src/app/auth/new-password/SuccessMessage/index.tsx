@@ -49,7 +49,7 @@ export const SuccessMessage = () => {
       </div>
       <motion.div variants={itemVariants}>
         <UI.PrimaryButton asChild className="mt-8">
-          <Link href={"/"}>Proceed to Login</Link>
+          <Link href={"/auth/login"}>Proceed to Login</Link>
         </UI.PrimaryButton>
       </motion.div>
     </motion.div>

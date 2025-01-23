@@ -1,23 +1,26 @@
-import { BASE_URL } from "@/constant";
+import { BASE_URL, STORAGE } from "@/constant";
 import { AxiosError } from "axios";
+import { getCookie } from "cookies-next";
 import { Api } from "./Api";
 
 type SecurityDataType = {
   token?: string;
 };
 
-type HeadersType = Record<keyof Omit<SecurityDataType, "token"> | "Authorization", string | undefined>;
+type HeadersType = Record<
+  keyof Omit<SecurityDataType, "token"> | "Authorization",
+  string | undefined
+>;
 
 const apiService = new Api({
   baseURL: BASE_URL,
   timeout: 60000,
   timeoutErrorMessage: "Network error",
   securityWorker: async (securityData: SecurityDataType | null) => {
-    const auth = {
-      access_token: ""
-    } // TODO:  get auth from redux store
+    const accessToken = getCookie(STORAGE.accessToken)?.toString();
+
     const headers: HeadersType = {
-      Authorization: `Bearer ${auth.access_token}`,
+      Authorization: `Bearer ${accessToken}`,
     };
 
     for (let key in securityData) {
@@ -39,12 +42,19 @@ const apiService = new Api({
 
 apiService.instance.interceptors.request.use(
   (config) => {
-    console.log("apiService request =============>>", { headers: config.headers, url: config.url, data: config.data });
+    console.log("apiService request =============>>", {
+      headers: config.headers,
+      url: config.url,
+      data: config.data,
+    });
 
     return config;
   },
   (err: AxiosError) => {
-    console.log("apiService request error =============>>", err.response?.data ?? err.message);
+    console.log(
+      "apiService request error =============>>",
+      err.response?.data ?? err.message
+    );
     return Promise.reject(err);
   }
 );
@@ -55,7 +65,10 @@ apiService.instance.interceptors.response.use(
     return response;
   },
   (err: AxiosError) => {
-    console.log("apiService response error =============>>", err.response?.data ?? err.message);
+    console.log(
+      "apiService response error =============>>",
+      err.response?.data ?? err.message
+    );
     return Promise.reject(err);
   }
 );
