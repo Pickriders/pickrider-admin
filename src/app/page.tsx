@@ -8,7 +8,7 @@ import { HeadLogo } from "./HeadLogo";
 export default function Home() {
   return (
     <div className="h-screen p-5 overflow-y-hidden flex  items-center">
-      <div className="rounded-2xl bg-[#F3F3F3] dark:bg-[#1e1f1f]  w-[33rem] h-full pt-8 px-5">
+      <div className="rounded-2xl bg-[#F3F3F3] dark:bg-[#1e1f1f] lg:block hidden   w-[33rem] h-full pt-8 px-5">
         <div className="grid place-items-center">
           <SVG.PickridersLogo />
         </div>

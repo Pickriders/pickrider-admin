@@ -16,7 +16,7 @@ export const ToastMessage = ({ showToast, close }: ToastPops) => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [showToast]);
+  }, [close, showToast]);
 
   return (
     <motion.div

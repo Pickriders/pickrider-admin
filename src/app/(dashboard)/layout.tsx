@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Layout } from "@/components/layouts";
 import { Suspense } from "react";
 import { LogoutModal } from "./LogoutModal";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -13,6 +15,13 @@ export default function Dashboard({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!accessToken) {
+    redirect("/");
+  }
+
   return (
     <div className="bg-primary-foreground min-h-screen">
       <Layout.Header />

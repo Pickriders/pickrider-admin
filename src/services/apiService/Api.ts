@@ -108,6 +108,9 @@ import {
   GetRiderOrderStatisticsParams,
   GetRiderOrdersData,
   GetRiderOrdersParams,
+  GetTransactionData,
+  GetTransactions2Data,
+  GetTransactions2Params,
   GetTransactionsData,
   GetTransactionsParams,
   GetUserData,
@@ -119,6 +122,8 @@ import {
   GetUserProfileData,
   GetUserReviewsData,
   GetUserTransactionData,
+  GetUserTransactionsData,
+  GetUserTransactionsParams,
   GetUserVehicleData,
   GetUserWalletData,
   GetUserWalletsData,
@@ -791,6 +796,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags users
+   * @name GetUserTransactions
+   * @request GET:/api/v1/users/me/transactions
+   * @secure
+   * @response `200` `GetUserTransactionsData`
+   */
+  getUserTransactions = (query: GetUserTransactionsParams, params: RequestParams = {}) =>
+    this.request<GetUserTransactionsData, any>({
+      path: `/api/v1/users/me/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
    * @name GetUserTransaction
    * @request GET:/api/v1/users/me/transactions/{transactionId}
    * @secure
@@ -1200,6 +1223,43 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/transactions`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetTransactions2
+   * @request GET:/api/v1/admins/transactions
+   * @originalName getTransactions
+   * @duplicate
+   * @secure
+   * @response `200` `GetTransactions2Data`
+   */
+  getTransactions2 = (query: GetTransactions2Params, params: RequestParams = {}) =>
+    this.request<GetTransactions2Data, any>({
+      path: `/api/v1/admins/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetTransaction
+   * @request GET:/api/v1/admins/transactions/{transactionId}
+   * @secure
+   * @response `200` `GetTransactionData`
+   */
+  getTransaction = (transactionId: string, params: RequestParams = {}) =>
+    this.request<GetTransactionData, any>({
+      path: `/api/v1/admins/transactions/${transactionId}`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,
