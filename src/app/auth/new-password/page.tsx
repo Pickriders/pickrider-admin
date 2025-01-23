@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { NewPasswordContainer } from "../../auth/new-password/NewPasswordContainer";
+import { NewPasswordContainer } from "./NewPasswordContainer";
 
 const NewPassword = () => {
   return (
