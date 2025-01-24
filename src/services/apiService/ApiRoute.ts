@@ -1303,28 +1303,26 @@ export namespace Api {
    * No description
    * @tags payments
    * @name GetBanks
-   * @request GET:/api/v1/payments/banks
+   * @request GET:/api/v1/payments/{provider}/banks
    * @secure
    * @response `200` `GetBanksData`
    */
   export namespace GetBanks {
-    export type RequestParams = {};
+    export type RequestParams = {
+      provider: "PAYSTACK" | "FLUTTERWAVE";
+    };
     export type RequestQuery = {
       /** A cursor key to fetch the previous page of the list after an intial next request */
       previous?: any;
       /** A cursor that indicates your place in the list. It can be used to fetch the next page of the list */
       next?: any;
-      /** Flag to enable cursor pagination */
-      use_cursor?: boolean;
       /** The number of objects to return per page. Defaults to 50, and limited to 100 records per page. */
       perPage?: any;
       /** Acceptable values are: ghana, kenya, nigeria, and south africa. */
       country?: any;
     };
     export type RequestBody = never;
-    export type RequestHeaders = {
-      provider: "PAYSTACK" | "FLUTTERWAVE";
-    };
+    export type RequestHeaders = {};
     export type ResponseBody = GetBanksData;
   }
 
