@@ -1046,7 +1046,7 @@ export interface UpdateGroupUsersRequestDto {
   userIds: string[];
 }
 
-export interface GetBankResponseDto {
+export interface BankResponseDto {
   name: string;
   slug: string;
   code: string;
@@ -1063,6 +1063,19 @@ export interface GetBankResponseDto {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+}
+
+export interface BankResponseMetaDto {
+  next: string;
+  previous: string;
+  perPage: number;
+}
+
+export interface GetBanksResponseDto {
+  status: boolean;
+  message: string;
+  data: BankResponseDto;
+  meta: BankResponseMetaDto;
 }
 
 export interface CreateVirtualAccountRequestDto {
@@ -1812,15 +1825,14 @@ export interface GetBanksParams {
   previous?: any;
   /** A cursor that indicates your place in the list. It can be used to fetch the next page of the list */
   next?: any;
-  /** Flag to enable cursor pagination */
-  use_cursor?: boolean;
   /** The number of objects to return per page. Defaults to 50, and limited to 100 records per page. */
   perPage?: any;
   /** Acceptable values are: ghana, kenya, nigeria, and south africa. */
   country?: any;
+  provider: "PAYSTACK" | "FLUTTERWAVE";
 }
 
-export type GetBanksData = GetBankResponseDto;
+export type GetBanksData = GetBanksResponseDto;
 
 export type CreateDedicatedVirtualAccountData = object;
 

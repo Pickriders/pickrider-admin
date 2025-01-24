@@ -1361,13 +1361,13 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags payments
    * @name GetBanks
-   * @request GET:/api/v1/payments/banks
+   * @request GET:/api/v1/payments/{provider}/banks
    * @secure
    * @response `200` `GetBanksData`
    */
-  getBanks = (query: GetBanksParams, params: RequestParams = {}) =>
+  getBanks = ({ provider, ...query }: GetBanksParams, params: RequestParams = {}) =>
     this.request<GetBanksData, any>({
-      path: `/api/v1/payments/banks`,
+      path: `/api/v1/payments/${provider}/banks`,
       method: "GET",
       query: query,
       secure: true,

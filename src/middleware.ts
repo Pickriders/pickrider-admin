@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!accessToken) {
+  if (!accessToken && !pathname.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
@@ -32,9 +32,13 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all paths except static files
-     * /:path* matches all routes after the root /
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files (public files)
      */
-    "/:path*",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
