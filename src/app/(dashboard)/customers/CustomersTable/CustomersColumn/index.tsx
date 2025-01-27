@@ -24,8 +24,6 @@ export const customersColumns: ColumnDef<User>[] = [
       <UI.Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => {
-          console.log(value);
-          console.log(row.getIsSelected());
           row.toggleSelected(!!value);
         }}
         aria-label="select-customers"

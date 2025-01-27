@@ -1,21 +1,21 @@
 import { ActiveIcon } from "./Icons";
 
-type Status = "active" | "inactive" | "Suspended";
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
 
 type TableStatusProps = {
-  status: Status;
+  status: UserStatus;
 };
 
 export const TableStatus = ({ status }: TableStatusProps) => {
   return (
     <>
-      {status === "active" && (
+      {/* // TODO: Handle status logic correlty */}
+      {status === "ACTIVE" ? (
         <div className="flex items-center gap-x-1.5 text-[#3E7DF6]">
           <ActiveIcon />
           Active
         </div>
-      )}
-      {status === "inactive" && (
+      ) : (
         <div className="flex items-center gap-x-1.5 text-[#C7CBE0]">
           <ActiveIcon className="fill-[#C7CBE0]" />
           Inactive

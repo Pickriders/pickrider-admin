@@ -64,6 +64,7 @@ import {
   FindAllData,
   FundWalletRequestDto,
   GetActiveCouponsData,
+  GetActiveOffersData,
   GetAllReferralsData,
   GetBanksData,
   GetBusinessData,
@@ -87,6 +88,7 @@ import {
   GetNotificationsData,
   GetOrderStatusChartData,
   GetOrderTypeChartData,
+  GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
   GetRiderOrderStatisticsData,
@@ -125,6 +127,7 @@ import {
   Object,
   PasswordResetData,
   PasswordResetRequestData,
+  QueueOrderData,
   RateRiderData,
   RateRiderRequestDto,
   RejectVehicleData,
@@ -1641,7 +1644,7 @@ export namespace Api {
       dateRange?: string;
       /** Allowed order types separated by comma : CREDIT,DEBIT */
       type?: string;
-      /** Allowed categories separated by comma : FEES,BONUS,REFUND,ORDER_PAYMENT,ORDER_EARNING,WALLET_FUNDING,REFERRAL_BONUS,CARD_DEPOSIT,BANK_DEPOSIT */
+      /** Allowed categories separated by comma : FEE,DEPOSIT,WITHDRAWAL,REVERSAL,CHARGE */
       category?: string;
       /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS */
       status?: string;
@@ -2486,9 +2489,63 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {
       "x-country-code": string;
-      "x-state-code": string;
     };
     export type ResponseBody = CompleteOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name QueueOrder
+   * @request PATCH:/api/v1/orders/{orderId}/queue
+   * @secure
+   * @response `200` `QueueOrderData`
+   */
+  export namespace QueueOrder {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QueueOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetQueuedOrders
+   * @request GET:/api/v1/orders/queued-orders
+   * @secure
+   * @response `200` `GetQueuedOrdersData`
+   */
+  export namespace GetQueuedOrders {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = GetQueuedOrdersData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetActiveOffers
+   * @request GET:/api/v1/orders/{orderId}/active-offers
+   * @secure
+   * @response `200` `GetActiveOffersData`
+   */
+  export namespace GetActiveOffers {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetActiveOffersData;
   }
 
   /**

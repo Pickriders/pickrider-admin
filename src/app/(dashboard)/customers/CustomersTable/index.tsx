@@ -1,34 +1,62 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import { DataTableProps } from "@/components/ui/Table/Table.type";
 import {
   flexRender,
   getCoreRowModel,
+  RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
 import { CustomersTableBulkAction } from "../CustomersTableBulkAction";
 import { CustomersTableFilter } from "../CustomersTableFilter";
+import { ColumnDef } from "@tanstack/react-table";
+import { useGetUsersQuery } from "@/api";
+import { ListUserResponseDto, User } from "@/services";
+import { LoadingTable } from "./LoadingTable";
+import { customersColumns as columns } from "./CustomersColumn";
 
-export const CustomersTable = <TData, TValue>({
-  columns,
+interface DataTableProps<TData> {
+  data: TData[];
+  allData: ListUserResponseDto;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+}
+
+export const CustomersTable = <TData,>({
   data,
-}: DataTableProps<TData, TValue>) => {
-  const [rowSelection, setRowSelection] = React.useState({});
+  isLoading,
+  allData,
+  onPageChange,
+}: DataTableProps<TData>) => {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+  const totalPages = allData?.totalPages ?? 0;
+  const customers = allData?.results ?? [];
 
   const table = useReactTable({
-    data,
-    columns,
+    data: customers,
+    columns: columns as ColumnDef<User, any>[],
     getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: totalPages,
+    onRowSelectionChange: (newSelection) => {
+      setRowSelection(newSelection);
+    },
     state: {
       rowSelection,
     },
+    enableRowSelection: true,
   });
 
+  if (isLoading) {
+    return <LoadingTable columns={columns} />;
+  }
+
+  // console.log(table.getAll)
+
   return (
-    <div className="bg-background rounded-lg pb-6 w-full">
+    <div>
       {/* Query components */}
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <CustomersTableBulkAction />
@@ -92,9 +120,13 @@ export const CustomersTable = <TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={2} totalPages={4} />
-      </div>
+      {/* <div className="mt-3 flex justify-end px-[1.5rem]">
+        <UI.PaginationBtns
+          currentPage={allData.currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      </div> */}
     </div>
   );
 };

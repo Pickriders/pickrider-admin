@@ -87,7 +87,7 @@ export const vehicleTableColumn: ColumnDef<VehicleProps>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <UI.TableStatus status="inactive" />,
+    cell: ({ row }) => <UI.TableStatus status="INACTIVE" />,
   },
   {
     header: "Action",

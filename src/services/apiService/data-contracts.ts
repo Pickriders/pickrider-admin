@@ -434,12 +434,7 @@ export interface User {
   driversLicense?: string;
   driversLicenseDoc?: string;
   /** @default "PENDING" */
-  driversLicenseVerified:
-    | "APPROVE"
-    | "DISAPPROVE"
-    | "SUSPENDED"
-    | "SUBMITTED"
-    | "PENDING";
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   driversLicenseVerifiedComment?: string;
   /** @default "USER" */
   accessType: "USER" | "ADMIN";
@@ -588,14 +583,7 @@ export interface Business {
     code?: string;
   };
   /** @default "PARTNER" */
-  type:
-    | "BANKING"
-    | "CLIENT"
-    | "PARTNER"
-    | "SUPPLIER"
-    | "MERCHANT"
-    | "AGENCY_BANKING"
-    | "PICKRIDERS_AGENT";
+  type: "BANKING" | "CLIENT" | "PARTNER" | "SUPPLIER" | "MERCHANT" | "AGENCY_BANKING" | "PICKRIDERS_AGENT";
   /** @default false */
   isDeleted: boolean;
   /** @format date-time */
@@ -730,7 +718,6 @@ export interface FundWalletResponseDto {
 export interface UpdateSettlementAccountRequestDto {
   bankName: string;
   bankCode: string;
-  accountName?: string;
   /**
    * @minLength 10
    * @maxLength 15
@@ -767,17 +754,19 @@ export interface Transaction {
   balanceBefore: number;
   balanceAfter: number;
   type: "CREDIT" | "DEBIT";
-  category:
-    | "FEES"
-    | "BONUS"
-    | "REFUND"
-    | "ORDER_PAYMENT"
+  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
+  purpose:
     | "ORDER_EARNING"
     | "WALLET_FUNDING"
+    | "WALLET_WITHDRAWAL"
     | "REFERRAL_BONUS"
-    | "CARD_DEPOSIT"
-    | "BANK_DEPOSIT";
-  purpose: "DEPOSIT" | "WITHDRAWAL" | "TRANSFER" | "REVERSAL";
+    | "ORDER_PAYMENT"
+    | "ORDER_PAYMENT_REFUND"
+    | "ORDER_EARNING_SPLIT"
+    | "ORDER_DISCOUNT"
+    | "PROVIDER_DEPOSIT_FEE"
+    | "PROVIDER_WITHDRAWAL_FEE"
+    | "ORDER_SERVICE_CHARGE";
   status: "PROCESSING" | "FAILED" | "SUCCESS";
   /** @default {} */
   metadata?: object;
@@ -953,6 +942,9 @@ export interface Order {
   /** @format date-time */
   scheduledFor?: string;
   color?: string;
+  isQueued?: boolean;
+  /** @format date-time */
+  queuedAt?: string;
   business?: Business;
   user?: User;
   vehicle?: Vehicle;
@@ -969,8 +961,8 @@ export interface Order {
 export interface Offer {
   orderId: string;
   riderId: string;
-  /** @default false */
-  accepted: boolean;
+  /** @default "PENDING" */
+  status: "PENDING" | "REJECTED" | "ACCEPTED";
   amount: number;
   order?: Order;
   rider?: User;
@@ -987,18 +979,21 @@ export interface SubmitDriversLicenseRequestDto {
   businessId?: string;
 }
 
-/** @default "SUSPENDED" */
+/** @default "ACCEPTED" */
 export enum Status {
-  APPROVE = "APPROVE",
-  DISAPPROVE = "DISAPPROVE",
-  SUSPENDED = "SUSPENDED",
-  SUBMITTED = "SUBMITTED",
   PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  ACCEPTED = "ACCEPTED",
 }
 
 export interface UpdateDriverLicenseRequestDto {
   status: Status;
   comment?: string;
+}
+
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
 }
 
 export interface WalletCreateRequestDto {
@@ -1074,7 +1069,7 @@ export interface BankResponseMetaDto {
 export interface GetBanksResponseDto {
   status: boolean;
   message: string;
-  data: BankResponseDto;
+  data: BankResponseDto[];
   meta: BankResponseMetaDto;
 }
 
@@ -1544,8 +1539,7 @@ export interface MakeOfferRequestDto {
 }
 
 export interface AcceptRejectOfferRequestDto {
-  /** @default false */
-  accepted: boolean;
+  status: Status;
 }
 
 export enum OrderLocationStatus {
@@ -1898,7 +1892,7 @@ export interface GetBusinessTransactionsParams {
   dateRange?: string;
   /** Allowed order types separated by comma : CREDIT,DEBIT */
   type?: string;
-  /** Allowed categories separated by comma : FEES,BONUS,REFUND,ORDER_PAYMENT,ORDER_EARNING,WALLET_FUNDING,REFERRAL_BONUS,CARD_DEPOSIT,BANK_DEPOSIT */
+  /** Allowed categories separated by comma : FEE,DEPOSIT,WITHDRAWAL,REVERSAL,CHARGE */
   category?: string;
   /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS */
   status?: string;
@@ -2069,6 +2063,12 @@ export type RemoveOrderCouponData = object;
 export type CompleteOrderLocationData = OrderLocation;
 
 export type CompleteOrderData = Order;
+
+export type QueueOrderData = Order;
+
+export type GetQueuedOrdersData = Order[];
+
+export type GetActiveOffersData = Offer[];
 
 export interface GetUserOrdersParams {
   /** date filter for scheduled orders - provide this if filtering for scheduled orders */

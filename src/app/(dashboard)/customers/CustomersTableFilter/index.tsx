@@ -1,7 +1,18 @@
+"use client";
+
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { useQueryModal } from "@/hooks";
+
+const status = ["All", "Active", "Inactive", "Suspended"];
 
 export const CustomersTableFilter = () => {
+  const { setParam } = useQueryModal();
+
+  const handlefilter = (filterBy: string) => {
+    setParam("status", filterBy);
+  };
+
   return (
     <UI.Popover>
       <UI.PopoverTrigger asChild>
@@ -65,10 +76,17 @@ export const CustomersTableFilter = () => {
                 </UI.SelectTrigger>
                 <UI.SelectContent>
                   <UI.SelectGroup>
-                    <UI.SelectItem value="all">All</UI.SelectItem>
+                    {status.map((stat, i) => {
+                      return (
+                        <UI.SelectItem key={i} value={stat}>
+                          {stat}
+                        </UI.SelectItem>
+                      );
+                    })}
+                    {/* <UI.SelectItem value="all">All</UI.SelectItem>
                     <UI.SelectItem value="Active">Active</UI.SelectItem>
                     <UI.SelectItem value="Inactive">Inactive</UI.SelectItem>
-                    <UI.SelectItem value="Suspended">Suspended</UI.SelectItem>
+                    <UI.SelectItem value="Suspended">Suspended</UI.SelectItem> */}
                   </UI.SelectGroup>
                 </UI.SelectContent>
               </UI.Select>
