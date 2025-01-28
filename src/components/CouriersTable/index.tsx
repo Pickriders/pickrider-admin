@@ -97,7 +97,9 @@ export const CouriersTable = <TData,>({ data }: DataTableProps<TData>) => {
 
       {/* Pagination */}
       <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={2} totalPages={4} />
+        <Suspense>
+          <UI.PaginationBtns currentPage={2} totalPages={4} />
+        </Suspense>
       </div>
 
       {/* Modals */}

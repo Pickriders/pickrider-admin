@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { columns } from "./TableColumn";
+import { Suspense } from "react";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -73,7 +74,9 @@ export const HistoryTable = <TData,>({ data }: DataTableProps<TData>) => {
       </UI.Table>
       <div className="mt-12 flex items-center justify-between">
         <TableFilter />
-        <UI.PaginationBtns currentPage={1} totalPages={3} />
+        <Suspense>
+          <UI.PaginationBtns currentPage={1} totalPages={3} />
+        </Suspense>
       </div>
     </div>
   );

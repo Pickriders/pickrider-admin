@@ -97,7 +97,9 @@ export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
       {/* Pagination */}
       {data.length > 10 && (
         <div className="mt-3 flex justify-end px-[1.5rem]">
-          <UI.PaginationBtns currentPage={0} totalPages={4} />
+          <Suspense>
+            <UI.PaginationBtns currentPage={0} totalPages={4} />
+          </Suspense>
         </div>
       )}
 

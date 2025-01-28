@@ -34,8 +34,15 @@ export const customersColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    id: "serialNumber",
     header: "S/N",
-    cell: ({ row }) => <div>{row.index + 1}</div>,
+    cell: ({ table, row }) => {
+      const { pageIndex, pageSize } = table.getState().pagination;
+      const globalIndex = pageIndex * pageSize + row.index + 1;
+
+      console.log(pageSize, pageIndex);
+      return <div>{globalIndex}</div>;
+    },
   },
   {
     accessorKey: "balance",
