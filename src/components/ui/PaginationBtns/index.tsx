@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../Button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { generatePagination } from "@/lib/utils";
 
 interface PaginationBtnsProps {
   totalPages: number;
@@ -15,6 +16,8 @@ export const PaginationBtns = ({ totalPages }: PaginationBtnsProps) => {
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const router = useRouter();
+
+  const totalBtnPages = generatePagination(currentPage, totalPages);
 
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
@@ -33,21 +36,19 @@ export const PaginationBtns = ({ totalPages }: PaginationBtnsProps) => {
       >
         <ChevronLeft size={15} />
       </Button>
-      {Array(totalPages)
-        .fill(0)
-        .map((_, i) => {
-          return (
-            <Button
-              key={i}
-              variant={currentPage === i + 1 ? "default" : "ghost"}
-              size={"icon"}
-              className="rounded-full font-semibold font-montserrat"
-              onClick={() => createPageURL(i + 1)}
-            >
-              {i + 1}
-            </Button>
-          );
-        })}
+      {totalBtnPages.map((page, i) => {
+        return (
+          <Button
+            key={i}
+            variant={currentPage === page ? "default" : "ghost"}
+            size={"icon"}
+            className="rounded-full font-semibold font-montserrat"
+            onClick={() => createPageURL(page)}
+          >
+            {page}
+          </Button>
+        );
+      })}
 
       <Button
         onClick={() => createPageURL(currentPage + 1)}

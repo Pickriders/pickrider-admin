@@ -40,7 +40,6 @@ export const customersColumns: ColumnDef<User>[] = [
       const { pageIndex, pageSize } = table.getState().pagination;
       const globalIndex = pageIndex * pageSize + row.index + 1;
 
-      console.log(pageSize, pageIndex);
       return <div>{globalIndex}</div>;
     },
   },

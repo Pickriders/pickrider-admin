@@ -27,7 +27,7 @@ export const CustomersTable = <TData,>({
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const totalPages = data?.totalPages ?? 0;
-  const customers = data?.results.filter((cus) => cus.isRider === false) ?? [];
+  const customers = data?.results;
 
   const table = useReactTable({
     data: customers,

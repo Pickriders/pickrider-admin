@@ -16,5 +16,4 @@ export const useGetUsersQuery = (query: GetUsersParams) =>
   useApiQuery({
     queryKey: [USER_KEY.USERS, query],
     queryFn: () => apiService.getUsers(query),
-    // initialData,
   });

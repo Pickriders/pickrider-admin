@@ -22,13 +22,15 @@ const Customers = ({
   const page = searchParams.page ? Number(searchParams.page) : 1;
   const status = ((searchParams.status as string) || "").toUpperCase();
 
-  let query: GetUsersParams = { page, limit: 5 };
+  let query: GetUsersParams = { page, limit: 2, role: "USER" };
 
   if (allowedStatuses.includes(status)) {
     query.status = status;
   }
 
   const { data, isLoading, error } = useGetUsersQuery(query);
+
+  console.log(data);
 
   if (error) {
     return <div>Error loading customers: {error.message}</div>;
