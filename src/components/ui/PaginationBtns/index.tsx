@@ -7,15 +7,11 @@ import { generatePagination } from "@/lib/utils";
 
 interface PaginationBtnsProps {
   totalPages: number;
-  currentPage: number;
+  currentPage?: number;
   onPageChange?: (page: number) => void;
 }
 
-export const PaginationBtns = ({
-  // currentPage,
-  totalPages,
-  onPageChange,
-}: PaginationBtnsProps) => {
+export const PaginationBtns = ({ totalPages }: PaginationBtnsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;

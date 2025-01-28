@@ -6,10 +6,11 @@ import { UI } from "@/components/ui";
 import { CustomersTable } from "./CustomersTable";
 import { DeleteCustomersModal } from "./DeleteCustomersModal";
 import { SuspendCustomersModal } from "./SuspendcustomersModal";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { useGetUsersQuery } from "@/api";
-import { useRouter } from "next/navigation";
 import { GetUsersParams } from "@/services";
+import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
+import { CustomersTableFilter } from "./CustomersTableFilter";
 
 const allowedStatuses = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"];
 
@@ -29,16 +30,6 @@ const Customers = ({
 
   const { data, isLoading, error } = useGetUsersQuery(query);
 
-  const customers =
-    data?.results?.filter((user) => user.isRider === false) ?? [];
-
-  console.log(data);
-
-  const handlePageChange = (newPage: number) => {
-    // setPage(newPage);
-    // router.push(`/customers?page=${newPage}`, { scroll: false });
-  };
-
   if (error) {
     return <div>Error loading customers: {error.message}</div>;
   }
@@ -54,19 +45,26 @@ const Customers = ({
       </div>
       <section className="mt-[2rem] ">
         <div className="bg-background border rounded-lg pb-6 w-full">
-          <CustomersTable
-            allData={data!}
-            data={customers}
-            isLoading={isLoading}
-            onPageChange={handlePageChange}
-          />
-          {/* Pagination */}
+          {/* TABLE Query components */}
+          <div className="px-[1.4rem] py-5 flex items-center justify-between">
+            <CustomersTableBulkAction />
+            <div className="flex items-center gap-x-2">
+              <Suspense>
+                <UI.TableSearchInput />
+                <CustomersTableFilter />
+              </Suspense>
+            </div>
+          </div>
+          {/* DATA TABLE */}
+          <CustomersTable data={data!} isLoading={isLoading} />
+          {/* TABLE Pagination */}
           <div className="mt-3 flex justify-end px-[1.5rem]">
-            <UI.PaginationBtns
-              currentPage={data?.currentPage || 1}
-              totalPages={data?.totalPages || 0}
-              onPageChange={handlePageChange}
-            />
+            <Suspense>
+              <UI.PaginationBtns
+                currentPage={data?.currentPage || 1}
+                totalPages={data?.totalPages || 0}
+              />
+            </Suspense>
           </div>
         </div>
       </section>

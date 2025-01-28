@@ -11,25 +11,18 @@ interface LoadingTableProps {
 const tableHead = [
   "",
   "S/N",
+  "Balance",
   "User",
   "Verifield",
   "Status",
   "Last Login",
+  "Orders",
   "Action",
 ];
 
 export const LoadingTable = ({ columns }: LoadingTableProps) => {
   return (
     <div className="bg-background rounded-lg pb-6 w-full">
-      {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
-        <UI.Skeleton className="h-8 w-32 rounded" />
-        <div className="flex items-center gap-x-2">
-          <UI.Skeleton className="h-8 w-48 rounded-full" />
-          <UI.Skeleton className="h-8 w-24 rounded" />
-        </div>
-      </div>
-
       {/* Table data */}
       <div className="overflow-x-auto w-full scroll-bar">
         <UI.Table>

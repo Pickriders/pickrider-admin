@@ -2,9 +2,9 @@
 
 import { UI } from "@/components/ui";
 import { ColumnDef } from "@tanstack/react-table";
-import { CustomerPhoneVerified } from "../CustomersPhoneVerified";
 import dayjs from "dayjs";
 import { User } from "@/services";
+import { CustomerPhoneVerified } from "../CustomersTable/CustomersPhoneVerified";
 
 export const customersColumns: ColumnDef<User>[] = [
   {

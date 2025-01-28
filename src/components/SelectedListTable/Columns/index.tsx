@@ -40,7 +40,7 @@ export const columns: ColumnDef<ColumnsProps>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <UI.TableStatus status="active" />,
+    cell: ({ row }) => <UI.TableStatus status="ACTIVE" />,
   },
   {
     accessorKey: "lastLogin",

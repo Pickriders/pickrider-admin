@@ -8,31 +8,26 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { CustomersTableBulkAction } from "../CustomersTableBulkAction";
-import { CustomersTableFilter } from "../CustomersTableFilter";
+
 import { ColumnDef } from "@tanstack/react-table";
-import { useGetUsersQuery } from "@/api";
 import { ListUserResponseDto, User } from "@/services";
 import { LoadingTable } from "./LoadingTable";
 import { customersColumns as columns } from "./CustomersColumn";
 
 interface DataTableProps<TData> {
-  data: TData[];
-  allData: ListUserResponseDto;
+  // data: TData[];
+  data: ListUserResponseDto;
   isLoading: boolean;
-  onPageChange: (page: number) => void;
 }
 
 export const CustomersTable = <TData,>({
-  data,
   isLoading,
-  allData,
-  onPageChange,
+  data,
 }: DataTableProps<TData>) => {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-  const totalPages = allData?.totalPages ?? 0;
-  const customers = allData?.results ?? [];
+  const totalPages = data?.totalPages ?? 0;
+  const customers = data?.results.filter((cus) => cus.isRider === false) ?? [];
 
   const table = useReactTable({
     data: customers,
@@ -53,19 +48,8 @@ export const CustomersTable = <TData,>({
     return <LoadingTable columns={columns} />;
   }
 
-  // console.log(table.getAll)
-
   return (
     <div>
-      {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
-        <CustomersTableBulkAction />
-        <div className="flex items-center gap-x-2">
-          <UI.TableSearchInput />
-          <CustomersTableFilter />
-        </div>
-      </div>
-
       {/* Table data */}
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
@@ -118,15 +102,6 @@ export const CustomersTable = <TData,>({
           </UI.TableBody>
         </UI.Table>
       </div>
-
-      {/* Pagination */}
-      {/* <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns
-          currentPage={allData.currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
-      </div> */}
     </div>
   );
 };

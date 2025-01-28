@@ -2,15 +2,24 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { useQueryModal } from "@/hooks";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const status = ["All", "Active", "Inactive", "Suspended"];
+const status = ["ALL", "ACTIVE", "INACTIVE", "SUSPENDED"];
 
 export const CustomersTableFilter = () => {
-  const { setParam } = useQueryModal();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const FILTER_STATUS = searchParams.get("status") || "ALL";
+  const { replace } = useRouter();
 
   const handlefilter = (filterBy: string) => {
-    setParam("status", filterBy);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
+
+    if (filterBy) {
+      params.set("status", filterBy.toUpperCase());
+    }
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -70,7 +79,7 @@ export const CustomersTableFilter = () => {
                 STATUS
               </UI.Label>
 
-              <UI.Select defaultValue="all">
+              <UI.Select onValueChange={handlefilter} value={FILTER_STATUS}>
                 <UI.SelectTrigger id="STATUS" className="w-[6rem]">
                   <UI.SelectValue />
                 </UI.SelectTrigger>
@@ -83,10 +92,6 @@ export const CustomersTableFilter = () => {
                         </UI.SelectItem>
                       );
                     })}
-                    {/* <UI.SelectItem value="all">All</UI.SelectItem>
-                    <UI.SelectItem value="Active">Active</UI.SelectItem>
-                    <UI.SelectItem value="Inactive">Inactive</UI.SelectItem>
-                    <UI.SelectItem value="Suspended">Suspended</UI.SelectItem> */}
                   </UI.SelectGroup>
                 </UI.SelectContent>
               </UI.Select>
