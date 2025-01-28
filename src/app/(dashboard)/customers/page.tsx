@@ -6,7 +6,7 @@ import { UI } from "@/components/ui";
 import { CustomersTable } from "./CustomersTable";
 import { DeleteCustomersModal } from "./DeleteCustomersModal";
 import { SuspendCustomersModal } from "./SuspendcustomersModal";
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { useGetUsersQuery } from "@/api";
 import { GetUsersParams } from "@/services";
 import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
@@ -19,18 +19,20 @@ const Customers = ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const page = searchParams.page ? Number(searchParams.page) : 1;
-  const status = ((searchParams.status as string) || "").toUpperCase();
+  const query = useMemo(() => {
+    const page = searchParams.page ? Number(searchParams.page) : 1;
+    const status = ((searchParams.status as string) || "").toUpperCase();
 
-  let query: GetUsersParams = { page, limit: 2, role: "USER" };
+    const baseQuery: GetUsersParams = { page, limit: 5, role: "USER" };
 
-  if (allowedStatuses.includes(status)) {
-    query.status = status;
-  }
+    if (allowedStatuses.includes(status)) {
+      baseQuery.status = status;
+    }
+
+    return baseQuery;
+  }, [searchParams.page, searchParams.status]);
 
   const { data, isLoading, error } = useGetUsersQuery(query);
-
-  console.log(data);
 
   if (error) {
     return <div>Error loading customers: {error.message}</div>;
