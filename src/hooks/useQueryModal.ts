@@ -31,6 +31,13 @@ export const useQueryModal = (params?: QueryParam[]) => {
     [router, createQueryString]
   );
 
+  const getParam = useCallback(
+    (param: string) => {
+      return searchParams.get(param);
+    },
+    [searchParams]
+  );
+
   const closeModal = () => {
     if (!params) return;
 
@@ -39,5 +46,5 @@ export const useQueryModal = (params?: QueryParam[]) => {
     router.push(`?${newParams.toString()}`, { scroll: false });
   };
 
-  return { isOpen, closeModal, setParam };
+  return { isOpen, closeModal, setParam, getParam };
 };

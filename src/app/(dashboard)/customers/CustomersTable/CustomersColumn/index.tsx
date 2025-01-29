@@ -2,9 +2,9 @@
 
 import { UI } from "@/components/ui";
 import { ColumnDef } from "@tanstack/react-table";
+import { CustomerPhoneVerified } from "../CustomersPhoneVerified";
 import dayjs from "dayjs";
 import { User } from "@/services";
-import { CustomerPhoneVerified } from "../CustomersTable/CustomersPhoneVerified";
 
 export const customersColumns: ColumnDef<User>[] = [
   {
@@ -24,8 +24,6 @@ export const customersColumns: ColumnDef<User>[] = [
       <UI.Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => {
-          console.log(value);
-          console.log(row.getIsSelected());
           row.toggleSelected(!!value);
         }}
         aria-label="select-customers"
@@ -36,19 +34,27 @@ export const customersColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    id: "serialNumber",
     header: "S/N",
-    cell: ({ row }) => <div>{row.index + 1}</div>,
+    cell: ({ table, row }) => {
+      const { pageIndex, pageSize } = table.getState().pagination;
+      const globalIndex = pageIndex * pageSize + row.index + 1;
+
+      return <div>{globalIndex}</div>;
+    },
   },
-  // {
-  //   accessorKey: "balance",
-  //   header: "Balance",
-  //   cell: ({ row }) => <div>{row.getValue("balance") ?? "460,0000"}</div>,
-  // },
   {
-    accessorKey: "lastname",
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => <div>{row.getValue("balance") ?? "460,0000"}</div>,
+  },
+  {
+    accessorKey: "firstname",
     header: "User",
     cell: ({ row }) => {
-      return <UI.TableUser name={`${row.getValue("lastname") ?? "N/A"}`} />;
+      const firstname = row.getValue("firstname") ?? "N/A";
+      const lastname = row.original.lastname ?? "N/A";
+      return <UI.TableUser name={`${firstname} ${lastname}`} />;
     },
   },
   {
@@ -80,11 +86,11 @@ export const customersColumns: ColumnDef<User>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: "orders",
-  //   header: "Orders",
-  //   cell: ({ row }) => <p>{row.getValue("orders") ?? 20} completed</p>,
-  // },
+  {
+    accessorKey: "orders",
+    header: "Orders",
+    cell: ({ row }) => <p>{row.getValue("orders") ?? 20} completed</p>,
+  },
   {
     header: "Action",
     cell: ({ row }) => <UI.Switch />,

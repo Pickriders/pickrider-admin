@@ -1,43 +1,55 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import { DataTableProps } from "@/components/ui/Table/Table.type";
 import {
   flexRender,
   getCoreRowModel,
+  RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { CustomersTableBulkAction } from "../CustomersTableBulkAction";
-import { CustomersTableFilter } from "../CustomersTableFilter";
 
-export const CustomersTable = <TData, TValue>({
-  columns,
+import { ColumnDef } from "@tanstack/react-table";
+import { ListUserResponseDto, User } from "@/services";
+import { LoadingTable } from "./LoadingTable";
+import { customersColumns as columns } from "./CustomersColumn";
+
+interface DataTableProps<TData> {
+  // data: TData[];
+  data: ListUserResponseDto;
+  isLoading: boolean;
+}
+
+export const CustomersTable = <TData,>({
+  isLoading,
   data,
-}: DataTableProps<TData, TValue>) => {
-  const [rowSelection, setRowSelection] = React.useState({});
+}: DataTableProps<TData>) => {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+  const totalPages = data?.totalPages ?? 0;
+  const customers = data?.results;
 
   const table = useReactTable({
-    data,
-    columns,
+    data: customers,
+    columns: columns as ColumnDef<User, any>[],
     getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: totalPages,
+    onRowSelectionChange: (newSelection) => {
+      setRowSelection(newSelection);
+    },
     state: {
       rowSelection,
     },
+    enableRowSelection: true,
   });
 
-  return (
-    <div className="bg-background rounded-lg pb-6 w-full">
-      {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
-        <CustomersTableBulkAction />
-        <div className="flex items-center gap-x-2">
-          <UI.TableSearchInput />
-          <CustomersTableFilter />
-        </div>
-      </div>
+  if (isLoading) {
+    return <LoadingTable columns={columns} />;
+  }
 
+  return (
+    <div>
       {/* Table data */}
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
@@ -89,11 +101,6 @@ export const CustomersTable = <TData, TValue>({
             )}
           </UI.TableBody>
         </UI.Table>
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={2} totalPages={4} />
       </div>
     </div>
   );

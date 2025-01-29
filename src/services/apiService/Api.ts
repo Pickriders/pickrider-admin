@@ -66,6 +66,7 @@ import {
   FindAllParams,
   FundWalletRequestDto,
   GetActiveCouponsData,
+  GetActiveOffersData,
   GetAllReferralsData,
   GetAllReferralsParams,
   GetBanksData,
@@ -102,6 +103,7 @@ import {
   GetOrderStatusChartParams,
   GetOrderTypeChartData,
   GetOrderTypeChartParams,
+  GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
   GetRiderOrderStatisticsData,
@@ -148,6 +150,7 @@ import {
   Object,
   PasswordResetData,
   PasswordResetRequestData,
+  QueueOrderData,
   RateRiderData,
   RateRiderRequestDto,
   RejectVehicleData,
@@ -2483,6 +2486,57 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<CompleteOrderData, any>({
       path: `/api/v1/orders/${orderId}/complete`,
       method: "PATCH",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name QueueOrder
+   * @request PATCH:/api/v1/orders/{orderId}/queue
+   * @secure
+   * @response `200` `QueueOrderData`
+   */
+  queueOrder = (orderId: string, params: RequestParams = {}) =>
+    this.request<QueueOrderData, any>({
+      path: `/api/v1/orders/${orderId}/queue`,
+      method: "PATCH",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetQueuedOrders
+   * @request GET:/api/v1/orders/queued-orders
+   * @secure
+   * @response `200` `GetQueuedOrdersData`
+   */
+  getQueuedOrders = (params: RequestParams = {}) =>
+    this.request<GetQueuedOrdersData, any>({
+      path: `/api/v1/orders/queued-orders`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetActiveOffers
+   * @request GET:/api/v1/orders/{orderId}/active-offers
+   * @secure
+   * @response `200` `GetActiveOffersData`
+   */
+  getActiveOffers = (orderId: string, params: RequestParams = {}) =>
+    this.request<GetActiveOffersData, any>({
+      path: `/api/v1/orders/${orderId}/active-offers`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

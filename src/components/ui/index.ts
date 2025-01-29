@@ -56,6 +56,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./Select";
+import { Skeleton } from "./Skeleton";
 import { Switch } from "./Switch";
 import {
   Table,
@@ -73,6 +74,7 @@ import { Tag } from "./Tag";
 import { TextArea } from "./Textarea";
 
 export const UI = {
+  Skeleton,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,

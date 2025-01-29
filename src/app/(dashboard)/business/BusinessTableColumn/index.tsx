@@ -89,7 +89,7 @@ export const businessTableColumn: ColumnDef<BusinessProps>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <UI.TableStatus status="active" />,
+    cell: ({ row }) => <UI.TableStatus status="ACTIVE" />,
   },
   {
     accessorKey: "verified",

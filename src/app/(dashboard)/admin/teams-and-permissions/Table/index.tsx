@@ -97,15 +97,14 @@ export function DataTable<TData, TValue>({
           </UI.TableBody>
         </UI.Table>
       </div>
-
-      {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <UI.PaginationBtns currentPage={2} totalPages={4} />
-      </div>
-
-      {/* Modals */}
-
       <Suspense>
+        {/* Pagination */}
+        <div className="mt-3 flex justify-end px-[1.5rem]">
+          <UI.PaginationBtns currentPage={2} totalPages={4} />
+        </div>
+
+        {/* Modals */}
+
         <RemoveModal />
         <SuspendModal />
       </Suspense>
