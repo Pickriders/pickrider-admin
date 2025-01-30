@@ -3,18 +3,11 @@
 import { UI } from "@/components/ui";
 
 import React, { Suspense } from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+
 import { CouriersTableBulkActions } from "./CouriersTableBulkActions";
 import { CouriersTableFilter } from "./CouriersTableFilter";
-import { couriersTableColumn as columns } from "./CouriersTableColumn";
 import { DeleteCourierModal } from "./DeleteModal";
 import { SuspendCourierModal } from "./SuspendModal";
-import LoadingSkeleton from "./LoadingSkeleton";
 import { DataTable } from "./DataTable";
 import { ListUserResponseDto } from "@/services";
 

@@ -4,6 +4,7 @@ import { useGetUsersQuery } from "@/api";
 import { CouriersTable } from "@/components/CouriersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { status as allowedStatus } from "@/constant";
 import { GetUsersParams } from "@/services";
 import { useMemo } from "react";
 
@@ -18,14 +19,22 @@ const CouriersPage = ({
 
     const baseQuery: GetUsersParams = { page, limit: 5, role: "USER" };
 
-    // if (allowedStatuses.includes(status)) {
-    //   baseQuery.status = status;
-    // }
+    if (allowedStatus.includes(status)) {
+      baseQuery.status = status;
+    }
 
     return baseQuery;
   }, [searchParams.page, searchParams.status]);
 
   const { data, isLoading, error } = useGetUsersQuery(query);
+
+  if (error) {
+    return (
+      <div className="text-center mt-16 font-montserrat text-xl">
+        Error loading customers: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -37,7 +46,7 @@ const CouriersPage = ({
         </UI.Button>
       </div>
       <section className="mt-[2rem] w-full">
-        <CouriersTable data={data} isLoading={isLoading} />
+        <CouriersTable data={data!} isLoading={isLoading} />
       </section>
     </div>
   );

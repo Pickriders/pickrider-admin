@@ -19,7 +19,7 @@ const tableHead = [
   "Action",
 ];
 
-const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) => {
+export const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) => {
   return (
     <div className="bg-background rounded-lg  w-full">
       {/* Table data */}
@@ -79,4 +79,3 @@ const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) => {
   );
 };
 
-export default LoadingSkeleton;

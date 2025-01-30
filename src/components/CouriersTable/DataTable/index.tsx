@@ -2,30 +2,23 @@
 
 import { UI } from "@/components/ui";
 
-import React, { Suspense } from "react";
+import React from "react";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { CouriersTableBulkActions } from "./CouriersTableBulkActions";
-import { CouriersTableFilter } from "./CouriersTableFilter";
-import { couriersTableColumn as columns } from "./CouriersTableColumn";
-import { DeleteCourierModal } from "./DeleteModal";
-import { SuspendCourierModal } from "./SuspendModal";
-import LoadingSkeleton from "./LoadingSkeleton";
+import { couriersTableColumn as columns } from "../CouriersTableColumn";
 import { ListUserResponseDto, User } from "@/services";
+import { LoadingSkeleton } from "./LoadingSkeleton";
 
-interface DataTableProps<TData> {
+interface DataTableProps {
   data: ListUserResponseDto;
   isLoading: boolean;
 }
 
-export const DataTable = <TData,>({
-  data,
-  isLoading,
-}: DataTableProps<TData>) => {
+export const DataTable = ({ data, isLoading }: DataTableProps) => {
   const [rowSelection, setRowSelection] = React.useState({});
   const couriers = data?.results || [];
   const totalPages = data?.totalPages ?? 0;
@@ -42,8 +35,6 @@ export const DataTable = <TData,>({
     },
   });
 
-  console.log(data, isLoading);
-
   if (isLoading) {
     return (
       <div>
@@ -51,8 +42,6 @@ export const DataTable = <TData,>({
       </div>
     );
   }
-
-  console.log(data?.results);
 
   return (
     <div className="w-full overflow-x-auto scroll-bar">

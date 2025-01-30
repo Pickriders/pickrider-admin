@@ -8,14 +8,6 @@ import { SVG } from "@/components/svg";
 import { User } from "@/services";
 import dayjs from "dayjs";
 
-// export type CouriersProps = {
-//   courier: { img: string; name: string; email: string };
-//   phoneNumber: number;
-//   address: string;
-//   liscenceVerified: boolean;
-//   dateJoined: Date;
-// };
-
 type liscenceVerified =
   | "APPROVE"
   | "DISAPPROVE"
@@ -100,7 +92,7 @@ export const couriersTableColumn: ColumnDef<User>[] = [
     accessorKey: "dateJoined",
     header: "Date Joined	",
     cell: ({ row }) => {
-      const date = row.getValue("lastLoginDate") as Date;
+      const date = row.getValue("dateJoined") as Date;
       if (!date) return <div>N/A</div>;
 
       return <p className="mt-1">1/3/24</p>;
