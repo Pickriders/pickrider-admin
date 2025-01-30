@@ -22,11 +22,15 @@ export const CouriersTable = ({ data, isLoading }: DataTableProps) => {
   return (
     <div className="bg-background border rounded-lg pb-6 w-full">
       {/* Query components */}
+
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <CouriersTableBulkActions />
         <div className="flex items-center gap-x-2">
-          <UI.TableSearchInput />
-          <CouriersTableFilter />
+          <Suspense>
+            {" "}
+            <UI.TableSearchInput />
+            <CouriersTableFilter />
+          </Suspense>
         </div>
       </div>
 
