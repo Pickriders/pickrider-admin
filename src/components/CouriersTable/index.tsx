@@ -11,15 +11,12 @@ import { SuspendCourierModal } from "./SuspendModal";
 import { DataTable } from "./DataTable";
 import { ListUserResponseDto } from "@/services";
 
-interface DataTableProps<TData> {
-  data: ListUserResponseDto;
+interface DataTableProps {
+  data: ListUserResponseDto | null;
   isLoading: boolean;
 }
 
-export const CouriersTable = <TData,>({
-  data,
-  isLoading,
-}: DataTableProps<TData>) => {
+export const CouriersTable = ({ data, isLoading }: DataTableProps) => {
   const totalPages = data?.totalPages || 0;
 
   return (

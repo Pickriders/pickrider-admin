@@ -19,7 +19,9 @@ const tableHead = [
   "Action",
 ];
 
-export const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) => {
+export const LoadingSkeleton = <TData,>({
+  columns,
+}: LoadingTableProps<TData>) => {
   return (
     <div className="bg-background rounded-lg  w-full">
       {/* Table data */}
@@ -34,7 +36,7 @@ export const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) =
           </UI.TableHeader>
 
           <UI.TableBody>
-            {[...Array(5)].map((_, rowIndex) => (
+            {[...Array(10)].map((_, rowIndex) => (
               <UI.TableRow key={rowIndex}>
                 <UI.TableCell>
                   <UI.Skeleton className="h-4 w-[1.5rem] rounded" />
@@ -78,4 +80,3 @@ export const LoadingSkeleton = <TData,>({ columns }: LoadingTableProps<TData>) =
     </div>
   );
 };
-
