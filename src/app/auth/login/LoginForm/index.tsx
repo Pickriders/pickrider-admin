@@ -41,7 +41,7 @@ export const LoginForm = () => {
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} className="relative">
+    <form onSubmit={formik.handleSubmit} className="relative" autoComplete="off">
       <h1 className="font-semibold text-2xl font-clash-display">
         Welcome back!
       </h1>
@@ -55,6 +55,7 @@ export const LoginForm = () => {
             labelValue="Email Address"
             id="email"
             type="email"
+            
             leftIcon={<SVG.Mail />}
             {...formik.getFieldProps("email")}
             errorMessage={formik.touched.email && formik.errors.email}
@@ -64,6 +65,7 @@ export const LoginForm = () => {
             id="password"
             type="password"
             placeholder="Enter password"
+            autoComplete="off"
             leftIcon={<SVG.LockIcon />}
             showToggle
             className="placeholder:text-primary-gray placeholder:font-montserrat"

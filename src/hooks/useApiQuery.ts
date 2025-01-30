@@ -1,5 +1,6 @@
 import { DefaultError, QueryKey, UndefinedInitialDataOptions, useQuery } from "@tanstack/react-query";
 import React from "react";
+import { toast } from "sonner";
 
 export const useApiQuery = <
   TQueryFnData = unknown,
@@ -7,14 +8,13 @@ export const useApiQuery = <
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UndefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey>
+  options: UndefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey>,
 ) => {
   const res = useQuery(options);
 
   React.useEffect(() => {
     if (res.error) {
-      // TODO: Handle error here. 
-      // Probably show a toast or something, so that you don't have to do it everywehre on the app.
+      toast.error(res.error as string);
     }
   }, [res.error]);
 
