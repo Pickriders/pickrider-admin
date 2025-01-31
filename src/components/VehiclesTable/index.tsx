@@ -70,7 +70,7 @@ export const VechiclesTable: React.FC = () => {
       {/* Pagination */}
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <Suspense>
-          <UI.PaginationBtns currentPage={data.currentPage ?? 0} totalPages={data?.totalPages ?? 0} />
+          <UI.PaginationBtns currentPage={data?.currentPage ?? 0} totalPages={data?.totalPages ?? 0} />
         </Suspense>
       </div>
 
