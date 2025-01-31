@@ -2,9 +2,8 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { status } from "@/constant";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-const status = ["ALL", "ACTIVE", "INACTIVE", "SUSPENDED"];
 
 export const CustomersTableFilter = () => {
   const searchParams = useSearchParams();
@@ -85,7 +84,7 @@ export const CustomersTableFilter = () => {
                 </UI.SelectTrigger>
                 <UI.SelectContent>
                   <UI.SelectGroup>
-                    {status.map((stat, i) => {
+                    {["ALL", ...status].map((stat, i) => {
                       return (
                         <UI.SelectItem key={i} value={stat}>
                           {stat}

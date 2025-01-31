@@ -4,8 +4,6 @@ import { UI } from "@/components/ui";
 import { flexRender } from "@tanstack/react-table";
 import React, { Suspense } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { User } from "@/services";
 import { customersColumns as columns } from "./CustomersColumn";
 import { useGetUsersReactTableQuery } from "@/api";
 
