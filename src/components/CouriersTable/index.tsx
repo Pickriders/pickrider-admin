@@ -12,7 +12,7 @@ import { DataTable } from "./DataTable";
 import { ListUserResponseDto } from "@/services";
 
 interface DataTableProps {
-  data: ListUserResponseDto | undefined;
+  data?: ListUserResponseDto | undefined;
   isLoading: boolean;
 }
 
