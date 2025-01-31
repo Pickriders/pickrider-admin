@@ -31,3 +31,5 @@ export const actionBarStatus = [
   { value: "Active", label: "Active" },
   { value: "Suspended", label: "Suspended" },
 ];
+
+export const status = ["ACTIVE", "INACTIVE", "SUSPENDED"];

@@ -15,7 +15,6 @@ import { LoadingTable } from "./LoadingTable";
 import { customersColumns as columns } from "./CustomersColumn";
 
 interface DataTableProps<TData> {
-  // data: TData[];
   data: ListUserResponseDto;
   isLoading: boolean;
 }

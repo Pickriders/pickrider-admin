@@ -1744,6 +1744,8 @@ export interface GetUsersParams {
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   emailVerified?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
+  isRider?: "0" | "1" | "false" | "true";
+  /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   bvnVerified?: "0" | "1" | "false" | "true";
   /** comma-seprarated list of user roles */
   role?: string;

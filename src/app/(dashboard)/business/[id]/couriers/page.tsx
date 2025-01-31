@@ -29,7 +29,7 @@ const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <div className="mt-10">
-        <CouriersTable data={Array(13).fill(0)} />
+        <CouriersTable isLoading={false} />
       </div>
     </div>
   );
