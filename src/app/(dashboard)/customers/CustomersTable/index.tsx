@@ -1,45 +1,21 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import { flexRender, getCoreRowModel, RowSelectionState, useReactTable } from "@tanstack/react-table";
-import React from "react";
+import { flexRender } from "@tanstack/react-table";
+import React, { Suspense } from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ListUserResponseDto, User } from "@/services";
+import { User } from "@/services";
 import { customersColumns as columns } from "./CustomersColumn";
+import { useGetUsersReactTableQuery } from "@/api";
 
 const LIMIT = 5;
 
-interface DataTableProps<TData> {
-  // data: TData[];
-  data: ListUserResponseDto;
-  isLoading: boolean;
-}
-
-export const CustomersTable = <TData,>({ isLoading, data }: DataTableProps<TData>) => {
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-
-  const totalPages = data?.totalPages ?? 0;
-  const customers = data?.results;
-
-  const table = useReactTable({
-    data: customers || [],
-    columns: columns as ColumnDef<User, any>[],
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    pageCount: totalPages,
-    onRowSelectionChange: (newSelection) => {
-      setRowSelection(newSelection);
-    },
-    state: {
-      rowSelection,
-    },
-    enableRowSelection: true,
-  });
+export const CustomersTable: React.FC = () => {
+  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT }, {});
 
   return (
     <div>
-      {/* Table data */}
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
           <UI.TableHeader>
@@ -78,6 +54,12 @@ export const CustomersTable = <TData,>({ isLoading, data }: DataTableProps<TData
             )}
           </UI.TableBody>
         </UI.Table>
+      </div>
+
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <Suspense>
+          <UI.PaginationBtns currentPage={data?.currentPage || 1} totalPages={data?.totalPages || 0} />
+        </Suspense>
       </div>
     </div>
   );

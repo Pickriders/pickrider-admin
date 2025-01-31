@@ -1,7 +1,7 @@
 import { useApiQuery } from "@/hooks/useApiQuery";
 import { apiService, GetVehiclesParams, Vehicle } from "@/services";
-import { ColumnDef } from "@tanstack/react-table";
-import { useApiReactTableQuery } from "@/hooks/useApiReactTableQuery";
+import { ColumnDef, TableOptions } from "@tanstack/react-table";
+import { useApiReactTableQuery, UseApiReactTableQueryOptions } from "@/hooks/useApiReactTableQuery";
 
 export const VEHICLE_KEY = {
   VEHICLES: "vehicles",
@@ -20,17 +20,23 @@ export const useGetVehicleQuery = (vehicleId: string) =>
     enabled: !!vehicleId,
   });
 
-export const useGetVehiclesReactTableQuery = (columns: ColumnDef<Vehicle>[], query?: GetVehiclesParams) => {
+export const useGetVehiclesReactTableQuery = (
+  columns: ColumnDef<Vehicle>[],
+  query?: GetVehiclesParams,
+  tableOptions?: UseApiReactTableQueryOptions<Vehicle>,
+) => {
   const filter: GetVehiclesParams = {
     // TODO: Get filters from the url query params and set them here.
     ...query,
   };
 
-  const res = useApiReactTableQuery({
-    queryKey: [VEHICLE_KEY.VEHICLES, query],
-    queryFn: () => apiService.getVehicles(filter),
-    columns,
-  });
+  const res = useApiReactTableQuery(
+    {
+      queryKey: [VEHICLE_KEY.VEHICLES, query],
+      queryFn: () => apiService.getVehicles(filter),
+    },
+    { columns, ...tableOptions },
+  );
 
   return res;
 };

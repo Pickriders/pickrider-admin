@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import * as React from "react";
+import { CldImage } from "next-cloudinary";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Image from "next/image";
@@ -71,7 +72,7 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
             {vehicle?.photos?.map((img, i) => {
               return (
                 <motion.div key={i} layoutId={`preview-${img}`} className="relative w-[18rem]">
-                  <Image alt={img} src={img} width={395} height={240} />
+                  <CldImage alt={img} src={img} width={"395"} height={"240"} />
                   <button
                     onClick={() => setPreviewDoc(img)}
                     className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-2 right-3"

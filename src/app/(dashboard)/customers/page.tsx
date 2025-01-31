@@ -14,11 +14,7 @@ import { CustomersTableFilter } from "./CustomersTableFilter";
 
 const allowedStatuses = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"];
 
-const Customers = ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Customers = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
   const query = useMemo(() => {
     const page = searchParams.page ? Number(searchParams.page) : 1;
     const status = ((searchParams.status as string) || "").toUpperCase();
@@ -31,12 +27,6 @@ const Customers = ({
 
     return baseQuery;
   }, [searchParams.page, searchParams.status]);
-
-  const { data, isLoading, error } = useGetUsersQuery(query);
-
-  if (error) {
-    return <div>Error loading customers: {error.message}</div>;
-  }
 
   return (
     <div>
@@ -60,16 +50,7 @@ const Customers = ({
             </div>
           </div>
           {/* DATA TABLE */}
-          <CustomersTable data={data!} isLoading={isLoading} />
-          {/* TABLE Pagination */}
-          <div className="mt-3 flex justify-end px-[1.5rem]">
-            <Suspense>
-              <UI.PaginationBtns
-                currentPage={data?.currentPage || 1}
-                totalPages={data?.totalPages || 0}
-              />
-            </Suspense>
-          </div>
+          <CustomersTable />
         </div>
       </section>
 
