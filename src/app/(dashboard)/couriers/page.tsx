@@ -31,7 +31,7 @@ const CouriersPage = ({
   if (error) {
     return (
       <div className="text-center mt-16 font-montserrat text-xl">
-        Error loading customers: {error.message}
+        Error loading customers: {error?.message}
       </div>
     );
   }
@@ -46,7 +46,7 @@ const CouriersPage = ({
         </UI.Button>
       </div>
       <section className="mt-[2rem] w-full">
-        <CouriersTable data={data!} isLoading={isLoading} />
+        <CouriersTable data={data} isLoading={isLoading} />
       </section>
     </div>
   );

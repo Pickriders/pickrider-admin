@@ -14,7 +14,7 @@ import { ListUserResponseDto, User } from "@/services";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 
 interface DataTableProps {
-  data: ListUserResponseDto | null;
+  data: ListUserResponseDto | undefined;
   isLoading: boolean;
 }
 

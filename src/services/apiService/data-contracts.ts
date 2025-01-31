@@ -434,12 +434,7 @@ export interface User {
   driversLicense?: string;
   driversLicenseDoc?: string;
   /** @default "PENDING" */
-  driversLicenseVerified:
-    | "APPROVE"
-    | "DISAPPROVE"
-    | "SUSPENDED"
-    | "SUBMITTED"
-    | "PENDING";
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   driversLicenseVerifiedComment?: string;
   /** @default "USER" */
   accessType: "USER" | "ADMIN";
@@ -588,14 +583,7 @@ export interface Business {
     code?: string;
   };
   /** @default "PARTNER" */
-  type:
-    | "BANKING"
-    | "CLIENT"
-    | "PARTNER"
-    | "SUPPLIER"
-    | "MERCHANT"
-    | "AGENCY_BANKING"
-    | "PICKRIDERS_AGENT";
+  type: "BANKING" | "CLIENT" | "PARTNER" | "SUPPLIER" | "MERCHANT" | "AGENCY_BANKING" | "PICKRIDERS_AGENT";
   /** @default false */
   isDeleted: boolean;
   /** @format date-time */
@@ -1001,6 +989,11 @@ export enum Status {
 export interface UpdateDriverLicenseRequestDto {
   status: Status;
   comment?: string;
+}
+
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
 }
 
 export interface WalletCreateRequestDto {
@@ -1743,6 +1736,8 @@ export interface GetUsersParams {
   phoneVerified?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   emailVerified?: "0" | "1" | "false" | "true";
+  /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
+  isRider?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   bvnVerified?: "0" | "1" | "false" | "true";
   /** comma-seprarated list of user roles */
