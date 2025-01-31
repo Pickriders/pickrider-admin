@@ -9,25 +9,13 @@ import { VehicleTableFilter } from "./VehicleTableFilter";
 import { vehicleTableColumn as columns } from "./VehiclesTableColumn";
 import { DeleteVehicleModal } from "./DeleteModal";
 import { SuspendVehicleModal } from "./SuspendModal";
-import { useGetVehiclesQuery } from "@/api";
+import { useGetVehiclesQuery, useGetVehiclesReactTableQuery } from "@/api";
 import { Vehicle } from "@/services";
 
-const LIMIT = 15;
+const LIMIT = 10;
 
 export const VechiclesTable: React.FC = () => {
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const { data, isLoading } = useGetVehiclesQuery({});
-
-  const table = useReactTable({
-    data: data?.results || [],
-    columns: columns,
-    getCoreRowModel: getCoreRowModel<Vehicle>(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      rowSelection,
-    },
-  });
+  const { data, isLoading, table, rowSelection } = useGetVehiclesReactTableQuery(columns);
 
   return (
     <div className="bg-background rounded-lg pb-6">
@@ -80,13 +68,11 @@ export const VechiclesTable: React.FC = () => {
         </UI.Table>
       </div>
       {/* Pagination */}
-      {data?.totalPages && data.totalPages > 1 && (
-        <div className="mt-3 flex justify-end px-[1.5rem]">
-          <Suspense>
-            <UI.PaginationBtns currentPage={data.currentPage} totalPages={data.totalPages} />
-          </Suspense>
-        </div>
-      )}
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <Suspense>
+          <UI.PaginationBtns currentPage={data.currentPage ?? 0} totalPages={data?.totalPages ?? 0} />
+        </Suspense>
+      </div>
 
       {/* Modals */}
       <Suspense>
