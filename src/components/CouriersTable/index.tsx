@@ -1,24 +1,14 @@
 "use client";
 
 import { UI } from "@/components/ui";
-
 import React, { Suspense } from "react";
-
 import { CouriersTableBulkActions } from "./CouriersTableBulkActions";
 import { CouriersTableFilter } from "./CouriersTableFilter";
 import { DeleteCourierModal } from "./DeleteModal";
 import { SuspendCourierModal } from "./SuspendModal";
 import { DataTable } from "./DataTable";
-import { ListUserResponseDto } from "@/services";
 
-interface DataTableProps {
-  data?: ListUserResponseDto | undefined;
-  isLoading: boolean;
-}
-
-export const CouriersTable = ({ data, isLoading }: DataTableProps) => {
-  const totalPages = data?.totalPages || 0;
-
+export const CouriersTable = () => {
   return (
     <div className="bg-background border rounded-lg pb-6 w-full">
       {/* Query components */}
@@ -36,14 +26,7 @@ export const CouriersTable = ({ data, isLoading }: DataTableProps) => {
 
       {/* Data Table */}
       <div>
-        <DataTable data={data} isLoading={isLoading} />
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <Suspense>
-          <UI.PaginationBtns totalPages={totalPages} />
-        </Suspense>
+        <DataTable />
       </div>
 
       {/* Modals */}

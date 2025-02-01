@@ -2,11 +2,7 @@ import { UI } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-type BulkActionProps =
-  | "send email"
-  | "suspend"
-  | "send push notification"
-  | "delete";
+type BulkActionProps = "send email" | "suspend" | "send push notification" | "delete";
 
 const bulkActions = [
   {
