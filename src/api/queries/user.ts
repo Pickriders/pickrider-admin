@@ -22,6 +22,12 @@ export const useGetUsersQuery = (query: GetUsersParams) =>
     queryFn: () => apiService.getUsers(query),
   });
 
+export const useGetUserDetailsQuery = (userId: string) =>
+  useApiQuery({
+    queryKey: [userId],
+    queryFn: () => apiService.getUser(userId),
+  });
+
 export const useGetUsersReactTableQuery = (
   columns: ColumnDef<User>[],
   query?: GetUsersParams,
