@@ -35,7 +35,6 @@ export const useGetUsersReactTableQuery = (
       status: searchParams.get("status")?.toUpperCase(),
       limit: 5,
       role: "USER",
-      isRider: "false",
       ...query,
     };
 

@@ -8,33 +8,14 @@ interface LoadingTableProps<TData> {
   columns: ColumnDef<TData, any>[];
 }
 
-const tableHead = [
-  "",
-  "S/N",
-  "Courier Name",
-  "Phone Number",
-  "Address",
-  "Liscence",
-  "Date Joined",
-  "Action",
-];
+const tableHead = ["", "S/N", "Courier Name", "Phone Number", "Address", "Liscence", "Date Joined", "Action"];
 
-export const LoadingSkeleton = <TData,>({
-  columns,
-}: LoadingTableProps<TData>) => {
+export const LoadingSkeleton = () => {
   return (
     <div className="bg-background rounded-lg  w-full">
       {/* Table data */}
       <div className="overflow-x-auto w-full scroll-bar">
         <UI.Table>
-          <UI.TableHeader>
-            <UI.TableRow>
-              {tableHead.map((column, index) => (
-                <UI.TableHead key={index}>{column}</UI.TableHead>
-              ))}
-            </UI.TableRow>
-          </UI.TableHeader>
-
           <UI.TableBody>
             {[...Array(10)].map((_, rowIndex) => (
               <UI.TableRow key={rowIndex}>

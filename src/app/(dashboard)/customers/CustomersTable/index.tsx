@@ -10,7 +10,7 @@ import { useGetUsersReactTableQuery } from "@/api";
 const LIMIT = 5;
 
 export const CustomersTable: React.FC = () => {
-  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT }, {});
+  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT, isRider: "false" }, {});
 
   return (
     <div>
@@ -56,7 +56,7 @@ export const CustomersTable: React.FC = () => {
 
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <Suspense>
-          <UI.PaginationBtns currentPage={data?.currentPage || 1} totalPages={data?.totalPages || 0} />
+          <UI.PaginationBtns totalPages={data?.totalPages || 0} />
         </Suspense>
       </div>
     </div>

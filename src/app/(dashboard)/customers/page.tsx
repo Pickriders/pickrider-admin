@@ -1,33 +1,13 @@
-"use client";
-
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-
 import { CustomersTable } from "./CustomersTable";
 import { DeleteCustomersModal } from "./DeleteCustomersModal";
 import { SuspendCustomersModal } from "./SuspendcustomersModal";
-import { Suspense, useMemo } from "react";
-import { useGetUsersQuery } from "@/api";
-import { GetUsersParams } from "@/services";
+import { Suspense } from "react";
 import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
 import { CustomersTableFilter } from "./CustomersTableFilter";
 
-const allowedStatuses = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"];
-
-const Customers = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
-  const query = useMemo(() => {
-    const page = searchParams.page ? Number(searchParams.page) : 1;
-    const status = ((searchParams.status as string) || "").toUpperCase();
-
-    const baseQuery: GetUsersParams = { page, limit: 5, role: "USER" };
-
-    if (allowedStatuses.includes(status)) {
-      baseQuery.status = status;
-    }
-
-    return baseQuery;
-  }, [searchParams.page, searchParams.status]);
-
+const Customers = () => {
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -50,7 +30,9 @@ const Customers = ({ searchParams }: { searchParams: { [key: string]: string | s
             </div>
           </div>
           {/* DATA TABLE */}
-          <CustomersTable />
+          <Suspense>
+            <CustomersTable />
+          </Suspense>
         </div>
       </section>
 

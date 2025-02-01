@@ -15,7 +15,7 @@ import { Vehicle } from "@/services";
 const LIMIT = 10;
 
 export const VechiclesTable: React.FC = () => {
-  const { data, isLoading, table, rowSelection } = useGetVehiclesReactTableQuery(columns);
+  const { data, isLoading, table } = useGetVehiclesReactTableQuery(columns);
 
   return (
     <div className="bg-background rounded-lg pb-6">
