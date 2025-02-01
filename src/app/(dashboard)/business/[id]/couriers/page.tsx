@@ -1,17 +1,14 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { SuspendCourierModal } from "./SuspendModal";
-import { DeleteCourierModal } from "./DeleteModal";
 import { CouriersTable } from "@/components/CouriersTable";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
+// export async function generateStaticParams() {
+//   return Array(20)
+//     .fill(0)
+//     .map((_, id) => ({
+//       id: `${id}`,
+//     }));
+// }
 
 const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {

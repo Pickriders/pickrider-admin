@@ -30,7 +30,9 @@ const Customers = () => {
             </div>
           </div>
           {/* DATA TABLE */}
-          <CustomersTable />
+          <Suspense>
+            <CustomersTable />
+          </Suspense>
         </div>
       </section>
 

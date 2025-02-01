@@ -26,7 +26,9 @@ export const CouriersTable = () => {
 
       {/* Data Table */}
       <div>
-        <DataTable />
+        <Suspense>
+          <DataTable />
+        </Suspense>
       </div>
 
       {/* Modals */}
