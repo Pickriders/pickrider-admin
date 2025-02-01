@@ -27,7 +27,7 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
       />
 
       <div className="mt-10">
-        <VechiclesTable data={Array(13).fill(0)} />
+        <VechiclesTable />
       </div>
     </div>
   );

@@ -1,55 +1,19 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import {
-  flexRender,
-  getCoreRowModel,
-  RowSelectionState,
-  useReactTable,
-} from "@tanstack/react-table";
-import React from "react";
+import { flexRender } from "@tanstack/react-table";
+import React, { Suspense } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { ListUserResponseDto, User } from "@/services";
-import { LoadingTable } from "./LoadingTable";
 import { customersColumns as columns } from "./CustomersColumn";
+import { useGetUsersReactTableQuery } from "@/api";
 
-interface DataTableProps<TData> {
-  data: ListUserResponseDto;
-  isLoading: boolean;
-}
+const LIMIT = 5;
 
-export const CustomersTable = <TData,>({
-  isLoading,
-  data,
-}: DataTableProps<TData>) => {
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-
-  const totalPages = data?.totalPages ?? 0;
-  const customers = data?.results;
-
-  const table = useReactTable({
-    data: customers,
-    columns: columns as ColumnDef<User, any>[],
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    pageCount: totalPages,
-    onRowSelectionChange: (newSelection) => {
-      setRowSelection(newSelection);
-    },
-    state: {
-      rowSelection,
-    },
-    enableRowSelection: true,
-  });
-
-  if (isLoading) {
-    return <LoadingTable columns={columns} />;
-  }
+export const CustomersTable: React.FC = () => {
+  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT }, {});
 
   return (
     <div>
-      {/* Table data */}
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
           <UI.TableHeader>
@@ -58,12 +22,7 @@ export const CustomersTable = <TData,>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <UI.TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </UI.TableHead>
                   );
                 })}
@@ -72,34 +31,33 @@ export const CustomersTable = <TData,>({
           </UI.TableHeader>
 
           <UI.TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel()?.rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <UI.TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <UI.TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <UI.TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </UI.TableCell>
                   ))}
                 </UI.TableRow>
               ))
+            ) : isLoading ? (
+              <UI.TableLoading rowCount={LIMIT} columnCount={columns.length} />
             ) : (
               <UI.TableRow>
-                <UI.TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center font-faktum-test font-semibold"
-                >
+                <UI.TableCell colSpan={columns.length} className="h-24 text-center font-faktum-test font-semibold">
                   No results.
                 </UI.TableCell>
               </UI.TableRow>
             )}
           </UI.TableBody>
         </UI.Table>
+      </div>
+
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <Suspense>
+          <UI.PaginationBtns currentPage={data?.currentPage || 1} totalPages={data?.totalPages || 0} />
+        </Suspense>
       </div>
     </div>
   );

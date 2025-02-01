@@ -19,14 +19,7 @@ import {
 import { BreadCrumbNav } from "./BreadCrumbNav";
 import { Button } from "./Button";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./Card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./Card";
 import { Checkbox } from "./Checkbox";
 import { DateCalendar } from "./DateCalender";
 
@@ -47,26 +40,12 @@ import { PrimaryButton } from "./PrimaryButton";
 
 import { PrimaryHeading } from "./PrimaryHeading";
 import { SectionHeader } from "./SectionHeader";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./Select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./Select";
 import { Skeleton } from "./Skeleton";
 import { Switch } from "./Switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./Table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./Table";
 import { TableFilter } from "./TableFilter";
+import { TableLoading } from "./TableLoading";
 import { TableSearchInput } from "./TableSearchInput";
 import { TableStatus } from "./TableStatus";
 import { TableUser } from "./TableUser";
@@ -125,6 +104,7 @@ export const UI = {
   SelectValue,
 
   TableFilter,
+  TableLoading,
   TableSearchInput,
   TableUser,
   TableStatus,

@@ -1,26 +1,58 @@
+import * as React from "react";
+import { toTitleCase } from "@/utils";
 import { ActiveIcon } from "./Icons";
 
-export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+export type AllStatuses =
+  | "ACTIVE"
+  | "INACTIVE"
+  | "SUSPENDED"
+  | "BANNED"
+  | "VERIFIED"
+  | "PENDING"
+  | "REJECTED"
+  | "APPROVE"
+  | "DISAPPROVE"
+  | "SUBMITTED";
 
 type TableStatusProps = {
-  status: UserStatus;
+  status: AllStatuses;
+  title?: string;
 };
 
-export const TableStatus = ({ status }: TableStatusProps) => {
+export const TableStatus = ({ status, title }: TableStatusProps) => {
+  const statusColor = React.useMemo(() => {
+    switch (status) {
+      case "ACTIVE":
+        return "#3E7DF6";
+      case "INACTIVE":
+        return "#D0D4EA";
+      case "SUSPENDED":
+        return "#FFC700";
+      case "BANNED":
+        return "#FF5244";
+      case "VERIFIED":
+        return "#32BA7C";
+      case "PENDING":
+        return "#FFA500";
+      case "REJECTED":
+        return "#FF5244";
+      case "APPROVE":
+        return "#32BA7C";
+      case "DISAPPROVE":
+        return "#FF5244";
+      case "SUBMITTED":
+        return "#FFA500";
+      default:
+        return "#FFFFFF";
+    }
+  }, [status]);
+
   return (
     <>
-      {/* // TODO: Handle status logic correlty */}
-      {status === "ACTIVE" ? (
-        <div className="flex items-center gap-x-1.5 text-[#3E7DF6]">
-          <ActiveIcon />
-          Active
-        </div>
-      ) : (
-        <div className="flex items-center gap-x-1.5 text-[#C7CBE0]">
-          <ActiveIcon className="fill-[#C7CBE0]" />
-          Inactive
-        </div>
-      )}
+      <div className={`flex items-center gap-x-1.5 text-[${statusColor}]`} title={title}>
+        <ActiveIcon className={`fill-[${statusColor}]`} />
+        {toTitleCase(status)}
+      </div>
     </>
   );
 };

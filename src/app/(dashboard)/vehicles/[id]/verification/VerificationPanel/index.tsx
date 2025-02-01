@@ -1,60 +1,78 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import * as React from "react";
+import { CldImage } from "next-cloudinary";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import { VerificationModalPeview } from "@/components/VerificationModalPreview";
 import { Suspense, useState } from "react";
-import { RejectVerificationModal } from "@/components/RejectVerificationModal";
+import { RejectVerificationModal } from "./RejectVerificationModal";
+import { useGetVehicleQuery, useGetVehiclesQuery, useVerifyVehicleMn } from "@/api";
 
 const vehicles = ["/vehic-1.svg", "/vehic-2.svg", "/vehic-3.svg"];
 
-export const VerificationPanel = () => {
+interface VerificationPanelProps {
+  vehicleId: string;
+}
+
+export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId }) => {
+  const { data: vehicle, error, isLoading } = useGetVehicleQuery(vehicleId);
+  const verifyVehicle = useVerifyVehicleMn(vehicleId, vehicle?.userId!);
+
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
-  const isVerified = true;
+  const isVerified = vehicle?.status === "VERIFIED";
+
+  const vehicleStatus = React.useMemo(() => {
+    switch (vehicle?.status) {
+      case "PENDING":
+        return { text: "Pending review...", color: "#F9C613" };
+      case "VERIFIED":
+        return { text: "Verified", color: "#32BA7C" };
+      case "REJECTED":
+        return { text: "Rejected", color: "#FF5244" };
+      case "SUSPENDED":
+        return { text: "Suspended", color: "#FF5244" };
+      default:
+        return { text: "Pending review...", color: "#F9C613" };
+    }
+  }, [vehicle?.status]);
 
   return (
     <div className="bg-background rounded-2xl p-10  *:font-montserrat">
       <div className="space-y-4">
         <div>
           <UI.SectionHeader text="Vehicle Type" />
-          <p className="font-semibold text-sm text-primary-gray mt-2">Bike</p>
+          <p className="font-semibold text-sm text-primary-gray mt-2">Motorbike</p>
         </div>
         <div>
           <UI.SectionHeader text="Vehicle Colour" />
-          <p className="font-semibold text-sm text-primary-gray mt-2">Red</p>
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.color}</p>
         </div>
         <div>
           <UI.SectionHeader text="Plate Number" />
-          <p className="font-semibold text-sm text-primary-gray mt-2">
-            X543-URL
-          </p>
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.plateNumber}</p>
         </div>
         <div>
           <UI.SectionHeader text="Status" />
           <p className="font-semibold text-sm  mt-2">
-            {isVerified ? (
-              <span className="text-[#32BA7C]">Verified</span>
-            ) : (
-              <span className="text-[#F9C613]">Pending verification...</span>
-            )}
+            <span className={`text-[${vehicleStatus.color}]`}>{vehicleStatus.text}</span>
           </p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Comment" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.statusComment}</p>
         </div>
 
         <div>
           <UI.SectionHeader text="Attachment" />
           <div className="flex items-center gap-x-3 mt-3">
-            {vehicles.map((img, i) => {
+            {vehicle?.photos?.map((img, i) => {
               return (
-                <motion.div
-                  key={i}
-                  layoutId={`preview-${img}`}
-                  className="relative w-[18rem]"
-                >
-                  <Image alt={img} src={img} width={395} height={240} />
+                <motion.div key={i} layoutId={`preview-${img}`} className="relative w-[18rem]">
+                  <CldImage alt={img} src={img} width={"395"} height={"240"} />
                   <button
                     onClick={() => setPreviewDoc(img)}
                     className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-2 right-3"
@@ -70,12 +88,16 @@ export const VerificationPanel = () => {
         </div>
         <div>
           {isVerified ? (
-            <UI.PrimaryButton variant="outline">
-              Suspend Verification
-            </UI.PrimaryButton>
+            <UI.PrimaryButton variant="outline">Suspend Verification</UI.PrimaryButton>
           ) : (
             <div className="flex items-center gap-x-4">
-              <UI.PrimaryButton>Verify</UI.PrimaryButton>
+              <UI.PrimaryButton
+                onClick={() => verifyVehicle.mutate()}
+                // TODO: Add a loading state
+                // isLoading={verifyVehicle.isPending}
+              >
+                Verify
+              </UI.PrimaryButton>
               <UI.PrimaryButton variant="outline" asChild>
                 <Link scroll={false} href={"?reject-verification=true"}>
                   Reject

@@ -3,34 +3,19 @@
 import { UI } from "@/components/ui";
 
 import React, { Suspense } from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { VehiclesTableBulkActions } from "./VehiclesTableBulkActions";
 import { VehicleTableFilter } from "./VehicleTableFilter";
 import { vehicleTableColumn as columns } from "./VehiclesTableColumn";
 import { DeleteVehicleModal } from "./DeleteModal";
 import { SuspendVehicleModal } from "./SuspendModal";
+import { useGetVehiclesQuery, useGetVehiclesReactTableQuery } from "@/api";
+import { Vehicle } from "@/services";
 
-interface DataTableProps<TData> {
-  data: TData[];
-}
+const LIMIT = 10;
 
-export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const table = useReactTable({
-    data,
-    columns: columns as ColumnDef<TData>[],
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      rowSelection,
-    },
-  });
+export const VechiclesTable: React.FC = () => {
+  const { data, isLoading, table, rowSelection } = useGetVehiclesReactTableQuery(columns);
 
   return (
     <div className="bg-background rounded-lg pb-6">
@@ -52,12 +37,7 @@ export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
                 {headerGroup.headers.map((header) => {
                   return (
                     <UI.TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </UI.TableHead>
                   );
                 })}
@@ -67,26 +47,19 @@ export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
           <UI.TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <UI.TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <UI.TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <UI.TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </UI.TableCell>
                   ))}
                 </UI.TableRow>
               ))
+            ) : isLoading ? (
+              <UI.TableLoading rowCount={LIMIT} columnCount={columns.length} />
             ) : (
               <UI.TableRow>
-                <UI.TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center font-faktum-test font-semibold"
-                >
+                <UI.TableCell colSpan={columns.length} className="h-24 text-center font-faktum-test font-semibold">
                   No results.
                 </UI.TableCell>
               </UI.TableRow>
@@ -95,13 +68,11 @@ export const VechiclesTable = <TData,>({ data }: DataTableProps<TData>) => {
         </UI.Table>
       </div>
       {/* Pagination */}
-      {data.length > 10 && (
-        <div className="mt-3 flex justify-end px-[1.5rem]">
-          <Suspense>
-            <UI.PaginationBtns currentPage={0} totalPages={4} />
-          </Suspense>
-        </div>
-      )}
+      <div className="mt-3 flex justify-end px-[1.5rem]">
+        <Suspense>
+          <UI.PaginationBtns currentPage={data?.currentPage ?? 0} totalPages={data?.totalPages ?? 0} />
+        </Suspense>
+      </div>
 
       {/* Modals */}
       <Suspense>

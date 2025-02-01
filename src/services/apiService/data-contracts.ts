@@ -434,12 +434,7 @@ export interface User {
   driversLicense?: string;
   driversLicenseDoc?: string;
   /** @default "PENDING" */
-  driversLicenseVerified:
-    | "APPROVE"
-    | "DISAPPROVE"
-    | "SUSPENDED"
-    | "SUBMITTED"
-    | "PENDING";
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   driversLicenseVerifiedComment?: string;
   /** @default "USER" */
   accessType: "USER" | "ADMIN";
@@ -588,14 +583,7 @@ export interface Business {
     code?: string;
   };
   /** @default "PARTNER" */
-  type:
-    | "BANKING"
-    | "CLIENT"
-    | "PARTNER"
-    | "SUPPLIER"
-    | "MERCHANT"
-    | "AGENCY_BANKING"
-    | "PICKRIDERS_AGENT";
+  type: "BANKING" | "CLIENT" | "PARTNER" | "SUPPLIER" | "MERCHANT" | "AGENCY_BANKING" | "PICKRIDERS_AGENT";
   /** @default false */
   isDeleted: boolean;
   /** @format date-time */
