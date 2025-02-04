@@ -6,13 +6,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 
 export const USER_KEY = {
+  PROFILE: "profile",
   USER: "user",
   USERS: "users",
 };
 
 export const useGetUserQuery = () =>
   useApiQuery({
-    queryKey: [USER_KEY.USER],
+    queryKey: [USER_KEY.PROFILE],
     queryFn: () => apiService.getUserProfile(),
   });
 
@@ -24,7 +25,7 @@ export const useGetUsersQuery = (query: GetUsersParams) =>
 
 export const useGetUserDetailsQuery = (userId: string) =>
   useApiQuery({
-    queryKey: [userId],
+    queryKey: [USER_KEY.USER, userId],
     queryFn: () => apiService.getUser(userId),
   });
 
