@@ -11,7 +11,7 @@ const LIMIT = 5;
 export const DataTable = () => {
   const { data, isLoading, table, rowSelection } = useGetUsersReactTableQuery(
     columns,
-    { limit: LIMIT, isRider: "false" },
+    { limit: LIMIT, isRider: "true" },
     {},
   );
 

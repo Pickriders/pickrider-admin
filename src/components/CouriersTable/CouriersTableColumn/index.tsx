@@ -8,31 +8,20 @@ import { SVG } from "@/components/svg";
 import { User } from "@/services";
 import dayjs from "dayjs";
 
-type liscenceVerified =
-  | "APPROVE"
-  | "DISAPPROVE"
-  | "SUSPENDED"
-  | "SUBMITTED"
-  | "PENDING";
+type liscenceVerified = "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
 
 export const couriersTableColumn: ColumnDef<User>[] = [
   {
     id: "business-courierSelect",
     header: ({ table }) => (
       <UI.Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
-      <UI.Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
+      <UI.Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} />
     ),
   },
   {
@@ -63,9 +52,7 @@ export const couriersTableColumn: ColumnDef<User>[] = [
     accessorKey: "driversLicenseVerified",
     header: "Liscence",
     cell: ({ row }) => {
-      const isVerified = row.getValue(
-        "driversLicenseVerified"
-      ) as liscenceVerified;
+      const isVerified = row.getValue("driversLicenseVerified") as liscenceVerified;
       return (
         <Link href={`/couriers/${row.index}/verification`} className="group">
           {isVerified === "APPROVE" ? (
@@ -101,16 +88,12 @@ export const couriersTableColumn: ColumnDef<User>[] = [
   {
     header: "Action",
     cell: ({ row }) => {
+      const userId = row.original._id;
       return (
         <div className="flex items-center  gap-x-8">
           <UI.Switch />
-          <UI.Button
-            size={"icon"}
-            variant={"outline"}
-            className="rounded-full shrink-0 size-6 [&_svg]:size-2"
-            asChild
-          >
-            <Link href={`/couriers/${row.index}/details`}>
+          <UI.Button size={"icon"} variant={"outline"} className="rounded-full shrink-0 size-6 [&_svg]:size-2" asChild>
+            <Link href={`/couriers/${userId}/details`}>
               <SVG.ChevronRightIcon />
             </Link>
           </UI.Button>
