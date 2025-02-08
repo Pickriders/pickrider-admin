@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-types": "npx swagger-typescript-api -p https://pickriders-api-nest-dev.onrender.com/docs/api-json -o ./src/services/apiService --debug --responses --axios --route-types --extract-request-params --extract-request-body --extract-response-body --modular --default-response any --patch --unwrap-response-data"
+    "generate-types": "npx swagger-typescript-api -p https://pickriders-api-dev.onrender.com/docs/api-json -o ./src/services/apiService --debug --responses --axios --route-types --extract-request-params --extract-request-body --extract-response-body --modular --default-response any --patch --unwrap-response-data"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",

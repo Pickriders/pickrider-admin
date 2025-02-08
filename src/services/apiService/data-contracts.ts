@@ -1605,6 +1605,8 @@ export interface ListAuditLogResponseDto {
 
 export type Object = object;
 
+export type GetHeartbeatData = any;
+
 export interface GetCountriesParams {
   order?: "ASC" | "DESC";
   page?: number;

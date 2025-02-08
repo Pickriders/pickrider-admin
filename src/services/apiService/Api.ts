@@ -96,6 +96,7 @@ import {
   GetCountryByIdData,
   GetCountryStateByIdData,
   GetCountryStatesData,
+  GetHeartbeatData,
   GetLogsData,
   GetNotificationsData,
   GetNotificationsParams,
@@ -222,6 +223,19 @@ import {
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @name GetHeartbeat
+   * @request GET:/api/v1/ping
+   * @response `200` `GetHeartbeatData`
+   */
+  getHeartbeat = (params: RequestParams = {}) =>
+    this.request<GetHeartbeatData, any>({
+      path: `/api/v1/ping`,
+      method: "GET",
+      ...params,
+    });
   /**
    * No description
    *

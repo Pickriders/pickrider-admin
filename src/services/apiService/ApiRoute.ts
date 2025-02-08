@@ -84,6 +84,7 @@ import {
   GetCountryByIdData,
   GetCountryStateByIdData,
   GetCountryStatesData,
+  GetHeartbeatData,
   GetLogsData,
   GetNotificationsData,
   GetOrderStatusChartData,
@@ -198,6 +199,22 @@ import {
 } from "./data-contracts";
 
 export namespace Api {
+  /**
+   * No description
+   * @name GetHeartbeat
+   * @request GET:/api/v1/ping
+   * @response `200` `GetHeartbeatData`
+   */
+  export namespace GetHeartbeat {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {
+      "x-api-key"?: string;
+    };
+    export type ResponseBody = GetHeartbeatData;
+  }
+
   /**
    * No description
    * @tags admin-configs
