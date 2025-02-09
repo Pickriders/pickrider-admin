@@ -21,6 +21,7 @@ import {
   AddVehiclesData,
   AddVehiclesDto,
   ApplyOrderCouponData,
+  ApproveDriversLicenseSubmissionData,
   AssignUserVehicleData,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
@@ -1025,9 +1026,27 @@ export namespace Api {
       userId: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = SubmitDriversLicenseRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = VerifyDriversLicense2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name ApproveDriversLicenseSubmission
+   * @request PATCH:/api/v1/admins/users/{userId}/drivers-license/approve
+   * @secure
+   * @response `200` `ApproveDriversLicenseSubmissionData`
+   */
+  export namespace ApproveDriversLicenseSubmission {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ApproveDriversLicenseSubmissionData;
   }
 
   /**

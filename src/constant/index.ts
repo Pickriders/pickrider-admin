@@ -1,6 +1,6 @@
 export * from "./select";
 
-export const BASE_URL = "https://pickriders-api-dev.onrender.com"; // TODO: Replace this with url from env instead
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const API_URL = `${BASE_URL}/api/v1`;
 
