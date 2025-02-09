@@ -7,6 +7,7 @@ import {
   CreateUserParams,
   CreateUserRequestDto,
   queryClient,
+  SubmitDriversLicenseRequestDto,
   UpdateEmailData,
   UpdateEmailRequestDto,
   UpdatePhoneNumberData,
@@ -15,22 +16,39 @@ import {
   UpdateProfilePhotoData,
   UpdateProfileRequestDto,
   UpdateUserProfileData,
+  VerifyDriversLicense2Data,
 } from "@/services";
 import { USER_KEY } from "../queries/user";
 import _ from "lodash";
 import { useApiMutation } from "@/hooks/useApiMutation";
+import { toast } from "sonner";
 
 export const useRegisterMn = (
   query: CreateUserParams,
-  options?: MutationOptions<CreateUserData, any, CreateUserRequestDto>
+  options?: MutationOptions<CreateUserData, any, CreateUserRequestDto>,
 ) =>
   useApiMutation({
     ...options,
     mutationFn: (varaibles) => apiService.createUser(query, varaibles),
   });
 
+export const useVerifyDriversLicense2 = (userId: string, options?: MutationOptions<object, any>) =>
+  useApiMutation({
+    ...options,
+    mutationFn: (varaibles) => apiService.verifyDriversLicense2(userId),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.USER] });
+      options?.onSuccess?.(data, variables, context);
+      toast.success("Courier Verifield");
+    },
+    onError: (error, variables, context) => {
+      toast.error(error.response?.data?.message ?? error?.message);
+      console.log(error, "error occured");
+    },
+  });
+
 export const useUpdateUserProfileMn = (
-  options?: MutationOptions<UpdateUserProfileData, any, UpdateProfileRequestDto>
+  options?: MutationOptions<UpdateUserProfileData, any, UpdateProfileRequestDto>,
 ) =>
   useApiMutation({
     ...options,
@@ -62,7 +80,7 @@ export const useUpdateUserPhoneMn = (options?: MutationOptions<UpdatePhoneNumber
   });
 
 export const useUpdateUserProfilePhotoMn = (
-  options?: MutationOptions<UpdateProfilePhotoData, any, UpdatePhotoRequestDto>
+  options?: MutationOptions<UpdateProfilePhotoData, any, UpdatePhotoRequestDto>,
 ) =>
   useApiMutation({
     ...options,
@@ -74,7 +92,7 @@ export const useUpdateUserProfilePhotoMn = (
   });
 
 export const useChangeUserPasswordMn = (
-  options?: MutationOptions<ChangeUserPasswordData, any, ChangePasswordRequestDto>
+  options?: MutationOptions<ChangeUserPasswordData, any, ChangePasswordRequestDto>,
 ) =>
   useApiMutation({
     ...options,

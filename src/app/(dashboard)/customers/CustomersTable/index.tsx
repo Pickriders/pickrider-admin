@@ -7,7 +7,7 @@ import React, { Suspense } from "react";
 import { customersColumns as columns } from "./CustomersColumn";
 import { useGetUsersReactTableQuery } from "@/api";
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 export const CustomersTable: React.FC = () => {
   const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT, isRider: "false" }, {});

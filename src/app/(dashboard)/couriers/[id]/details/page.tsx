@@ -20,6 +20,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
     notFound();
   }
 
+
   return (
     <div>
       <UI.BreadCrumbNav

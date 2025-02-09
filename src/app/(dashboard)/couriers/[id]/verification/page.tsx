@@ -5,15 +5,9 @@ import { Suspense } from "react";
 import { VerificationPanel } from "./VerificationPanel";
 import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
-
 const VerificationPage = ({ params }: { params: { id: string } }) => {
+  // console.log(data);
+
   if (!params.id) {
     notFound();
   }
@@ -27,7 +21,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
       />
 
       <div className="mt-16">
-        <VerificationPanel />
+        <VerificationPanel userId={params.id} />
       </div>
 
       {/* Preview */}

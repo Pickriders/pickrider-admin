@@ -12,9 +12,7 @@ import { Role } from "@/services";
 import { LoaderCircle } from "lucide-react";
 
 const validationSchema = Yup.object({
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+  email: Yup.string().email("Invalid email address").required("Email is required"),
   password: Yup.string()
     .min(8, "Password must be at least 8 characters")
     // .matches(/[a-zA-Z]/, "Password must contain at least one letter")
@@ -42,9 +40,7 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} className="relative" autoComplete="off">
-      <h1 className="font-semibold text-2xl font-clash-display">
-        Welcome back!
-      </h1>
+      <h1 className="font-semibold text-2xl font-clash-display">Welcome back!</h1>
       <motion.div
         initial={{ translateY: 40 }}
         animate={{ translateY: 0 }}
@@ -55,7 +51,6 @@ export const LoginForm = () => {
             labelValue="Email Address"
             id="email"
             type="email"
-            
             leftIcon={<SVG.Mail />}
             {...formik.getFieldProps("email")}
             errorMessage={formik.touched.email && formik.errors.email}
@@ -79,17 +74,14 @@ export const LoginForm = () => {
             </div>
             <p className="font-montserrat font-semibold text-primary-gray text-sm">
               Forgot Password?{" "}
-              <Link
-                href={"/auth/reset-password"}
-                className="text-primary hover:underline"
-              >
+              <Link href={"/auth/reset-password"} className="text-primary hover:underline">
                 Reset
               </Link>
             </p>
           </div>
         </div>
         <div className="mt-10">
-          <UI.PrimaryButton disabled={loginMutation.isPending}>
+          <UI.PrimaryButton type="submit" disabled={loginMutation.isPending}>
             {loginMutation.isPending ? (
               <>
                 <LoaderCircle size={20} className="animate-spin" />
