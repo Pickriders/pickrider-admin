@@ -57,8 +57,8 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
     <div className="bg-background rounded-2xl p-10  *:font-montserrat">
       <div className="space-y-4">
         <div>
-          <UI.SectionHeader text="Expiring Date" />
-          <p className="font-semibold text-sm text-primary-gray mt-2">23/11/26</p>
+          {/* <UI.SectionHeader text="Expiring Date" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">23/11/26</p> */}
         </div>
         <div>
           <UI.SectionHeader text="Status" />
