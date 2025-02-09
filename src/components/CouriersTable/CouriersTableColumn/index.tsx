@@ -52,9 +52,11 @@ export const couriersTableColumn: ColumnDef<User>[] = [
     accessorKey: "driversLicenseVerified",
     header: "Liscence",
     cell: ({ row }) => {
+      const userId = row.original._id;
       const isVerified = row.getValue("driversLicenseVerified") as liscenceVerified;
+
       return (
-        <Link href={`/couriers/${row.index}/verification`} className="group">
+        <Link href={`/couriers/${userId}/verification`} className="group">
           {isVerified === "APPROVE" ? (
             <div className="flex items-center font-bold gap-x-4">
               <SVG.VerificationBadgeIcon /> Verified

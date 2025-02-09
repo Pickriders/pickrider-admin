@@ -399,6 +399,11 @@ export interface KYCDetailsSchemaDto {
   statusComment: string;
 }
 
+export interface ReviewDetailsDto {
+  average?: number;
+  count?: number;
+}
+
 export interface User {
   /**
    * @minLength 3
@@ -499,6 +504,7 @@ export interface User {
   /** @format date-time */
   passwordUpdatedAt?: string;
   business?: Business;
+  reviews?: ReviewDetailsDto;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -1391,11 +1397,6 @@ export interface RateRiderRequestDto {
   comment: string;
 }
 
-export interface RateRiderResponseDto {
-  message: string;
-  status: string;
-}
-
 export interface UpdateVehicleStatusRequestDto {
   /** @minLength 15 */
   reason: string;
@@ -1751,7 +1752,9 @@ export type GetUsersData = ListUserResponseDto;
 
 export type GetUserData = User;
 
-export type VerifyDriversLicense2Data = object;
+export type VerifyDriversLicense2Data = User;
+
+export type ApproveDriversLicenseSubmissionData = object;
 
 export type UpdateDriversLicenseData = User;
 
@@ -1996,7 +1999,7 @@ export type UpdateBusinessVehicleData = Vehicle;
 
 export type GetReviewsData = ListReviewResponseDto;
 
-export type RateRiderData = RateRiderResponseDto;
+export type RateRiderData = Review;
 
 export type UpdateUserVehicleData = Vehicle;
 

@@ -7,13 +7,15 @@ import { flexRender } from "@tanstack/react-table";
 import { couriersTableColumn as columns } from "../CouriersTableColumn";
 import { useGetUsersReactTableQuery } from "@/api";
 
-const LIMIT = 5;
+const LIMIT = 10;
 export const DataTable = () => {
   const { data, isLoading, table, rowSelection } = useGetUsersReactTableQuery(
     columns,
     { limit: LIMIT, isRider: "true" },
     {},
   );
+
+  console.log(data);
 
   return (
     <div>
