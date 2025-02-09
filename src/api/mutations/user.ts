@@ -32,18 +32,22 @@ export const useRegisterMn = (
     mutationFn: (varaibles) => apiService.createUser(query, varaibles),
   });
 
-export const useVerifyDriversLicense2 = (userId: string, options?: MutationOptions<object, any>) =>
+export const useVerifyDriversLicense2 = (
+  userId: string,
+  options?: MutationOptions<object, any, SubmitDriversLicenseRequestDto>,
+) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.verifyDriversLicense2(userId),
+    mutationFn: (varaibles) => apiService.verifyDriversLicense2(userId, varaibles),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: [USER_KEY.USER] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.USERS] });
+
       options?.onSuccess?.(data, variables, context);
-      toast.success("Courier Verifield");
+      toast.success("License verified successfully!");
     },
     onError: (error, variables, context) => {
       toast.error(error.response?.data?.message ?? error?.message);
-      console.log(error, "error occured");
     },
   });
 

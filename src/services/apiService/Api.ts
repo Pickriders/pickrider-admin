@@ -21,6 +21,7 @@ import {
   AddVehiclesData,
   AddVehiclesDto,
   ApplyOrderCouponData,
+  ApproveDriversLicenseSubmissionData,
   AssignUserVehicleData,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
@@ -1072,9 +1073,28 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `VerifyDriversLicense2Data`
    */
-  verifyDriversLicense2 = (userId: string, params: RequestParams = {}) =>
+  verifyDriversLicense2 = (userId: string, data: SubmitDriversLicenseRequestDto, params: RequestParams = {}) =>
     this.request<VerifyDriversLicense2Data, any>({
       path: `/api/v1/admins/users/${userId}/drivers-license/verify`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name ApproveDriversLicenseSubmission
+   * @request PATCH:/api/v1/admins/users/{userId}/drivers-license/approve
+   * @secure
+   * @response `200` `ApproveDriversLicenseSubmissionData`
+   */
+  approveDriversLicenseSubmission = (userId: string, params: RequestParams = {}) =>
+    this.request<ApproveDriversLicenseSubmissionData, any>({
+      path: `/api/v1/admins/users/${userId}/drivers-license/approve`,
       method: "PATCH",
       secure: true,
       format: "json",

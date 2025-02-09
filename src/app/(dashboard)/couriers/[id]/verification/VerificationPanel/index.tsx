@@ -21,7 +21,13 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
   const { mutate, isPending: isVerifiying } = useVerifyDriversLicense2(userId);
 
   const handleVerification = async () => {
-    mutate();
+    if (data && data.driversLicense) {
+      mutate({
+        licenseNumber: data.driversLicense,
+        businessId: data.businessId,
+        licenseDocument: data.driversLicenseDoc,
+      });
+    }
   };
 
   const licenseStatus = useMemo(() => {
