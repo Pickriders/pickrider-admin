@@ -32,7 +32,7 @@ export const useRegisterMn = (
     mutationFn: (varaibles) => apiService.createUser(query, varaibles),
   });
 
-export const useVerifyDriversLicense2 = (
+export const useVerifyDriversLicenseMn = (
   userId: string,
   options?: MutationOptions<object, any, SubmitDriversLicenseRequestDto>,
 ) =>

@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { VerificationModalPeview } from "@/components/VerificationModalPreview";
 import { useMemo, useState } from "react";
-import { useGetUserDetailsQuery, useVerifyDriversLicense2 } from "@/api";
+import { useGetUserDetailsQuery, useVerifyDriversLicenseMn } from "@/api";
 import { LoaderCircle } from "lucide-react";
 
 interface IVerificationPanel {
@@ -18,7 +18,7 @@ interface IVerificationPanel {
 export const VerificationPanel = ({ userId }: IVerificationPanel) => {
   const { data, isLoading, error, isError } = useGetUserDetailsQuery(userId);
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
-  const { mutate, isPending: isVerifiying } = useVerifyDriversLicense2(userId);
+  const { mutate, isPending: isVerifiying } = useVerifyDriversLicenseMn(userId);
 
   const handleVerification = async () => {
     if (data && data.driversLicense) {
