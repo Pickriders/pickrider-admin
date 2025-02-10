@@ -8,13 +8,13 @@ export const useApiQuery = <
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UndefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey>,
+  options: UndefinedInitialDataOptions<TQueryFnData, TError | any, TData, TQueryKey>,
 ) => {
   const res = useQuery(options);
 
   React.useEffect(() => {
     if (res.error) {
-      toast.error(res.error as string);
+      toast.error(res.error.response?.data?.message || res.error.message);
     }
   }, [res.error]);
 

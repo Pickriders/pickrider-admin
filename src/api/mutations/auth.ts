@@ -3,7 +3,6 @@ import {
   apiService,
   CheckTokenValidityData,
   LoginAdminsData,
-  LoginData,
   LoginRequestDto,
   PasswordResetData,
   PasswordResetRequestData,
@@ -30,7 +29,6 @@ export const useLoginMn = (options?: MutationOptions<LoginAdminsData, any, Login
     ...options,
     mutationFn: (varaibles) => apiService.loginAdmins(varaibles),
     onError(error, variables, context) {
-      toast.error(error.response?.data?.message ?? error?.message);
       if (error?.code === "UNVERIFIED") {
         // TODO: Redirect the user to verification screen
       }
