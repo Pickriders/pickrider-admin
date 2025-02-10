@@ -2,6 +2,7 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
+import { useQueryModal } from "@/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 
 export type Rows = {
@@ -16,9 +17,7 @@ export const columns: ColumnDef<Rows>[] = [
   {
     header: "User",
     accessorKey: "user",
-    cell: ({ row }) => (
-      <UI.TableUser name="Nnamani Kester" subText="Customer" />
-    ),
+    cell: ({ row }) => <UI.TableUser name="Nnamani Kester" subText="Customer" />,
   },
   {
     header: "Timestamp",
@@ -54,16 +53,24 @@ export const columns: ColumnDef<Rows>[] = [
     ),
   },
   {
-    // header: "Date Added",
     id: "query",
-    cell: ({ row }) => (
-      <UI.Button
-        variant={"ghost"}
-        className="text-[#2282C8] hover:text-[#2282C8]"
-      >
-        <SVG.SearchListIcon />
-        Query
-      </UI.Button>
-    ),
+    cell: ({ row }) => {
+      return <QueryButton />;
+    },
   },
 ];
+
+const QueryButton = () => {
+  const setParam = useQueryModal([{ key: "jsonPreview", value: true }]).setParam;
+
+  const handlePreview = () => {
+    setParam("jsonPreview", "true");
+  };
+
+  return (
+    <UI.Button onClick={handlePreview} variant={"ghost"} className="text-[#2282C8] hover:text-[#2282C8]">
+      <SVG.SearchListIcon />
+      Query
+    </UI.Button>
+  );
+};
