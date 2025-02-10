@@ -1,0 +1,25 @@
+@import "/src/styles/abstracts/mixins";
+@import "/src/styles/abstracts/variables";
+
+.statsCard {
+  @include border-1;
+  display: flex;
+  align-items: center;
+  gap: 0 1.5rem;
+  padding: 1.2rem 2rem;
+  border-radius: $rounded-lg;
+  background-color: $white;
+
+  &_info {
+    overflow: hidden;
+    > :last-child {
+      margin-top: 0.7rem;
+    }
+  }
+}
+
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

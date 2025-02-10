@@ -1,0 +1,23 @@
+@import "../../../styles/abstracts/variables";
+
+.text {
+  font-family: "Faktum Test";
+  color: $primary-color;
+  font-weight: 400;
+  letter-spacing: -0.025rem;
+  font-size: 1.2rem;
+  line-height: 1.875rem;
+
+  &.label {
+    font-size: 1.4rem;
+    letter-spacing: -0.04rem;
+    text-transform: capitalize;
+  }
+
+  &.heading {
+    font-size: 1.2rem;
+    line-height: 0.875rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+}

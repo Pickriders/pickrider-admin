@@ -1,0 +1,80 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+@import "../../../styles/base/animations";
+
+.trigger {
+  @include border-1;
+  display: flex;
+  place-items: center;
+  justify-content: space-between;
+  border-radius: $rounded-lg;
+  background-color: $white;
+  font-size: 1.4rem;
+  height: 4rem;
+  padding: 1.5rem 1.5rem;
+  color: $primary-color;
+  column-gap: 0.7rem;
+  overflow: hidden;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.content {
+  position: relative;
+  max-height: 24rem;
+  min-width: 10rem;
+  overflow: hidden;
+  border-radius: $rounded-md;
+  background-color: $white;
+  box-shadow: $shadow-md;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  z-index: 99999;
+
+  &_viewport {
+    padding: 0.7rem;
+    height: var(--radix-select-trigger-height);
+    width: 100%;
+    min-width: var(--radix-select-trigger-width);
+    z-index: 99999;
+  }
+
+  &[data-state="open"] {
+    animation-name: animate-in;
+  }
+}
+
+.item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: default;
+  user-select: none;
+  place-items: center;
+  border-radius: $rounded-md;
+  padding: 0.7rem 0.8rem 0.6rem 0.8rem;
+  font-size: 1.4rem;
+  outline: none;
+  color: $primary-color;
+  text-transform: capitalize;
+
+  &:focus {
+    background: #f3f4f6;
+  }
+
+  &_indicator {
+    position: absolute;
+    left: 0.5rem;
+    display: flex;
+    place-items: center;
+    justify-content: center;
+  }
+
+  &_icon {
+    height: 1.2rem;
+    width: 1.2rem;
+  }
+}

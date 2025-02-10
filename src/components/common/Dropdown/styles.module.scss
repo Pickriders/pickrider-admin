@@ -1,0 +1,41 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+@import "../../../styles/base/animations";
+
+.menuTrigger {
+  outline: none;
+}
+
+.menuContent {
+  z-index: 50;
+  min-width: 8rem;
+  max-width: 50rem;
+  overflow: hidden;
+  border-radius: $rounded-lg;
+  background-color: $white;
+  box-shadow: $shadow-md;
+  padding: 0.5rem;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+
+  &[data-state="open"] {
+    animation-name: animate-in;
+  }
+}
+
+.menuItem {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  place-items: center;
+  border-radius: $rounded-sm;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.4rem;
+  outline: none;
+
+  &:focus {
+    background-color: #f3f4f6;
+  }
+}

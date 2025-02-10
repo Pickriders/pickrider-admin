@@ -1,0 +1,37 @@
+// DEFINED BORDER MIXINS
+
+@mixin border {
+  border: 1px solid $gray-200;
+}
+
+@mixin border-1 {
+  border: 1.4px solid $gray-200;
+}
+
+// DEFINED CENTER MIXINS
+
+@mixin absCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin gridCenter {
+  display: grid;
+  place-items: center;
+}
+
+// Mixin to simplify media queries for min-width
+@mixin respond-to-min($breakpoint) {
+  @media only screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Mixin to simplify media queries for max-width
+@mixin respond-to-max($breakpoint) {
+  @media only screen and (max-width: $breakpoint) {
+    @content;
+  }
+}

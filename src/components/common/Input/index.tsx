@@ -1,0 +1,37 @@
+import style from "./styles.module.scss";
+
+export const Input = ({
+  label,
+  rightIcon,
+  leftIcon,
+  placeholder,
+  ...rest
+}: InputProps) => {
+  const className = `${style.input} ${rightIcon && style.input_withRightIcon} ${
+    leftIcon && style.input_withLeftIcon
+  } ${label && style.label}`;
+
+  return (
+    <div className={style.inputContainer}>
+      {leftIcon && (
+        <span className={`${style.input_leftIcon} ${style.input_icon}`}>
+          {leftIcon}
+        </span>
+      )}
+
+      {rightIcon && (
+        <span className={`${style.input_rightIcon}  ${style.input_icon}`}>
+          {rightIcon}
+        </span>
+      )}
+
+      <input
+        className={className}
+        {...rest}
+        placeholder={placeholder || label}
+      />
+
+      <label className={style.input_label}>{label}</label>
+    </div>
+  );
+};

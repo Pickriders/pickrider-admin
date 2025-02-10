@@ -1,0 +1,81 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+
+.logo {
+  min-height: 9.6rem;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  border-bottom: 1px solid $gray-100;
+}
+
+.sidebar {
+  background-color: $white;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  width: 250px;
+  flex-shrink: 0;
+  display: none;
+
+  @include respond-to-min($breakpoint-lg) {
+    position: sticky;
+    display: block;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+  max-height: 100%;
+  height: calc(100% - 9.6rem);
+  overflow-y: auto;
+  padding: 2rem 0;
+}
+
+.link {
+  font-size: 1.6rem;
+  font-family: "ClashDisplay";
+  text-transform: capitalize;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  column-gap: 1.5rem;
+  padding: 1rem 3rem;
+  color: $primary-color;
+  height: 56px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: $transition;
+  position: relative;
+
+  &:hover {
+    background-color: $gray-50;
+  }
+
+  &.active {
+    font-weight: 700;
+    color: $black;
+  }
+
+  .selectorIcon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.linkIcon {
+  @include gridCenter;
+  flex-shrink: 0;
+}
+
+.border {
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid $gray-100;
+  display: inline-block;
+}

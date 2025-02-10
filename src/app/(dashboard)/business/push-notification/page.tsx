@@ -1,0 +1,37 @@
+"use client";
+
+import { UI } from "@/components/ui";
+import { SelectedTags } from "@/components/SelectedTags";
+import React from "react";
+import { FormMessage } from "@/components/FormMessage";
+
+const PushNotification = () => {
+  const [title, setTitle] = React.useState("");
+  const [message, setMessage] = React.useState("");
+
+  return (
+    <div>
+      <UI.BreadCrumbNav
+        pageLinks={[{ href: "/business", label: "Business" }]}
+        rootPageLink="/business"
+        currentPage="Push Notification"
+      />
+
+      <section className="bg-background mt-10 px-7 py-6 rounded-lg">
+        <h2 className="font-montserrat text-xs font-semibold text-foreground">
+          Push Notification
+        </h2>
+        <div className="mt-9 ">
+          <SelectedTags />
+        </div>
+        <FormMessage
+          message={message}
+          onMessageChange={setMessage}
+          title={title}
+          onTitleChange={setTitle}
+        />
+      </section>
+    </div>
+  );
+};
+export default PushNotification;

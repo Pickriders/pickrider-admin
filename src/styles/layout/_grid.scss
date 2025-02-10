@@ -1,0 +1,90 @@
+@import "../abstracts/mixins";
+@import "../abstracts/variables";
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.65rem;
+  margin-right: -0.65rem;
+
+  [class^="col-"] {
+    @include respond-to-max($breakpoint-md) {
+      width: 100%;
+    }
+  }
+}
+
+.col {
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+  width: 100%;
+}
+
+.col-12 {
+  width: calc(100%);
+}
+
+.col-11 {
+  width: calc((100% / 12) * 11);
+}
+
+.col-10 {
+  width: calc((100% / 12) * 10);
+}
+
+.col-9 {
+  width: calc((100% / 12) * 9);
+}
+
+.col-8 {
+  width: calc((100% / 12) * 8);
+}
+
+.col-7 {
+  width: calc((100% / 12) * 7);
+}
+
+.col-6 {
+  width: calc((100% / 12) * 6 - 1.5rem);
+  margin-left: 0.65rem;
+  margin-right: 0.65rem;
+}
+
+.col-5 {
+  width: calc((100% / 12) * 5);
+}
+
+// .col-5 {
+//   width: calc((20% - 1.3rem) - (1.3rem / 5));
+// }
+
+.col-4 {
+  width: calc((100% / 12) * 4);
+}
+
+.col-3 {
+  width: calc((100% / 12) * 3);
+}
+
+.col-2 {
+  width: calc((100% / 12) * 2);
+}
+
+.col-1 {
+  width: calc(100% / 12);
+}
+
+.col-lg-5 {
+  @include respond-to-min($breakpoint-lg) {
+    width: calc((20% - 1.3rem) - (1.3rem / 5));
+  }
+}
+
+.main {
+  width: 100%;
+
+  @include respond-to-min($breakpoint-lg) {
+    width: calc(100% - 250px);
+  }
+}

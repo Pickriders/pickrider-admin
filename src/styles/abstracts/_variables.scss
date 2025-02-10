@@ -1,0 +1,30 @@
+// COLORS
+$primary-color: #505582;
+$main-color: #2e1030;
+$business-color: #956810;
+
+$white: #fff;
+$black: #1e1f1f;
+
+$gray-50: #f9fafb;
+$gray-100: #f3f3f3;
+$gray-200: #c7cbe0;
+//  BORDER-RADIUS
+$rounded-sm: 2px;
+$rounded-md: 5px;
+$rounded-lg: 8px;
+$rounded-full: 9999px;
+
+// TRANSITION
+$transition: all 0.3s ease;
+
+// BOX-SHADOWS
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+// BREAK-POINTS
+$breakpoint-sm: 650px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-2xl: 1536px;

@@ -1,0 +1,84 @@
+"use client";
+
+import { SVG } from "@/components/svg";
+import { SidebarLink } from "./SidebarLink";
+import { useTheme } from "next-themes";
+
+const SIDEBAR_LINKS = [
+  {
+    activeIcon: <SVG.HomeIconFill />,
+    icon: <SVG.HomeIcon />,
+    label: "Dashboard",
+    href: "/dashboard",
+  },
+  {
+    activeIcon: <SVG.PersonGroupBoldFillIcon width={25} height={25} />,
+    icon: <SVG.PersonGropBoldIcon />,
+    label: "Customers",
+    href: "/customers",
+  },
+  {
+    activeIcon: <SVG.PeopleGroupFill width={23} height={17} />,
+    icon: <SVG.PepleGroup />,
+    label: "Business",
+    href: "/business",
+  },
+  {
+    activeIcon: <SVG.PersonAcceptFillIcon width={23} height={17} />,
+    icon: <SVG.PersonAcceptIcon />,
+    label: "Couriers",
+    href: "/couriers",
+  },
+  {
+    activeIcon: <SVG.CategoryFill />,
+    icon: <SVG.CategoryIcon />,
+    label: "Vehicles",
+    href: "/vehicles",
+  },
+  {
+    activeIcon: <SVG.CardFill />,
+    icon: <SVG.Card />,
+    label: "Finances",
+    href: "/finances",
+  },
+  {
+    activeIcon: <SVG.MenuIcon className="fill-white" />,
+    icon: <SVG.MenuIcon />,
+    label: "Orders",
+    href: "/orders",
+  },
+  {
+    icon: <SVG.ReportIcon />,
+    label: "Reports & Complaints",
+    href: "/reports",
+  },
+  {
+    activeIcon: <SVG.ShieldKeyFill />,
+    icon: <SVG.ShieldKey />,
+    label: "Admin",
+    href: "/admin",
+  },
+];
+
+export const Sidebar = () => {
+  const { setTheme, theme } = useTheme();
+
+  return (
+    <aside className="w-[15rem] sticky top-[6.2rem] left-0 bg-background border-r  h-[calc(100vh-6.2rem)] pt-6">
+      <ul className=" max-h-full ">
+        {SIDEBAR_LINKS.map((link, i) => {
+          return (
+            <li key={i}>
+              <SidebarLink
+                path={link.href}
+                label={link.label}
+                icon={link.icon}
+                activeIcon={link.activeIcon}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </aside>
+  );
+};

@@ -1,0 +1,42 @@
+@import "../../../styles/abstracts/variables";
+
+.button {
+  font-family: "ClashDisplay", "Courier New", Courier, monospace;
+  padding: 1rem 4rem;
+  border-radius: $rounded-lg;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: inline-flex;
+  gap: 0 1rem;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  &.business {
+    background-color: $business-color;
+    color: $white;
+  }
+
+  &.primary {
+    background-color: $black;
+    padding: 0.7rem 2rem;
+    color: $white;
+  }
+  &.ghost {
+    font-family: "Faktum Test";
+    background-color: transparent;
+    padding: 0.7rem 1rem;
+    color: $black;
+
+    &:hover {
+      background-color: $gray-50;
+    }
+  }
+
+  &.outline {
+    font-family: "Faktum Test";
+    background-color: #fcfcfc;
+    padding: 0.6rem 2rem;
+    border: 1px solid $gray-100;
+  }
+}

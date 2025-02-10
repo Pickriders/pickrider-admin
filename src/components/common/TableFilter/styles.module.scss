@@ -1,0 +1,9 @@
+@import "/src/styles/abstracts/variables";
+
+.dropdown {
+  &_filterHeading {
+    font-size: 1.4rem;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid $gray-100;
+  }
+}
