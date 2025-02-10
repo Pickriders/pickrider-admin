@@ -6,7 +6,6 @@ import { flexRender } from "@tanstack/react-table";
 import { UI } from "@/components/ui";
 import { useGetCountryStatesReactTableQuery } from "@/api";
 import { columns } from "../columns";
-import { useSearchParams } from "next/navigation";
 
 const LIMIT = 10;
 
@@ -15,7 +14,7 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ countryId }) => {
-  const { table, isLoading, data } = useGetCountryStatesReactTableQuery(countryId, columns);
+  const { table, isLoading } = useGetCountryStatesReactTableQuery(countryId, columns);
 
   return (
     <>
