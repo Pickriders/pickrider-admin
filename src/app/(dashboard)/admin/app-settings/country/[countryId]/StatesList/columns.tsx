@@ -24,7 +24,7 @@ export const columns: ColumnDef<State>[] = [
           <Trash2 color="#FF5244" size={20} />
         </UI.Button>
         <Link
-          href={`states/${row.original._id}/state-details`}
+          href={`${row.original.countryId}/states/${row.original._id}`}
           className="size-[1.3rem] grid place-items-center rounded-full border"
         >
           <ChevronRight size={12} />

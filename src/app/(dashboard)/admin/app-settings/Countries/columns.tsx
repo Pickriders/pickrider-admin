@@ -24,7 +24,7 @@ export const columns: ColumnDef<Country>[] = [
           <Trash2 color="#FF5244" size={20} />
         </UI.Button>
         <Link
-          href={`app-settings/${row.original._id}/country-details`}
+          href={`app-settings/country/${row.original._id}`}
           className="size-[1.3rem] grid place-items-center rounded-full border"
         >
           <ChevronRight size={12} />

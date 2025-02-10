@@ -3,11 +3,11 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { DataTable } from "./DataTable";
 
-interface StatesProps {
+interface StatesListProps {
   countryId: string;
 }
 
-export const States: React.FC<StatesProps> = (props) => {
+export const StatesList: React.FC<StatesListProps> = (props) => {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between">

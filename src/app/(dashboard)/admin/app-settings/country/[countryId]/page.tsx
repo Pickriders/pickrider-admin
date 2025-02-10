@@ -1,10 +1,10 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
-import { States } from "./States";
+import { StatesList } from "./StatesList";
 import { CountryConfig } from "./CountryConfig";
 
-const CountryDetailsPage = ({ params }: { params: { id: string } }) => {
-  if (!params.id) {
+const CountryDetailsPage = ({ params }: { params: { countryId: string } }) => {
+  if (!params.countryId) {
     notFound();
   }
 
@@ -21,9 +21,9 @@ const CountryDetailsPage = ({ params }: { params: { id: string } }) => {
       <section className="mt-12 bg-background rounded-2xl p-6">
         <div>
           <UI.PrimaryHeading text="Country Details" />
-          <CountryConfig countryId={params.id} />
+          <CountryConfig countryId={params.countryId} />
 
-          <States countryId={params.id} />
+          <StatesList countryId={params.countryId} />
         </div>
       </section>
     </div>
