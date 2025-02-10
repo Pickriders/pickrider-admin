@@ -85,14 +85,8 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
             <UI.PrimaryButton variant="outline">Suspend Verification</UI.PrimaryButton>
           ) : (
             <div className="flex items-center gap-x-4">
-              <UI.PrimaryButton disabled={isVerifiying} onClick={handleVerification}>
-                {isVerifiying ? (
-                  <div className="flex items-center gap-x-1">
-                    <LoaderCircle size={15} className="animate-spin" /> Verifying...
-                  </div>
-                ) : (
-                  "Verify"
-                )}
+              <UI.PrimaryButton isLoading={isVerifiying} loadingText="Verifying..." onClick={handleVerification}>
+                Verify
               </UI.PrimaryButton>
               <UI.PrimaryButton disabled={isVerifiying} variant="outline" asChild>
                 <Link scroll={false} href={"?reject-verification=true"}>

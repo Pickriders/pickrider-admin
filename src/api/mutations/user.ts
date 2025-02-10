@@ -16,7 +16,6 @@ import {
   UpdateProfilePhotoData,
   UpdateProfileRequestDto,
   UpdateUserProfileData,
-  VerifyDriversLicense2Data,
 } from "@/services";
 import { USER_KEY } from "../queries/user";
 import _ from "lodash";
@@ -45,9 +44,6 @@ export const useVerifyDriversLicenseMn = (
 
       options?.onSuccess?.(data, variables, context);
       toast.success("License verified successfully!");
-    },
-    onError: (error, variables, context) => {
-      toast.error(error.response?.data?.message ?? error?.message);
     },
   });
 

@@ -3,19 +3,23 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { DataTable } from "./DataTable";
 
-export const Countries = () => {
+interface StatesProps {
+  countryId: string;
+}
+
+export const States: React.FC<StatesProps> = (props) => {
   return (
-    <div>
+    <div className="mt-8">
       <div className="flex items-center justify-between">
-        <h1 className="font-clash-display font-semibold">Countries</h1>
+        <h1 className="font-clash-display font-semibold">States</h1>
         <UI.Button asChild>
-          <Link href={"/admin/app-settings/add-country"}>
-            <Plus size={13} /> Add Country
+          <Link href={"/admin/app-settings/add-state"}>
+            <Plus size={13} /> Add State
           </Link>
         </UI.Button>
       </div>
       <div className="mt-8">
-        <DataTable />
+        <DataTable countryId={props.countryId} />
       </div>
     </div>
   );
