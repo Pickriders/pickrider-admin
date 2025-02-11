@@ -30,21 +30,30 @@ export const SuspendVerificationModal = ({ userId, vehicleId }: SuspendVerificat
   const { mutate, isPending } = useSuspendVehicleMn(vehicleId, userId);
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [text, setText] = useState("");
+  const [otherReason, setOtherReason] = useState(false);
 
-  const isDisabled = !selectedReason && text.trim() === "";
+  const isDisabled = !selectedReason && !text.trim();
 
   const handleSuspend = () => {
-    if (!selectedReason) return;
+    if (!selectedReason && !text) return;
+
+    const suspenseReasons = selectedReason && text ? `${selectedReason} - ${text}` : selectedReason || text;
+
     mutate(
-      { reason: selectedReason },
+      { reason: suspenseReasons },
       {
         onSuccess: () => {
-          closeModal();
-          setSelectedReason(null);
-          setText("");
+          handleCloseModal();
         },
       },
     );
+  };
+
+  const handleCloseModal = () => {
+    closeModal();
+    setSelectedReason(null);
+    setText("");
+    setOtherReason(false);
   };
 
   return (
@@ -66,14 +75,27 @@ export const SuspendVerificationModal = ({ userId, vehicleId }: SuspendVerificat
                 </li>
               ))}
             </UI.RadioGroup>
+            <li className="flex items-center gap-x-3">
+              <UI.Checkbox
+                id={"other"}
+                checked={otherReason}
+                onCheckedChange={(checked) => setOtherReason(checked as boolean)}
+              />
+              <label className="text-sm font-semibold text-primary-gray" htmlFor={"other"}>
+                Other
+              </label>
+            </li>
           </ul>
 
-          {/* <UI.TextArea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="h-40"
-            placeholder="Specify..."
-          /> */}
+          {otherReason && (
+            <UI.TextArea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="h-40"
+              placeholder="Specify..."
+            />
+          )}
+
           <div className="mt-4 space-y-3">
             <UI.PrimaryButton
               isLoading={isPending}
@@ -83,7 +105,7 @@ export const SuspendVerificationModal = ({ userId, vehicleId }: SuspendVerificat
             >
               Suspend
             </UI.PrimaryButton>
-            <UI.PrimaryButton onClick={closeModal} type="button" variant="outline">
+            <UI.PrimaryButton onClick={handleCloseModal} type="button" variant="outline">
               Cancel
             </UI.PrimaryButton>
           </div>
