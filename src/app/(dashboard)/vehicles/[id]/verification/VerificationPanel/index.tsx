@@ -47,6 +47,18 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
           <p className="font-semibold text-sm text-primary-gray mt-2">Motorbike</p>
         </div>
         <div>
+          <UI.SectionHeader text="Name" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.name}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Make" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.make}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Model" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.model}</p>
+        </div>
+        <div>
           <UI.SectionHeader text="Vehicle Colour" />
           <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.color}</p>
         </div>
@@ -59,6 +71,14 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
           <p className="font-semibold text-sm  mt-2">
             <span className={`text-[${vehicleStatus.color}]`}>{vehicleStatus.text}</span>
           </p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Engine Number" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.engineNumber}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Chassis Number" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.chasisNumber}</p>
         </div>
         <div>
           <UI.SectionHeader text="Comment" />
@@ -92,8 +112,8 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
             <div className="flex items-center gap-x-4">
               <UI.PrimaryButton
                 onClick={() => verifyVehicle.mutate()}
-                // TODO: Add a loading state
-                // isLoading={verifyVehicle.isPending}
+                isLoading={verifyVehicle.isPending}
+                loadingText="Verifying..."
               >
                 Verify
               </UI.PrimaryButton>

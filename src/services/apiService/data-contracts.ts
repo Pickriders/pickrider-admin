@@ -997,6 +997,11 @@ export interface UpdateDriverLicenseRequestDto {
   comment?: string;
 }
 
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
 export interface WalletCreateRequestDto {
   currency: string;
   /**
