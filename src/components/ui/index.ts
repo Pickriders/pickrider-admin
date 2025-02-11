@@ -39,6 +39,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
 
 import { PrimaryHeading } from "./PrimaryHeading";
+import { RadioGroup, RadioGroupItem } from "./Radiobox";
 import { SectionHeader } from "./SectionHeader";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./Select";
 import { Skeleton } from "./Skeleton";
@@ -53,6 +54,8 @@ import { Tag } from "./Tag";
 import { TextArea } from "./Textarea";
 
 export const UI = {
+  RadioGroupItem,
+  RadioGroup,
   Skeleton,
   DropdownMenu,
   DropdownMenuCheckboxItem,
