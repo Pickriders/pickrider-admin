@@ -46,11 +46,7 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
   }, [data?.driversLicenseVerified]);
 
   if (!data && isLoading) {
-    return (
-      <div className="bg-background rounded-2xl p-10 h-[25rem] grid place-items-center">
-        <LoaderCircle size={40} className="animate-spin" />
-      </div>
-    );
+    return <UI.PageLoadingUI />;
   }
 
   return (

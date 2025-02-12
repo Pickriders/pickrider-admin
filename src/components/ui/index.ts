@@ -34,6 +34,7 @@ import { Input } from "./Input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./InputOtp";
 import { Label } from "./Label";
 import { Overlay } from "./Overlay";
+import { PageLoadingUI } from "./PageLoading";
 import { PaginationBtns } from "./PaginationBtns";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
@@ -54,6 +55,7 @@ import { Tag } from "./Tag";
 import { TextArea } from "./Textarea";
 
 export const UI = {
+  PageLoadingUI,
   RadioGroupItem,
   RadioGroup,
   Skeleton,
