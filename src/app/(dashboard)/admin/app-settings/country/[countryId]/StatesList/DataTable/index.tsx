@@ -4,13 +4,17 @@ import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
 
 import { UI } from "@/components/ui";
-import { useGetCountriesReactTableQuery } from "@/api";
+import { useGetCountryStatesReactTableQuery } from "@/api";
 import { columns } from "../columns";
 
 const LIMIT = 10;
 
-export const DataTable: React.FC = () => {
-  const { table, isLoading, data } = useGetCountriesReactTableQuery(columns);
+interface DataTableProps {
+  countryId: string;
+}
+
+export const DataTable: React.FC<DataTableProps> = ({ countryId }) => {
+  const { table, isLoading } = useGetCountryStatesReactTableQuery(countryId, columns);
 
   return (
     <>

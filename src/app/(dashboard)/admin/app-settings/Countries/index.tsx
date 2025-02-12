@@ -1,8 +1,8 @@
 import { UI } from "@/components/ui";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { columns } from "./Column";
 import { DataTable } from "./DataTable";
+import { Suspense } from "react";
 
 export const Countries = () => {
   return (
@@ -16,7 +16,9 @@ export const Countries = () => {
         </UI.Button>
       </div>
       <div className="mt-8">
-        <DataTable columns={columns} data={Array(4).fill(0)} />
+        <Suspense>
+          <DataTable />
+        </Suspense>
       </div>
     </div>
   );

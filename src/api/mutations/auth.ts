@@ -3,7 +3,6 @@ import {
   apiService,
   CheckTokenValidityData,
   LoginAdminsData,
-  LoginData,
   LoginRequestDto,
   PasswordResetData,
   PasswordResetRequestData,
@@ -23,19 +22,18 @@ import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { STORAGE } from "@/constant";
 
-export const useLoginMn = (
-  options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>
-) => {
+export const useLoginMn = (options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>) => {
   const router = useRouter();
 
   return useApiMutation({
     ...options,
     mutationFn: (varaibles) => apiService.loginAdmins(varaibles),
     onError(error, variables, context) {
-      toast.error(error.response?.data?.message ?? error?.message);
       if (error?.code === "UNVERIFIED") {
         // TODO: Redirect the user to verification screen
       }
+      console.log(error);
+
       options?.onError?.(error, variables, context);
     },
     onSuccess(data, variables, context) {
@@ -52,9 +50,7 @@ export const useLoginMn = (
   });
 };
 
-export const useVerifyPhoneMn = (
-  options?: MutationOptions<VerifyPhoneData, any, VerifyPhoneRequestDto>
-) =>
+export const useVerifyPhoneMn = (options?: MutationOptions<VerifyPhoneData, any, VerifyPhoneRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.verifyPhone(varaibles),
@@ -64,9 +60,7 @@ export const useVerifyPhoneMn = (
     },
   });
 
-export const useVerifyEmailMn = (
-  options?: MutationOptions<VerifyEmailData, any, VerifyEmailRequestDto>
-) =>
+export const useVerifyEmailMn = (options?: MutationOptions<VerifyEmailData, any, VerifyEmailRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.verifyEmail(varaibles),
@@ -76,33 +70,25 @@ export const useVerifyEmailMn = (
     },
   });
 
-export const useResetPasswordMn = (
-  options?: MutationOptions<PasswordResetData, any, ResetPasswordRequestDto>
-) =>
+export const useResetPasswordMn = (options?: MutationOptions<PasswordResetData, any, ResetPasswordRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.passwordReset(varaibles),
   });
 
-export const useRequestPasswordResetMn = (
-  options?: MutationOptions<PasswordResetRequestData, any, TokenRequestDto>
-) =>
+export const useRequestPasswordResetMn = (options?: MutationOptions<PasswordResetRequestData, any, TokenRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.passwordResetRequest(varaibles),
   });
 
-export const useResendTokenMn = (
-  options?: MutationOptions<ResendTokenData, any, TokenRequestDto>
-) =>
+export const useResendTokenMn = (options?: MutationOptions<ResendTokenData, any, TokenRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.resendToken(varaibles),
   });
 
-export const useCheckTokenMn = (
-  options?: MutationOptions<CheckTokenValidityData, any, VerifyPhoneRequestDto>
-) =>
+export const useCheckTokenMn = (options?: MutationOptions<CheckTokenValidityData, any, VerifyPhoneRequestDto>) =>
   useApiMutation({
     ...options,
     mutationFn: async (varaibles) => apiService.checkTokenValidity(varaibles),

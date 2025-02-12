@@ -4,16 +4,13 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
 import { motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 
 type DeleteProps = {
   onComfirm?: () => void;
 };
 
 export const DeleteModal = ({ onComfirm }: DeleteProps) => {
-  const { closeModal, isOpen } = useQueryModal([
-    { key: "delete", value: true },
-  ]);
+  const { closeModal, isOpen } = useQueryModal([{ key: "delete", value: true }]);
 
   return (
     <UI.AlertDialog open={isOpen}>
@@ -47,11 +44,7 @@ export const DeleteModal = ({ onComfirm }: DeleteProps) => {
           <UI.PrimaryButton onClick={closeModal} variant="outline" className="">
             Cancel
           </UI.PrimaryButton>
-          <UI.PrimaryButton
-            onClick={onComfirm}
-            variant="destructive"
-            className=""
-          >
+          <UI.PrimaryButton onClick={onComfirm} variant="destructive" className="">
             Delete
           </UI.PrimaryButton>
         </UI.AlertDialogFooter>

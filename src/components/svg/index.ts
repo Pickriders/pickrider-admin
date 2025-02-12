@@ -1,3 +1,4 @@
+import { AddNoteIcon } from "./AddNote";
 import { AddUserIcon } from "./AddUserIcon";
 import { Analysis } from "./Analysis";
 import { AppSettingicon } from "./AppSettingicon";
@@ -79,6 +80,7 @@ import { WarningIcon } from "./WarningIcon";
 import { XIcon } from "./XIcon";
 
 export const SVG = {
+  AddNoteIcon,
   SearchListIcon,
   UserSwitchIcon,
   Shield,

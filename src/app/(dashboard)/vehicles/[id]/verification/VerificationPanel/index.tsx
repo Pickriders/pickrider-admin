@@ -10,6 +10,10 @@ import { VerificationModalPeview } from "@/components/VerificationModalPreview";
 import { Suspense, useState } from "react";
 import { RejectVerificationModal } from "./RejectVerificationModal";
 import { useGetVehicleQuery, useGetVehiclesQuery, useVerifyVehicleMn } from "@/api";
+import { SuspendVerificationModal } from "./SuspendVerificationModal";
+import { useQueryModal } from "@/hooks";
+import { LoaderCircle } from "lucide-react";
+import { dataTagErrorSymbol } from "@tanstack/react-query";
 
 const vehicles = ["/vehic-1.svg", "/vehic-2.svg", "/vehic-3.svg"];
 
@@ -19,6 +23,7 @@ interface VerificationPanelProps {
 
 export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId }) => {
   const { data: vehicle, error, isLoading } = useGetVehicleQuery(vehicleId);
+  const setParam = useQueryModal([{ key: "suspend-vehicle", value: true }]).setParam;
   const verifyVehicle = useVerifyVehicleMn(vehicleId, vehicle?.userId!);
 
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
@@ -39,12 +44,32 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
     }
   }, [vehicle?.status]);
 
+  if (!vehicle && isLoading) {
+    return (
+      <div className="bg-background rounded-2xl p-10 h-[25rem] grid place-items-center">
+        <LoaderCircle size={40} className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background rounded-2xl p-10  *:font-montserrat">
       <div className="space-y-4">
         <div>
           <UI.SectionHeader text="Vehicle Type" />
           <p className="font-semibold text-sm text-primary-gray mt-2">Motorbike</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Name" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.name}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Make" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.make}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Model" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.model}</p>
         </div>
         <div>
           <UI.SectionHeader text="Vehicle Colour" />
@@ -59,6 +84,14 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
           <p className="font-semibold text-sm  mt-2">
             <span className={`text-[${vehicleStatus.color}]`}>{vehicleStatus.text}</span>
           </p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Engine Number" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.engineNumber}</p>
+        </div>
+        <div>
+          <UI.SectionHeader text="Chassis Number" />
+          <p className="font-semibold text-sm text-primary-gray mt-2">{vehicle?.chasisNumber}</p>
         </div>
         <div>
           <UI.SectionHeader text="Comment" />
@@ -87,13 +120,16 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
         </div>
         <div>
           {isVerified ? (
-            <UI.PrimaryButton variant="outline">Suspend Verification</UI.PrimaryButton>
+            <UI.PrimaryButton onClick={() => setParam("suspend-vehicle", "true")} variant="outline">
+              Suspend Verification
+            </UI.PrimaryButton>
           ) : (
             <div className="flex items-center gap-x-4">
               <UI.PrimaryButton
                 onClick={() => verifyVehicle.mutate()}
-                // TODO: Add a loading state
-                // isLoading={verifyVehicle.isPending}
+                isLoading={verifyVehicle.isPending}
+                loadingText="Verifying..."
+
               >
                 Verify
               </UI.PrimaryButton>
@@ -115,6 +151,7 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
       />
       <Suspense>
         <RejectVerificationModal />
+        <SuspendVerificationModal userId={vehicle?.userId as string} vehicleId={vehicleId} />
       </Suspense>
     </div>
   );

@@ -61,45 +61,59 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
           <p className="font-semibold text-sm text-primary-gray mt-2">23/11/26</p> */}
         </div>
         <div>
+          <UI.SectionHeader text="License Number" />
+          <p className="font-semibold text-sm  mt-2">
+            <span>{data?.driversLicense}</span>
+          </p>
+        </div>
+        <div>
           <UI.SectionHeader text="Status" />
           <p className="font-semibold text-sm  mt-2">
             <span className={`text-[${licenseStatus.color}]`}>{licenseStatus.text}</span>
           </p>
         </div>
-        <div>
-          <UI.SectionHeader text="Attachment" />
-          <motion.div layoutId="preview-courier" className="mt-3 relative w-[26rem]">
-            <Image alt="demo" src={"/demo-linc.svg"} width={395} height={240} />
-            <button
-              onClick={() => setPreviewDoc("preview-courier")}
-              className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-2 right-3"
-            >
-              <span className="group-hover:scale-105 transition-all">
-                <SVG.ArrowExpand />
-              </span>
-            </button>
-          </motion.div>
-        </div>
+        {!!data?.driversLicenseVerifiedComment && (
+          <div>
+            <UI.SectionHeader text="Comment" />
+            <p className="font-semibold text-sm  mt-2">
+              <span>{data?.driversLicenseVerifiedComment}</span>
+            </p>
+          </div>
+        )}
+        {!!data?.driversLicenseDoc && (
+          <div>
+            <UI.SectionHeader text="Attachment" />
+            <motion.div layoutId="preview-courier" className="mt-3 relative w-[26rem]">
+              {<Image alt="demo" src={data.driversLicenseDoc} width={395} height={240} />}
+              <button
+                onClick={() => setPreviewDoc("preview-courier")}
+                className="size-10 bg-black group rounded-lg grid place-items-center absolute bottom-2 right-3"
+              >
+                <span className="group-hover:scale-105 transition-all">
+                  <SVG.ArrowExpand />
+                </span>
+              </button>
+            </motion.div>
+          </div>
+        )}
         <div>
           {data?.driversLicenseVerified === "APPROVE" ? (
-            <UI.PrimaryButton variant="outline">Suspend Verification</UI.PrimaryButton>
+            <UI.PrimaryButton variant="outline" disabled>
+              Suspend Verification
+            </UI.PrimaryButton>
           ) : (
-            <div className="flex items-center gap-x-4">
-              <UI.PrimaryButton disabled={isVerifiying} onClick={handleVerification}>
-                {isVerifiying ? (
-                  <div className="flex items-center gap-x-1">
-                    <LoaderCircle size={15} className="animate-spin" /> Verifying...
-                  </div>
-                ) : (
-                  "Verify"
-                )}
-              </UI.PrimaryButton>
-              <UI.PrimaryButton disabled={isVerifiying} variant="outline" asChild>
-                <Link scroll={false} href={"?reject-verification=true"}>
-                  Reject
-                </Link>
-              </UI.PrimaryButton>{" "}
-            </div>
+            data?.driversLicenseVerified === "SUBMITTED" && (
+              <div className="flex items-center gap-x-4">
+                <UI.PrimaryButton isLoading={isVerifiying} loadingText="Verifying..." onClick={handleVerification}>
+                  Verify
+                </UI.PrimaryButton>
+                <UI.PrimaryButton disabled={isVerifiying} variant="outline" asChild>
+                  <Link scroll={false} href={"?reject-verification=true"}>
+                    Reject
+                  </Link>
+                </UI.PrimaryButton>{" "}
+              </div>
+            )
           )}
         </div>
       </div>
