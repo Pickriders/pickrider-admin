@@ -10,6 +10,10 @@ import { VerificationModalPeview } from "@/components/VerificationModalPreview";
 import { Suspense, useState } from "react";
 import { RejectVerificationModal } from "./RejectVerificationModal";
 import { useGetVehicleQuery, useGetVehiclesQuery, useVerifyVehicleMn } from "@/api";
+import { SuspendVerificationModal } from "./SuspendVerificationModal";
+import { useQueryModal } from "@/hooks";
+import { LoaderCircle } from "lucide-react";
+import { dataTagErrorSymbol } from "@tanstack/react-query";
 
 const vehicles = ["/vehic-1.svg", "/vehic-2.svg", "/vehic-3.svg"];
 
@@ -19,6 +23,7 @@ interface VerificationPanelProps {
 
 export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId }) => {
   const { data: vehicle, error, isLoading } = useGetVehicleQuery(vehicleId);
+  const setParam = useQueryModal([{ key: "suspend-vehicle", value: true }]).setParam;
   const verifyVehicle = useVerifyVehicleMn(vehicleId, vehicle?.userId!);
 
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
@@ -38,6 +43,14 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
         return { text: "Pending review...", color: "#F9C613" };
     }
   }, [vehicle?.status]);
+
+  if (!vehicle && isLoading) {
+    return (
+      <div className="bg-background rounded-2xl p-10 h-[25rem] grid place-items-center">
+        <LoaderCircle size={40} className="animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background rounded-2xl p-10  *:font-montserrat">
@@ -107,13 +120,16 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
         </div>
         <div>
           {isVerified ? (
-            <UI.PrimaryButton variant="outline">Suspend Verification</UI.PrimaryButton>
+            <UI.PrimaryButton onClick={() => setParam("suspend-vehicle", "true")} variant="outline">
+              Suspend Verification
+            </UI.PrimaryButton>
           ) : (
             <div className="flex items-center gap-x-4">
               <UI.PrimaryButton
                 onClick={() => verifyVehicle.mutate()}
                 isLoading={verifyVehicle.isPending}
                 loadingText="Verifying..."
+
               >
                 Verify
               </UI.PrimaryButton>
@@ -135,6 +151,7 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
       />
       <Suspense>
         <RejectVerificationModal />
+        <SuspendVerificationModal userId={vehicle?.userId as string} vehicleId={vehicleId} />
       </Suspense>
     </div>
   );
