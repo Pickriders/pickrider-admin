@@ -9,6 +9,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.it",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   redirects: async () => {
