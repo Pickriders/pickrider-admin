@@ -20,10 +20,8 @@ export default function Dashboard({
         <div className="xl:block hidden">
           <Layout.Sidebar />
         </div>
-        <main className="pt-6 px-7 pb-10">
-          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] w-full mx-auto ">
-            {children}
-          </div>
+        <main className="pt-6 px-7 pb-10 relative">
+          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] w-full mx-auto ">{children}</div>
         </main>
       </div>
       {/* Modals */}
