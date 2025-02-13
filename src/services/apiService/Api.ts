@@ -120,6 +120,8 @@ import {
   GetUserData,
   GetUserNotificationData,
   GetUserOrderData,
+  GetUserOrders2Data,
+  GetUserOrders2Params,
   GetUserOrdersData,
   GetUserOrdersParams,
   GetUserProfile2Data,
@@ -2676,6 +2678,26 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   getOrderTypeChart = (query: GetOrderTypeChartParams, params: RequestParams = {}) =>
     this.request<GetOrderTypeChartData, any>({
       path: `/api/v1/orders/riders/type-chart`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
+   * @name GetUserOrders2
+   * @request GET:/api/v1/admins/orders
+   * @originalName getUserOrders
+   * @duplicate
+   * @secure
+   * @response `200` `GetUserOrders2Data`
+   */
+  getUserOrders2 = (query: GetUserOrders2Params, params: RequestParams = {}) =>
+    this.request<GetUserOrders2Data, any>({
+      path: `/api/v1/admins/orders`,
       method: "GET",
       query: query,
       secure: true,

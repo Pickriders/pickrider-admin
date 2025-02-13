@@ -2133,6 +2133,27 @@ export interface GetOrderTypeChartParams {
 
 export type GetOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
+export interface GetUserOrders2Params {
+  /** date filter for scheduled orders - provide this if filtering for scheduled orders */
+  scheduledFor?: any;
+  /** filter for scheduled orders */
+  isScheduled?: any;
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: any;
+  /** order type filter. Comma seprarated list of OrderType */
+  type?: string;
+  /** order status filter. Comma seprarated list of OrderStatus */
+  status?: string;
+  /** search by order number */
+  orderNumber?: any;
+  /** the records sorting order */
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type GetUserOrders2Data = ListOrderResponseDto;
+
 export type GetLogsData = DataLogsResponseDto;
 
 export interface FindAllParams {

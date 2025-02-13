@@ -16,7 +16,7 @@ const OrdersPage = () => {
         </UI.Button>
       </div>
       <section className="mt-[2rem]">
-        <OrdersTable data={Array(4).fill(0)} />
+        <OrdersTable />
       </section>
     </div>
   );
