@@ -2,24 +2,22 @@
 
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useTableUrlFilter } from "@/hooks";
 
 const STATUS = ["INITIATED", "ACCEPTED", "ON_GOING", "COMPLETED", "CANCELLED"];
+const ORDER_TYPES = ["SINGLE", "BATCH", "BULK"];
 
 export const OrdersTableFilter = () => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { searchParams, updateFilter } = useTableUrlFilter();
   const FILTER_STATUS = searchParams.get("status") || "ALL";
-  const { replace } = useRouter();
+  const FILTER_ORDER_TYPE = searchParams.get("orderType") || "ALL";
 
-  const handlefilter = (filterBy: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
+  const filterByOrderType = (filterBy: string) => {
+    updateFilter("orderType", filterBy.toUpperCase());
+  };
 
-    if (filterBy) {
-      params.set("status", filterBy.toUpperCase());
-    }
-    replace(`${pathname}?${params.toString()}`);
+  const filterByStatus = (filterBy: string) => {
+    updateFilter("status", filterBy.toUpperCase());
   };
 
   return (
@@ -35,18 +33,21 @@ export const OrdersTableFilter = () => {
           <div className="flex items-center gap-x-10">
             <div>
               <label htmlFor="type" className="text-primary-gray text-xs font-faktum-test font-semibold">
-                Type
+                Order Type
               </label>
-              <UI.Select defaultValue="all">
+              <UI.Select onValueChange={filterByOrderType} value={FILTER_ORDER_TYPE}>
                 <UI.SelectTrigger id="type" className="w-[6rem]">
                   <UI.SelectValue />
                 </UI.SelectTrigger>
                 <UI.SelectContent>
                   <UI.SelectGroup>
-                    <UI.SelectItem value="all">All</UI.SelectItem>
-                    <UI.SelectItem value="Single order">Single order</UI.SelectItem>
-                    <UI.SelectItem value="Batch delivery">Batch delivery</UI.SelectItem>
-                    <UI.SelectItem value="Bulk pickup">Bulk pickup</UI.SelectItem>
+                    {["ALL", ...ORDER_TYPES].map((orderType) => {
+                      return (
+                        <UI.SelectItem key={orderType} value={orderType}>
+                          {orderType}
+                        </UI.SelectItem>
+                      );
+                    })}
                   </UI.SelectGroup>
                 </UI.SelectContent>
               </UI.Select>
@@ -55,7 +56,7 @@ export const OrdersTableFilter = () => {
               <label htmlFor="STATUS" className="text-primary-gray text-xs font-faktum-test font-semibold">
                 Status
               </label>
-              <UI.Select onValueChange={handlefilter} value={FILTER_STATUS}>
+              <UI.Select onValueChange={filterByStatus} value={FILTER_STATUS}>
                 <UI.SelectTrigger id="STATUS" className="w-[6rem]">
                   <UI.SelectValue />
                 </UI.SelectTrigger>

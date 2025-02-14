@@ -16,6 +16,7 @@ export const useGetOrdersReactTableQuery = (
 ) => {
   const searchParams = useSearchParams();
   const status = searchParams.get("status") || "ALL";
+  const orderType = searchParams.get("orderType") || "ALL";
 
   const filters = React.useMemo(() => {
     const queries: GetUserOrders2Params = {
@@ -25,6 +26,10 @@ export const useGetOrdersReactTableQuery = (
 
     if (status !== "ALL") {
       queries.status = status;
+    }
+
+    if (orderType !== "ALL") {
+      queries.type = orderType;
     }
 
     return queries;
