@@ -2,6 +2,7 @@ import { OrdersTable } from "@/components/OrdersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const OrdersPage = () => {
   return (
@@ -16,7 +17,9 @@ const OrdersPage = () => {
         </UI.Button>
       </div>
       <section className="mt-[2rem]">
-        <OrdersTable />
+        <Suspense>
+          <OrdersTable />
+        </Suspense>
       </section>
     </div>
   );
