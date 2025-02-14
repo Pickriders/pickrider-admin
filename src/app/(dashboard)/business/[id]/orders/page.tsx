@@ -27,7 +27,7 @@ const OrdersPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <section className="mt-10">
-        <OrdersTable data={Array(20).fill(0)} />
+        <OrdersTable />
       </section>
     </div>
   );
