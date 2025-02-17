@@ -33,6 +33,7 @@ export const OrdersTableBulkActions = () => {
       openDeleteOrderModal();
     }
   }
+
   return (
     <div className="flex items-center gap-x-2">
       <UI.Select onValueChange={handleActionSelect}>

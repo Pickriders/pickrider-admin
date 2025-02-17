@@ -35,15 +35,19 @@ export const useGetUsersReactTableQuery = (
   tableOptions?: UseApiReactTableQueryOptions<User>,
 ) => {
   const searchParams = useSearchParams();
+  const status = searchParams.get("status") || "ALL";
 
   const filters = React.useMemo(() => {
     const queries: GetUsersParams = {
       page: Number(searchParams.get("page") ?? 1),
-      status: searchParams.get("status")?.toUpperCase(),
       limit: 5,
       role: "USER",
       ...query,
     };
+
+    if (status !== "ALL") {
+      queries.status = status;
+    }
 
     return queries;
   }, [searchParams, query]);

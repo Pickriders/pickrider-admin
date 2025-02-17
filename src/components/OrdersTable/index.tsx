@@ -1,12 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { OrdersTableBulkActions } from "./OrdersTableBulkActions";
 import { UI } from "../ui";
 import Link from "next/link";
@@ -15,24 +10,12 @@ import { ordersTableColumn as columns } from "./OrdersTableColumn";
 import { SVG } from "../svg";
 import { usePathname } from "next/navigation";
 import { DeleteOrdersModal } from "./DeleteModal";
+import { useGetOrdersReactTableQuery } from "@/api/queries/orders";
 
-interface DataTableProps<TData> {
-  data: TData[];
-}
-
-export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
-  const [rowSelection, setRowSelection] = React.useState({});
+const LIMIT = 10;
+export const OrdersTable = () => {
+  const { data, table, isLoading } = useGetOrdersReactTableQuery(columns, { limit: LIMIT }, {});
   const pathname = usePathname();
-
-  const table = useReactTable({
-    data,
-    columns: columns as ColumnDef<TData>[],
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      rowSelection,
-    },
-  });
 
   return (
     <div className="bg-background rounded-lg pb-6">
@@ -50,8 +33,10 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
           )}
         </div>
         <div className="flex items-center gap-x-2">
-          <UI.TableSearchInput />
-          <OrdersTableFilter />
+          <Suspense>
+            <UI.TableSearchInput />
+            <OrdersTableFilter />
+          </Suspense>
         </div>
       </div>
 
@@ -63,12 +48,7 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
                 {headerGroup.headers.map((header) => {
                   return (
                     <UI.TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </UI.TableHead>
                   );
                 })}
@@ -78,26 +58,19 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
           <UI.TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <UI.TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <UI.TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <UI.TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </UI.TableCell>
                   ))}
                 </UI.TableRow>
               ))
+            ) : isLoading ? (
+              <UI.TableLoading rowCount={LIMIT} columnCount={columns.length} />
             ) : (
               <UI.TableRow>
-                <UI.TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center font-faktum-test font-semibold"
-                >
+                <UI.TableCell colSpan={columns.length} className="h-24 text-center font-faktum-test font-semibold">
                   No results.
                 </UI.TableCell>
               </UI.TableRow>
@@ -106,9 +79,10 @@ export const OrdersTable = <TData,>({ data }: DataTableProps<TData>) => {
         </UI.Table>
       </div>
       {/* Pagination */}
+
       <div className="mt-3 flex justify-end px-[1.5rem]">
         <Suspense>
-          <UI.PaginationBtns currentPage={2} totalPages={4} />
+          <UI.PaginationBtns totalPages={data?.totalPages ?? 0} />
         </Suspense>
       </div>
 

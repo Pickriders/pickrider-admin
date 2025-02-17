@@ -15,8 +15,6 @@ export const DataTable = () => {
     {},
   );
 
-  console.log(data);
-
   return (
     <div>
       <div className="w-full overflow-x-auto scroll-bar">

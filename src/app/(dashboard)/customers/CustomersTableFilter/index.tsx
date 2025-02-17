@@ -3,22 +3,14 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { status } from "@/constant";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTableUrlFilter } from "@/hooks";
 
 export const CustomersTableFilter = () => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { searchParams, updateFilter } = useTableUrlFilter();
   const FILTER_STATUS = searchParams.get("status") || "ALL";
-  const { replace } = useRouter();
 
-  const handlefilter = (filterBy: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
-
-    if (filterBy) {
-      params.set("status", filterBy.toUpperCase());
-    }
-    replace(`${pathname}?${params.toString()}`);
+  const filterStatus = (filterBy: string) => {
+    updateFilter("status", filterBy.toUpperCase());
   };
 
   return (
@@ -29,26 +21,18 @@ export const CustomersTableFilter = () => {
         </UI.Button>
       </UI.PopoverTrigger>
       <UI.PopoverContent sideOffset={10} className="mr-10 p-0 w-[19rem]">
-        <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">
-          Filter Customers
-        </h4>
+        <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">Filter Customers</h4>
         <div className="py-4 px-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-2">
               <UI.Checkbox id="have balance" />{" "}
-              <label
-                htmlFor="have balance"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="have balance" className="text-primary-gray text-xs font-montserrat font-semibold">
                 Have Balance
               </label>
             </div>
             <div className="flex items-center gap-x-2">
               <UI.Checkbox id="KYC Verified" />{" "}
-              <label
-                htmlFor="KYC Verified"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="KYC Verified" className="text-primary-gray text-xs font-montserrat font-semibold">
                 KYC Verified
               </label>
             </div>
@@ -78,7 +62,7 @@ export const CustomersTableFilter = () => {
                 STATUS
               </UI.Label>
 
-              <UI.Select onValueChange={handlefilter} value={FILTER_STATUS}>
+              <UI.Select onValueChange={filterStatus} value={FILTER_STATUS}>
                 <UI.SelectTrigger id="STATUS" className="w-[6rem]">
                   <UI.SelectValue />
                 </UI.SelectTrigger>
