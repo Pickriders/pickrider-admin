@@ -12,8 +12,6 @@ import { RejectVerificationModal } from "./RejectVerificationModal";
 import { useGetVehicleQuery, useGetVehiclesQuery, useVerifyVehicleMn } from "@/api";
 import { SuspendVerificationModal } from "./SuspendVerificationModal";
 import { useQueryModal } from "@/hooks";
-import { LoaderCircle } from "lucide-react";
-import { dataTagErrorSymbol } from "@tanstack/react-query";
 
 const vehicles = ["/vehic-1.svg", "/vehic-2.svg", "/vehic-3.svg"];
 
