@@ -6,8 +6,6 @@ import { VerificationPanel } from "./VerificationPanel";
 import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
 const VerificationPage = ({ params }: { params: { id: string } }) => {
-  // console.log(data);
-
   if (!params.id) {
     notFound();
   }

@@ -12,8 +12,6 @@ import { RejectVerificationModal } from "./RejectVerificationModal";
 import { useGetVehicleQuery, useGetVehiclesQuery, useVerifyVehicleMn } from "@/api";
 import { SuspendVerificationModal } from "./SuspendVerificationModal";
 import { useQueryModal } from "@/hooks";
-import { LoaderCircle } from "lucide-react";
-import { dataTagErrorSymbol } from "@tanstack/react-query";
 
 const vehicles = ["/vehic-1.svg", "/vehic-2.svg", "/vehic-3.svg"];
 
@@ -45,11 +43,7 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
   }, [vehicle?.status]);
 
   if (!vehicle && isLoading) {
-    return (
-      <div className="bg-background rounded-2xl p-10 h-[25rem] grid place-items-center">
-        <LoaderCircle size={40} className="animate-spin" />
-      </div>
-    );
+    return <UI.PageLoadingUI />;
   }
 
   return (
@@ -129,7 +123,6 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
                 onClick={() => verifyVehicle.mutate()}
                 isLoading={verifyVehicle.isPending}
                 loadingText="Verifying..."
-
               >
                 Verify
               </UI.PrimaryButton>

@@ -1,2 +1,3 @@
 export * from "./useRowSelection";
 export * from "./useQueryModal";
+export * from "./useTableUrlFilter";

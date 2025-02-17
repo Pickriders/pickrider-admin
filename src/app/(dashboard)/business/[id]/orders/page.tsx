@@ -2,6 +2,7 @@ import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 
 import { OrdersTable } from "@/components/OrdersTable";
+import { Suspense } from "react";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -27,7 +28,9 @@ const OrdersPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <section className="mt-10">
-        <OrdersTable data={Array(20).fill(0)} />
+        <Suspense>
+          <OrdersTable />
+        </Suspense>
       </section>
     </div>
   );
