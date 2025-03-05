@@ -11,7 +11,6 @@
 
 export interface CountryConfigSchemaDto {
   exchangeRate: number;
-  percentageCharge: number;
   minimumOfferPercentage: number;
   userWithdrawalLimits: {
     /** @default 0 */
@@ -72,12 +71,6 @@ export interface CountryConfigDto {
   /** Exchange rate for the country */
   exchangeRate?: number;
   /**
-   * Percentage charge value
-   * @min 0
-   * @max 100
-   */
-  percentageCharge?: number;
-  /**
    * Minimum Percentage value
    * @min 0
    * @max 100
@@ -112,6 +105,11 @@ export interface StateConfigDto {
    */
   percentageCharge: number;
   /**
+   * Service charge for orders
+   * @default 0
+   */
+  serviceCharge: number;
+  /**
    * Minimum order orice
    * @default 200000
    */
@@ -131,6 +129,11 @@ export interface StateConfigDto {
    * @default 20
    */
   maxDistanceRadius: number;
+  /**
+   * Field to queue orders by default
+   * @default false
+   */
+  queueOrderByDefault: boolean;
 }
 
 export interface StateDto {
@@ -153,6 +156,8 @@ export interface State {
     baseFuelPrice?: number;
     currentFuelPrice?: number;
     /** @default 0 */
+    serviceCharge?: number;
+    /** @default 0 */
     percentageCharge?: number;
     /** @default 2000000 */
     minimumOrderPrice?: number;
@@ -162,6 +167,8 @@ export interface State {
     maxActiveOrders?: number;
     /** @default 20 */
     maxDistanceRadius?: number;
+    /** @default false */
+    queueOrderByDefault?: boolean;
   };
   _id: string;
   /** @format date-time */
@@ -997,6 +1004,11 @@ export interface UpdateDriverLicenseRequestDto {
   comment?: string;
 }
 
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
 export interface WalletCreateRequestDto {
   currency: string;
   /**
@@ -1197,6 +1209,8 @@ export interface TriggerNotificationRequestDto {
   externalRecipient?: string;
   /** Notification actions */
   actions?: NotificationAction[];
+  sound?: string;
+  channelId?: string;
   template?: TemplateRequestDto;
 }
 
@@ -1726,6 +1740,8 @@ export type VerifyDriversLicenseData = User;
 export type SubmitDriversLicenseData = object;
 
 export type GetUserVehicleData = Vehicle;
+
+export type NewFeatureLaunchNotificationData = any;
 
 export type CreateUser2Data = CreateUserRequestDto;
 

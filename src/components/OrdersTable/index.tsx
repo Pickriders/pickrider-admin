@@ -16,6 +16,7 @@ const LIMIT = 10;
 export const OrdersTable = () => {
   const { data, table, isLoading } = useGetOrdersReactTableQuery(columns, { limit: LIMIT }, {});
   const pathname = usePathname();
+  console.log(data?.results[0]);
 
   return (
     <div className="bg-background rounded-lg pb-6">

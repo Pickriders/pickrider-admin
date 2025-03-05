@@ -33,7 +33,7 @@ export const useGetOrdersReactTableQuery = (
     }
 
     return queries;
-  }, [searchParams, query]);
+  }, [searchParams, query, status, orderType]);
 
   const res = useApiReactTableQuery(
     {

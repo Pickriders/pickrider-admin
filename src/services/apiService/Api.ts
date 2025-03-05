@@ -151,6 +151,7 @@ import {
   LoginRequestDto,
   MakeOfferRequestDto,
   MakeOrderOfferData,
+  NewFeatureLaunchNotificationData,
   Object,
   PasswordResetData,
   PasswordResetRequestData,
@@ -1008,6 +1009,22 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       method: "GET",
       secure: true,
       format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name NewFeatureLaunchNotification
+   * @request PATCH:/api/v1/admins/users/new-features-nofitication
+   * @secure
+   * @response `200` `NewFeatureLaunchNotificationData`
+   */
+  newFeatureLaunchNotification = (params: RequestParams = {}) =>
+    this.request<NewFeatureLaunchNotificationData, any>({
+      path: `/api/v1/admins/users/new-features-nofitication`,
+      method: "PATCH",
+      secure: true,
       ...params,
     });
   /**
