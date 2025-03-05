@@ -127,6 +127,7 @@ import {
   LoginRequestDto,
   MakeOfferRequestDto,
   MakeOrderOfferData,
+  NewFeatureLaunchNotificationData,
   Object,
   PasswordResetData,
   PasswordResetRequestData,
@@ -942,6 +943,22 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetUserVehicleData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name NewFeatureLaunchNotification
+   * @request PATCH:/api/v1/admins/users/new-features-nofitication
+   * @secure
+   * @response `200` `NewFeatureLaunchNotificationData`
+   */
+  export namespace NewFeatureLaunchNotification {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = NewFeatureLaunchNotificationData;
   }
 
   /**
@@ -2528,6 +2545,7 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {
       "x-country-code": string;
+      "x-state-code": string;
     };
     export type ResponseBody = CompleteOrderData;
   }
