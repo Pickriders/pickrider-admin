@@ -53,6 +53,8 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
         baseFuelPrice: state?.config?.baseFuelPrice ?? 0,
         currentFuelPrice: state?.config?.currentFuelPrice ?? 0,
         percentageCharge: state?.config?.percentageCharge ?? 0,
+        serviceCharge: state?.config?.serviceCharge ?? 0,
+        queueOrderByDefault: state?.config?.queueOrderByDefault ?? true,
         minimumOrderPrice: state?.config?.minimumOrderPrice ?? 1,
         maxRidersPerQuery: state?.config?.maxRidersPerQuery ?? 5,
         maxActiveOrders: state?.config?.maxActiveOrders ?? 5,
@@ -148,6 +150,24 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             errorMessage={
               formik.getFieldMeta("config.percentageCharge").touched &&
               formik.getFieldMeta("config.percentageCharge").error
+            }
+          />
+          <UI.Input
+            labelValue="Service charge"
+            placeholder="0"
+            id="serviceCharge"
+            type="number"
+            min={0}
+            className="w-[21rem]"
+            {...formik.getFieldProps("config.serviceCharge")}
+            value={formatMoney(subUnitToBaseUnit(formik.values.config?.serviceCharge ?? 0), { isCurrency: false })}
+            onChange={({ target }) => {
+              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+              if (isNaN(Number(value))) return;
+              formik.setFieldValue("config.serviceCharge", Number(value) * 100);
+            }}
+            errorMessage={
+              formik.getFieldMeta("config.serviceCharge").touched && formik.getFieldMeta("config.serviceCharge").error
             }
           />
           <UI.Input

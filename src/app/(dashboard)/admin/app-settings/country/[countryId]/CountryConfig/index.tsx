@@ -48,7 +48,6 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
       config: {
         exchangeRate: country?.config?.exchangeRate ?? 0,
         minimumOfferPercentage: country?.config?.minimumOfferPercentage ?? 0,
-        percentageCharge: country?.config?.percentageCharge ?? 0,
         userWithdrawalLimits: {
           maximumAmount: country?.config?.userWithdrawalLimits.maximumAmount ?? 0,
           minimumAmount: country?.config?.userWithdrawalLimits.minimumAmount ?? 0,
@@ -155,20 +154,6 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
               errorMessage={
                 formik.getFieldMeta("config.minimumOfferPercentage").touched &&
                 formik.getFieldMeta("config.minimumOfferPercentage").error
-              }
-            />
-            <UI.Input
-              labelValue="Percentage Charge (%)"
-              placeholder="0"
-              id="percentageChange"
-              type="number"
-              min={0}
-              max={100}
-              className="w-[21rem]"
-              {...formik.getFieldProps("config.percentageCharge")}
-              errorMessage={
-                formik.getFieldMeta("config.percentageCharge").touched &&
-                formik.getFieldMeta("config.percentageCharge").error
               }
             />
           </div>
