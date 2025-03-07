@@ -21,6 +21,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "2Fcloudflare-ipfs.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   redirects: async () => {

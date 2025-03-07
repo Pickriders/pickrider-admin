@@ -6,7 +6,7 @@ import Link from "next/link";
 import { SVG } from "@/components/svg";
 import { Order, User } from "@/services";
 import dayjs from "dayjs";
-import { formatMoney } from "@/utils";
+import { formatMoney, subUnitToBaseUnit } from "@/utils";
 
 type Status = "INITIATED" | "ACCEPTED" | "ON_GOING" | "COMPLETED" | "CANCELLED" | "PENDING" | "PAID" | "FAILED";
 
@@ -76,13 +76,25 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
     header: "Order Amount",
     cell: ({ row }) => (
       <p className="text-nowrap">
-        Discount: <span className="text-red-500 font-bold">{formatMoney(row.original.discountAmount ?? 0)}</span>
+        Discount:{" "}
+        <span className="text-red-500 font-bold">
+          {formatMoney(subUnitToBaseUnit(row.original.discountAmount ?? 0))}
+        </span>
         <br />
-        Service Charge: <span className="text-green-500 font-bold">{formatMoney(row.original.serviceCharge ?? 0)}</span>
+        Service Charge:{" "}
+        <span className="text-green-500 font-bold">
+          {formatMoney(subUnitToBaseUnit(row.original.serviceCharge ?? 0))}
+        </span>
         <br />
-        Negotiated: <span className="text-blue-500 font-bold">{formatMoney(row.original.negotiatedAmount ?? 0)}</span>
+        Negotiated:{" "}
+        <span className="text-blue-500 font-bold">
+          {formatMoney(subUnitToBaseUnit(row.original.negotiatedAmount ?? 0))}
+        </span>
         <br />
-        Total: <span className="font-bold">{formatMoney(row.original.totalAmountPayable ?? 0)}</span> <br />
+        Total: <span className="font-bold">
+          {formatMoney(subUnitToBaseUnit(row.original.totalAmountPayable ?? 0))}
+        </span>{" "}
+        <br />
       </p>
     ),
   },
