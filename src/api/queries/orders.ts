@@ -1,6 +1,6 @@
 import { useApiQuery } from "@/hooks/useApiQuery";
 import { useApiReactTableQuery, UseApiReactTableQueryOptions } from "@/hooks/useApiReactTableQuery";
-import { apiService, GetUserOrders2Params, Order } from "@/services";
+import { apiService, GetOrdersParams, Order } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import React from "react";
@@ -11,7 +11,7 @@ export const ORDER_KEY = {
 
 export const useGetOrdersReactTableQuery = (
   columns: ColumnDef<Order>[],
-  query: GetUserOrders2Params,
+  query: GetOrdersParams,
   tableOptions?: UseApiReactTableQueryOptions<Order>,
 ) => {
   const searchParams = useSearchParams();
@@ -19,7 +19,7 @@ export const useGetOrdersReactTableQuery = (
   const orderType = searchParams.get("orderType") || "ALL";
 
   const filters = React.useMemo(() => {
-    const queries: GetUserOrders2Params = {
+    const queries: GetOrdersParams = {
       page: Number(searchParams.get("page") ?? 1),
       ...query,
     };
@@ -38,10 +38,17 @@ export const useGetOrdersReactTableQuery = (
   const res = useApiReactTableQuery(
     {
       queryKey: [ORDER_KEY.ORDERS, filters],
-      queryFn: () => apiService.getUserOrders2(filters),
+      queryFn: () => apiService.getOrders(filters),
     },
     { columns, ...tableOptions },
   );
 
   return res;
 };
+
+export const useGetOrderQuery = (orderId: string) =>
+  useApiQuery({
+    queryKey: [ORDER_KEY.ORDERS, orderId],
+    queryFn: () => apiService.getOrder(orderId),
+    enabled: !!orderId,
+  });

@@ -17,13 +17,10 @@ import {
 } from "@/services";
 import { USER_KEY } from "../queries/user";
 import { useApiMutation } from "@/hooks/useApiMutation";
-import { toast } from "sonner";
-import { setCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
-import { STORAGE } from "@/constant";
+import { useAuth } from "@/hooks/useAuth";
 
-export const useLoginMn = (options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>) => {
-  const router = useRouter();
+export const useLoginMn = (rememberMe?: boolean, options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>) => {
+  const { login } = useAuth();
 
   return useApiMutation({
     ...options,
@@ -37,15 +34,8 @@ export const useLoginMn = (options?: MutationOptions<LoginAdminsData, any, Login
       options?.onError?.(error, variables, context);
     },
     onSuccess(data, variables, context) {
-      setCookie(STORAGE.accessToken, data.accessToken, {
-        maxAge: 24 * 60 * 60,
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      });
-
+      login(data.accessToken, rememberMe);
       options?.onSuccess?.(data, variables, context);
-      toast.success("Login successful! 🎉");
-      router.push("/dashboard");
     },
   });
 };

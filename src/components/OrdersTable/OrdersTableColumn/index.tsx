@@ -72,7 +72,6 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
     cell: ({ row }) => <p className="text-nowrap">{row.getValue("type")} </p>,
   },
   {
-    accessorKey: "amount",
     header: "Order Amount",
     cell: ({ row }) => (
       <p className="text-nowrap">
@@ -115,13 +114,12 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
       const status = row.original.status;
       const color = statusColors[status];
 
-      const statusTimeText = {
+      const statusTimeText: Record<Order["status"], keyof Order> = {
         INITIATED: "createdAt",
         ACCEPTED: "acceptedAt",
         ON_GOING: "startedAt",
         COMPLETED: "completedAt",
         CANCELLED: "cancelledAt",
-        PENDING: "createdAt",
       };
 
       return (
@@ -130,7 +128,9 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
             {status}
           </span>
           <br />
-          <span className="text-nowrap">{dayjs(row.getValue(statusTimeText[status])).format("DD/MM/YYYY hh:mma")}</span>
+          <span className="text-nowrap">
+            {dayjs(row.original[statusTimeText[status]] as string).format("DD/MM/YYYY hh:mma")}
+          </span>
         </div>
       );
     },
@@ -142,7 +142,7 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
       const status = row.original.paymentStatus;
       const color = statusColors[status];
 
-      const statusTimeText = {
+      const statusTimeText: Record<Order["paymentStatus"], keyof Order> = {
         PENDING: "createdAt",
         PAID: "paidDate",
         FAILED: "updatedAt",
@@ -154,7 +154,9 @@ export const ordersTableColumn: ColumnDef<Order>[] = [
             {status}
           </span>
           <br />
-          <span className="text-nowrap">{dayjs(row.getValue(statusTimeText[status])).format("DD/MM/YYYY hh:mma")}</span>
+          <span className="text-nowrap">
+            {dayjs(row.original[statusTimeText[status]] as string).format("DD/MM/YYYY hh:mma")}
+          </span>
         </div>
       );
     },

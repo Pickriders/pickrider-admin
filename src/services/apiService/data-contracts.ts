@@ -1004,6 +1004,11 @@ export interface UpdateDriverLicenseRequestDto {
   comment?: string;
 }
 
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
 export interface WalletCreateRequestDto {
   currency: string;
   /**
@@ -2144,9 +2149,11 @@ export interface GetOrderTypeChartParams {
 
 export type GetOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
-export interface GetUserOrders2Params {
+export interface GetOrdersParams {
   /** date filter for scheduled orders - provide this if filtering for scheduled orders */
   scheduledFor?: any;
+  /** filter for orders by user id */
+  byUserId?: any;
   /** filter for scheduled orders */
   isScheduled?: any;
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
@@ -2163,7 +2170,9 @@ export interface GetUserOrders2Params {
   limit?: number;
 }
 
-export type GetUserOrders2Data = ListOrderResponseDto;
+export type GetOrdersData = ListOrderResponseDto;
+
+export type GetOrderData = Order;
 
 export type GetLogsData = DataLogsResponseDto;
 

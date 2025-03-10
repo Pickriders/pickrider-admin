@@ -88,8 +88,10 @@ import {
   GetHeartbeatData,
   GetLogsData,
   GetNotificationsData,
+  GetOrderData,
   GetOrderStatusChartData,
   GetOrderTypeChartData,
+  GetOrdersData,
   GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
@@ -101,7 +103,6 @@ import {
   GetUserData,
   GetUserNotificationData,
   GetUserOrderData,
-  GetUserOrders2Data,
   GetUserOrdersData,
   GetUserProfile2Data,
   GetUserProfileData,
@@ -2748,18 +2749,18 @@ export namespace Api {
   /**
    * No description
    * @tags admins/orders
-   * @name GetUserOrders2
+   * @name GetOrders
    * @request GET:/api/v1/admins/orders
-   * @originalName getUserOrders
-   * @duplicate
    * @secure
-   * @response `200` `GetUserOrders2Data`
+   * @response `200` `GetOrdersData`
    */
-  export namespace GetUserOrders2 {
+  export namespace GetOrders {
     export type RequestParams = {};
     export type RequestQuery = {
       /** date filter for scheduled orders - provide this if filtering for scheduled orders */
       scheduledFor?: any;
+      /** filter for orders by user id */
+      byUserId?: any;
       /** filter for scheduled orders */
       isScheduled?: any;
       /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
@@ -2777,7 +2778,25 @@ export namespace Api {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = GetUserOrders2Data;
+    export type ResponseBody = GetOrdersData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
+   * @name GetOrder
+   * @request GET:/api/v1/admins/orders/{orderId}
+   * @secure
+   * @response `200` `GetOrderData`
+   */
+  export namespace GetOrder {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOrderData;
   }
 
   /**
