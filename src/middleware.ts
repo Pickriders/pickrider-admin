@@ -7,11 +7,7 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Skip middleware for public assets and API routes
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname === "/"
-  ) {
+  if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname === "/") {
     return NextResponse.next();
   }
 
@@ -23,7 +19,10 @@ export function middleware(request: NextRequest) {
   }
 
   if (!accessToken && !pathname.startsWith("/auth")) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    const requestedUrl = request.nextUrl.pathname + request.nextUrl.search;
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("redirect", requestedUrl);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

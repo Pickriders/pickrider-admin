@@ -21,12 +21,11 @@ const validationSchema = Yup.object({
 });
 
 export const LoginForm = () => {
-  const loginMutation = useLoginMn();
-
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -37,6 +36,8 @@ export const LoginForm = () => {
       });
     },
   });
+
+  const loginMutation = useLoginMn(formik.values.rememberMe);
 
   return (
     <form onSubmit={formik.handleSubmit} className="relative" autoComplete="off">
@@ -69,7 +70,12 @@ export const LoginForm = () => {
           />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-1">
-              <UI.Checkbox id="remeber me" />
+              <UI.Checkbox
+                checked={formik.values.rememberMe}
+                onCheckedChange={(val) => {
+                  formik.setFieldValue("rememberMe", val);
+                }}
+              />
               <UI.Label htmlFor="remeber me">Remember me</UI.Label>
             </div>
             <p className="font-montserrat font-semibold text-primary-gray text-sm">

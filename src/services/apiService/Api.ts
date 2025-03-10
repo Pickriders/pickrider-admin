@@ -101,10 +101,13 @@ import {
   GetLogsData,
   GetNotificationsData,
   GetNotificationsParams,
+  GetOrderData,
   GetOrderStatusChartData,
   GetOrderStatusChartParams,
   GetOrderTypeChartData,
   GetOrderTypeChartParams,
+  GetOrdersData,
+  GetOrdersParams,
   GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
@@ -120,8 +123,6 @@ import {
   GetUserData,
   GetUserNotificationData,
   GetUserOrderData,
-  GetUserOrders2Data,
-  GetUserOrders2Params,
   GetUserOrdersData,
   GetUserOrdersParams,
   GetUserProfile2Data,
@@ -2705,18 +2706,33 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/orders
-   * @name GetUserOrders2
+   * @name GetOrders
    * @request GET:/api/v1/admins/orders
-   * @originalName getUserOrders
-   * @duplicate
    * @secure
-   * @response `200` `GetUserOrders2Data`
+   * @response `200` `GetOrdersData`
    */
-  getUserOrders2 = (query: GetUserOrders2Params, params: RequestParams = {}) =>
-    this.request<GetUserOrders2Data, any>({
+  getOrders = (query: GetOrdersParams, params: RequestParams = {}) =>
+    this.request<GetOrdersData, any>({
       path: `/api/v1/admins/orders`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
+   * @name GetOrder
+   * @request GET:/api/v1/admins/orders/{orderId}
+   * @secure
+   * @response `200` `GetOrderData`
+   */
+  getOrder = (orderId: string, params: RequestParams = {}) =>
+    this.request<GetOrderData, any>({
+      path: `/api/v1/admins/orders/${orderId}`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

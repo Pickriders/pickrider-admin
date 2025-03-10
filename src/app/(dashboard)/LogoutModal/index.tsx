@@ -4,11 +4,11 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { motion } from "framer-motion";
 import { useQueryModal } from "@/hooks";
+import { useAuth } from "@/hooks/useAuth";
 
 export const LogoutModal = () => {
-  const { closeModal, isOpen } = useQueryModal([
-    { key: "logout", value: true },
-  ]);
+  const { closeModal, isOpen } = useQueryModal([{ key: "logout", value: true }]);
+  const { logout } = useAuth();
 
   return (
     <UI.AlertDialog open={isOpen}>
@@ -34,22 +34,16 @@ export const LogoutModal = () => {
         </div>
 
         <div>
-          <p className="text-xs font-bold font-montserrat">
-            Are you sure you want to log out?
-          </p>
+          <p className="text-xs font-bold font-montserrat">Are you sure you want to log out?</p>
           <p className="text-xs text-primary-gray font-semibold font-montserrat">
             Login details would be required when you want to log back in.{" "}
           </p>
         </div>
         <UI.AlertDialogFooter className="justify-center">
-          <UI.PrimaryButton
-            onClick={closeModal}
-            variant="outline"
-            className="w-[9rem]"
-          >
+          <UI.PrimaryButton onClick={closeModal} variant="outline" className="w-[9rem]">
             Cancel
           </UI.PrimaryButton>
-          <UI.PrimaryButton variant="destructive" className="w-[9rem]">
+          <UI.PrimaryButton variant="destructive" className="w-[9rem]" onClick={logout}>
             Log out
           </UI.PrimaryButton>
         </UI.AlertDialogFooter>

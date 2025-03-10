@@ -50,7 +50,7 @@ export const useGetUsersReactTableQuery = (
     }
 
     return queries;
-  }, [searchParams, query]);
+  }, [searchParams, query, status]);
 
   const res = useApiReactTableQuery(
     {
