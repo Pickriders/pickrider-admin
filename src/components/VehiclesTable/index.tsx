@@ -1,21 +1,28 @@
 "use client";
 
-import { UI } from "@/components/ui";
-
 import React, { Suspense } from "react";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { UI } from "@/components/ui";
+import { flexRender } from "@tanstack/react-table";
 import { VehiclesTableBulkActions } from "./VehiclesTableBulkActions";
 import { VehicleTableFilter } from "./VehicleTableFilter";
 import { vehicleTableColumn as columns } from "./VehiclesTableColumn";
 import { DeleteVehicleModal } from "./DeleteModal";
 import { SuspendVehicleModal } from "./SuspendModal";
-import { useGetVehiclesQuery, useGetVehiclesReactTableQuery } from "@/api";
-import { Vehicle } from "@/services";
+import { useGetVehiclesReactTableQuery } from "@/api";
+import { useURLQuery } from "@/hooks";
 
 const LIMIT = 10;
 
 export const VechiclesTable: React.FC = () => {
-  const { data, isLoading, table } = useGetVehiclesReactTableQuery(columns);
+  const query = useURLQuery();
+  const vehicleSearch = query.get("search");
+  const status = query.get("status");
+  const isAssigned = query.get("assigned");
+  const { data, isLoading, table } = useGetVehiclesReactTableQuery(columns, {
+    vehicleSearch,
+    status: status === "all" ? undefined : status,
+    isAssigned: isAssigned === "true" ? "1" : undefined,
+  });
 
   return (
     <div className="bg-background rounded-lg pb-6">
@@ -23,7 +30,12 @@ export const VechiclesTable: React.FC = () => {
       <div className="px-[1.4rem] py-5 flex items-center justify-between">
         <VehiclesTableBulkActions />
         <div className="flex items-center gap-x-2">
-          <UI.TableSearchInput />
+          <UI.TableSearchInput
+            value={vehicleSearch}
+            onSearch={(text) => {
+              query.set("search", text);
+            }}
+          />
           <VehicleTableFilter />
         </div>
       </div>

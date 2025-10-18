@@ -17,7 +17,7 @@ export const useSuspendVehicleMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.suspendVehicle(vehicleId, userId, varaibles),
+    mutationFn: (varaibles) => apiService.suspendVehicle({ vehicleId, userId }, varaibles),
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries({ queryKey: [VEHICLE_KEY.VEHICLES] });
       options?.onSuccess?.(data, variables, context);
@@ -31,7 +31,7 @@ export const useVerifyVehicleMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: () => apiService.verifyVehicle(vehicleId, userId),
+    mutationFn: () => apiService.verifyVehicle({ vehicleId, userId }),
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries({ queryKey: [VEHICLE_KEY.VEHICLES] });
       options?.onSuccess?.(data, variables, context);
@@ -45,7 +45,7 @@ export const useRejectVehicleMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (variables) => apiService.rejectVehicle(vehicleId, userId, variables),
+    mutationFn: (variables) => apiService.rejectVehicle({ vehicleId, userId }, variables),
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries({ queryKey: [VEHICLE_KEY.VEHICLES] });
       options?.onSuccess?.(data, variables, context);

@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -8,6 +9,91 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
+
+export enum OrderLocationStatus {
+  PENDING = "PENDING",
+  IN_TRANSIT = "IN_TRANSIT",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  ARRIVED = "ARRIVED",
+}
+
+/** @default "USER" */
+export enum CancelledBy {
+  USER = "USER",
+  RIDER = "RIDER",
+  ADMIN = "ADMIN",
+}
+
+/** @default "SINGLE" */
+export enum NotificationCategory {
+  SINGLE = "SINGLE",
+  BROADCAST = "BROADCAST",
+  SCHEDULED_BROADCAST = "SCHEDULED_BROADCAST",
+}
+
+/** @default "USER" */
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
+/** @default "EMAIL" */
+export enum NotificationType {
+  IN_APP = "IN_APP",
+  PUSH = "PUSH",
+  SMS = "SMS",
+  EMAIL = "EMAIL",
+}
+
+export enum CouponType {
+  FIXED = "FIXED",
+  PERCENTAGE = "PERCENTAGE",
+}
+
+export enum EntityType {
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
+/** @default "ACCEPTED" */
+export enum Status {
+  PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  ACCEPTED = "ACCEPTED",
+}
+
+export enum PaymentProvider {
+  PAYSTACK = "PAYSTACK",
+  FLUTTERWAVE = "FLUTTERWAVE",
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
+export enum UserSignUpRoles {
+  USER = "USER",
+  PLATFORM_RIDER = "PLATFORM_RIDER",
+  DEVELOPER = "DEVELOPER",
+}
+
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN",
+  SUPER_ADMIN = "SUPER_ADMIN",
+  PLATFORM_ADMIN = "PLATFORM_ADMIN",
+  PLATFORM_RIDER = "PLATFORM_RIDER",
+  PLATFORM_OPERATION = "PLATFORM_OPERATION",
+  PLATFORM_FINANCE = "PLATFORM_FINANCE",
+  PLATFORM_BUSINESS = "PLATFORM_BUSINESS",
+  PLATFORM_MANAGER = "PLATFORM_MANAGER",
+  DEVELOPER = "DEVELOPER",
+  BUSINESS_ADMIN = "BUSINESS_ADMIN",
+  BUSINESS_USER = "BUSINESS_USER",
+  BUSINESS_RIDER = "BUSINESS_RIDER",
+}
 
 export interface CountryConfigSchemaDto {
   exchangeRate: number;
@@ -49,10 +135,6 @@ export interface ListCountryResponseDto {
 
 export interface AddCountryDto {
   name: string;
-  /**
-   * @minLength 2
-   * @maxLength 3
-   */
   code: string;
   /**
    * @minLength 3
@@ -138,10 +220,6 @@ export interface StateConfigDto {
 
 export interface StateDto {
   name: string;
-  /**
-   * @minLength 2
-   * @maxLength 3
-   */
   code: string;
   /** Configuration for the state */
   config?: StateConfigDto;
@@ -195,22 +273,6 @@ export interface UpdateStateDto {
   name: string;
   /** Configuration for the state */
   config?: StateConfigDto;
-}
-
-export enum Role {
-  USER = "USER",
-  ADMIN = "ADMIN",
-  SUPER_ADMIN = "SUPER_ADMIN",
-  PLATFORM_ADMIN = "PLATFORM_ADMIN",
-  PLATFORM_RIDER = "PLATFORM_RIDER",
-  PLATFORM_OPERATION = "PLATFORM_OPERATION",
-  PLATFORM_FINANCE = "PLATFORM_FINANCE",
-  PLATFORM_BUSINESS = "PLATFORM_BUSINESS",
-  PLATFORM_MANAGER = "PLATFORM_MANAGER",
-  DEVELOPER = "DEVELOPER",
-  BUSINESS_ADMIN = "BUSINESS_ADMIN",
-  BUSINESS_USER = "BUSINESS_USER",
-  BUSINESS_RIDER = "BUSINESS_RIDER",
 }
 
 export interface LoginRequestDto {
@@ -270,27 +332,12 @@ export interface CheckTokenResponseDto {
 
 export interface CountryDto {
   name: string;
-  /**
-   * @minLength 2
-   * @maxLength 3
-   */
   code: string;
   /**
    * @minLength 3
    * @maxLength 3
    */
   currency: string;
-}
-
-export enum UserSignUpRoles {
-  USER = "USER",
-  PLATFORM_RIDER = "PLATFORM_RIDER",
-  DEVELOPER = "DEVELOPER",
-}
-
-export enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
 }
 
 export interface CreateUserRequestDto {
@@ -446,7 +493,12 @@ export interface User {
   driversLicense?: string;
   driversLicenseDoc?: string;
   /** @default "PENDING" */
-  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
+  driversLicenseVerified:
+    | "APPROVE"
+    | "DISAPPROVE"
+    | "SUSPENDED"
+    | "SUBMITTED"
+    | "PENDING";
   driversLicenseVerifiedComment?: string;
   /** @default "USER" */
   accessType: "USER" | "ADMIN";
@@ -596,7 +648,14 @@ export interface Business {
     code?: string;
   };
   /** @default "PARTNER" */
-  type: "BANKING" | "CLIENT" | "PARTNER" | "SUPPLIER" | "MERCHANT" | "AGENCY_BANKING" | "PICKRIDERS_AGENT";
+  type:
+    | "BANKING"
+    | "CLIENT"
+    | "PARTNER"
+    | "SUPPLIER"
+    | "MERCHANT"
+    | "AGENCY_BANKING"
+    | "PICKRIDERS_AGENT";
   /** @default false */
   isDeleted: boolean;
   /** @format date-time */
@@ -697,11 +756,6 @@ export interface WalletListResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
-}
-
-export enum PaymentProvider {
-  PAYSTACK = "PAYSTACK",
-  FLUTTERWAVE = "FLUTTERWAVE",
 }
 
 export interface FundWalletRequestDto {
@@ -992,13 +1046,6 @@ export interface SubmitDriversLicenseRequestDto {
   businessId?: string;
 }
 
-/** @default "ACCEPTED" */
-export enum Status {
-  PENDING = "PENDING",
-  REJECTED = "REJECTED",
-  ACCEPTED = "ACCEPTED",
-}
-
 export interface UpdateDriverLicenseRequestDto {
   status: Status;
   comment?: string;
@@ -1013,11 +1060,6 @@ export interface WalletCreateRequestDto {
   countryCode: string;
   entityId: string;
   entityType: EntityType;
-}
-
-export enum CouponType {
-  FIXED = "FIXED",
-  PERCENTAGE = "PERCENTAGE",
 }
 
 export interface CreateCouponRequestDto {
@@ -1152,27 +1194,6 @@ export interface CreateTemplateRequestDto {
   isActive?: boolean;
 }
 
-/** @default "EMAIL" */
-export enum NotificationType {
-  IN_APP = "IN_APP",
-  PUSH = "PUSH",
-  SMS = "SMS",
-  EMAIL = "EMAIL",
-}
-
-/** @default "USER" */
-export enum EntityType {
-  USER = "USER",
-  BUSINESS = "BUSINESS",
-}
-
-/** @default "SINGLE" */
-export enum NotificationCategory {
-  SINGLE = "SINGLE",
-  BROADCAST = "BROADCAST",
-  SCHEDULED_BROADCAST = "SCHEDULED_BROADCAST",
-}
-
 export interface NotificationAction {
   action?: string;
   title?: string;
@@ -1211,10 +1232,6 @@ export interface TriggerNotificationRequestDto {
 
 export interface CityDto {
   name: string;
-  /**
-   * @minLength 2
-   * @maxLength 3
-   */
   code: string;
 }
 
@@ -1527,13 +1544,6 @@ export interface CancelLocationRequestDto {
   reason: string;
 }
 
-/** @default "USER" */
-export enum CancelledBy {
-  USER = "USER",
-  RIDER = "RIDER",
-  ADMIN = "ADMIN",
-}
-
 export interface CancelOrderRequestDto {
   reason: string;
   cancelledBy?: CancelledBy;
@@ -1545,14 +1555,6 @@ export interface MakeOfferRequestDto {
 
 export interface AcceptRejectOfferRequestDto {
   status: Status;
-}
-
-export enum OrderLocationStatus {
-  PENDING = "PENDING",
-  IN_TRANSIT = "IN_TRANSIT",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  ARRIVED = "ARRIVED",
 }
 
 export interface UpdateLocationStatusRequestDto {
@@ -1627,17 +1629,43 @@ export type GetCountriesData = ListCountryResponseDto;
 
 export type AddCountryData = Country;
 
+export interface UpdateCountryParams {
+  countryId: string;
+}
+
 export type UpdateCountryData = Country;
+
+export interface GetCountryByIdParams {
+  countryId: string;
+}
 
 export type GetCountryByIdData = Country;
 
 export type AddCountryStatesPayload = string[];
 
+export interface AddCountryStatesParams {
+  countryId: string;
+}
+
 export type AddCountryStatesData = StateDto[];
+
+export interface GetCountryStatesParams {
+  countryId: string;
+}
 
 export type GetCountryStatesData = ListStateResponseDto;
 
+export interface GetCountryStateByIdParams {
+  countryId: string;
+  stateId: string;
+}
+
 export type GetCountryStateByIdData = State;
+
+export interface UpdateCountryStateParams {
+  countryId: string;
+  stateId: string;
+}
 
 export type UpdateCountryStateData = State;
 
@@ -1681,11 +1709,27 @@ export type ChangeUserPasswordData = MessageResponseDto;
 
 export type GetUserWalletsData = WalletListResponseDto;
 
+export interface GetUserWalletParams {
+  walletId: string;
+}
+
 export type GetUserWalletData = Wallet;
+
+export interface InitializeFundWalletParams {
+  walletId: string;
+}
 
 export type InitializeFundWalletData = FundWalletResponseDto;
 
+export interface UpdateSettlementAccountParams {
+  walletId: string;
+}
+
 export type UpdateSettlementAccountData = Wallet;
+
+export interface InitiateWithdrawalParams {
+  walletId: string;
+}
 
 export type InitiateWithdrawalData = Wallet;
 
@@ -1716,6 +1760,10 @@ export interface GetUserTransactionsParams {
 
 export type GetUserTransactionsData = ListTransactionResponseDto;
 
+export interface GetUserTransactionParams {
+  transactionId: string;
+}
+
 export type GetUserTransactionData = Transaction;
 
 export type DeleteUserAccountData = MessageResponseDto;
@@ -1727,6 +1775,10 @@ export type UpdateEmailData = MessageResponseDto;
 export type UpdateUserPreferencesData = User;
 
 export type ToggleOnlinePresenceData = User;
+
+export interface GetRiderOrderParams {
+  orderId: string;
+}
 
 export type GetRiderOrderData = Order;
 
@@ -1741,6 +1793,8 @@ export type NewFeatureLaunchNotificationData = any;
 export type CreateUser2Data = CreateUserRequestDto;
 
 export interface GetUsersParams {
+  /** Search by user email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
+  userSearch?: string;
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   phoneVerified?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
@@ -1761,13 +1815,34 @@ export interface GetUsersParams {
 
 export type GetUsersData = ListUserResponseDto;
 
+export interface GetUserParams {
+  userId: string;
+}
+
 export type GetUserData = User;
+
+export interface VerifyDriversLicense2Params {
+  userId: string;
+}
 
 export type VerifyDriversLicense2Data = User;
 
+export interface ApproveDriversLicenseSubmissionParams {
+  userId: string;
+}
+
 export type ApproveDriversLicenseSubmissionData = object;
 
+export interface UpdateDriversLicenseParams {
+  userId: string;
+}
+
 export type UpdateDriversLicenseData = User;
+
+export interface UpdateSettlementAccount2Params {
+  userId: string;
+  walletId: string;
+}
 
 export type UpdateSettlementAccount2Data = Wallet;
 
@@ -1815,15 +1890,31 @@ export interface GetTransactions2Params {
 
 export type GetTransactions2Data = ListTransactionResponseDto;
 
+export interface GetTransactionParams {
+  transactionId: string;
+}
+
 export type GetTransactionData = Transaction;
 
 export type CreateCouponData = object;
 
 export type CreateGroupData = object;
 
+export interface AddGroupUsersParams {
+  groupId: string;
+}
+
 export type AddGroupUsersData = object;
 
+export interface RemoveGroupUsersParams {
+  groupId: string;
+}
+
 export type RemoveGroupUsersData = object;
+
+export interface DeactivateCouponParams {
+  couponCode: string;
+}
 
 export type DeactivateCouponData = any;
 
@@ -1852,6 +1943,10 @@ export interface GetNotificationsParams {
 
 export type GetNotificationsData = ListNotificationResponseDto;
 
+export interface GetUserNotificationParams {
+  notificationId: string;
+}
+
 export type GetUserNotificationData = Notification;
 
 export type BulkMarkNotificationsAsReadData = MessageResponseDto;
@@ -1864,9 +1959,24 @@ export type CreateBusinessData = CreateBusinessRequestDto;
 
 export type CreateBusinessUserData = CreateBusinessUserRequestDto;
 
+export interface GetBusinessUserParams {
+  businessId: string;
+  userId: string;
+}
+
 export type GetBusinessUserData = User;
 
+export interface UpdateBusinessUserParams {
+  businessId: string;
+  userId: string;
+}
+
 export type UpdateBusinessUserData = User;
+
+export interface RemoveUserFromBusinessParams {
+  businessId: string;
+  userId: string;
+}
 
 export type RemoveUserFromBusinessData = MessageResponseDto;
 
@@ -1892,9 +2002,21 @@ export type GetBusinessUsersData = ListUserResponseDto;
 
 export type AddVehiclesData = MessageResponseDto;
 
+export interface AssignUserVehicleParams {
+  vehicleId: string;
+}
+
 export type AssignUserVehicleData = MessageResponseDto;
 
+export interface AddKycDetailsParams {
+  businessId: string;
+}
+
 export type AddKycDetailsData = MessageResponseDto;
+
+export interface GetUserReviewsParams {
+  userId: string;
+}
 
 export type GetUserReviewsData = ListReviewResponseDto;
 
@@ -1917,6 +2039,11 @@ export interface GetBusinessTransactionsParams {
 }
 
 export type GetBusinessTransactionsData = ListTransactionResponseDto;
+
+export interface GetBusinessTransactionParams {
+  businessId: string;
+  transactionId: string;
+}
 
 export type GetBusinessTransactionData = Transaction;
 
@@ -1946,9 +2073,23 @@ export interface GetBusinessOrdersParams {
 
 export type GetBusinessOrdersData = ListOrderResponseDto;
 
+export interface GetBusinessOrderParams {
+  businessId: string;
+  orderId: string;
+}
+
 export type GetBusinessOrderData = Order;
 
+export interface GetBusinessWalletsParams {
+  businessId: string;
+}
+
 export type GetBusinessWalletsData = WalletListResponseDto;
+
+export interface GetBusinessWalletParams {
+  walletId: string;
+  businessId: string;
+}
 
 export type GetBusinessWalletData = Wallet;
 
@@ -1982,6 +2123,10 @@ export interface GetBusinessOrderTypeChartParams {
 
 export type GetBusinessOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
+export interface GetBusinessParams {
+  businessId: string;
+}
+
 export type GetBusinessData = Business;
 
 export interface GetBusinessVehiclesParams {
@@ -2000,11 +2145,30 @@ export interface GetBusinessVehiclesParams {
 
 export type GetBusinessVehiclesData = VehicleListResponseDto;
 
+export interface UpdateBusinessPreferencesParams {
+  businessId: string;
+}
+
 export type UpdateBusinessPreferencesData = Business;
+
+export interface SuspendBusinessUserParams {
+  businessId: string;
+  userId: string;
+}
 
 export type SuspendBusinessUserData = User;
 
+export interface UnsuspendBusinessUserParams {
+  businessId: string;
+  userId: string;
+}
+
 export type UnsuspendBusinessUserData = User;
+
+export interface UpdateBusinessVehicleParams {
+  businessId: string;
+  vehicleId: string;
+}
 
 export type UpdateBusinessVehicleData = Vehicle;
 
@@ -2014,11 +2178,23 @@ export type RateRiderData = Review;
 
 export type UpdateUserVehicleData = Vehicle;
 
+export interface GetVehicleParams {
+  vehicleId: string;
+}
+
 export type GetVehicleData = Vehicle;
+
+export interface DeleteUserVehicleParams {
+  vehicleId: string;
+}
 
 export type DeleteUserVehicleData = MessageResponseDto;
 
 export interface GetVehiclesParams {
+  /** Search by vehicle name, plate number, model, make, engine number, or chassis number. Also search by courier email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
+  vehicleSearch?: string;
+  /** Filter by setting either of the enum values ['0', '1', 'false', 'true']. Select this to filter by assigned/non-assigned vehicles */
+  isAssigned?: "0" | "1" | "false" | "true";
   /** comma-seprarated list of vehicle models */
   model?: string;
   /** comma-seprarated list of vehicle makes */
@@ -2033,15 +2209,42 @@ export interface GetVehiclesParams {
 
 export type GetVehiclesData = VehicleListResponseDto;
 
+export interface UpdateUserVehicle2Params {
+  userId: string;
+}
+
 export type UpdateUserVehicle2Data = Vehicle;
+
+export interface VerifyVehicleParams {
+  vehicleId: string;
+  userId: string;
+}
 
 export type VerifyVehicleData = Vehicle;
 
+export interface RejectVehicleParams {
+  vehicleId: string;
+  userId: string;
+}
+
 export type RejectVehicleData = Vehicle;
+
+export interface SuspendVehicleParams {
+  vehicleId: string;
+  userId: string;
+}
 
 export type SuspendVehicleData = Vehicle;
 
+export interface GetVehicle2Params {
+  vehicleId: string;
+}
+
 export type GetVehicle2Data = Vehicle;
+
+export interface DeleteVehicleParams {
+  vehicleId: string;
+}
 
 export type DeleteVehicleData = MessageResponseDto;
 
@@ -2051,35 +2254,103 @@ export type CreateBulkOrderData = Order;
 
 export type CreateBatchOrderData = Order;
 
+export interface RequestOrderRidersParams {
+  orderId: string;
+}
+
 export type RequestOrderRidersData = User[];
+
+export interface CancelOrderLocationParams {
+  orderId: string;
+  locationId: string;
+}
 
 export type CancelOrderLocationData = OrderLocation;
 
+export interface CancelOrderParams {
+  orderId: string;
+}
+
 export type CancelOrderData = Order;
+
+export interface MakeOrderOfferParams {
+  orderId: string;
+}
 
 export type MakeOrderOfferData = Order;
 
+export interface InitiateOrderPaymentParams {
+  orderId: string;
+  walletId: string;
+}
+
 export type InitiateOrderPaymentData = Order;
+
+export interface AcceptOrRejectOrderOfferParams {
+  orderId: string;
+  offerId: string;
+}
 
 export type AcceptOrRejectOrderOfferData = Offer;
 
+export interface StartOrderParams {
+  orderId: string;
+}
+
 export type StartOrderData = Order;
+
+export interface StartOrderLocationParams {
+  orderId: string;
+  locationId: string;
+}
 
 export type StartOrderLocationData = OrderLocation;
 
+export interface UpdateOrderLocationStatusParams {
+  orderId: string;
+  locationId: string;
+}
+
 export type UpdateOrderLocationStatusData = OrderLocation;
+
+export interface ApplyOrderCouponParams {
+  orderId: string;
+  couponCode: string;
+}
 
 export type ApplyOrderCouponData = Order;
 
+export interface RemoveOrderCouponParams {
+  orderId: string;
+  couponCode: string;
+}
+
 export type RemoveOrderCouponData = object;
+
+export interface CompleteOrderLocationParams {
+  orderId: string;
+  locationId: string;
+}
 
 export type CompleteOrderLocationData = OrderLocation;
 
+export interface CompleteOrderParams {
+  orderId: string;
+}
+
 export type CompleteOrderData = Order;
+
+export interface QueueOrderParams {
+  orderId: string;
+}
 
 export type QueueOrderData = Order;
 
 export type GetQueuedOrdersData = Order[];
+
+export interface GetActiveOffersParams {
+  orderId: string;
+}
 
 export type GetActiveOffersData = Offer[];
 
@@ -2120,6 +2391,10 @@ export interface GetRiderOrdersParams {
 }
 
 export type GetRiderOrdersData = ListOrderResponseDto;
+
+export interface GetUserOrderParams {
+  orderId: string;
+}
 
 export type GetUserOrderData = Order;
 
@@ -2167,6 +2442,10 @@ export interface GetOrdersParams {
 
 export type GetOrdersData = ListOrderResponseDto;
 
+export interface GetOrderParams {
+  orderId: string;
+}
+
 export type GetOrderData = Order;
 
 export type GetLogsData = DataLogsResponseDto;
@@ -2179,4 +2458,10 @@ export interface FindAllParams {
 
 export type FindAllData = ListAuditLogResponseDto;
 
+export interface HandleWebhookEventsParams {
+  provider: "PAYSTACK" | "FLUTTERWAVE";
+}
+
 export type HandleWebhookEventsData = object;
+
+export type RunData = any;

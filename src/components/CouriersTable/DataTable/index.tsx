@@ -6,12 +6,15 @@ import React, { Suspense } from "react";
 import { flexRender } from "@tanstack/react-table";
 import { couriersTableColumn as columns } from "../CouriersTableColumn";
 import { useGetUsersReactTableQuery } from "@/api";
+import { useURLQuery } from "@/hooks";
 
 const LIMIT = 10;
 export const DataTable = () => {
+  const query = useURLQuery();
+  const userSearch = query.get("search");
   const { data, isLoading, table, rowSelection } = useGetUsersReactTableQuery(
     columns,
-    { limit: LIMIT, isRider: "true" },
+    { limit: LIMIT, isRider: "true", userSearch },
     {},
   );
 

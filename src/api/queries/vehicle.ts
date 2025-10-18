@@ -16,7 +16,7 @@ export const useGetVehiclesQuery = (query: GetVehiclesParams) =>
 export const useGetVehicleQuery = (vehicleId: string) =>
   useApiQuery({
     queryKey: [VEHICLE_KEY.VEHICLES, vehicleId],
-    queryFn: () => apiService.getVehicle2(vehicleId),
+    queryFn: () => apiService.getVehicle2({ vehicleId }),
     enabled: !!vehicleId,
   });
 

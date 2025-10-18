@@ -1,3 +1,5 @@
+"use client";
+
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { CustomersTable } from "./CustomersTable";
@@ -6,8 +8,12 @@ import { SuspendCustomersModal } from "./SuspendcustomersModal";
 import { Suspense } from "react";
 import { CustomersTableBulkAction } from "./CustomersTableBulkAction";
 import { CustomersTableFilter } from "./CustomersTableFilter";
+import { useURLQuery } from "@/hooks";
 
 const Customers = () => {
+  const query = useURLQuery();
+  const customerSearch = query.get("search");
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -24,7 +30,12 @@ const Customers = () => {
             <CustomersTableBulkAction />
             <div className="flex items-center gap-x-2">
               <Suspense>
-                <UI.TableSearchInput />
+                <UI.TableSearchInput
+                  onSearch={(text) => {
+                    query.set("search", text);
+                  }}
+                  value={customerSearch}
+                />
                 <CustomersTableFilter />
               </Suspense>
             </div>

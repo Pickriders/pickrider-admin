@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -11,23 +12,32 @@
 
 import {
   AcceptOrRejectOrderOfferData,
+  AcceptOrRejectOrderOfferParams,
   AcceptRejectOfferRequestDto,
   AddCountryData,
   AddCountryDto,
   AddCountryStatesData,
+  AddCountryStatesParams,
   AddCountryStatesPayload,
   AddGroupUsersData,
+  AddGroupUsersParams,
   AddKycDetailsData,
+  AddKycDetailsParams,
   AddVehiclesData,
   AddVehiclesDto,
   ApplyOrderCouponData,
+  ApplyOrderCouponParams,
   ApproveDriversLicenseSubmissionData,
+  ApproveDriversLicenseSubmissionParams,
   AssignUserVehicleData,
+  AssignUserVehicleParams,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
   CancelLocationRequestDto,
   CancelOrderData,
   CancelOrderLocationData,
+  CancelOrderLocationParams,
+  CancelOrderParams,
   CancelOrderRequestDto,
   ChangePasswordRequestDto,
   ChangeUserPassword2Data,
@@ -36,6 +46,8 @@ import {
   CompleteLocationRequestDto,
   CompleteOrderData,
   CompleteOrderLocationData,
+  CompleteOrderLocationParams,
+  CompleteOrderParams,
   CreateBatchOrderData,
   CreateBatchOrderDto,
   CreateBulkOrderData,
@@ -60,20 +72,25 @@ import {
   CreateVirtualAccountRequestDto,
   CreateWalletData,
   DeactivateCouponData,
+  DeactivateCouponParams,
   DeleteUserAccountData,
   DeleteUserVehicleData,
+  DeleteUserVehicleParams,
   DeleteVehicleData,
+  DeleteVehicleParams,
   FindAllData,
   FindAllParams,
   FundWalletRequestDto,
   GetActiveCouponsData,
   GetActiveOffersData,
+  GetActiveOffersParams,
   GetAllReferralsData,
   GetAllReferralsParams,
   GetBanksData,
   GetBanksParams,
   GetBusinessData,
   GetBusinessOrderData,
+  GetBusinessOrderParams,
   GetBusinessOrderStatisticsData,
   GetBusinessOrderStatisticsParams,
   GetBusinessOrderStatusChartData,
@@ -82,26 +99,35 @@ import {
   GetBusinessOrderTypeChartParams,
   GetBusinessOrdersData,
   GetBusinessOrdersParams,
+  GetBusinessParams,
   GetBusinessTransactionData,
+  GetBusinessTransactionParams,
   GetBusinessTransactionsData,
   GetBusinessTransactionsParams,
   GetBusinessUserData,
+  GetBusinessUserParams,
   GetBusinessUsersData,
   GetBusinessUsersParams,
   GetBusinessVehiclesData,
   GetBusinessVehiclesParams,
   GetBusinessWalletData,
+  GetBusinessWalletParams,
   GetBusinessWalletsData,
+  GetBusinessWalletsParams,
   GetCountriesData,
   GetCountriesParams,
   GetCountryByIdData,
+  GetCountryByIdParams,
   GetCountryStateByIdData,
+  GetCountryStateByIdParams,
   GetCountryStatesData,
+  GetCountryStatesParams,
   GetHeartbeatData,
   GetLogsData,
   GetNotificationsData,
   GetNotificationsParams,
   GetOrderData,
+  GetOrderParams,
   GetOrderStatusChartData,
   GetOrderStatusChartParams,
   GetOrderTypeChartData,
@@ -111,39 +137,53 @@ import {
   GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
+  GetRiderOrderParams,
   GetRiderOrderStatisticsData,
   GetRiderOrderStatisticsParams,
   GetRiderOrdersData,
   GetRiderOrdersParams,
   GetTransactionData,
+  GetTransactionParams,
   GetTransactions2Data,
   GetTransactions2Params,
   GetTransactionsData,
   GetTransactionsParams,
   GetUserData,
   GetUserNotificationData,
+  GetUserNotificationParams,
   GetUserOrderData,
+  GetUserOrderParams,
   GetUserOrdersData,
   GetUserOrdersParams,
+  GetUserParams,
   GetUserProfile2Data,
   GetUserProfileData,
   GetUserReviewsData,
+  GetUserReviewsParams,
   GetUserTransactionData,
+  GetUserTransactionParams,
   GetUserTransactionsData,
   GetUserTransactionsParams,
   GetUserVehicleData,
   GetUserWalletData,
+  GetUserWalletParams,
   GetUserWalletsData,
   GetUsersData,
   GetUsersParams,
   GetVehicle2Data,
+  GetVehicle2Params,
   GetVehicleData,
+  GetVehicleParams,
   GetVehiclesData,
   GetVehiclesParams,
   HandleWebhookEventsData,
+  HandleWebhookEventsParams,
   InitializeFundWalletData,
+  InitializeFundWalletParams,
   InitiateOrderPaymentData,
+  InitiateOrderPaymentParams,
   InitiateWithdrawalData,
+  InitiateWithdrawalParams,
   InitiateWithdrawalRequestDto,
   KYCDetailsDto,
   LoginAdminsData,
@@ -152,41 +192,60 @@ import {
   LoginRequestDto,
   MakeOfferRequestDto,
   MakeOrderOfferData,
+  MakeOrderOfferParams,
   NewFeatureLaunchNotificationData,
   Object,
   PasswordResetData,
   PasswordResetRequestData,
   QueueOrderData,
+  QueueOrderParams,
   RateRiderData,
   RateRiderRequestDto,
   RejectVehicleData,
+  RejectVehicleParams,
   RemoveGroupUsersData,
+  RemoveGroupUsersParams,
   RemoveOrderCouponData,
+  RemoveOrderCouponParams,
   RemoveUserFromBusinessData,
+  RemoveUserFromBusinessParams,
   RequestOrderRidersData,
+  RequestOrderRidersParams,
   ResendTokenData,
   ResetPasswordRequestDto,
   RidersRequestDto,
+  RunData,
   StartOrderData,
   StartOrderLocationData,
+  StartOrderLocationParams,
+  StartOrderParams,
   SubmitDriversLicenseData,
   SubmitDriversLicenseRequestDto,
   SuspendBusinessUserData,
+  SuspendBusinessUserParams,
   SuspendVehicleData,
+  SuspendVehicleParams,
   ToggleOnlinePresenceData,
   TokenRequestDto,
   TriggerNotificationData,
   TriggerNotificationRequestDto,
   UnsuspendBusinessUserData,
+  UnsuspendBusinessUserParams,
   UpdateAddressesRequestDto,
   UpdateBusinessPreferencesData,
+  UpdateBusinessPreferencesParams,
   UpdateBusinessUserData,
+  UpdateBusinessUserParams,
   UpdateBusinessVehicleData,
+  UpdateBusinessVehicleParams,
   UpdateCountryData,
   UpdateCountryDto,
+  UpdateCountryParams,
   UpdateCountryStateData,
+  UpdateCountryStateParams,
   UpdateDriverLicenseRequestDto,
   UpdateDriversLicenseData,
+  UpdateDriversLicenseParams,
   UpdateEmailData,
   UpdateEmailRequestDto,
   UpdateGroupUsersRequestDto,
@@ -194,6 +253,7 @@ import {
   UpdateLocationStatusRequestDto,
   UpdateNotificationsRequestDto,
   UpdateOrderLocationStatusData,
+  UpdateOrderLocationStatusParams,
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
@@ -202,7 +262,9 @@ import {
   UpdateProfilePhotoData,
   UpdateProfileRequestDto,
   UpdateSettlementAccount2Data,
+  UpdateSettlementAccount2Params,
   UpdateSettlementAccountData,
+  UpdateSettlementAccountParams,
   UpdateSettlementAccountRequestDto,
   UpdateStateDto,
   UpdateUserAddresses2Data,
@@ -211,23 +273,28 @@ import {
   UpdateUserPreferencesData,
   UpdateUserProfileData,
   UpdateUserVehicle2Data,
+  UpdateUserVehicle2Params,
   UpdateUserVehicleData,
   UpdateVehicleRequestDto,
   UpdateVehicleStatusRequestDto,
   UserKYCDetailDto,
   UserKycVerificationData,
   VerifyDriversLicense2Data,
+  VerifyDriversLicense2Params,
   VerifyDriversLicenseData,
   VerifyEmailData,
   VerifyEmailRequestDto,
   VerifyPhoneData,
   VerifyPhoneRequestDto,
   VerifyVehicleData,
+  VerifyVehicleParams,
   WalletCreateRequestDto,
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class Api<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -287,7 +354,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateCountryData`
    */
-  updateCountry = (countryId: string, data: UpdateCountryDto, params: RequestParams = {}) =>
+  updateCountry = (
+    { countryId, ...query }: UpdateCountryParams,
+    data: UpdateCountryDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateCountryData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}`,
       method: "PATCH",
@@ -306,7 +377,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetCountryByIdData`
    */
-  getCountryById = (countryId: string, params: RequestParams = {}) =>
+  getCountryById = (
+    { countryId, ...query }: GetCountryByIdParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetCountryByIdData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}`,
       method: "GET",
@@ -323,7 +397,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `AddCountryStatesData`
    */
-  addCountryStates = (countryId: string, data: AddCountryStatesPayload, params: RequestParams = {}) =>
+  addCountryStates = (
+    { countryId, ...query }: AddCountryStatesParams,
+    data: AddCountryStatesPayload,
+    params: RequestParams = {},
+  ) =>
     this.request<AddCountryStatesData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}/states`,
       method: "POST",
@@ -342,7 +420,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetCountryStatesData`
    */
-  getCountryStates = (countryId: string, params: RequestParams = {}) =>
+  getCountryStates = (
+    { countryId, ...query }: GetCountryStatesParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetCountryStatesData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}/states`,
       method: "GET",
@@ -359,7 +440,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetCountryStateByIdData`
    */
-  getCountryStateById = (countryId: string, stateId: string, params: RequestParams = {}) =>
+  getCountryStateById = (
+    { countryId, stateId, ...query }: GetCountryStateByIdParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetCountryStateByIdData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}/states/${stateId}`,
       method: "GET",
@@ -376,7 +460,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateCountryStateData`
    */
-  updateCountryState = (countryId: string, stateId: string, data: UpdateStateDto, params: RequestParams = {}) =>
+  updateCountryState = (
+    { countryId, stateId, ...query }: UpdateCountryStateParams,
+    data: UpdateStateDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateCountryStateData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}/states/${stateId}`,
       method: "PATCH",
@@ -530,7 +618,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/auth/check-token
    * @response `201` `CheckTokenValidityData`
    */
-  checkTokenValidity = (data: VerifyPhoneRequestDto, params: RequestParams = {}) =>
+  checkTokenValidity = (
+    data: VerifyPhoneRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CheckTokenValidityData, any>({
       path: `/api/v1/auth/check-token`,
       method: "POST",
@@ -547,7 +638,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/users
    * @response `201` `CreateUserData`
    */
-  createUser = (query: CreateUserParams, data: CreateUserRequestDto, params: RequestParams = {}) =>
+  createUser = (
+    query: CreateUserParams,
+    data: CreateUserRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateUserData, any>({
       path: `/api/v1/users`,
       method: "POST",
@@ -583,7 +678,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateUserProfileData`
    */
-  updateUserProfile = (data: UpdateProfileRequestDto, params: RequestParams = {}) =>
+  updateUserProfile = (
+    data: UpdateProfileRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserProfileData, any>({
       path: `/api/v1/users/me/update-profile`,
       method: "PATCH",
@@ -602,7 +700,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateUserLocationData`
    */
-  updateUserLocation = (data: UpdateLocationRequestDto, params: RequestParams = {}) =>
+  updateUserLocation = (
+    data: UpdateLocationRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserLocationData, any>({
       path: `/api/v1/users/me/update-location`,
       method: "PATCH",
@@ -621,7 +722,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateProfilePhotoData`
    */
-  updateProfilePhoto = (data: UpdatePhotoRequestDto, params: RequestParams = {}) =>
+  updateProfilePhoto = (
+    data: UpdatePhotoRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateProfilePhotoData, any>({
       path: `/api/v1/users/me/update-profile-photo`,
       method: "PATCH",
@@ -640,7 +744,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateUserAddressesData`
    */
-  updateUserAddresses = (data: UpdateAddressesRequestDto, params: RequestParams = {}) =>
+  updateUserAddresses = (
+    data: UpdateAddressesRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserAddressesData, any>({
       path: `/api/v1/users/me/update-addresses`,
       method: "PATCH",
@@ -678,7 +785,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `ChangeUserPasswordData`
    */
-  changeUserPassword = (data: ChangePasswordRequestDto, params: RequestParams = {}) =>
+  changeUserPassword = (
+    data: ChangePasswordRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<ChangeUserPasswordData, any>({
       path: `/api/v1/users/me/password-change`,
       method: "PATCH",
@@ -714,7 +824,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserWalletData`
    */
-  getUserWallet = (walletId: string, params: RequestParams = {}) =>
+  getUserWallet = (
+    { walletId, ...query }: GetUserWalletParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserWalletData, any>({
       path: `/api/v1/users/me/wallets/${walletId}`,
       method: "GET",
@@ -731,7 +844,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `InitializeFundWalletData`
    */
-  initializeFundWallet = (walletId: string, data: FundWalletRequestDto, params: RequestParams = {}) =>
+  initializeFundWallet = (
+    { walletId, ...query }: InitializeFundWalletParams,
+    data: FundWalletRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<InitializeFundWalletData, any>({
       path: `/api/v1/users/me/wallets/${walletId}/initialize-funding`,
       method: "POST",
@@ -750,7 +867,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateSettlementAccountData`
    */
-  updateSettlementAccount = (walletId: string, data: UpdateSettlementAccountRequestDto, params: RequestParams = {}) =>
+  updateSettlementAccount = (
+    { walletId, ...query }: UpdateSettlementAccountParams,
+    data: UpdateSettlementAccountRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateSettlementAccountData, any>({
       path: `/api/v1/users/me/wallets/${walletId}/settlement-account`,
       method: "PATCH",
@@ -769,7 +890,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `InitiateWithdrawalData`
    */
-  initiateWithdrawal = (walletId: string, data: InitiateWithdrawalRequestDto, params: RequestParams = {}) =>
+  initiateWithdrawal = (
+    { walletId, ...query }: InitiateWithdrawalParams,
+    data: InitiateWithdrawalRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<InitiateWithdrawalData, any>({
       path: `/api/v1/users/me/wallets/${walletId}/withdrawal-request`,
       method: "PATCH",
@@ -805,7 +930,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetAllReferralsData`
    */
-  getAllReferrals = (query: GetAllReferralsParams, params: RequestParams = {}) =>
+  getAllReferrals = (
+    query: GetAllReferralsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetAllReferralsData, any>({
       path: `/api/v1/users/me/referrals`,
       method: "GET",
@@ -823,7 +951,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserTransactionsData`
    */
-  getUserTransactions = (query: GetUserTransactionsParams, params: RequestParams = {}) =>
+  getUserTransactions = (
+    query: GetUserTransactionsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserTransactionsData, any>({
       path: `/api/v1/users/me/transactions`,
       method: "GET",
@@ -841,7 +972,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserTransactionData`
    */
-  getUserTransaction = (transactionId: string, params: RequestParams = {}) =>
+  getUserTransaction = (
+    { transactionId, ...query }: GetUserTransactionParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserTransactionData, any>({
       path: `/api/v1/users/me/transactions/${transactionId}`,
       method: "GET",
@@ -875,7 +1009,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdatePhoneNumberData`
    */
-  updatePhoneNumber = (data: UpdatePhoneRequestDto, params: RequestParams = {}) =>
+  updatePhoneNumber = (
+    data: UpdatePhoneRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdatePhoneNumberData, any>({
       path: `/api/v1/users/me/phone`,
       method: "PATCH",
@@ -913,7 +1050,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateUserPreferencesData`
    */
-  updateUserPreferences = (data: UpdatePreferencesRequestDto, params: RequestParams = {}) =>
+  updateUserPreferences = (
+    data: UpdatePreferencesRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserPreferencesData, any>({
       path: `/api/v1/users/me/preferences`,
       method: "PATCH",
@@ -949,7 +1089,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetRiderOrderData`
    */
-  getRiderOrder = (orderId: string, params: RequestParams = {}) =>
+  getRiderOrder = (
+    { orderId, ...query }: GetRiderOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetRiderOrderData, any>({
       path: `/api/v1/users/me/orders/${orderId}`,
       method: "GET",
@@ -966,7 +1109,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `VerifyDriversLicenseData`
    */
-  verifyDriversLicense = (data: SubmitDriversLicenseRequestDto, params: RequestParams = {}) =>
+  verifyDriversLicense = (
+    data: SubmitDriversLicenseRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<VerifyDriversLicenseData, any>({
       path: `/api/v1/users/me/documents/drivers-license/verify`,
       method: "PATCH",
@@ -985,7 +1131,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `SubmitDriversLicenseData`
    */
-  submitDriversLicense = (data: SubmitDriversLicenseRequestDto, params: RequestParams = {}) =>
+  submitDriversLicense = (
+    data: SubmitDriversLicenseRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<SubmitDriversLicenseData, any>({
       path: `/api/v1/users/me/documents/drivers-license`,
       method: "PATCH",
@@ -1074,7 +1223,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserData`
    */
-  getUser = (userId: string, params: RequestParams = {}) =>
+  getUser = ({ userId, ...query }: GetUserParams, params: RequestParams = {}) =>
     this.request<GetUserData, any>({
       path: `/api/v1/admins/users/${userId}`,
       method: "GET",
@@ -1093,7 +1242,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `VerifyDriversLicense2Data`
    */
-  verifyDriversLicense2 = (userId: string, data: SubmitDriversLicenseRequestDto, params: RequestParams = {}) =>
+  verifyDriversLicense2 = (
+    { userId, ...query }: VerifyDriversLicense2Params,
+    data: SubmitDriversLicenseRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<VerifyDriversLicense2Data, any>({
       path: `/api/v1/admins/users/${userId}/drivers-license/verify`,
       method: "PATCH",
@@ -1112,7 +1265,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `ApproveDriversLicenseSubmissionData`
    */
-  approveDriversLicenseSubmission = (userId: string, params: RequestParams = {}) =>
+  approveDriversLicenseSubmission = (
+    { userId, ...query }: ApproveDriversLicenseSubmissionParams,
+    params: RequestParams = {},
+  ) =>
     this.request<ApproveDriversLicenseSubmissionData, any>({
       path: `/api/v1/admins/users/${userId}/drivers-license/approve`,
       method: "PATCH",
@@ -1129,7 +1285,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateDriversLicenseData`
    */
-  updateDriversLicense = (userId: string, data: UpdateDriverLicenseRequestDto, params: RequestParams = {}) =>
+  updateDriversLicense = (
+    { userId, ...query }: UpdateDriversLicenseParams,
+    data: UpdateDriverLicenseRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateDriversLicenseData, any>({
       path: `/api/v1/admins/users/${userId}/drivers-license/update`,
       method: "PATCH",
@@ -1151,8 +1311,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `UpdateSettlementAccount2Data`
    */
   updateSettlementAccount2 = (
-    userId: string,
-    walletId: string,
+    { userId, walletId, ...query }: UpdateSettlementAccount2Params,
     data: UpdateSettlementAccountRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1195,7 +1354,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateProfilePhoto2Data`
    */
-  updateProfilePhoto2 = (data: UpdatePhotoRequestDto, params: RequestParams = {}) =>
+  updateProfilePhoto2 = (
+    data: UpdatePhotoRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateProfilePhoto2Data, any>({
       path: `/api/v1/admins/users/me/update-profile-photo`,
       method: "PATCH",
@@ -1216,7 +1378,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateUserAddresses2Data`
    */
-  updateUserAddresses2 = (data: UpdateAddressesRequestDto, params: RequestParams = {}) =>
+  updateUserAddresses2 = (
+    data: UpdateAddressesRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserAddresses2Data, any>({
       path: `/api/v1/admins/users/me/update-addresses`,
       method: "PATCH",
@@ -1237,7 +1402,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `ChangeUserPassword2Data`
    */
-  changeUserPassword2 = (data: ChangePasswordRequestDto, params: RequestParams = {}) =>
+  changeUserPassword2 = (
+    data: ChangePasswordRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<ChangeUserPassword2Data, any>({
       path: `/api/v1/admins/users/me/password-change`,
       method: "PATCH",
@@ -1275,7 +1443,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetTransactionsData`
    */
-  getTransactions = (query: GetTransactionsParams, params: RequestParams = {}) =>
+  getTransactions = (
+    query: GetTransactionsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetTransactionsData, any>({
       path: `/api/v1/transactions`,
       method: "GET",
@@ -1295,7 +1466,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetTransactions2Data`
    */
-  getTransactions2 = (query: GetTransactions2Params, params: RequestParams = {}) =>
+  getTransactions2 = (
+    query: GetTransactions2Params,
+    params: RequestParams = {},
+  ) =>
     this.request<GetTransactions2Data, any>({
       path: `/api/v1/admins/transactions`,
       method: "GET",
@@ -1313,7 +1487,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetTransactionData`
    */
-  getTransaction = (transactionId: string, params: RequestParams = {}) =>
+  getTransaction = (
+    { transactionId, ...query }: GetTransactionParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetTransactionData, any>({
       path: `/api/v1/admins/transactions/${transactionId}`,
       method: "GET",
@@ -1368,7 +1545,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `AddGroupUsersData`
    */
-  addGroupUsers = (groupId: string, data: UpdateGroupUsersRequestDto, params: RequestParams = {}) =>
+  addGroupUsers = (
+    { groupId, ...query }: AddGroupUsersParams,
+    data: UpdateGroupUsersRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<AddGroupUsersData, any>({
       path: `/api/v1/admins/coupons/groups/${groupId}/add`,
       method: "PATCH",
@@ -1387,7 +1568,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `RemoveGroupUsersData`
    */
-  removeGroupUsers = (groupId: string, data: UpdateGroupUsersRequestDto, params: RequestParams = {}) =>
+  removeGroupUsers = (
+    { groupId, ...query }: RemoveGroupUsersParams,
+    data: UpdateGroupUsersRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<RemoveGroupUsersData, any>({
       path: `/api/v1/admins/coupons/groups/${groupId}/remove`,
       method: "PATCH",
@@ -1406,7 +1591,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `DeactivateCouponData`
    */
-  deactivateCoupon = (couponCode: string, params: RequestParams = {}) =>
+  deactivateCoupon = (
+    { couponCode, ...query }: DeactivateCouponParams,
+    params: RequestParams = {},
+  ) =>
     this.request<DeactivateCouponData, any>({
       path: `/api/v1/admins/coupons/${couponCode}/deactivate`,
       method: "PATCH",
@@ -1422,7 +1610,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBanksData`
    */
-  getBanks = ({ provider, ...query }: GetBanksParams, params: RequestParams = {}) =>
+  getBanks = (
+    { provider, ...query }: GetBanksParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBanksData, any>({
       path: `/api/v1/payments/${provider}/banks`,
       method: "GET",
@@ -1440,7 +1631,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `CreateDedicatedVirtualAccountData`
    */
-  createDedicatedVirtualAccount = (data: CreateVirtualAccountRequestDto, params: RequestParams = {}) =>
+  createDedicatedVirtualAccount = (
+    data: CreateVirtualAccountRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateDedicatedVirtualAccountData, any>({
       path: `/api/v1/payments/dedicated-account/create`,
       method: "POST",
@@ -1459,7 +1653,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetNotificationsData`
    */
-  getNotifications = (query: GetNotificationsParams, params: RequestParams = {}) =>
+  getNotifications = (
+    query: GetNotificationsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetNotificationsData, any>({
       path: `/api/v1/notifications`,
       method: "GET",
@@ -1477,7 +1674,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserNotificationData`
    */
-  getUserNotification = (notificationId: string, params: RequestParams = {}) =>
+  getUserNotification = (
+    { notificationId, ...query }: GetUserNotificationParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserNotificationData, any>({
       path: `/api/v1/notifications/${notificationId}`,
       method: "GET",
@@ -1494,7 +1694,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `BulkMarkNotificationsAsReadData`
    */
-  bulkMarkNotificationsAsRead = (data: UpdateNotificationsRequestDto, params: RequestParams = {}) =>
+  bulkMarkNotificationsAsRead = (
+    data: UpdateNotificationsRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<BulkMarkNotificationsAsReadData, any>({
       path: `/api/v1/notifications/mark-as-read`,
       method: "PATCH",
@@ -1513,7 +1716,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `CreateTemplateData`
    */
-  createTemplate = (data: CreateTemplateRequestDto, params: RequestParams = {}) =>
+  createTemplate = (
+    data: CreateTemplateRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateTemplateData, any>({
       path: `/api/v1/admins/notifications/templates`,
       method: "POST",
@@ -1532,7 +1738,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `TriggerNotificationData`
    */
-  triggerNotification = (data: TriggerNotificationRequestDto, params: RequestParams = {}) =>
+  triggerNotification = (
+    data: TriggerNotificationRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<TriggerNotificationData, any>({
       path: `/api/v1/admins/notifications/trigger`,
       method: "POST",
@@ -1549,7 +1758,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/businesses
    * @response `201` `CreateBusinessData`
    */
-  createBusiness = (data: CreateBusinessRequestDto, params: RequestParams = {}) =>
+  createBusiness = (
+    data: CreateBusinessRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateBusinessData, any>({
       path: `/api/v1/businesses`,
       method: "POST",
@@ -1567,7 +1779,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `CreateBusinessUserData`
    */
-  createBusinessUser = (data: CreateBusinessUserRequestDto, params: RequestParams = {}) =>
+  createBusinessUser = (
+    data: CreateBusinessUserRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateBusinessUserData, any>({
       path: `/api/v1/businesses/users`,
       method: "POST",
@@ -1586,7 +1801,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessUserData`
    */
-  getBusinessUser = (businessId: string, userId: string, params: RequestParams = {}) =>
+  getBusinessUser = (
+    { businessId, userId, ...query }: GetBusinessUserParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessUserData, any>({
       path: `/api/v1/businesses/${businessId}/users/${userId}`,
       method: "GET",
@@ -1604,8 +1822,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `UpdateBusinessUserData`
    */
   updateBusinessUser = (
-    businessId: string,
-    userId: string,
+    { businessId, userId, ...query }: UpdateBusinessUserParams,
     data: UpdateProfileRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1627,7 +1844,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `RemoveUserFromBusinessData`
    */
-  removeUserFromBusiness = (businessId: string, userId: string, params: RequestParams = {}) =>
+  removeUserFromBusiness = (
+    { businessId, userId, ...query }: RemoveUserFromBusinessParams,
+    params: RequestParams = {},
+  ) =>
     this.request<RemoveUserFromBusinessData, any>({
       path: `/api/v1/businesses/${businessId}/users/${userId}`,
       method: "DELETE",
@@ -1644,7 +1864,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessUsersData`
    */
-  getBusinessUsers = ({ businessId, ...query }: GetBusinessUsersParams, params: RequestParams = {}) =>
+  getBusinessUsers = (
+    { businessId, ...query }: GetBusinessUsersParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessUsersData, any>({
       path: `/api/v1/businesses/${businessId}/users`,
       method: "GET",
@@ -1681,7 +1904,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `AssignUserVehicleData`
    */
-  assignUserVehicle = (vehicleId: string, data: AssignVehicleDto, params: RequestParams = {}) =>
+  assignUserVehicle = (
+    { vehicleId, ...query }: AssignUserVehicleParams,
+    data: AssignVehicleDto,
+    params: RequestParams = {},
+  ) =>
     this.request<AssignUserVehicleData, any>({
       path: `/api/v1/businesses/vehicles/${vehicleId}/assign`,
       method: "PATCH",
@@ -1700,7 +1927,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `AddKycDetailsData`
    */
-  addKycDetails = (businessId: string, data: KYCDetailsDto, params: RequestParams = {}) =>
+  addKycDetails = (
+    { businessId, ...query }: AddKycDetailsParams,
+    data: KYCDetailsDto,
+    params: RequestParams = {},
+  ) =>
     this.request<AddKycDetailsData, any>({
       path: `/api/v1/businesses/${businessId}/kyc`,
       method: "PATCH",
@@ -1719,7 +1950,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserReviewsData`
    */
-  getUserReviews = (userId: string, params: RequestParams = {}) =>
+  getUserReviews = (
+    { userId, ...query }: GetUserReviewsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserReviewsData, any>({
       path: `/api/v1/businesses/users/${userId}/reviews`,
       method: "GET",
@@ -1736,7 +1970,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessTransactionsData`
    */
-  getBusinessTransactions = ({ businessId, ...query }: GetBusinessTransactionsParams, params: RequestParams = {}) =>
+  getBusinessTransactions = (
+    { businessId, ...query }: GetBusinessTransactionsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessTransactionsData, any>({
       path: `/api/v1/businesses/${businessId}/transactions`,
       method: "GET",
@@ -1754,7 +1991,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessTransactionData`
    */
-  getBusinessTransaction = (businessId: string, transactionId: string, params: RequestParams = {}) =>
+  getBusinessTransaction = (
+    { businessId, transactionId, ...query }: GetBusinessTransactionParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessTransactionData, any>({
       path: `/api/v1/businesses/${businessId}/transactions/${transactionId}`,
       method: "GET",
@@ -1771,7 +2011,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessOrdersData`
    */
-  getBusinessOrders = ({ businessId, ...query }: GetBusinessOrdersParams, params: RequestParams = {}) =>
+  getBusinessOrders = (
+    { businessId, ...query }: GetBusinessOrdersParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessOrdersData, any>({
       path: `/api/v1/businesses/${businessId}/orders`,
       method: "GET",
@@ -1789,7 +2032,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessOrderData`
    */
-  getBusinessOrder = (businessId: string, orderId: string, params: RequestParams = {}) =>
+  getBusinessOrder = (
+    { businessId, orderId, ...query }: GetBusinessOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessOrderData, any>({
       path: `/api/v1/businesses/${businessId}/orders/${orderId}`,
       method: "GET",
@@ -1806,7 +2052,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessWalletsData`
    */
-  getBusinessWallets = (businessId: string, params: RequestParams = {}) =>
+  getBusinessWallets = (
+    { businessId, ...query }: GetBusinessWalletsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessWalletsData, any>({
       path: `/api/v1/businesses/${businessId}/wallets`,
       method: "GET",
@@ -1823,7 +2072,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessWalletData`
    */
-  getBusinessWallet = (walletId: string, businessId: string, params: RequestParams = {}) =>
+  getBusinessWallet = (
+    { walletId, businessId, ...query }: GetBusinessWalletParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessWalletData, any>({
       path: `/api/v1/businesses/${businessId}/wallets/${walletId}`,
       method: "GET",
@@ -1882,7 +2134,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessOrderTypeChartData`
    */
-  getBusinessOrderTypeChart = ({ businessId, ...query }: GetBusinessOrderTypeChartParams, params: RequestParams = {}) =>
+  getBusinessOrderTypeChart = (
+    { businessId, ...query }: GetBusinessOrderTypeChartParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessOrderTypeChartData, any>({
       path: `/api/v1/businesses/${businessId}/order-type-chart`,
       method: "GET",
@@ -1900,7 +2155,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessData`
    */
-  getBusiness = (businessId: string, params: RequestParams = {}) =>
+  getBusiness = (
+    { businessId, ...query }: GetBusinessParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessData, any>({
       path: `/api/v1/businesses/${businessId}`,
       method: "GET",
@@ -1917,7 +2175,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetBusinessVehiclesData`
    */
-  getBusinessVehicles = ({ businessId, ...query }: GetBusinessVehiclesParams, params: RequestParams = {}) =>
+  getBusinessVehicles = (
+    { businessId, ...query }: GetBusinessVehiclesParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetBusinessVehiclesData, any>({
       path: `/api/v1/businesses/${businessId}/vehicles`,
       method: "GET",
@@ -1935,7 +2196,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UpdateBusinessPreferencesData`
    */
-  updateBusinessPreferences = (businessId: string, data: UpdatePreferencesRequestDto, params: RequestParams = {}) =>
+  updateBusinessPreferences = (
+    { businessId, ...query }: UpdateBusinessPreferencesParams,
+    data: UpdatePreferencesRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateBusinessPreferencesData, any>({
       path: `/api/v1/businesses/${businessId}/preferences`,
       method: "PATCH",
@@ -1954,7 +2219,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `SuspendBusinessUserData`
    */
-  suspendBusinessUser = (businessId: string, userId: string, params: RequestParams = {}) =>
+  suspendBusinessUser = (
+    { businessId, userId, ...query }: SuspendBusinessUserParams,
+    params: RequestParams = {},
+  ) =>
     this.request<SuspendBusinessUserData, any>({
       path: `/api/v1/businesses/${businessId}/users/${userId}/suspend`,
       method: "PATCH",
@@ -1971,7 +2239,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `UnsuspendBusinessUserData`
    */
-  unsuspendBusinessUser = (businessId: string, userId: string, params: RequestParams = {}) =>
+  unsuspendBusinessUser = (
+    { businessId, userId, ...query }: UnsuspendBusinessUserParams,
+    params: RequestParams = {},
+  ) =>
     this.request<UnsuspendBusinessUserData, any>({
       path: `/api/v1/businesses/${businessId}/users/${userId}/unsuspend`,
       method: "PATCH",
@@ -1989,8 +2260,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `UpdateBusinessVehicleData`
    */
   updateBusinessVehicle = (
-    businessId: string,
-    vehicleId: string,
+    { businessId, vehicleId, ...query }: UpdateBusinessVehicleParams,
     data: UpdateVehicleRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2048,7 +2318,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `UpdateUserVehicleData`
    */
-  updateUserVehicle = (data: UpdateVehicleRequestDto, params: RequestParams = {}) =>
+  updateUserVehicle = (
+    data: UpdateVehicleRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserVehicleData, any>({
       path: `/api/v1/vehicles`,
       method: "POST",
@@ -2067,7 +2340,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetVehicleData`
    */
-  getVehicle = (vehicleId: string, params: RequestParams = {}) =>
+  getVehicle = (
+    { vehicleId, ...query }: GetVehicleParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetVehicleData, any>({
       path: `/api/v1/vehicles/${vehicleId}`,
       method: "GET",
@@ -2084,7 +2360,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `DeleteUserVehicleData`
    */
-  deleteUserVehicle = (vehicleId: string, params: RequestParams = {}) =>
+  deleteUserVehicle = (
+    { vehicleId, ...query }: DeleteUserVehicleParams,
+    params: RequestParams = {},
+  ) =>
     this.request<DeleteUserVehicleData, any>({
       path: `/api/v1/vehicles/${vehicleId}`,
       method: "DELETE",
@@ -2121,7 +2400,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `UpdateUserVehicle2Data`
    */
-  updateUserVehicle2 = (userId: string, data: UpdateVehicleRequestDto, params: RequestParams = {}) =>
+  updateUserVehicle2 = (
+    { userId, ...query }: UpdateUserVehicle2Params,
+    data: UpdateVehicleRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<UpdateUserVehicle2Data, any>({
       path: `/api/v1/admins/vehicles/${userId}/create`,
       method: "POST",
@@ -2140,7 +2423,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `VerifyVehicleData`
    */
-  verifyVehicle = (vehicleId: string, userId: string, params: RequestParams = {}) =>
+  verifyVehicle = (
+    { vehicleId, userId, ...query }: VerifyVehicleParams,
+    params: RequestParams = {},
+  ) =>
     this.request<VerifyVehicleData, any>({
       path: `/api/v1/admins/vehicles/${vehicleId}/users/${userId}/verify`,
       method: "PATCH",
@@ -2158,8 +2444,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `RejectVehicleData`
    */
   rejectVehicle = (
-    vehicleId: string,
-    userId: string,
+    { vehicleId, userId, ...query }: RejectVehicleParams,
     data: UpdateVehicleStatusRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2182,8 +2467,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `SuspendVehicleData`
    */
   suspendVehicle = (
-    vehicleId: string,
-    userId: string,
+    { vehicleId, userId, ...query }: SuspendVehicleParams,
     data: UpdateVehicleStatusRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2207,7 +2491,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetVehicle2Data`
    */
-  getVehicle2 = (vehicleId: string, params: RequestParams = {}) =>
+  getVehicle2 = (
+    { vehicleId, ...query }: GetVehicle2Params,
+    params: RequestParams = {},
+  ) =>
     this.request<GetVehicle2Data, any>({
       path: `/api/v1/admins/vehicles/${vehicleId}`,
       method: "GET",
@@ -2224,7 +2511,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `DeleteVehicleData`
    */
-  deleteVehicle = (vehicleId: string, params: RequestParams = {}) =>
+  deleteVehicle = (
+    { vehicleId, ...query }: DeleteVehicleParams,
+    params: RequestParams = {},
+  ) =>
     this.request<DeleteVehicleData, any>({
       path: `/api/v1/admins/vehicles/${vehicleId}`,
       method: "DELETE",
@@ -2241,7 +2531,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `CreateSingleOrderData`
    */
-  createSingleOrder = (data: CreateSingleOrderDto, params: RequestParams = {}) =>
+  createSingleOrder = (
+    data: CreateSingleOrderDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CreateSingleOrderData, any>({
       path: `/api/v1/orders/single`,
       method: "POST",
@@ -2298,7 +2591,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `RequestOrderRidersData`
    */
-  requestOrderRiders = (orderId: string, data: RidersRequestDto, params: RequestParams = {}) =>
+  requestOrderRiders = (
+    { orderId, ...query }: RequestOrderRidersParams,
+    data: RidersRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<RequestOrderRidersData, any>({
       path: `/api/v1/orders/${orderId}/request-riders`,
       method: "POST",
@@ -2318,8 +2615,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `CancelOrderLocationData`
    */
   cancelOrderLocation = (
-    orderId: string,
-    locationId: string,
+    { orderId, locationId, ...query }: CancelOrderLocationParams,
     data: CancelLocationRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2341,7 +2637,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `CancelOrderData`
    */
-  cancelOrder = (orderId: string, data: CancelOrderRequestDto, params: RequestParams = {}) =>
+  cancelOrder = (
+    { orderId, ...query }: CancelOrderParams,
+    data: CancelOrderRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<CancelOrderData, any>({
       path: `/api/v1/orders/${orderId}/cancel`,
       method: "PATCH",
@@ -2360,7 +2660,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `201` `MakeOrderOfferData`
    */
-  makeOrderOffer = (orderId: string, data: MakeOfferRequestDto, params: RequestParams = {}) =>
+  makeOrderOffer = (
+    { orderId, ...query }: MakeOrderOfferParams,
+    data: MakeOfferRequestDto,
+    params: RequestParams = {},
+  ) =>
     this.request<MakeOrderOfferData, any>({
       path: `/api/v1/orders/${orderId}/offers`,
       method: "POST",
@@ -2379,7 +2683,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `InitiateOrderPaymentData`
    */
-  initiateOrderPayment = (orderId: string, walletId: string, params: RequestParams = {}) =>
+  initiateOrderPayment = (
+    { orderId, walletId, ...query }: InitiateOrderPaymentParams,
+    params: RequestParams = {},
+  ) =>
     this.request<InitiateOrderPaymentData, any>({
       path: `/api/v1/orders/${orderId}/wallets/${walletId}/pay`,
       method: "PATCH",
@@ -2397,8 +2704,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `AcceptOrRejectOrderOfferData`
    */
   acceptOrRejectOrderOffer = (
-    orderId: string,
-    offerId: string,
+    { orderId, offerId, ...query }: AcceptOrRejectOrderOfferParams,
     data: AcceptRejectOfferRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2420,7 +2726,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `StartOrderData`
    */
-  startOrder = (orderId: string, params: RequestParams = {}) =>
+  startOrder = (
+    { orderId, ...query }: StartOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<StartOrderData, any>({
       path: `/api/v1/orders/${orderId}/start`,
       method: "PATCH",
@@ -2437,7 +2746,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `StartOrderLocationData`
    */
-  startOrderLocation = (orderId: string, locationId: string, params: RequestParams = {}) =>
+  startOrderLocation = (
+    { orderId, locationId, ...query }: StartOrderLocationParams,
+    params: RequestParams = {},
+  ) =>
     this.request<StartOrderLocationData, any>({
       path: `/api/v1/orders/${orderId}/locations/${locationId}/start`,
       method: "PATCH",
@@ -2455,8 +2767,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `UpdateOrderLocationStatusData`
    */
   updateOrderLocationStatus = (
-    orderId: string,
-    locationId: string,
+    { orderId, locationId, ...query }: UpdateOrderLocationStatusParams,
     data: UpdateLocationStatusRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2478,7 +2789,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `ApplyOrderCouponData`
    */
-  applyOrderCoupon = (orderId: string, couponCode: string, params: RequestParams = {}) =>
+  applyOrderCoupon = (
+    { orderId, couponCode, ...query }: ApplyOrderCouponParams,
+    params: RequestParams = {},
+  ) =>
     this.request<ApplyOrderCouponData, any>({
       path: `/api/v1/orders/${orderId}/coupons/${couponCode}/apply`,
       method: "PATCH",
@@ -2495,7 +2809,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `RemoveOrderCouponData`
    */
-  removeOrderCoupon = (orderId: string, couponCode: string, params: RequestParams = {}) =>
+  removeOrderCoupon = (
+    { orderId, couponCode, ...query }: RemoveOrderCouponParams,
+    params: RequestParams = {},
+  ) =>
     this.request<RemoveOrderCouponData, any>({
       path: `/api/v1/orders/${orderId}/coupons/${couponCode}/remove`,
       method: "PATCH",
@@ -2513,8 +2830,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `CompleteOrderLocationData`
    */
   completeOrderLocation = (
-    orderId: string,
-    locationId: string,
+    { orderId, locationId, ...query }: CompleteOrderLocationParams,
     data: CompleteLocationRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2536,7 +2852,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `CompleteOrderData`
    */
-  completeOrder = (orderId: string, params: RequestParams = {}) =>
+  completeOrder = (
+    { orderId, ...query }: CompleteOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<CompleteOrderData, any>({
       path: `/api/v1/orders/${orderId}/complete`,
       method: "PATCH",
@@ -2553,7 +2872,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `QueueOrderData`
    */
-  queueOrder = (orderId: string, params: RequestParams = {}) =>
+  queueOrder = (
+    { orderId, ...query }: QueueOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<QueueOrderData, any>({
       path: `/api/v1/orders/${orderId}/queue`,
       method: "PATCH",
@@ -2587,7 +2909,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetActiveOffersData`
    */
-  getActiveOffers = (orderId: string, params: RequestParams = {}) =>
+  getActiveOffers = (
+    { orderId, ...query }: GetActiveOffersParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetActiveOffersData, any>({
       path: `/api/v1/orders/${orderId}/active-offers`,
       method: "GET",
@@ -2640,7 +2965,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetUserOrderData`
    */
-  getUserOrder = (orderId: string, params: RequestParams = {}) =>
+  getUserOrder = (
+    { orderId, ...query }: GetUserOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserOrderData, any>({
       path: `/api/v1/orders/${orderId}`,
       method: "GET",
@@ -2657,7 +2985,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetRiderOrderStatisticsData`
    */
-  getRiderOrderStatistics = (query: GetRiderOrderStatisticsParams, params: RequestParams = {}) =>
+  getRiderOrderStatistics = (
+    query: GetRiderOrderStatisticsParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetRiderOrderStatisticsData, any>({
       path: `/api/v1/orders/riders/order-statistics`,
       method: "GET",
@@ -2675,7 +3006,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetOrderStatusChartData`
    */
-  getOrderStatusChart = (query: GetOrderStatusChartParams, params: RequestParams = {}) =>
+  getOrderStatusChart = (
+    query: GetOrderStatusChartParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetOrderStatusChartData, any>({
       path: `/api/v1/orders/riders/status-chart`,
       method: "GET",
@@ -2693,7 +3027,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetOrderTypeChartData`
    */
-  getOrderTypeChart = (query: GetOrderTypeChartParams, params: RequestParams = {}) =>
+  getOrderTypeChart = (
+    query: GetOrderTypeChartParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetOrderTypeChartData, any>({
       path: `/api/v1/orders/riders/type-chart`,
       method: "GET",
@@ -2729,7 +3066,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `GetOrderData`
    */
-  getOrder = (orderId: string, params: RequestParams = {}) =>
+  getOrder = (
+    { orderId, ...query }: GetOrderParams,
+    params: RequestParams = {},
+  ) =>
     this.request<GetOrderData, any>({
       path: `/api/v1/admins/orders/${orderId}`,
       method: "GET",
@@ -2780,13 +3120,31 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/webhooks/public/{provider}/events
    * @response `200` `HandleWebhookEventsData`
    */
-  handleWebhookEvents = (provider: "PAYSTACK" | "FLUTTERWAVE", data: Object, params: RequestParams = {}) =>
+  handleWebhookEvents = (
+    { provider, ...query }: HandleWebhookEventsParams,
+    data: Object,
+    params: RequestParams = {},
+  ) =>
     this.request<HandleWebhookEventsData, any>({
       path: `/api/v1/webhooks/public/${provider}/events`,
       method: "POST",
       body: data,
       type: ContentType.Json,
       format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags crons
+   * @name Run
+   * @request GET:/api/v1/crons/run
+   * @response `200` `RunData`
+   */
+  run = (params: RequestParams = {}) =>
+    this.request<RunData, any>({
+      path: `/api/v1/crons/run`,
+      method: "GET",
       ...params,
     });
 }

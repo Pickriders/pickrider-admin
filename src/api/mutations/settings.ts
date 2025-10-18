@@ -32,7 +32,7 @@ export const useUpdateCountryMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.updateCountry(countryId, varaibles),
+    mutationFn: (varaibles) => apiService.updateCountry({ countryId }, varaibles),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: [SETTINGS_KEY.COUNTRIES] });
       toast.success("Country updated successfully!");
@@ -46,7 +46,7 @@ export const useAddCountryStatesMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.addCountryStates(countryId, varaibles),
+    mutationFn: (varaibles) => apiService.addCountryStates({ countryId }, varaibles),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: [SETTINGS_KEY.COUNTRIES, countryId] });
       toast.success("Country states added successfully!");
@@ -61,7 +61,7 @@ export const useUpdateCountryStateMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.updateCountryState(countryId, stateId, varaibles),
+    mutationFn: (varaibles) => apiService.updateCountryState({ countryId, stateId }, varaibles),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: [SETTINGS_KEY.COUNTRIES, countryId, SETTINGS_KEY.STATES] });
       toast.success("Country state updated successfully!");

@@ -6,11 +6,21 @@ import React, { Suspense } from "react";
 
 import { customersColumns as columns } from "./CustomersColumn";
 import { useGetUsersReactTableQuery } from "@/api";
+import { useURLQuery } from "@/hooks";
 
 const LIMIT = 10;
 
 export const CustomersTable: React.FC = () => {
-  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, { limit: LIMIT, isRider: "false" }, {});
+  const query = useURLQuery();
+  const customerSearch = query.get("search");
+  const status = query.get("status");
+
+  const { data, isLoading, table } = useGetUsersReactTableQuery(columns, {
+    limit: LIMIT,
+    isRider: "false",
+    userSearch: customerSearch,
+    status: status.toLowerCase() === "all" ? undefined : status,
+  });
 
   return (
     <div>

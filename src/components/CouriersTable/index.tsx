@@ -7,8 +7,13 @@ import { CouriersTableFilter } from "./CouriersTableFilter";
 import { DeleteCourierModal } from "./DeleteModal";
 import { SuspendCourierModal } from "./SuspendModal";
 import { DataTable } from "./DataTable";
+import { useTableUrlFilter } from "@/hooks/useTableUrlFilter";
+import { useURLQuery } from "@/hooks";
 
 export const CouriersTable = () => {
+  const query = useURLQuery();
+  const userSearch = query.get("search");
+
   return (
     <div className="bg-background border rounded-lg pb-6 w-full">
       {/* Query components */}
@@ -17,8 +22,12 @@ export const CouriersTable = () => {
         <CouriersTableBulkActions />
         <div className="flex items-center gap-x-2">
           <Suspense>
-            {" "}
-            <UI.TableSearchInput />
+            <UI.TableSearchInput
+              value={userSearch ?? ""}
+              onSearch={(text) => {
+                query.set("search", text);
+              }}
+            />
             <CouriersTableFilter />
           </Suspense>
         </div>

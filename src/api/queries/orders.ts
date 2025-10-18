@@ -49,6 +49,6 @@ export const useGetOrdersReactTableQuery = (
 export const useGetOrderQuery = (orderId: string) =>
   useApiQuery({
     queryKey: [ORDER_KEY.ORDERS, orderId],
-    queryFn: () => apiService.getOrder(orderId),
+    queryFn: () => apiService.getOrder({ orderId }),
     enabled: !!orderId,
   });
