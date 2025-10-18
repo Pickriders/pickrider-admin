@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { VechiclesTable } from "@/components/VehiclesTable";
@@ -13,7 +14,9 @@ const VehiclesPage = () => {
         </UI.Button>
       </div>
       <section className="mt-[2.5rem] w-full">
-        <VechiclesTable  />
+        <Suspense>
+          <VechiclesTable />
+        </Suspense>
       </section>
     </div>
   );

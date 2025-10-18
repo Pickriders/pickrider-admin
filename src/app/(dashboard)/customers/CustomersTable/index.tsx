@@ -7,6 +7,8 @@ import React, { Suspense } from "react";
 import { customersColumns as columns } from "./CustomersColumn";
 import { useGetUsersReactTableQuery } from "@/api";
 import { useURLQuery } from "@/hooks";
+import { CustomersTableFilter } from "../CustomersTableFilter";
+import { CustomersTableBulkAction } from "../CustomersTableBulkAction";
 
 const LIMIT = 10;
 
@@ -24,6 +26,22 @@ export const CustomersTable: React.FC = () => {
 
   return (
     <div>
+      <div className="px-[1.4rem] py-5 flex items-center justify-between">
+        <CustomersTableBulkAction />
+        <div className="flex items-center gap-x-2">
+          <Suspense>
+            <UI.TableSearchInput
+              onSearch={(text) => {
+                query.set("search", text);
+              }}
+              value={customerSearch}
+            />
+
+            <CustomersTableFilter />
+          </Suspense>
+        </div>
+      </div>
+
       <div className="overflow-x-auto  w-full  scroll-bar">
         <UI.Table>
           <UI.TableHeader>

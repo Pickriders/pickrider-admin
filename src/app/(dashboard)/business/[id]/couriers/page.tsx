@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { CouriersTable } from "@/components/CouriersTable";
@@ -26,7 +27,9 @@ const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/business"
       />
       <div className="mt-10">
-        <CouriersTable />
+        <Suspense>
+          <CouriersTable />
+        </Suspense>
       </div>
     </div>
   );

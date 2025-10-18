@@ -2,6 +2,7 @@ import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 
 import { VechiclesTable } from "@/components/VehiclesTable";
+import { Suspense } from "react";
 
 export async function generateStaticParams() {
   return Array(20)
@@ -27,7 +28,9 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
       />
 
       <div className="mt-10">
-        <VechiclesTable />
+        <Suspense>
+          <VechiclesTable />
+        </Suspense>
       </div>
     </div>
   );
