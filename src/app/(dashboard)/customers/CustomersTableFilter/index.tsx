@@ -1,16 +1,23 @@
 "use client";
 
+import React from "react";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { status } from "@/constant";
-import { useTableUrlFilter } from "@/hooks";
+import { useURLQuery } from "@/hooks";
+
+interface CustomerFilters {
+  status: string;
+}
 
 export const CustomersTableFilter = () => {
-  const { searchParams, updateFilter } = useTableUrlFilter();
-  const FILTER_STATUS = searchParams.get("status") || "ALL";
+  const query = useURLQuery();
+  const [filters, setFilters] = React.useState<CustomerFilters>({
+    status: "ALL",
+  });
 
-  const filterStatus = (filterBy: string) => {
-    updateFilter("status", filterBy.toUpperCase());
+  const handleFilter = () => {
+    query.setMultiple({ status: filters.status.toUpperCase(), page: "1" });
   };
 
   return (
@@ -62,7 +69,7 @@ export const CustomersTableFilter = () => {
                 STATUS
               </UI.Label>
 
-              <UI.Select onValueChange={filterStatus} value={FILTER_STATUS}>
+              <UI.Select onValueChange={(value) => setFilters({ ...filters, status: value })} value={filters.status}>
                 <UI.SelectTrigger id="STATUS" className="w-[6rem]">
                   <UI.SelectValue />
                 </UI.SelectTrigger>
@@ -82,7 +89,7 @@ export const CustomersTableFilter = () => {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <UI.Button>Save Filter</UI.Button>
+            <UI.Button onClick={handleFilter}>Save Filter</UI.Button>
           </div>
         </div>
       </UI.PopoverContent>

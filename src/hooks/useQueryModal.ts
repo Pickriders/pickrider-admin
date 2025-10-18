@@ -10,9 +10,7 @@ export const useQueryModal = (params?: QueryParam[]) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const isOpen =
-    params &&
-    params.some(({ key, value }) => searchParams.get(key) === String(value));
+  const isOpen = params && params.some(({ key, value }) => searchParams.get(key) === String(value));
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -21,21 +19,21 @@ export const useQueryModal = (params?: QueryParam[]) => {
 
       return params.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   const setParam = useCallback(
     (name: string, value: string) => {
-      router.push(`?${createQueryString(name, value)}`, { scroll: false });
+      router.replace(`?${createQueryString(name, value)}`, { scroll: false });
     },
-    [router, createQueryString]
+    [router, createQueryString],
   );
 
   const getParam = useCallback(
     (param: string) => {
       return searchParams.get(param);
     },
-    [searchParams]
+    [searchParams],
   );
 
   const closeModal = () => {
@@ -43,7 +41,7 @@ export const useQueryModal = (params?: QueryParam[]) => {
 
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.delete(params[0].key);
-    router.push(`?${newParams.toString()}`, { scroll: false });
+    router.replace(`?${newParams.toString()}`, { scroll: false });
   };
 
   return { isOpen, closeModal, setParam, getParam };

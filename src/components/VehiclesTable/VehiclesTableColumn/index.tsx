@@ -61,6 +61,8 @@ export const vehicleTableColumn: ColumnDef<Vehicle>[] = [
       <UI.TableUser
         name={row.original.user ? `${row.original.user?.firstname}  ${row.original.user?.lastname}` : "N/A"}
         img={row.original.user?.photo}
+        subText={`+${row.original.user?.phone}`}
+        email={row.original.user?.email}
       />
     ),
   },

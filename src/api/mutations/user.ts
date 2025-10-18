@@ -37,7 +37,7 @@ export const useVerifyDriversLicenseMn = (
 ) =>
   useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.verifyDriversLicense2(userId, varaibles),
+    mutationFn: (varaibles) => apiService.verifyDriversLicense2({ userId }, varaibles),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: [USER_KEY.USER] });
       queryClient.invalidateQueries({ queryKey: [USER_KEY.USERS] });

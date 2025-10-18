@@ -143,8 +143,12 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
         previewImage={previewDoc as string}
       />
       <Suspense>
-        <RejectVerificationModal />
-        <SuspendVerificationModal userId={vehicle?.userId as string} vehicleId={vehicleId} />
+        {vehicle?.userId && (
+          <>
+            <RejectVerificationModal vehicleId={vehicleId} userId={vehicle.userId} />
+            <SuspendVerificationModal userId={vehicle?.userId as string} vehicleId={vehicleId} />
+          </>
+        )}
       </Suspense>
     </div>
   );

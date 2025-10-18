@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -143,6 +144,7 @@ import {
   ResendTokenData,
   ResetPasswordRequestDto,
   RidersRequestDto,
+  RunData,
   StartOrderData,
   StartOrderLocationData,
   SubmitDriversLicenseData,
@@ -990,6 +992,8 @@ export namespace Api {
   export namespace GetUsers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** Search by user email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
+      userSearch?: string;
       /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
       phoneVerified?: "0" | "1" | "false" | "true";
       /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
@@ -1399,7 +1403,7 @@ export namespace Api {
     export type RequestQuery = {};
     export type RequestBody = CreateVirtualAccountRequestDto;
     export type RequestHeaders = {
-      provider: string;
+      provider: any;
     };
     export type ResponseBody = CreateDedicatedVirtualAccountData;
   }
@@ -2115,6 +2119,10 @@ export namespace Api {
   export namespace GetVehicles {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** Search by vehicle name, plate number, model, make, engine number, or chassis number. Also search by courier email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
+      vehicleSearch?: string;
+      /** Filter by setting either of the enum values ['0', '1', 'false', 'true']. Select this to filter by assigned/non-assigned vehicles */
+      isAssigned?: "0" | "1" | "false" | "true";
       /** comma-seprarated list of vehicle models */
       model?: string;
       /** comma-seprarated list of vehicle makes */
@@ -2357,7 +2365,10 @@ export namespace Api {
     };
     export type RequestQuery = {};
     export type RequestBody = CancelOrderRequestDto;
-    export type RequestHeaders = {};
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
     export type ResponseBody = CancelOrderData;
   }
 
@@ -2850,5 +2861,20 @@ export namespace Api {
     export type RequestBody = Object;
     export type RequestHeaders = {};
     export type ResponseBody = HandleWebhookEventsData;
+  }
+
+  /**
+   * No description
+   * @tags crons
+   * @name Run
+   * @request GET:/api/v1/crons/run
+   * @response `200` `RunData`
+   */
+  export namespace Run {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RunData;
   }
 }

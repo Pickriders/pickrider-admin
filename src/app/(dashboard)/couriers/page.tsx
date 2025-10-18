@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CouriersTable } from "@/components/CouriersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
@@ -13,9 +14,12 @@ const CouriersPage = () => {
         </UI.Button>
       </div>
       <section className="mt-[2rem] w-full">
-        <CouriersTable />
+        <Suspense>
+          <CouriersTable />
+        </Suspense>
       </section>
     </div>
   );
 };
+
 export default CouriersPage;

@@ -41,7 +41,7 @@ export const useGetCountryStatesReactTableQuery = (
   const res = useApiReactTableQuery(
     {
       queryKey: [SETTINGS_KEY.COUNTRIES, countryId, SETTINGS_KEY.STATES],
-      queryFn: () => apiService.getCountryStates(countryId),
+      queryFn: () => apiService.getCountryStates({ countryId }),
     },
     { columns, ...tableOptions },
   );
@@ -52,11 +52,11 @@ export const useGetCountryStatesReactTableQuery = (
 export const useGetCountryQuery = (countryId: string) =>
   useApiQuery({
     queryKey: [SETTINGS_KEY.COUNTRIES, countryId],
-    queryFn: () => apiService.getCountryById(countryId),
+    queryFn: () => apiService.getCountryById({ countryId }),
   });
 
 export const useGetCountryStateQuery = (countryId: string, stateId: string) =>
   useApiQuery({
     queryKey: [SETTINGS_KEY.STATES, stateId],
-    queryFn: () => apiService.getCountryStateById(countryId, stateId),
+    queryFn: () => apiService.getCountryStateById({ countryId, stateId }),
   });
