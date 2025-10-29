@@ -3,6 +3,7 @@ import { UI } from "@/components/ui";
 import { StatsContainer } from "./StatsContainer";
 import { HistoryTable } from "./HistoryTable";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const FinancesPage = () => {
   return (
@@ -25,12 +26,16 @@ const FinancesPage = () => {
         </div>
       </div>
       <section className="mt-[2rem] w-full bg-background p-6 rounded-2xl">
-        <StatsContainer />
+        <Suspense>
+          <StatsContainer />
+        </Suspense>
 
         <div className="mt-8">
           <UI.SectionHeader text="Transaction history" />
         </div>
-        <HistoryTable />
+        <Suspense>
+          <HistoryTable />
+        </Suspense>
       </section>
     </div>
   );
