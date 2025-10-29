@@ -33,11 +33,7 @@ export const TableFilter = () => {
   };
 
   const handleReset = () => {
-    query.remove("status");
-    query.remove("type");
-    query.remove("category");
-    query.remove("purpose");
-    query.remove("timeframe");
+    query.removeMultiple(["status", "type", "category", "purpose", "timeframe"]);
     query.set("page", "1");
   };
 
