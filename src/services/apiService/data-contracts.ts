@@ -135,6 +135,10 @@ export interface ListCountryResponseDto {
 
 export interface AddCountryDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /**
    * @minLength 3
@@ -220,6 +224,10 @@ export interface StateConfigDto {
 
 export interface StateDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /** Configuration for the state */
   config?: StateConfigDto;
@@ -332,6 +340,10 @@ export interface CheckTokenResponseDto {
 
 export interface CountryDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /**
    * @minLength 3
@@ -1232,6 +1244,10 @@ export interface TriggerNotificationRequestDto {
 
 export interface CityDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
 }
 
@@ -1856,6 +1872,8 @@ export type ChangeUserPassword2Data = MessageResponseDto;
 
 export type CreateWalletData = Wallet;
 
+export type GetPlatformWalletData = Wallet;
+
 export interface GetTransactionsParams {
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
   dateRange?: string;
@@ -1879,6 +1897,8 @@ export interface GetTransactions2Params {
   dateRange?: string;
   /** transaction type filter. commap separated list of TransactionType */
   type?: string;
+  /** transaction purpose filter. commap separated list of TransactionPurpose */
+  purpose?: string;
   /** transaction category filter. commap separated list of TransactionCategory */
   category?: string;
   /** transaction status filter. comma separated list of TransactionStatus */

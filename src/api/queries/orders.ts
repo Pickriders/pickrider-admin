@@ -4,10 +4,17 @@ import { apiService, GetOrdersParams, Order } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import React from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export const ORDER_KEY = {
   ORDERS: "orders",
 };
+
+export const useGetOrdersQuery = (query: GetOrdersParams = {}) =>
+  useApiQuery({
+    queryKey: [ORDER_KEY.ORDERS, query],
+    queryFn: () => apiService.getOrders(query),
+  });
 
 export const useGetOrdersReactTableQuery = (
   columns: ColumnDef<Order>[],
@@ -39,6 +46,7 @@ export const useGetOrdersReactTableQuery = (
     {
       queryKey: [ORDER_KEY.ORDERS, filters],
       queryFn: () => apiService.getOrders(filters),
+      placeholderData: keepPreviousData,
     },
     { columns, ...tableOptions },
   );

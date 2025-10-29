@@ -134,6 +134,7 @@ import {
   GetOrderTypeChartParams,
   GetOrdersData,
   GetOrdersParams,
+  GetPlatformWalletData,
   GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
@@ -1431,6 +1432,23 @@ export class Api<
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/wallets
+   * @name GetPlatformWallet
+   * @request GET:/api/v1/admins/wallets/platform-wallet
+   * @secure
+   * @response `200` `GetPlatformWalletData`
+   */
+  getPlatformWallet = (params: RequestParams = {}) =>
+    this.request<GetPlatformWalletData, any>({
+      path: `/api/v1/admins/wallets/platform-wallet`,
+      method: "GET",
+      secure: true,
       format: "json",
       ...params,
     });

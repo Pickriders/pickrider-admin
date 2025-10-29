@@ -4,6 +4,7 @@ import { useApiReactTableQuery, UseApiReactTableQueryOptions } from "@/hooks/use
 import { apiService, GetUsersParams, User } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export const USER_KEY = {
   PROFILE: "profile",
@@ -56,6 +57,7 @@ export const useGetUsersReactTableQuery = (
     {
       queryKey: [USER_KEY.USERS, filters],
       queryFn: () => apiService.getUsers(filters),
+      placeholderData: keepPreviousData,
     },
     { columns, ...tableOptions },
   );

@@ -15,7 +15,7 @@ export const useURLQuery = () => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const setMultiple = (params: Record<string, string>) => {
+  const setMultiple = (params: Record<string, string | undefined>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(params).forEach(([key, value]) => {
       if (value) {
@@ -37,5 +37,21 @@ export const useURLQuery = () => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  return { set, get, remove, searchParams, setMultiple };
+  const removeMultiple = (keys: string[]) => {
+    const params = new URLSearchParams(searchParams);
+    keys.forEach((key) => {
+      params.delete(key);
+    });
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const removeAll = () => {
+    const params = new URLSearchParams(searchParams);
+    params.forEach((value, key) => {
+      params.delete(key);
+    });
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  return { set, get, remove, searchParams, setMultiple, removeMultiple, removeAll };
 };
