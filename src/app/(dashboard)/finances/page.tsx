@@ -30,7 +30,7 @@ const FinancesPage = () => {
         <div className="mt-8">
           <UI.SectionHeader text="Transaction history" />
         </div>
-        <HistoryTable data={Array(3).fill(0)} />
+        <HistoryTable />
       </section>
     </div>
   );

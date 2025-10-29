@@ -93,6 +93,7 @@ import {
   GetOrderStatusChartData,
   GetOrderTypeChartData,
   GetOrdersData,
+  GetPlatformWalletData,
   GetQueuedOrdersData,
   GetReviewsData,
   GetRiderOrderData,
@@ -1201,6 +1202,22 @@ export namespace Api {
 
   /**
    * No description
+   * @tags admins/wallets
+   * @name GetPlatformWallet
+   * @request GET:/api/v1/admins/wallets/platform-wallet
+   * @secure
+   * @response `200` `GetPlatformWalletData`
+   */
+  export namespace GetPlatformWallet {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetPlatformWalletData;
+  }
+
+  /**
+   * No description
    * @tags transactions
    * @name GetTransactions
    * @request GET:/api/v1/transactions
@@ -1246,6 +1263,8 @@ export namespace Api {
       dateRange?: string;
       /** transaction type filter. commap separated list of TransactionType */
       type?: string;
+      /** transaction purpose filter. commap separated list of TransactionPurpose */
+      purpose?: string;
       /** transaction category filter. commap separated list of TransactionCategory */
       category?: string;
       /** transaction status filter. comma separated list of TransactionStatus */

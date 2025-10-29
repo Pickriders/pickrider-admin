@@ -2,6 +2,7 @@ import { useApiQuery } from "@/hooks/useApiQuery";
 import { apiService, GetVehiclesParams, Vehicle } from "@/services";
 import { ColumnDef, TableOptions } from "@tanstack/react-table";
 import { useApiReactTableQuery, UseApiReactTableQueryOptions } from "@/hooks/useApiReactTableQuery";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export const VEHICLE_KEY = {
   VEHICLES: "vehicles",
@@ -34,6 +35,7 @@ export const useGetVehiclesReactTableQuery = (
     {
       queryKey: [VEHICLE_KEY.VEHICLES, query],
       queryFn: () => apiService.getVehicles(filter),
+      placeholderData: keepPreviousData,
     },
     { columns, ...tableOptions },
   );

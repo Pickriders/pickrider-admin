@@ -15,7 +15,7 @@ export const useURLQuery = () => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const setMultiple = (params: Record<string, string>) => {
+  const setMultiple = (params: Record<string, string | undefined>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(params).forEach(([key, value]) => {
       if (value) {

@@ -1856,6 +1856,8 @@ export type ChangeUserPassword2Data = MessageResponseDto;
 
 export type CreateWalletData = Wallet;
 
+export type GetPlatformWalletData = Wallet;
+
 export interface GetTransactionsParams {
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
   dateRange?: string;
@@ -1879,6 +1881,8 @@ export interface GetTransactions2Params {
   dateRange?: string;
   /** transaction type filter. commap separated list of TransactionType */
   type?: string;
+  /** transaction purpose filter. commap separated list of TransactionPurpose */
+  purpose?: string;
   /** transaction category filter. commap separated list of TransactionCategory */
   category?: string;
   /** transaction status filter. comma separated list of TransactionStatus */

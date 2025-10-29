@@ -2,7 +2,7 @@ export type Variant = "positive" | "negative" | "muted" | "neutral";
 
 type ValueProps = {
   title: string;
-  value: string;
+  value: string | number;
 };
 
 export interface PrimaryCardProps extends ValueProps {
