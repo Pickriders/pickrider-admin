@@ -135,6 +135,10 @@ export interface ListCountryResponseDto {
 
 export interface AddCountryDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /**
    * @minLength 3
@@ -220,6 +224,10 @@ export interface StateConfigDto {
 
 export interface StateDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /** Configuration for the state */
   config?: StateConfigDto;
@@ -332,6 +340,10 @@ export interface CheckTokenResponseDto {
 
 export interface CountryDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
   /**
    * @minLength 3
@@ -1232,6 +1244,10 @@ export interface TriggerNotificationRequestDto {
 
 export interface CityDto {
   name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
   code: string;
 }
 

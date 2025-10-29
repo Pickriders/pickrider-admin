@@ -1422,7 +1422,7 @@ export namespace Api {
     export type RequestQuery = {};
     export type RequestBody = CreateVirtualAccountRequestDto;
     export type RequestHeaders = {
-      provider: any;
+      provider: string;
     };
     export type ResponseBody = CreateDedicatedVirtualAccountData;
   }
