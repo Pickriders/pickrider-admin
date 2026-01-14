@@ -692,6 +692,8 @@ export interface UpdateProfileRequestDto {
 export interface UpdateLocationRequestDto {
   longitude: number;
   latitude: number;
+  state?: string;
+  stateCode?: string;
 }
 
 export interface UpdatePhotoRequestDto {
@@ -1657,7 +1659,7 @@ export interface GetCountryByIdParams {
 
 export type GetCountryByIdData = Country;
 
-export type AddCountryStatesPayload = string[];
+export type AddCountryStatesPayload = StateDto[];
 
 export interface AddCountryStatesParams {
   countryId: string;

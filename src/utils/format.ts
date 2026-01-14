@@ -10,6 +10,7 @@ interface Option {
   hideAmount?: boolean;
   isCurrency?: boolean;
   currency?: string;
+  symbolOnly?: boolean;
 }
 
 export const formatMoney = (amount: number | string, option?: Option) => {
@@ -28,6 +29,9 @@ export const formatMoney = (amount: number | string, option?: Option) => {
 
   if (hideAmount) {
     money = money.replaceAll(/[\d,\.]+/g, "*").padEnd(12, "*");
+  }
+  if (option?.symbolOnly) {
+    money = money.replaceAll(/[\d,\.]+/g, "");
   }
 
   return money;
