@@ -14,7 +14,7 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ countryId }) => {
-  const { table, isLoading } = useGetCountryStatesReactTableQuery(countryId, columns);
+  const { table, isLoading } = useGetCountryStatesReactTableQuery(columns, { countryId });
 
   return (
     <>

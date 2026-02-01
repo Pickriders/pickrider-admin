@@ -1,9 +1,9 @@
 "use client";
 
-import { useGetCountryStateQuery, useUpdateCountryStateMn } from "@/api";
+import { useGetCountryQuery, useGetCountryStateQuery, useUpdateCountryStateMn } from "@/api";
 import { UI } from "@/components/ui";
 import { UpdateStateDto } from "@/services";
-import { formatMoney, subUnitToBaseUnit } from "@/utils";
+import { baseUnitToSubUnit, formatMoney, subUnitToBaseUnit } from "@/utils";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -15,6 +15,7 @@ const FormValidation = Yup.object().shape({
     basePricePerKm: Yup.number().required("Base price per km is required"),
     baseFuelPrice: Yup.number().required("Base fuel price is required"),
     currentFuelPrice: Yup.number().required("Current fuel price is required"),
+    queueOrderByDefault: Yup.boolean().required("Queue order by default is required"),
     percentageCharge: Yup.number()
       .required("Percentage charge is required")
       .min(0, "Percentage cannot be less than 0")
@@ -42,6 +43,7 @@ interface StateConfigProps {
 const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
   const router = useRouter();
   const { data: state } = useGetCountryStateQuery(countryId, stateId);
+  const { data: country } = useGetCountryQuery(countryId);
   const updateStateMn = useUpdateCountryStateMn(countryId, stateId);
 
   const formik = useFormik<UpdateStateDto>({
@@ -68,179 +70,201 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
   });
 
   return (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          formik.handleSubmit(e);
-        }}
-      >
-        <UI.PrimaryHeading text="State Details" />
-        <div className="my-8 flex items-center gap-x-4">
-          <UI.Input
-            labelValue="State name"
-            id="State name"
-            className="w-[21rem]"
-            placeholder="State name"
-            {...formik.getFieldProps("name")}
-            errorMessage={formik.touched.name && formik.errors.name}
-          />
+    <div>
+      <UI.BreadCrumbNav
+        pageLinks={[
+          { href: "/admin", label: "Admin" },
+          { href: "/admin/app-settings", label: "App settings" },
+          { href: `/admin/app-settings/country/${countryId}`, label: country?.name ?? "Country details" },
+        ]}
+        rootPageLink="/admin"
+        currentPage={state?.name ?? "State Details"}
+      />
 
-          <UI.Input labelValue="Code" id="Code" className="w-[21rem]" defaultValue={state?.code} placeholder="EN" />
-        </div>
+      <section className="mt-11 bg-background rounded-2xl p-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            formik.handleSubmit(e);
+          }}
+        >
+          <UI.PrimaryHeading text="State Details" />
+          <div className="my-8 flex items-center gap-x-4">
+            <UI.Input
+              labelValue="State name"
+              id="State name"
+              className="w-[21rem]"
+              placeholder="State name"
+              {...formik.getFieldProps("name")}
+              errorMessage={formik.touched.name && formik.errors.name}
+            />
 
-        <UI.PrimaryHeading text="State Config" />
+            <UI.Input labelValue="Code" id="Code" className="w-[21rem]" defaultValue={state?.code} placeholder="EN" />
+          </div>
 
-        <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
-          <UI.Input
-            labelValue="Base fuel price"
-            id="Base fuel price"
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.baseFuelPrice")}
-            value={formatMoney(subUnitToBaseUnit(formik.values.config?.baseFuelPrice ?? 0), { isCurrency: false })}
-            onChange={({ target }) => {
-              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
-              if (isNaN(Number(value))) return;
-              formik.setFieldValue("config.baseFuelPrice", Number(value) * 100);
-            }}
-            errorMessage={
-              formik.getFieldMeta("config.baseFuelPrice").touched && formik.getFieldMeta("config.baseFuelPrice").error
-            }
-          />
-          <UI.Input
-            labelValue="Current fuel price"
-            id="Current fuel price"
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.currentFuelPrice")}
-            value={formatMoney(subUnitToBaseUnit(formik.values.config?.currentFuelPrice ?? 0), { isCurrency: false })}
-            onChange={({ target }) => {
-              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
-              if (isNaN(Number(value))) return;
-              formik.setFieldValue("config.currentFuelPrice", Number(value) * 100);
-            }}
-            errorMessage={
-              formik.getFieldMeta("config.currentFuelPrice").touched &&
-              formik.getFieldMeta("config.currentFuelPrice").error
-            }
-          />
-          <UI.Input
-            labelValue="Price per km"
-            id="Price per km"
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.basePricePerKm")}
-            value={formatMoney(subUnitToBaseUnit(formik.values.config?.basePricePerKm ?? 0), { isCurrency: false })}
-            onChange={({ target }) => {
-              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
-              if (isNaN(Number(value))) return;
-              formik.setFieldValue("config.basePricePerKm", Number(value) * 100);
-            }}
-            errorMessage={
-              formik.getFieldMeta("config.basePricePerKm").touched && formik.getFieldMeta("config.basePricePerKm").error
-            }
-          />
-          <UI.Input
-            labelValue="Percentage charge (%)"
-            placeholder="0"
-            id="percentageChange"
-            type="number"
-            min={0}
-            max={100}
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.percentageCharge")}
-            errorMessage={
-              formik.getFieldMeta("config.percentageCharge").touched &&
-              formik.getFieldMeta("config.percentageCharge").error
-            }
-          />
-          <UI.Input
-            labelValue="Service charge"
-            placeholder="0"
-            id="serviceCharge"
-            type="number"
-            min={0}
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.serviceCharge")}
-            value={formatMoney(subUnitToBaseUnit(formik.values.config?.serviceCharge ?? 0), { isCurrency: false })}
-            onChange={({ target }) => {
-              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
-              if (isNaN(Number(value))) return;
-              formik.setFieldValue("config.serviceCharge", Number(value) * 100);
-            }}
-            errorMessage={
-              formik.getFieldMeta("config.serviceCharge").touched && formik.getFieldMeta("config.serviceCharge").error
-            }
-          />
-          <UI.Input
-            labelValue="Minimum order price"
-            id="minimumOrderPrice"
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.minimumOrderPrice")}
-            value={formatMoney(subUnitToBaseUnit(formik.values.config?.minimumOrderPrice ?? 0), { isCurrency: false })}
-            onChange={({ target }) => {
-              const value = target.value?.replace(/[\u20A6,.\s]/g, "");
-              if (isNaN(Number(value))) return;
-              formik.setFieldValue("config.minimumOrderPrice", Number(value) * 100);
-            }}
-            errorMessage={
-              formik.getFieldMeta("config.minimumOrderPrice").touched &&
-              formik.getFieldMeta("config.minimumOrderPrice").error
-            }
-          />
-          <UI.Input
-            labelValue="Max number of active orders"
-            placeholder="0"
-            id="maxActiveOrders"
-            type="number"
-            min={1}
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.maxActiveOrders")}
-            errorMessage={
-              formik.getFieldMeta("config.maxActiveOrders").touched &&
-              formik.getFieldMeta("config.maxActiveOrders").error
-            }
-          />
-          <UI.Input
-            labelValue="Max number of searchable riders"
-            placeholder="0"
-            id="maxRidersPerQuery"
-            type="number"
-            min={1}
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.maxRidersPerQuery")}
-            errorMessage={
-              formik.getFieldMeta("config.maxRidersPerQuery").touched &&
-              formik.getFieldMeta("config.maxRidersPerQuery").error
-            }
-          />
-          <UI.Input
-            labelValue="Max searchable distance (km)"
-            placeholder="0"
-            id="maxDistanceRadius"
-            type="number"
-            min={1}
-            className="w-[21rem]"
-            {...formik.getFieldProps("config.maxDistanceRadius")}
-            errorMessage={
-              formik.getFieldMeta("config.maxDistanceRadius").touched &&
-              formik.getFieldMeta("config.maxDistanceRadius").error
-            }
-          />
-        </div>
-        <div className="mt-12 flex items-center gap-x-4">
-          <UI.PrimaryButton type="button" variant="outline" className="w-[10rem]" onClick={() => router.back()}>
-            Back
-          </UI.PrimaryButton>
-          <UI.PrimaryButton
-            type="submit"
-            className="w-[10rem]"
-            disabled={!formik.isValid}
-            isLoading={updateStateMn.isPending}
-          >
-            Save
-          </UI.PrimaryButton>
-        </div>
-      </form>
-    </>
+          <UI.PrimaryHeading text="State Config" />
+
+          <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
+            <UI.Input
+              labelValue="Base fuel price (subunit)"
+              id="Base fuel price"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.baseFuelPrice")}
+              value={formik.values.config?.baseFuelPrice}
+              onChange={({ target }) => {
+                const value = target.value;
+                formik.setFieldValue("config.baseFuelPrice", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.baseFuelPrice").touched && formik.getFieldMeta("config.baseFuelPrice").error
+              }
+            />
+            <UI.Input
+              labelValue="Current fuel price (subunit)"
+              id="Current fuel price"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.currentFuelPrice")}
+              value={formik.values.config?.currentFuelPrice}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.currentFuelPrice", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.currentFuelPrice").touched &&
+                formik.getFieldMeta("config.currentFuelPrice").error
+              }
+            />
+            <UI.Input
+              labelValue="Price per km (subunit)"
+              id="Price per km"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.basePricePerKm")}
+              value={formik.values.config?.basePricePerKm}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.basePricePerKm", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.basePricePerKm").touched &&
+                formik.getFieldMeta("config.basePricePerKm").error
+              }
+            />
+            <UI.Input
+              labelValue="Percentage charge (%)"
+              placeholder="0"
+              id="percentageChange"
+              type="number"
+              min={0}
+              max={100}
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.percentageCharge")}
+              errorMessage={
+                formik.getFieldMeta("config.percentageCharge").touched &&
+                formik.getFieldMeta("config.percentageCharge").error
+              }
+            />
+            <UI.Input
+              labelValue="Service charge (subunit)"
+              placeholder="0"
+              id="serviceCharge"
+              type="number"
+              min={0}
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.serviceCharge")}
+              value={formik.values.config?.serviceCharge}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.serviceCharge", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.serviceCharge").touched && formik.getFieldMeta("config.serviceCharge").error
+              }
+            />
+            <UI.Input
+              labelValue="Minimum order price (subunit)"
+              id="minimumOrderPrice"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.minimumOrderPrice")}
+              value={formik.values.config?.minimumOrderPrice}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.minimumOrderPrice", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.minimumOrderPrice").touched &&
+                formik.getFieldMeta("config.minimumOrderPrice").error
+              }
+            />
+            <UI.Input
+              labelValue="Max number of active orders"
+              placeholder="0"
+              id="maxActiveOrders"
+              type="number"
+              min={1}
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.maxActiveOrders")}
+              errorMessage={
+                formik.getFieldMeta("config.maxActiveOrders").touched &&
+                formik.getFieldMeta("config.maxActiveOrders").error
+              }
+            />
+            <UI.Input
+              labelValue="Max number of searchable riders"
+              placeholder="0"
+              id="maxRidersPerQuery"
+              type="number"
+              min={1}
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.maxRidersPerQuery")}
+              errorMessage={
+                formik.getFieldMeta("config.maxRidersPerQuery").touched &&
+                formik.getFieldMeta("config.maxRidersPerQuery").error
+              }
+            />
+            <UI.Input
+              labelValue="Max searchable distance (km)"
+              placeholder="0"
+              id="maxDistanceRadius"
+              type="number"
+              min={1}
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.maxDistanceRadius")}
+              errorMessage={
+                formik.getFieldMeta("config.maxDistanceRadius").touched &&
+                formik.getFieldMeta("config.maxDistanceRadius").error
+              }
+            />
+          </div>
+          <div className="mt-5 flex gap-y-4 flex-wrap items-center gap-x-4">
+            <UI.Label htmlFor="Queue order by default" className="text-xs">
+              Queue order by default
+            </UI.Label>
+            <UI.Switch
+              id="Queue order by default"
+              checked={formik.values.config?.queueOrderByDefault}
+              onCheckedChange={(checked) => formik.setFieldValue("config.queueOrderByDefault", checked)}
+            />
+          </div>
+          <div className="mt-12 flex items-center gap-x-4">
+            <UI.PrimaryButton type="button" variant="outline" className="w-[10rem]" onClick={() => router.back()}>
+              Back
+            </UI.PrimaryButton>
+            <UI.PrimaryButton
+              type="submit"
+              className="w-[10rem]"
+              disabled={!formik.isValid}
+              isLoading={updateStateMn.isPending}
+            >
+              Save
+            </UI.PrimaryButton>
+          </div>
+        </form>
+      </section>
+    </div>
   );
 };
 

@@ -118,6 +118,8 @@ import {
   GetVehicle2Data,
   GetVehicleData,
   GetVehiclesData,
+  GoogleSignInData,
+  GoogleSignInRequestDto,
   HandleWebhookEventsData,
   InitializeFundWalletData,
   InitiateOrderPaymentData,
@@ -501,6 +503,21 @@ export namespace Api {
     export type RequestBody = VerifyPhoneRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = CheckTokenValidityData;
+  }
+
+  /**
+   * No description
+   * @tags auth
+   * @name GoogleSignIn
+   * @request POST:/api/v1/auth/google
+   * @response `201` `GoogleSignInData`
+   */
+  export namespace GoogleSignIn {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = GoogleSignInRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = GoogleSignInData;
   }
 
   /**

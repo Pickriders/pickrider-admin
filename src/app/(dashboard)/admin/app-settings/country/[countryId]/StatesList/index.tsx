@@ -13,7 +13,7 @@ export const StatesList: React.FC<StatesListProps> = (props) => {
       <div className="flex items-center justify-between">
         <h1 className="font-clash-display font-semibold">States</h1>
         <UI.Button asChild>
-          <Link href={"/admin/app-settings/add-state"}>
+          <Link href={`/admin/app-settings/country/${props.countryId}/add-state`}>
             <Plus size={13} /> Add State
           </Link>
         </UI.Button>

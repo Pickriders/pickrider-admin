@@ -1,10 +1,46 @@
+"use client";
+
 import { UI } from "@/components/ui";
-import { ChevronRight, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { useAddCountryMn } from "@/api/mutations/country";
+import { useFormik } from "formik";
+import { AddCountryDto } from "@/services";
+import { useRouter } from "next/navigation";
+import * as Yup from "yup";
+
+const FormValidation = Yup.object().shape({
+  name: Yup.string().required("Country name is required"),
+  code: Yup.string().required("Country code is required"),
+  currencyName: Yup.string().required("Currency name is required"),
+  currencyCode: Yup.string().required("Currency code is required"),
+});
 
 export const CountryForm = () => {
+  const router = useRouter();
+  const addCountryMn = useAddCountryMn();
+
+  const handleSubmit = (values: AddCountryDto) => {
+    addCountryMn.mutate(values);
+  };
+
+  const formik = useFormik<AddCountryDto>({
+    initialValues: {
+      name: "",
+      code: "",
+      currencyName: "",
+      currencyCode: "",
+    },
+    validationSchema: FormValidation,
+    enableReinitialize: true,
+    onSubmit: handleSubmit,
+  });
+
   return (
-    <div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        formik.handleSubmit(e);
+      }}
+    >
       <UI.PrimaryHeading text="Add country" />
       <div className="mt-8">
         <div className="flex items-center gap-x-8">
@@ -12,8 +48,16 @@ export const CountryForm = () => {
             labelValue="Country name"
             id="Country name"
             className="w-[21rem]"
+            {...formik.getFieldProps("name")}
+            errorMessage={formik.touched.name && formik.errors.name}
           />
-          <UI.Input labelValue="Code" id="Code" className="w-[21rem]" />
+          <UI.Input
+            labelValue="Code"
+            id="Code"
+            className="w-[21rem]"
+            {...formik.getFieldProps("code")}
+            errorMessage={formik.touched.code && formik.errors.code}
+          />
         </div>
 
         <div className="flex items-center mt-6 gap-x-8">
@@ -21,17 +65,18 @@ export const CountryForm = () => {
             labelValue="Currency name"
             id="Currency name"
             className="w-[21rem]"
+            {...formik.getFieldProps("currencyName")}
+            errorMessage={formik.touched.currencyName && formik.errors.currencyName}
           />
           <UI.Input
-            labelValue="Currency symbol"
-            id="Currency symbol"
+            labelValue="Currency code"
+            id="Currency code"
             className="w-[21rem]"
-            leftIcon={<UI.Button variant={"ghost"}>$</UI.Button>}
+            {...formik.getFieldProps("currencyCode")}
+            errorMessage={formik.touched.currencyCode && formik.errors.currencyCode}
           />
           <div className="flex flex-col gap-y-1.5">
-            <UI.Label className="text-xs font-montserrat">
-              Exchange rate
-            </UI.Label>
+            <UI.Label className="text-xs font-montserrat">Exchange rate</UI.Label>
             <div className="flex  text-xs items-center gap-x-3 w-[21rem] border rounded-lg justify-between h-9 py-1 px-4">
               <span>$1</span>
               <span className="grow border-dashed border"></span>
@@ -41,12 +86,19 @@ export const CountryForm = () => {
         </div>
 
         <div className="mt-12 flex items-center gap-x-4">
-          <UI.PrimaryButton variant="outline" className="w-[10rem]">
+          <UI.PrimaryButton variant="outline" className="w-[10rem]" type="button" onClick={() => router.back()}>
             Back
           </UI.PrimaryButton>
-          <UI.PrimaryButton className="w-[10rem]">Save</UI.PrimaryButton>
+          <UI.PrimaryButton
+            className="w-[10rem]"
+            type="submit"
+            disabled={!formik.isValid}
+            isLoading={addCountryMn.isPending}
+          >
+            Save
+          </UI.PrimaryButton>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
