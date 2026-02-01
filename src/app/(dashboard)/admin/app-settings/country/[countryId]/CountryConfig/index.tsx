@@ -17,10 +17,6 @@ const FormValidation = Yup.object().shape({
       .required("Minimum offer percentage is required")
       .min(0, "Minimum offer percentage cannot be less that 0")
       .max(100, "Minimum offer percentage cannot be more than 100"),
-    percentageCharge: Yup.number()
-      .required("Percentage charge is required")
-      .min(0, "Percentage cannot be less that 0")
-      .max(100, "Percentage cannot be more than 100"),
     userWithdrawalLimits: Yup.object().shape({
       maximumAmount: Yup.number().required("Maximum courier withdrawal amount is required"),
       minimumAmount: Yup.number().required("Minimum courier withdrawal amount is required"),
@@ -50,7 +46,6 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
       name: country?.name ?? "",
       config: {
         exchangeRate: country?.config?.exchangeRate ?? 0,
-        percentageCharge: country?.config?.percentageCharge ?? 0,
         minimumOfferPercentage: country?.config?.minimumOfferPercentage ?? 0,
         userWithdrawalLimits: {
           maximumAmount: country?.config?.userWithdrawalLimits.maximumAmount ?? 0,
@@ -160,20 +155,6 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
               errorMessage={
                 formik.getFieldMeta("config.minimumOfferPercentage").touched &&
                 formik.getFieldMeta("config.minimumOfferPercentage").error
-              }
-            />
-            <UI.Input
-              labelValue="Percentage charge (%)"
-              placeholder="0"
-              id="percentageCharge"
-              className="w-[21rem]"
-              type="number"
-              min={0}
-              max={100}
-              {...formik.getFieldProps("config.percentageCharge")}
-              errorMessage={
-                formik.getFieldMeta("config.percentageCharge").touched &&
-                formik.getFieldMeta("config.percentageCharge").error
               }
             />
           </div>
