@@ -106,29 +106,29 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
 
           <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
             <UI.Input
-              labelValue="Base fuel price"
+              labelValue="Base fuel price (subunit)"
               id="Base fuel price"
               className="w-[21rem]"
               {...formik.getFieldProps("config.baseFuelPrice")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.baseFuelPrice ?? 0), { isCurrency: false })}
+              value={formik.values.config?.baseFuelPrice}
               onChange={({ target }) => {
                 const value = target.value;
-                formik.setFieldValue("config.baseFuelPrice", baseUnitToSubUnit(value));
+                formik.setFieldValue("config.baseFuelPrice", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.baseFuelPrice").touched && formik.getFieldMeta("config.baseFuelPrice").error
               }
             />
             <UI.Input
-              labelValue="Current fuel price"
+              labelValue="Current fuel price (subunit)"
               id="Current fuel price"
               className="w-[21rem]"
               {...formik.getFieldProps("config.currentFuelPrice")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.currentFuelPrice ?? 0), { isCurrency: false })}
+              value={formik.values.config?.currentFuelPrice}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.currentFuelPrice", Number(value) * 100);
+                formik.setFieldValue("config.currentFuelPrice", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.currentFuelPrice").touched &&
@@ -136,15 +136,15 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               }
             />
             <UI.Input
-              labelValue="Price per km"
+              labelValue="Price per km (subunit)"
               id="Price per km"
               className="w-[21rem]"
               {...formik.getFieldProps("config.basePricePerKm")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.basePricePerKm ?? 0), { isCurrency: false })}
+              value={formik.values.config?.basePricePerKm}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.basePricePerKm", Number(value) * 100);
+                formik.setFieldValue("config.basePricePerKm", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.basePricePerKm").touched &&
@@ -166,35 +166,33 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               }
             />
             <UI.Input
-              labelValue="Service charge"
+              labelValue="Service charge (subunit)"
               placeholder="0"
               id="serviceCharge"
               type="number"
               min={0}
               className="w-[21rem]"
               {...formik.getFieldProps("config.serviceCharge")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.serviceCharge ?? 0), { isCurrency: false })}
+              value={formik.values.config?.serviceCharge}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.serviceCharge", Number(value) * 100);
+                formik.setFieldValue("config.serviceCharge", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.serviceCharge").touched && formik.getFieldMeta("config.serviceCharge").error
               }
             />
             <UI.Input
-              labelValue="Minimum order price"
+              labelValue="Minimum order price (subunit)"
               id="minimumOrderPrice"
               className="w-[21rem]"
               {...formik.getFieldProps("config.minimumOrderPrice")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.minimumOrderPrice ?? 0), {
-                isCurrency: false,
-              })}
+              value={formik.values.config?.minimumOrderPrice}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.minimumOrderPrice", Number(value) * 100);
+                formik.setFieldValue("config.minimumOrderPrice", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.minimumOrderPrice").touched &&

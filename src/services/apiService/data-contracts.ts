@@ -108,6 +108,12 @@ export interface CountryConfigSchemaDto {
     minimumAmount?: number;
     maximumAmount?: number;
   };
+  /** @default false */
+  referAndEarn?: boolean;
+  /** @default 0 */
+  referralEarnAmount?: number;
+  /** @default 1 */
+  ordersRequiredBeforeEarn?: number;
 }
 
 export interface Country {
@@ -166,6 +172,18 @@ export interface CountryConfigDto {
   userWithdrawalLimits?: WithdrawalLimitsDto;
   /** business withdrawal limits */
   businessWithdrawalLimits?: WithdrawalLimitsDto;
+  /** Whether refer-and-earn is enabled; when true referees earn when conditions are met */
+  referAndEarn?: boolean;
+  /**
+   * Amount to credit referee when referral condition is met (smallest currency unit)
+   * @min 0
+   */
+  referralEarnAmount?: number;
+  /**
+   * Completed orders required before referee earns. 0 = earn on referred user signup
+   * @min 0
+   */
+  ordersRequiredBeforeEarn?: number;
 }
 
 export interface UpdateCountryDto {
@@ -338,6 +356,10 @@ export interface CheckTokenResponseDto {
   status: boolean;
 }
 
+export interface GoogleSignInRequestDto {
+  idToken: string;
+}
+
 export interface CountryDto {
   name: string;
   /**
@@ -488,6 +510,7 @@ export interface User {
   middlename?: string;
   email: string;
   phone: string;
+  googleId?: string;
   businessId?: string;
   addresses?: AddressesDetailDto;
   /** @default false */
@@ -687,6 +710,10 @@ export interface UpdateProfileRequestDto {
   firstname?: string;
   lastname?: string;
   pushToken?: string;
+  /** Referral code of another user (e.g. for Google sign-in users who skipped registration). Same logic as registration. */
+  referralCode?: string;
+  /** Whether the user is a vendor */
+  isVendor?: boolean;
 }
 
 export interface UpdateLocationRequestDto {
@@ -1704,6 +1731,8 @@ export type PasswordResetData = AuthTokenResponseDto;
 export type ResendTokenData = MessageResponseDto;
 
 export type CheckTokenValidityData = CheckTokenResponseDto;
+
+export type GoogleSignInData = AuthTokenResponseDto;
 
 export interface CreateUserParams {
   referralCode?: any;

@@ -29,6 +29,9 @@ const FormValidation = Yup.object().shape({
       maximumAmount: Yup.number().required("Maximum business withdrawal amount is required"),
       minimumAmount: Yup.number().required("Minimum business withdrawal amount is required"),
     }),
+    referAndEarn: Yup.boolean().required("Refer and earn is required"),
+    referralEarnAmount: Yup.number().optional().min(0, "Referral earn amount cannot be less than 0"),
+    ordersRequiredBeforeEarn: Yup.number().optional().min(0, "Orders required before earn cannot be less than 0"),
   }),
 });
 
@@ -47,6 +50,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
       name: country?.name ?? "",
       config: {
         exchangeRate: country?.config?.exchangeRate ?? 0,
+        percentageCharge: country?.config?.percentageCharge ?? 0,
         minimumOfferPercentage: country?.config?.minimumOfferPercentage ?? 0,
         userWithdrawalLimits: {
           maximumAmount: country?.config?.userWithdrawalLimits.maximumAmount ?? 0,
@@ -56,6 +60,9 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
           maximumAmount: country?.config?.businessWithdrawalLimits.maximumAmount ?? 0,
           minimumAmount: country?.config?.businessWithdrawalLimits.minimumAmount ?? 0,
         },
+        referAndEarn: country?.config?.referAndEarn ?? false,
+        referralEarnAmount: country?.config?.referralEarnAmount ?? 0,
+        ordersRequiredBeforeEarn: country?.config?.ordersRequiredBeforeEarn ?? 0,
       },
     },
     enableReinitialize: true,
@@ -71,6 +78,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         formik.handleSubmit(e);
       }}
     >
+      {JSON.stringify(formik.errors)}
       <div className="mt-8">
         <div className="flex items-center gap-x-8">
           <UI.Input
@@ -126,17 +134,15 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <div className="my-8">
           <div className="flex items-center gap-x-8">
             <UI.Input
-              labelValue="Exchange rate"
+              labelValue="Exchange rate (subunit)"
               id="exchangeRate"
               className="w-[21rem]"
               {...formik.getFieldProps("config.exchangeRate")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.exchangeRate ?? 0), {
-                currency: country?.currencyCode,
-              })}
+              value={formik.values.config?.exchangeRate}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.exchangeRate", Number(value) * 100);
+                formik.setFieldValue("config.exchangeRate", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.exchangeRate").touched && formik.getFieldMeta("config.exchangeRate").error
@@ -156,6 +162,20 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
                 formik.getFieldMeta("config.minimumOfferPercentage").error
               }
             />
+            <UI.Input
+              labelValue="Percentage charge (%)"
+              placeholder="0"
+              id="percentageCharge"
+              className="w-[21rem]"
+              type="number"
+              min={0}
+              max={100}
+              {...formik.getFieldProps("config.percentageCharge")}
+              errorMessage={
+                formik.getFieldMeta("config.percentageCharge").touched &&
+                formik.getFieldMeta("config.percentageCharge").error
+              }
+            />
           </div>
         </div>
 
@@ -164,17 +184,15 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <div className="my-8">
           <div className="flex items-center gap-x-8">
             <UI.Input
-              labelValue="Minimum withdrawal amount"
+              labelValue="Minimum withdrawal amount (subunit)"
               id="userMinimumWithdrawal"
               className="w-[21rem]"
               {...formik.getFieldProps("config.userWithdrawalLimits.minimumAmount")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.userWithdrawalLimits?.minimumAmount ?? 0), {
-                currency: country?.currencyCode,
-              })}
+              value={formik.values.config?.userWithdrawalLimits?.minimumAmount}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.userWithdrawalLimits.minimumAmount", Number(value) * 100);
+                formik.setFieldValue("config.userWithdrawalLimits.minimumAmount", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.userWithdrawalLimits.minimumAmount").touched &&
@@ -182,17 +200,15 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
               }
             />
             <UI.Input
-              labelValue="Maximum withdrawal amount"
+              labelValue="Maximum withdrawal amount (subunit)"
               id="userMaximumWithdrawal"
               className="w-[21rem]"
               {...formik.getFieldProps("config.userWithdrawalLimits.maximumAmount")}
-              value={formatMoney(subUnitToBaseUnit(formik.values.config?.userWithdrawalLimits?.maximumAmount ?? 0), {
-                currency: country?.currencyCode,
-              })}
+              value={formik.values.config?.userWithdrawalLimits?.maximumAmount}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.userWithdrawalLimits.maximumAmount", Number(value) * 100);
+                formik.setFieldValue("config.userWithdrawalLimits.maximumAmount", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.userWithdrawalLimits.maximumAmount").touched &&
@@ -207,20 +223,15 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <div className="my-8">
           <div className="flex items-center gap-x-8">
             <UI.Input
-              labelValue="Minimum withdrawal amount"
+              labelValue="Minimum withdrawal amount (subunit)"
               id="businessMinimumWithdrawal"
               className="w-[21rem]"
               {...formik.getFieldProps("config.businessWithdrawalLimits.minimumAmount")}
-              value={formatMoney(
-                subUnitToBaseUnit(formik.values.config?.businessWithdrawalLimits?.minimumAmount ?? 0),
-                {
-                  currency: country?.currencyCode,
-                },
-              )}
+              value={formik.values.config?.businessWithdrawalLimits?.minimumAmount}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.businessWithdrawalLimits.minimumAmount", Number(value) * 100);
+                formik.setFieldValue("config.businessWithdrawalLimits.minimumAmount", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.businessWithdrawalLimits.minimumAmount").touched &&
@@ -228,24 +239,64 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
               }
             />
             <UI.Input
-              labelValue="Maximum withdrawal amount"
+              labelValue="Maximum withdrawal amount (subunit)"
               id="businessMaximumWithdrawal"
               className="w-[21rem]"
               {...formik.getFieldProps("config.businessWithdrawalLimits.maximumAmount")}
-              value={formatMoney(
-                subUnitToBaseUnit(formik.values.config?.businessWithdrawalLimits?.maximumAmount ?? 0),
-                {
-                  currency: country?.currencyCode,
-                },
-              )}
+              value={formik.values.config?.businessWithdrawalLimits?.maximumAmount}
               onChange={({ target }) => {
                 const value = target.value?.replace(/[\u20A6,.\s]/g, "");
                 if (isNaN(Number(value))) return;
-                formik.setFieldValue("config.businessWithdrawalLimits.maximumAmount", Number(value) * 100);
+                formik.setFieldValue("config.businessWithdrawalLimits.maximumAmount", Number(value));
               }}
               errorMessage={
                 formik.getFieldMeta("config.businessWithdrawalLimits.maximumAmount").touched &&
                 formik.getFieldMeta("config.businessWithdrawalLimits.maximumAmount").error
+              }
+            />
+          </div>
+          <div className="my-5 flex gap-y-4 flex-wrap items-center gap-x-4">
+            <UI.Label htmlFor="Queue order by default" className="text-xs">
+              Refer and earn
+            </UI.Label>
+            <UI.Switch
+              id="Queue order by default"
+              checked={formik.values.config?.referAndEarn}
+              onCheckedChange={(checked) => formik.setFieldValue("config.referAndEarn", checked)}
+            />
+          </div>
+
+          <div className="flex items-center gap-x-8">
+            <UI.Input
+              labelValue="Referral earn amount (subunit)"
+              id="referralEarnAmount"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.referralEarnAmount")}
+              value={formik.values.config?.referralEarnAmount}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.referralEarnAmount", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.referralEarnAmount").touched &&
+                formik.getFieldMeta("config.referralEarnAmount").error
+              }
+            />
+            <UI.Input
+              labelValue="Orders required before earn"
+              id="ordersRequiredBeforeEarn"
+              className="w-[21rem]"
+              {...formik.getFieldProps("config.ordersRequiredBeforeEarn")}
+              value={formik.values.config?.ordersRequiredBeforeEarn}
+              onChange={({ target }) => {
+                const value = target.value?.replace(/[\u20A6,.\s]/g, "");
+                if (isNaN(Number(value))) return;
+                formik.setFieldValue("config.ordersRequiredBeforeEarn", Number(value));
+              }}
+              errorMessage={
+                formik.getFieldMeta("config.ordersRequiredBeforeEarn").touched &&
+                formik.getFieldMeta("config.ordersRequiredBeforeEarn").error
               }
             />
           </div>

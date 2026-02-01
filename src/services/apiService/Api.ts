@@ -177,6 +177,8 @@ import {
   GetVehicleParams,
   GetVehiclesData,
   GetVehiclesParams,
+  GoogleSignInData,
+  GoogleSignInRequestDto,
   HandleWebhookEventsData,
   HandleWebhookEventsParams,
   InitializeFundWalletData,
@@ -625,6 +627,23 @@ export class Api<
   ) =>
     this.request<CheckTokenValidityData, any>({
       path: `/api/v1/auth/check-token`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name GoogleSignIn
+   * @request POST:/api/v1/auth/google
+   * @response `201` `GoogleSignInData`
+   */
+  googleSignIn = (data: GoogleSignInRequestDto, params: RequestParams = {}) =>
+    this.request<GoogleSignInData, any>({
+      path: `/api/v1/auth/google`,
       method: "POST",
       body: data,
       type: ContentType.Json,
