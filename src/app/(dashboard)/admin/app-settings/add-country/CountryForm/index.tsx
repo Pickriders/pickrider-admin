@@ -43,18 +43,18 @@ export const CountryForm = () => {
     >
       <UI.PrimaryHeading text="Add country" />
       <div className="mt-8">
-        <div className="flex items-center gap-x-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <UI.Input
             labelValue="Country name"
             id="Country name"
-            className="w-[21rem]"
+            className="w-full"
             {...formik.getFieldProps("name")}
             errorMessage={formik.touched.name && formik.errors.name}
           />
           <UI.Input
             labelValue="Code"
             id="Code"
-            className="w-[21rem]"
+            className="w-full"
             {...formik.getFieldProps("code")}
             errorMessage={formik.touched.code && formik.errors.code}
           />
@@ -64,14 +64,14 @@ export const CountryForm = () => {
           <UI.Input
             labelValue="Currency name"
             id="Currency name"
-            className="w-[21rem]"
+            className="w-full"
             {...formik.getFieldProps("currencyName")}
             errorMessage={formik.touched.currencyName && formik.errors.currencyName}
           />
           <UI.Input
             labelValue="Currency code"
             id="Currency code"
-            className="w-[21rem]"
+            className="w-full"
             {...formik.getFieldProps("currencyCode")}
             errorMessage={formik.touched.currencyCode && formik.errors.currencyCode}
           />

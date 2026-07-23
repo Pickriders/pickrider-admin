@@ -94,14 +94,14 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="State name"
               id="State name"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("name")}
               errorMessage={formik.touched.name && formik.errors.name}
             />
             <UI.Input
               labelValue="Code"
               id="Code"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("code")}
               errorMessage={formik.touched.code && formik.errors.code}
             />
@@ -112,7 +112,7 @@ const AddState: React.FC = () => {
               labelValue="Base fuel price"
               id="Base fuel price"
               type="number"
-              className="w-[21rem]"
+              className="w-full"
               leftIcon={<span className="font-bold text-muted-foreground">{currencySymbol}</span>}
               {...formik.getFieldProps("config.baseFuelPrice")}
               errorMessage={formik.touched.config?.baseFuelPrice && formik.errors.config?.baseFuelPrice}
@@ -120,7 +120,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Current fuel price"
               id="Current fuel price"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               leftIcon={<span className="font-bold text-muted-foreground">{currencySymbol}</span>}
               {...formik.getFieldProps("config.currentFuelPrice")}
@@ -129,7 +129,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Price per km"
               id="Price per km"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               leftIcon={<span className="font-bold text-muted-foreground">{currencySymbol}</span>}
               {...formik.getFieldProps("config.basePricePerKm")}
@@ -138,7 +138,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Service charge"
               id="Service charge"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               leftIcon={<span className="font-bold text-muted-foreground">{currencySymbol}</span>}
               {...formik.getFieldProps("config.serviceCharge")}
@@ -147,7 +147,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Percentage charge (%)"
               id="Percentage charge"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               min={0}
               max={100}
@@ -157,7 +157,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Minimum order price"
               id="Minimum order price"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               leftIcon={<span className="font-bold text-muted-foreground">{currencySymbol}</span>}
               {...formik.getFieldProps("config.minimumOrderPrice")}
@@ -169,7 +169,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Max riders per query"
               id="Max riders per query"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               {...formik.getFieldProps("config.maxRidersPerQuery")}
               errorMessage={formik.touched.config?.maxRidersPerQuery && formik.errors.config?.maxRidersPerQuery}
@@ -177,7 +177,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Max active orders"
               id="Max active orders"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               {...formik.getFieldProps("config.maxActiveOrders")}
               errorMessage={formik.touched.config?.maxActiveOrders && formik.errors.config?.maxActiveOrders}
@@ -185,7 +185,7 @@ const AddState: React.FC = () => {
             <UI.Input
               labelValue="Max distance radius (km)"
               id="Max distance radius"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               {...formik.getFieldProps("config.maxDistanceRadius")}
               errorMessage={formik.touched.config?.maxDistanceRadius && formik.errors.config?.maxDistanceRadius}
