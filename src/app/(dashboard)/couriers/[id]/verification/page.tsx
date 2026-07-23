@@ -28,7 +28,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
 
       {/* Reject modal */}
       <Suspense>
-        <RejectVerificationModal />
+        <RejectVerificationModal userId={params.id} />
       </Suspense>
     </div>
   );

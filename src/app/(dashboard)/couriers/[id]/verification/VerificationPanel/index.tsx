@@ -15,6 +15,7 @@ interface IVerificationPanel {
 export const VerificationPanel = ({ userId }: IVerificationPanel) => {
   const { data, isLoading } = useGetUserDetailsQuery(userId);
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
+  const [docBroken, setDocBroken] = useState(false);
   const { mutate, isPending: isVerifiying } = useVerifyDriversLicenseMn(userId);
 
   const handleVerification = () => {
@@ -54,24 +55,42 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
           <FileText size={16} className="text-brand-dark" />
           Driver&apos;s licence document
         </div>
-        {data?.driversLicenseDoc ? (
-          <motion.div layoutId="preview-courier" className="relative mt-4 overflow-hidden rounded-xl border">
+        {data?.driversLicenseDoc && !docBroken ? (
+          <motion.div
+            layoutId="preview-courier"
+            className="relative mt-4 grid h-[20rem] place-items-center overflow-hidden rounded-xl border bg-muted"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.driversLicenseDoc}
               alt="Driver's licence"
-              className="max-h-[22rem] w-full bg-muted object-contain"
+              className="h-full w-full object-contain"
+              onError={() => setDocBroken(true)}
             />
             <button
               onClick={() => setPreviewDoc("preview-courier")}
-              className="absolute bottom-3 right-3 grid size-9 place-items-center rounded-lg bg-black/70 text-white transition-transform hover:scale-105"
+              className="absolute bottom-3 right-3 grid size-9 place-items-center rounded-lg bg-black/70 text-white shadow-md transition-transform hover:scale-105"
               aria-label="Expand document"
             >
               <Maximize2 size={16} />
             </button>
           </motion.div>
+        ) : data?.driversLicenseDoc && docBroken ? (
+          <div className="mt-4 grid h-[20rem] place-items-center rounded-xl border border-dashed bg-muted/40 text-center text-sm text-muted-foreground">
+            <div className="space-y-2 px-6">
+              <p>The document image couldn&apos;t be displayed.</p>
+              <a
+                href={data.driversLicenseDoc}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block font-bold text-primary underline"
+              >
+                Open document in a new tab
+              </a>
+            </div>
+          </div>
         ) : (
-          <div className="mt-4 grid h-52 place-items-center rounded-xl border border-dashed text-sm text-muted-foreground">
+          <div className="mt-4 grid h-[20rem] place-items-center rounded-xl border border-dashed text-sm text-muted-foreground">
             No document uploaded yet.
           </div>
         )}
