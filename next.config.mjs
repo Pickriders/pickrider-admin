@@ -2,30 +2,12 @@
 const nextConfig = {
   // output: "export",
   images: {
+    // Avatars/photos come from many providers (Google, Cloudinary, uploaded
+    // storage, etc.), so allow any https host. This is an internal admin.
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "placehold.it",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "2Fcloudflare-ipfs.com",
-        port: "",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },
