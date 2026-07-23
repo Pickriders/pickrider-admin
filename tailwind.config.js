@@ -12,13 +12,16 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // Default body face = Urbanist (matches the storefront). `sans` drives
-        // everything that doesn't opt into a specific face.
+        // The interface font is driven by one variable, --admin-font (default
+        // Urbanist, matching the storefront). Every font utility in the app —
+        // including the previously hardcoded clash-display / montserrat /
+        // faktum faces — resolves to it, so the header switcher changes the
+        // font EVERYWHERE. `urbanist` stays fixed for anything that must pin it.
         sans: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "system-ui", "sans-serif"],
+        "clash-display": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        montserrat: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        "faktum-test": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
         urbanist: ["var(--font-urbanist)"],
-        "clash-display": ["var(--font-clash-display)"],
-        montserrat: ["var(--font-montserrat)"],
-        "faktum-test": ["var(--font-faktum-test)"],
       },
       borderRadius: {
         lg: "var(--radius)",

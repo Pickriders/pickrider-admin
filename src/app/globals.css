@@ -3,6 +3,9 @@
 @tailwind utilities;
 @layer base {
   :root {
+    /* Interface font — the header switcher overrides this on <html>. */
+    --admin-font: var(--font-urbanist);
+
     /* Pickriders brand: teal #3FA49F primary, plum #2E1030, near-black #1E1F1F */
     --background: 0 0% 100%;
     --surface: 210 20% 98%;
