@@ -39,17 +39,19 @@ export const LoginForm = () => {
   const loginMutation = useLoginMn(formik.values.rememberMe);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="rounded-3xl border bg-card p-6 shadow-sm sm:p-9"
-    >
+    <>
+      {/* Mobile: logo sits above the form card, centered (desktop shows it in the panel). */}
       <div className="mb-6 flex justify-center lg:hidden">
         <SVG.PickridersLogo className="h-[2.1rem] w-auto" />
       </div>
 
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="rounded-3xl border bg-card p-6 shadow-sm sm:p-9"
+      >
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
         <ShieldCheck size={13} />
         Pickriders Admin
       </span>
@@ -119,6 +121,7 @@ export const LoginForm = () => {
         <ShieldCheck size={13} />
         Protected area — authorized staff only.
       </p>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
