@@ -7,7 +7,6 @@ import { CouriersTableFilter } from "./CouriersTableFilter";
 import { DeleteCourierModal } from "./DeleteModal";
 import { SuspendCourierModal } from "./SuspendModal";
 import { DataTable } from "./DataTable";
-import { useTableUrlFilter } from "@/hooks/useTableUrlFilter";
 import { useURLQuery } from "@/hooks";
 
 export const CouriersTable = () => {
@@ -23,9 +22,11 @@ export const CouriersTable = () => {
         <div className="flex items-center gap-x-2">
           <Suspense>
             <UI.TableSearchInput
+              placeholder="Search name, phone, email or vehicle..."
+              className="sm:w-72"
               value={userSearch ?? ""}
               onSearch={(text) => {
-                query.set("search", text);
+                query.setMultiple({ search: text, page: "1" });
               }}
             />
             <CouriersTableFilter />

@@ -4,16 +4,10 @@ import { UI } from "@/components/ui";
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { Eye, MoreHorizontal } from "lucide-react";
+import { Eye } from "lucide-react";
 import { User } from "@/services";
 import { formatMoney, subUnitToBaseUnit } from "@/utils";
 import { useGetCustomerCompletedCountQuery, useGetCustomerLatestBalanceQuery } from "@/api/queries/customer";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/DropdownMenu";
 
 const BalanceCell = ({ userId }: { userId: string }) => {
   const { data, isLoading } = useGetCustomerLatestBalanceQuery(userId);
@@ -116,21 +110,12 @@ export const customersColumns: ColumnDef<User>[] = [
     id: "actions",
     header: "",
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground">
-            <MoreHorizontal size={17} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-44">
-          <DropdownMenuItem asChild>
-            <Link href={`/customers/${row.original._id}`} className="flex items-center gap-2">
-              <Eye size={14} />
-              View details
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <UI.Button variant="outline" size="sm" asChild>
+        <Link href={`/customers/${row.original._id}`} className="flex items-center gap-1.5">
+          <Eye size={14} />
+          View details
+        </Link>
+      </UI.Button>
     ),
   },
 ];

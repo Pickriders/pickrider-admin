@@ -3,16 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { ArrowLeft, BadgeCheck, Mail, Phone, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bike, Mail, Phone, ShieldCheck, Wallet } from "lucide-react";
 import { UI } from "@/components/ui";
+import { SVG } from "@/components/svg";
 import { formatMoney, subUnitToBaseUnit } from "@/utils";
 import { useGetUserDetailsQuery } from "@/api/queries/user";
 import {
-  useGetCustomerOrdersQuery,
-  useGetCustomerOrderStatsQuery,
   useGetCustomerTransactionsQuery,
   useGetCustomerWalletQuery,
 } from "@/api/queries/customer";
+import { useGetCourierDeliveriesQuery, useGetCourierDeliveryStatsQuery } from "@/api/queries/courier";
 import { Order, Transaction } from "@/services";
 import { UserActions } from "@/components/UserActions";
 
@@ -22,6 +22,14 @@ const TXN_STATUS_COLOR: Record<string, string> = {
   FAILED: "#FF5244",
   CANCELLED: "#FF5244",
 };
+const ORDER_STATUS_COLOR: Record<string, string> = {
+  INITIATED: "#DBAD0E",
+  ACCEPTED: "#2282C8",
+  ON_GOING: "#3E7DF6",
+  COMPLETED: "#32BA7C",
+  CANCELLED: "#FF5244",
+};
+const ORDER_TYPE_LABEL: Record<string, string> = { SINGLE: "Single", BATCH: "Batch", BULK: "Bulk" };
 
 const money = (v?: number, currency?: string) => formatMoney(subUnitToBaseUnit(v ?? 0), { currency });
 
@@ -49,16 +57,6 @@ const Pager = ({ page, totalPages, onPage }: { page: number; totalPages: number;
   </div>
 );
 
-const ORDER_TYPE_LABEL: Record<string, string> = { SINGLE: "Single", BATCH: "Batch", BULK: "Bulk" };
-
-const ORDER_STATUS_COLOR: Record<string, string> = {
-  INITIATED: "#DBAD0E",
-  ACCEPTED: "#2282C8",
-  ON_GOING: "#3E7DF6",
-  COMPLETED: "#32BA7C",
-  CANCELLED: "#FF5244",
-};
-
 const OrderStatusBadge = ({ status }: { status: string }) => (
   <span
     className="rounded-full px-2.5 py-1 text-[11px] font-bold"
@@ -68,25 +66,36 @@ const OrderStatusBadge = ({ status }: { status: string }) => (
   </span>
 );
 
-export const CustomerDetail = ({ id }: { id: string }) => {
-  const [tab, setTab] = React.useState<"transactions" | "orders" | "activity">("transactions");
-  const [txnPage, setTxnPage] = React.useState(1);
-  const [orderPage, setOrderPage] = React.useState(1);
+const ActivityRow = ({ color, title, subtitle }: { color: string; title: string; subtitle: string }) => (
+  <div className="flex items-start gap-3">
+    <span className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+    <div>
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground">{subtitle}</p>
+    </div>
+  </div>
+);
 
-  const { data: user } = useGetUserDetailsQuery(id);
-  const { data: walletData } = useGetCustomerWalletQuery(id);
-  const { data: stats } = useGetCustomerOrderStatsQuery(id);
-  const { data: txns } = useGetCustomerTransactionsQuery(id, txnPage);
-  const { data: orders } = useGetCustomerOrdersQuery(id, orderPage);
-  const { data: recentOrders } = useGetCustomerOrdersQuery(id, 1, 25);
-  const { data: recentTxns } = useGetCustomerTransactionsQuery(id, 1, 25);
+export const CourierDetail = ({ id }: { id: string }) => {
+  const [tab, setTab] = React.useState<"transactions" | "deliveries" | "activity">("transactions");
+  const [txnPage, setTxnPage] = React.useState(1);
+  const [deliveryPage, setDeliveryPage] = React.useState(1);
   const [activityPage, setActivityPage] = React.useState(1);
   const ACTIVITY_PER_PAGE = 8;
 
+  const { data: user } = useGetUserDetailsQuery(id);
+  const { data: walletData } = useGetCustomerWalletQuery(id);
+  const { data: stats } = useGetCourierDeliveryStatsQuery(id);
+  const { data: txns } = useGetCustomerTransactionsQuery(id, txnPage);
+  const { data: deliveries } = useGetCourierDeliveriesQuery(id, deliveryPage);
+  const { data: recentTxns } = useGetCustomerTransactionsQuery(id, 1, 25);
+  const { data: recentDeliveries } = useGetCourierDeliveriesQuery(id, 1, 25);
+
   const wallet = walletData?.results?.[0];
   const currency = wallet?.currency;
-  const fullName = user ? `${user.firstname} ${user.lastname}` : "Customer";
+  const fullName = user ? `${user.firstname} ${user.lastname}` : "Courier";
   const initials = user ? `${user.firstname?.[0] ?? ""}${user.lastname?.[0] ?? ""}` : "";
+  const licenceApproved = user?.driversLicenseVerified === "APPROVE";
 
   type ActivityItem =
     | { kind: "login"; date: string }
@@ -97,9 +106,9 @@ export const CustomerDetail = ({ id }: { id: string }) => {
     const items: ActivityItem[] = [];
     if (user?.lastLoginDate) items.push({ kind: "login", date: user.lastLoginDate });
     (recentTxns?.results ?? []).forEach((x) => items.push({ kind: "txn", date: x.createdAt, data: x as Transaction }));
-    (recentOrders?.results ?? []).forEach((x) => items.push({ kind: "order", date: x.createdAt, data: x as Order }));
+    (recentDeliveries?.results ?? []).forEach((x) => items.push({ kind: "order", date: x.createdAt, data: x as Order }));
     return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [recentTxns, recentOrders, user?.lastLoginDate]);
+  }, [recentTxns, recentDeliveries, user?.lastLoginDate]);
 
   const activityTotalPages = Math.max(1, Math.ceil(activity.length / ACTIVITY_PER_PAGE));
   const activityItems = activity.slice((activityPage - 1) * ACTIVITY_PER_PAGE, activityPage * ACTIVITY_PER_PAGE);
@@ -107,16 +116,15 @@ export const CustomerDetail = ({ id }: { id: string }) => {
   return (
     <div>
       <Link
-        href="/customers"
+        href="/couriers"
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft size={16} />
-        Back to customers
+        Back to couriers
       </Link>
 
-      {/* Header */}
       <div className="mt-4 rounded-2xl border bg-card p-6">
-        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
           <div className="flex items-center gap-4">
             <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-primary-black text-xl font-semibold uppercase text-white">
               {user?.photo ? (
@@ -127,9 +135,18 @@ export const CustomerDetail = ({ id }: { id: string }) => {
               )}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-clash-display text-xl font-semibold text-foreground">{fullName}</h1>
                 {user?.status && <UI.TableStatus status={user.status} />}
+                <span
+                  className={
+                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold " +
+                    (licenceApproved ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600")
+                  }
+                >
+                  <BadgeCheck size={11} />
+                  {licenceApproved ? "Licence verified" : "Licence pending"}
+                </span>
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 {user?.phone && (
@@ -144,29 +161,43 @@ export const CustomerDetail = ({ id }: { id: string }) => {
                 )}
                 <span>Joined {dayjs(user?.createdAt).format("DD MMM YYYY")}</span>
               </div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {user?.phoneVerified && <Chip icon={<Phone size={11} />} label="Phone verified" />}
-                {user?.emailVerified && <Chip icon={<Mail size={11} />} label="Email verified" />}
-                {user?.ninVerified && <Chip icon={<BadgeCheck size={11} />} label="NIN verified" />}
-              </div>
             </div>
           </div>
 
-          <UserActions userId={id} status={user?.status} orders={recentOrders?.results ?? []} currency={currency} />
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <UI.Button variant="outline" asChild>
+                <Link href="verification" className="flex items-center gap-1.5">
+                  <ShieldCheck size={15} /> Verification
+                </Link>
+              </UI.Button>
+              <UI.Button variant="outline" asChild>
+                <Link href="edit" className="flex items-center gap-1.5">
+                  <SVG.ShieldUser /> Edit
+                </Link>
+              </UI.Button>
+            </div>
+            <UserActions
+              userId={id}
+              status={user?.status}
+              orders={[]}
+              currency={currency}
+              showRefund={false}
+              balanceLabel="courier's earnings wallet"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="mt-5 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <StatTile label="Wallet balance" value={money(wallet?.balance, currency)} icon={<Wallet size={16} />} />
-        <StatTile label="Completed orders" value={stats?.completed ?? 0} icon={<ShieldCheck size={16} />} />
-        <StatTile label="Total orders" value={stats?.total ?? 0} />
-        <StatTile label="Cancelled orders" value={stats?.cancelled ?? 0} />
+        <StatTile label="Earnings balance" value={money(wallet?.balance, currency)} icon={<Wallet size={16} />} />
+        <StatTile label="Deliveries completed" value={stats?.completed ?? 0} icon={<Bike size={16} />} />
+        <StatTile label="Total deliveries" value={stats?.total ?? 0} />
+        <StatTile label="Cancelled" value={stats?.cancelled ?? 0} />
       </div>
 
-      {/* Tabs */}
-      <div className="mt-6 flex items-center gap-1 rounded-xl border bg-card p-1 w-fit">
-        {(["transactions", "orders", "activity"] as const).map((t) => (
+      <div className="mt-6 flex w-fit items-center gap-1 rounded-xl border bg-card p-1">
+        {(["transactions", "deliveries", "activity"] as const).map((t) => (
           <button
             key={t}
             type="button"
@@ -230,7 +261,7 @@ export const CustomerDetail = ({ id }: { id: string }) => {
           </>
         )}
 
-        {tab === "orders" && (
+        {tab === "deliveries" && (
           <>
             <div className="overflow-x-auto">
               <UI.Table>
@@ -240,24 +271,20 @@ export const CustomerDetail = ({ id }: { id: string }) => {
                     <UI.TableHead>Type</UI.TableHead>
                     <UI.TableHead>Amount</UI.TableHead>
                     <UI.TableHead>Status</UI.TableHead>
-                    <UI.TableHead>Payment</UI.TableHead>
                     <UI.TableHead>Date</UI.TableHead>
                     <UI.TableHead />
                   </UI.TableRow>
                 </UI.TableHeader>
                 <UI.TableBody>
-                  {orders?.results?.length ? (
-                    orders.results.map((o) => (
+                  {deliveries?.results?.length ? (
+                    deliveries.results.map((o) => (
                       <UI.TableRow key={o._id}>
                         <UI.TableCell className="font-semibold">#{o.orderNumber}</UI.TableCell>
                         <UI.TableCell>{ORDER_TYPE_LABEL[o.type] ?? o.type}</UI.TableCell>
-                        <UI.TableCell className="font-semibold">
-                          {money(o.totalAmountPayable, o.currency)}
-                        </UI.TableCell>
+                        <UI.TableCell className="font-semibold">{money(o.totalAmountPayable, o.currency)}</UI.TableCell>
                         <UI.TableCell>
                           <OrderStatusBadge status={o.status} />
                         </UI.TableCell>
-                        <UI.TableCell>{o.paymentStatus}</UI.TableCell>
                         <UI.TableCell className="text-nowrap">{dayjs(o.createdAt).format("DD/MM/YY HH:mm")}</UI.TableCell>
                         <UI.TableCell>
                           <Link href={`/orders/${o._id}`} className="text-xs font-bold text-primary hover:underline">
@@ -268,15 +295,15 @@ export const CustomerDetail = ({ id }: { id: string }) => {
                     ))
                   ) : (
                     <UI.TableRow>
-                      <UI.TableCell colSpan={7} className="h-24 text-center font-semibold">
-                        No orders.
+                      <UI.TableCell colSpan={6} className="h-24 text-center font-semibold">
+                        No deliveries.
                       </UI.TableCell>
                     </UI.TableRow>
                   )}
                 </UI.TableBody>
               </UI.Table>
             </div>
-            <Pager page={orderPage} totalPages={orders?.totalPages ?? 1} onPage={setOrderPage} />
+            <Pager page={deliveryPage} totalPages={deliveries?.totalPages ?? 1} onPage={setDeliveryPage} />
           </>
         )}
 
@@ -296,14 +323,14 @@ export const CustomerDetail = ({ id }: { id: string }) => {
                     <ActivityRow
                       key={`t-${item.data._id}-${i}`}
                       color={item.data.type === "CREDIT" ? "#32BA7C" : "#FF5244"}
-                      title={`${item.data.type === "CREDIT" ? "Credit" : "Debit"} — ${item.data.purpose?.replaceAll("_", " ")}`}
+                      title={`${item.data.type === "CREDIT" ? "Earning / credit" : "Debit"} — ${item.data.purpose?.replaceAll("_", " ")}`}
                       subtitle={`${money(item.data.amount, item.data.currency)} · ${dayjs(item.date).format("DD MMM YYYY, HH:mm")}`}
                     />
                   ) : (
                     <ActivityRow
                       key={`o-${item.data._id}-${i}`}
                       color="#7C3AED"
-                      title={`Order #${item.data.orderNumber} — ${item.data.status}`}
+                      title={`Delivery #${item.data.orderNumber} — ${item.data.status}`}
                       subtitle={`${money(item.data.totalAmountPayable, item.data.currency)} · ${dayjs(item.date).format("DD MMM YYYY, HH:mm")}`}
                     />
                   ),
@@ -318,20 +345,3 @@ export const CustomerDetail = ({ id }: { id: string }) => {
     </div>
   );
 };
-
-const Chip = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
-    {icon}
-    {label}
-  </span>
-);
-
-const ActivityRow = ({ color, title, subtitle }: { color: string; title: string; subtitle: string }) => (
-  <div className="flex items-start gap-3">
-    <span className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-    <div>
-      <p className="text-sm font-semibold text-foreground">{title}</p>
-      <p className="text-xs text-muted-foreground">{subtitle}</p>
-    </div>
-  </div>
-);

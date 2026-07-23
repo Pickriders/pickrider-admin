@@ -5,42 +5,40 @@ import { Ban, CheckCircle2, MinusCircle, PlusCircle, Undo2 } from "lucide-react"
 import { UI } from "@/components/ui";
 import { Order } from "@/services";
 import { baseUnitToSubUnit, formatMoney, subUnitToBaseUnit } from "@/utils";
-import {
-  useAdjustCustomerWalletMn,
-  useRefundCustomerOrderMn,
-  useUpdateCustomerStatusMn,
-} from "@/api/queries/customer";
-import { Modal } from "../Modal";
+import { useAdjustCustomerWalletMn, useRefundCustomerOrderMn, useUpdateCustomerStatusMn } from "@/api/queries/customer";
+import { Modal } from "./Modal";
 
 type Status = "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
 
-export const CustomerActions = ({
+/** Shared admin actions for any user (customer or courier). */
+export const UserActions = ({
   userId,
   status,
   orders,
   currency,
+  showRefund = true,
+  balanceLabel = "wallet balance",
 }: {
   userId: string;
   status?: Status;
   orders: Order[];
   currency?: string;
+  showRefund?: boolean;
+  balanceLabel?: string;
 }) => {
   const [modal, setModal] = React.useState<null | "adjust" | "status" | "refund">(null);
   const close = () => setModal(null);
 
-  // Adjust balance form
   const [adjustType, setAdjustType] = React.useState<"CREDIT" | "DEBIT">("CREDIT");
   const [adjustAmount, setAdjustAmount] = React.useState("");
   const [adjustReason, setAdjustReason] = React.useState("");
   const adjustMn = useAdjustCustomerWalletMn(userId);
 
-  // Status form
   const isActive = status === "ACTIVE";
   const [nextStatus, setNextStatus] = React.useState<Status>(isActive ? "SUSPENDED" : "ACTIVE");
   const [statusReason, setStatusReason] = React.useState("");
   const statusMn = useUpdateCustomerStatusMn(userId);
 
-  // Refund form
   const [refundOrderId, setRefundOrderId] = React.useState("");
   const [refundAmount, setRefundAmount] = React.useState("");
   const [refundReason, setRefundReason] = React.useState("");
@@ -96,10 +94,12 @@ export const CustomerActions = ({
         <PlusCircle size={15} />
         Adjust balance
       </UI.Button>
-      <UI.Button variant="outline" onClick={() => setModal("refund")}>
-        <Undo2 size={15} />
-        Refund order
-      </UI.Button>
+      {showRefund && (
+        <UI.Button variant="outline" onClick={() => setModal("refund")}>
+          <Undo2 size={15} />
+          Refund order
+        </UI.Button>
+      )}
       <UI.Button
         variant="outline"
         className={isActive ? "text-red-500 hover:text-red-600" : "text-emerald-600 hover:text-emerald-700"}
@@ -117,7 +117,7 @@ export const CustomerActions = ({
         open={modal === "adjust"}
         onClose={close}
         title="Adjust wallet balance"
-        description="Manually credit or debit this customer's wallet. This is audited."
+        description={`Manually credit or debit this ${balanceLabel}. This is audited.`}
       >
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
@@ -158,7 +158,8 @@ export const CustomerActions = ({
             isLoading={adjustMn.isPending}
             disabled={!adjustAmount || !adjustReason.trim()}
           >
-            {adjustType === "CREDIT" ? "Credit" : "Debit"} {adjustAmount ? formatMoney(Number(adjustAmount), { currency }) : "wallet"}
+            {adjustType === "CREDIT" ? "Credit" : "Debit"}{" "}
+            {adjustAmount ? formatMoney(Number(adjustAmount), { currency }) : "wallet"}
           </UI.PrimaryButton>
         </div>
       </Modal>
@@ -167,8 +168,8 @@ export const CustomerActions = ({
       <Modal
         open={modal === "status"}
         onClose={close}
-        title={isActive ? "Suspend customer" : "Update customer status"}
-        description="Restrict or restore this customer's account access. This is audited."
+        title={isActive ? "Suspend account" : "Update account status"}
+        description="Restrict or restore this account's access. This is audited."
       >
         <div className="space-y-4">
           <div>
@@ -197,60 +198,62 @@ export const CustomerActions = ({
       </Modal>
 
       {/* Refund */}
-      <Modal
-        open={modal === "refund"}
-        onClose={close}
-        title="Refund an order"
-        description="Refund a paid order back to the customer's wallet. This is audited."
-      >
-        <div className="space-y-4">
-          <div>
-            <UI.Label className="text-xs">Order</UI.Label>
-            <UI.Select value={refundOrderId} onValueChange={setRefundOrderId}>
-              <UI.SelectTrigger className="mt-1 w-full">
-                <UI.SelectValue placeholder="Select an order" />
-              </UI.SelectTrigger>
-              <UI.SelectContent>
-                {orders.length ? (
-                  orders.map((o) => (
-                    <UI.SelectItem key={o._id} value={o._id}>
-                      #{o.orderNumber} — {formatMoney(subUnitToBaseUnit(o.totalAmountPayable ?? 0), { currency: o.currency })}
-                    </UI.SelectItem>
-                  ))
-                ) : (
-                  <div className="px-3 py-2 text-xs text-muted-foreground">No orders found</div>
-                )}
-              </UI.SelectContent>
-            </UI.Select>
+      {showRefund && (
+        <Modal
+          open={modal === "refund"}
+          onClose={close}
+          title="Refund an order"
+          description="Refund a paid order back to the customer's wallet. This is audited."
+        >
+          <div className="space-y-4">
+            <div>
+              <UI.Label className="text-xs">Order</UI.Label>
+              <UI.Select value={refundOrderId} onValueChange={setRefundOrderId}>
+                <UI.SelectTrigger className="mt-1 w-full">
+                  <UI.SelectValue placeholder="Select an order" />
+                </UI.SelectTrigger>
+                <UI.SelectContent>
+                  {orders.length ? (
+                    orders.map((o) => (
+                      <UI.SelectItem key={o._id} value={o._id}>
+                        #{o.orderNumber} — {formatMoney(subUnitToBaseUnit(o.totalAmountPayable ?? 0), { currency: o.currency })}
+                      </UI.SelectItem>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-xs text-muted-foreground">No orders found</div>
+                  )}
+                </UI.SelectContent>
+              </UI.Select>
+            </div>
+            {selectedOrder && (
+              <p className="text-xs text-muted-foreground">
+                Order value: {formatMoney(subUnitToBaseUnit(selectedOrder.totalAmountPayable ?? 0), { currency })}. Leave
+                amount blank to refund in full.
+              </p>
+            )}
+            <UI.Input
+              labelValue={`Amount (${currency ?? "NGN"}) — optional`}
+              type="number"
+              min={0}
+              placeholder="Full order value"
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(e.target.value)}
+            />
+            <UI.TextArea
+              placeholder="Reason for refund"
+              value={refundReason}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRefundReason(e.target.value)}
+            />
+            <UI.PrimaryButton
+              onClick={submitRefund}
+              isLoading={refundMn.isPending}
+              disabled={!refundOrderId || !refundReason.trim()}
+            >
+              Issue refund
+            </UI.PrimaryButton>
           </div>
-          {selectedOrder && (
-            <p className="text-xs text-muted-foreground">
-              Order value: {formatMoney(subUnitToBaseUnit(selectedOrder.totalAmountPayable ?? 0), { currency })}. Leave
-              amount blank to refund in full.
-            </p>
-          )}
-          <UI.Input
-            labelValue={`Amount (${currency ?? "NGN"}) — optional`}
-            type="number"
-            min={0}
-            placeholder="Full order value"
-            value={refundAmount}
-            onChange={(e) => setRefundAmount(e.target.value)}
-          />
-          <UI.TextArea
-            placeholder="Reason for refund"
-            value={refundReason}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRefundReason(e.target.value)}
-          />
-          <UI.PrimaryButton
-            onClick={submitRefund}
-            isLoading={refundMn.isPending}
-            disabled={!refundOrderId || !refundReason.trim()}
-          >
-            Issue refund
-          </UI.PrimaryButton>
-        </div>
-      </Modal>
+        </Modal>
+      )}
     </div>
   );
 };
