@@ -6,24 +6,32 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 
 const FONT_KEY = "pickriders-admin-font";
 
+// Mirrors the storefront's selectable fonts (src/lib/theme.ts). Default =
+// Urbanist, matching the storefront's default face.
 const FONTS = [
-  { id: "default", label: "Inter (default)", family: "" },
-  { id: "clash", label: "Clash Display", family: "var(--font-clash-display)" },
-  { id: "montserrat", label: "Montserrat", family: "var(--font-montserrat)" },
-  { id: "faktum", label: "Faktum", family: "var(--font-faktum-test)" },
+  { id: "default", label: "Urbanist (default)", family: "var(--font-urbanist), Urbanist, sans-serif" },
+  { id: "rubik", label: "Rubik", family: "Rubik, sans-serif" },
+  { id: "faktum", label: "Faktum", family: "var(--font-faktum-test), sans-serif" },
+  { id: "space-grotesk", label: "Space Grotesk", family: "'Space Grotesk', sans-serif" },
+  { id: "inter", label: "Inter", family: "Inter, sans-serif" },
+  { id: "barlow", label: "Barlow", family: "Barlow, sans-serif" },
+  { id: "quicksand", label: "Quicksand", family: "Quicksand, sans-serif" },
+  { id: "saira", label: "Saira", family: "Saira, sans-serif" },
 ] as const;
 
 type FontId = (typeof FONTS)[number]["id"];
 
 function applyFont(id: FontId) {
   const font = FONTS.find((entry) => entry.id === id) ?? FONTS[0];
-  if (font.family) document.body.style.setProperty("font-family", font.family);
-  else document.body.style.removeProperty("font-family");
+  // The whole app reads --admin-font (see tailwind fontFamily.sans + globals).
+  document.documentElement.style.setProperty("--admin-font", font.family);
 }
 
 /** Base-font picker, persisted per device. Section headings keep their own faces. */
@@ -48,21 +56,25 @@ export const FontSwitcher = () => {
         <button
           type="button"
           aria-label="Change font"
-          className="size-9 grid place-items-center rounded-lg border bg-background text-primary-gray transition-colors hover:text-foreground"
+          className="size-9 grid place-items-center rounded-xl border bg-background text-primary-gray transition-colors hover:text-foreground hover:border-primary/40"
         >
           <Type size={17} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-56 rounded-xl">
+        <DropdownMenuLabel className="text-[11px] uppercase tracking-wide text-primary-gray">
+          Interface font
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {FONTS.map((font) => (
           <DropdownMenuItem
             key={font.id}
             onClick={() => select(font.id)}
-            className="flex items-center justify-between"
-            style={font.family ? { fontFamily: font.family } : undefined}
+            className="flex items-center justify-between rounded-lg py-2"
+            style={{ fontFamily: font.family }}
           >
-            {font.label}
-            {fontId === font.id ? <Check size={14} /> : null}
+            <span className="text-sm">{font.label}</span>
+            {fontId === font.id ? <Check size={14} className="text-primary" /> : null}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

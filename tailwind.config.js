@@ -12,6 +12,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        // Default body face = Urbanist (matches the storefront). `sans` drives
+        // everything that doesn't opt into a specific face.
+        sans: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "system-ui", "sans-serif"],
+        urbanist: ["var(--font-urbanist)"],
         "clash-display": ["var(--font-clash-display)"],
         montserrat: ["var(--font-montserrat)"],
         "faktum-test": ["var(--font-faktum-test)"],
@@ -24,7 +28,12 @@ module.exports = {
 
       colors: {
         background: "hsl(var(--background))",
-
+        surface: "hsl(var(--surface))",
+        brand: {
+          DEFAULT: "var(--brand)",
+          dark: "var(--brand-dark)",
+          soft: "var(--brand-soft)",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
