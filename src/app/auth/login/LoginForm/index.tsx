@@ -41,13 +41,20 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} className="relative" autoComplete="off">
-      <h1 className="font-semibold text-2xl font-clash-display">Welcome back!</h1>
+      <div className="lg:hidden mb-6">
+        <SVG.PickridersLogo />
+      </div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Pickriders Admin</p>
+      <h1 className="mt-2 font-semibold text-3xl font-clash-display">Welcome back</h1>
+      <p className="mt-2 text-sm text-muted-foreground font-montserrat">
+        Sign in to manage orders, couriers, businesses and finances.
+      </p>
       <motion.div
         initial={{ translateY: 40 }}
         animate={{ translateY: 0 }}
         transition={{ duration: 0.2, ease: "linear", stiffness: 30 }}
       >
-        <div className="mt-12 space-y-3">
+        <div className="mt-10 space-y-3">
           <UI.Input
             labelValue="Email Address"
             id="email"

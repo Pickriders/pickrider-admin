@@ -1,6 +1,7 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { StatsContainer } from "./StatsContainer";
+import { FinanceCharts } from "./FinanceCharts";
 import { ExternalPayments } from "./ExternalPayments";
 import { HistoryTable } from "./HistoryTable";
 import Link from "next/link";
@@ -26,7 +27,7 @@ const FinancesPage = () => {
           </UI.Button>
         </div>
       </div>
-      <section className="mt-[2rem] w-full bg-background p-6 rounded-2xl">
+      <section className="mt-[2rem] w-full bg-background p-6 rounded-2xl border">
         <Suspense>
           <StatsContainer />
         </Suspense>
@@ -34,8 +35,14 @@ const FinancesPage = () => {
         <Suspense>
           <ExternalPayments />
         </Suspense>
+      </section>
 
-        <div className="mt-8">
+      <Suspense>
+        <FinanceCharts />
+      </Suspense>
+
+      <section className="mt-6 w-full bg-background p-6 rounded-2xl border">
+        <div className="mb-2">
           <UI.SectionHeader text="Transaction history" />
         </div>
         <Suspense>

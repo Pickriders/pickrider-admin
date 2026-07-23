@@ -28,6 +28,7 @@ module.exports = {
 
       colors: {
         background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         surface: "hsl(var(--surface))",
         brand: {
           DEFAULT: "var(--brand)",

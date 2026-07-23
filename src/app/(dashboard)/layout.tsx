@@ -15,7 +15,7 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-primary-foreground min-h-screen">
+    <div className="bg-surface min-h-screen">
       <Layout.Header />
       <div className="grid xl:grid-cols-[auto_1fr] grid-cols-1">
         <div className="xl:block hidden">
