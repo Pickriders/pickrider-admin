@@ -9,16 +9,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useLoginMn } from "@/api";
 import { Role } from "@/services";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, ShieldCheck } from "lucide-react";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Email is required"),
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    // .matches(/[a-zA-Z]/, "Password must contain at least one letter")
-    // .matches(/[0-9]/, "Password must contain at least one number")
-    .required("Password is required"),
+  password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
 });
+
+const FIELD_CLASS =
+  "h-12 rounded-xl px-4 pl-11 text-[15px] font-semibold text-foreground bg-background placeholder:font-medium placeholder:text-muted-foreground";
 
 export const LoginForm = () => {
   const formik = useFormik({
@@ -40,72 +39,86 @@ export const LoginForm = () => {
   const loginMutation = useLoginMn(formik.values.rememberMe);
 
   return (
-    <form onSubmit={formik.handleSubmit} className="relative" autoComplete="off">
-      <div className="lg:hidden mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="rounded-3xl border bg-card p-6 shadow-sm sm:p-9"
+    >
+      <div className="mb-8 lg:hidden">
         <SVG.PickridersLogo />
       </div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Pickriders Admin</p>
-      <h1 className="mt-2 font-semibold text-3xl font-clash-display">Welcome back</h1>
-      <p className="mt-2 text-sm text-muted-foreground font-montserrat">
+
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
+        <ShieldCheck size={13} />
+        Pickriders Admin
+      </span>
+      <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-[2rem]">Welcome back</h1>
+      <p className="mt-2 text-[15px] font-medium text-muted-foreground">
         Sign in to manage orders, couriers, businesses and finances.
       </p>
-      <motion.div
-        initial={{ translateY: 40 }}
-        animate={{ translateY: 0 }}
-        transition={{ duration: 0.2, ease: "linear", stiffness: 30 }}
-      >
-        <div className="mt-10 space-y-3">
+
+      <form onSubmit={formik.handleSubmit} className="mt-8" autoComplete="off">
+        <div className="space-y-5">
           <UI.Input
-            labelValue="Email Address"
+            labelValue="Email address"
+            labelClassName="text-sm font-bold text-foreground"
             id="email"
             type="email"
+            placeholder="you@pickriders.com"
             leftIcon={<SVG.Mail />}
+            className={FIELD_CLASS}
             {...formik.getFieldProps("email")}
             errorMessage={formik.touched.email && formik.errors.email}
           />
           <UI.Input
             labelValue="Password"
+            labelClassName="text-sm font-bold text-foreground"
             id="password"
             type="password"
-            placeholder="Enter password"
+            placeholder="Enter your password"
             autoComplete="off"
             leftIcon={<SVG.LockIcon />}
             showToggle
-            className="placeholder:text-primary-gray placeholder:font-montserrat"
+            className={`${FIELD_CLASS} pr-12`}
             errorMessage={formik.touched.password && formik.errors.password}
             {...formik.getFieldProps("password")}
           />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-x-1">
+
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex cursor-pointer items-center gap-2">
               <UI.Checkbox
                 checked={formik.values.rememberMe}
-                onCheckedChange={(val) => {
-                  formik.setFieldValue("rememberMe", val);
-                }}
+                onCheckedChange={(val) => formik.setFieldValue("rememberMe", val)}
               />
-              <UI.Label htmlFor="remeber me">Remember me</UI.Label>
-            </div>
-            <p className="font-montserrat font-semibold text-primary-gray text-sm">
-              Forgot Password?{" "}
-              <Link href={"/auth/reset-password"} className="text-primary hover:underline">
-                Reset
-              </Link>
-            </p>
+              <span className="text-sm font-semibold text-foreground">Remember me</span>
+            </label>
+            <Link href={"/auth/reset-password"} className="text-sm font-bold text-primary hover:underline">
+              Forgot password?
+            </Link>
           </div>
         </div>
-        <div className="mt-10">
-          <UI.PrimaryButton type="submit" disabled={loginMutation.isPending}>
-            {loginMutation.isPending ? (
-              <>
-                <LoaderCircle size={20} className="animate-spin" />
-                <span className="ml-2">Submitting...</span>
-              </>
-            ) : (
-              "Login"
-            )}
-          </UI.PrimaryButton>
-        </div>
-      </motion.div>
-    </form>
+
+        <UI.PrimaryButton
+          type="submit"
+          disabled={loginMutation.isPending}
+          className="mt-8 h-12 rounded-xl text-[15px] font-bold"
+        >
+          {loginMutation.isPending ? (
+            <>
+              <LoaderCircle size={20} className="animate-spin" />
+              <span className="ml-2">Signing in...</span>
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </UI.PrimaryButton>
+      </form>
+
+      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <ShieldCheck size={13} />
+        Protected area — authorized staff only.
+      </p>
+    </motion.div>
   );
 };

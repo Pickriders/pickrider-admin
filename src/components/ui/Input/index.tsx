@@ -62,14 +62,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <Button
               type="button"
               variant={"ghost"}
-              className="absolute opacity-30    peer-placeholder-shown:invisible overflow-hidden right-2 top-1/2 -translate-y-1/2"
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               onClick={toggleViewPassword}
             >
-              {inputType === "password" ? (
-                <Eye size={18} />
-              ) : (
-                <EyeOff size={18} />
-              )}
+              {inputType === "password" ? <Eye size={18} /> : <EyeOff size={18} />}
             </Button>
           )}
           {rightIcon && (
