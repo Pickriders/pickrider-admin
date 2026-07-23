@@ -22,7 +22,7 @@ export default function AuthLayout({
     <div className="flex min-h-screen items-center p-4 sm:p-6">
       <div className="relative hidden h-[calc(100vh-3rem)] w-[34rem] shrink-0 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1E1F1F] via-[#2E1030] to-[#3FA49F] p-9 text-white lg:flex lg:flex-col">
         <div className="flex items-center gap-2">
-          <SVG.PickridersLogo />
+          <SVG.PickridersLogo className="h-9 w-auto fill-white stroke-white" />
         </div>
 
         <div className="mt-auto">
