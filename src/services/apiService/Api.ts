@@ -1589,6 +1589,16 @@ export class Api<
       format: "json",
       ...params,
     });
+  /** Hand-added — re-add after any regen. Money-flow summary for finances. */
+  getTransactionSummary = (query?: { dateRange?: string }, params: RequestParams = {}) =>
+    this.request<import("./data-contracts").TransactionMetricsSummaryResponseDto, any>({
+      path: `/api/v1/admins/transactions/metrics/summary`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
   /**
    * No description
    *

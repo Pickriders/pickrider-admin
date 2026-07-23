@@ -1,35 +1,28 @@
-import { SVG } from "@/components/svg";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { ReactNode } from "react";
 
 interface NavigationLinksProps {
   title: string;
+  description?: string;
   href: string;
   headIcon: ReactNode;
-  bgPatternIcon: ReactNode;
 }
 
-export const NavigationLinks = ({
-  headIcon,
-  href,
-  bgPatternIcon,
-  title,
-}: NavigationLinksProps) => {
+export const NavigationLinks = ({ headIcon, href, title, description }: NavigationLinksProps) => {
   return (
     <Link
       href={href}
-      className=" setting-nav-card z-10 relative h-[8.2rem] bg-primary-black  flex items-center justify-between pr-[2.3rem] pl-5 rounded-lg border"
+      className="group rounded-2xl border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-md"
     >
-      <div>
-        {headIcon}
-        <h2 className="font-clash-display  mt-1.5 font-semibold text-white">
-          {title}
-        </h2>
+      <div className="flex items-center justify-between">
+        <span className="grid size-11 place-items-center rounded-xl bg-brand-soft text-brand-dark">{headIcon}</span>
+        <span className="grid size-7 place-items-center rounded-full border text-muted-foreground transition-colors group-hover:border-primary group-hover:text-primary">
+          <ChevronRight size={14} />
+        </span>
       </div>
-      <button className="  grid place-items-center top-1/2 bg-[#27272a]  size-[1.7rem] right-6 rounded-full">
-        <SVG.ChevronRightIcon className="fill-white" />
-      </button>
-      <div className="absolute right-0 -z-10">{bgPatternIcon}</div>
+      <h3 className="mt-4 font-semibold text-foreground">{title}</h3>
+      {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
     </Link>
   );
 };

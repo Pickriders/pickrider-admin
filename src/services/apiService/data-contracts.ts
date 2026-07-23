@@ -2639,3 +2639,17 @@ export interface AdminRefundOrderDto {
   amount?: number;
   reason: string;
 }
+
+/** Hand-added — money-flow summary for the finances dashboard. Re-add after regen. */
+export interface TransactionMetricsSummaryResponseDto {
+  totalVolume: number;
+  count: number;
+  inflow: number;
+  outflow: number;
+  deposits: number;
+  withdrawals: number;
+  fees: number;
+  refunds: number;
+  charges: number;
+  uniqueEntities: number;
+}

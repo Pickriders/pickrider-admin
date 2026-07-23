@@ -1,6 +1,6 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { StatsContainer } from "./StatsContainer";
+import { FinanceOverview } from "./FinanceOverview";
 import { FinanceCharts } from "./FinanceCharts";
 import { ExternalPayments } from "./ExternalPayments";
 import { HistoryTable } from "./HistoryTable";
@@ -10,30 +10,32 @@ import { Suspense } from "react";
 const FinancesPage = () => {
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <UI.PrimaryHeading text="Finances" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Finances</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Total volume, cash flow and every transaction across the platform.
+          </p>
+        </div>
         <div className="flex items-center gap-x-2">
-          <UI.Button className="font-montserrat" asChild>
-            <Link href={"/finances/withdraw"}>
+          <UI.Button variant="outline" asChild>
+            <Link href={"/finances/withdraw"} className="flex items-center gap-2">
               Withdraw
               <SVG.DownLoad />
             </Link>
           </UI.Button>
-          <UI.Button className="font-montserrat" asChild>
-            <Link href={"/finances/initiate-payout"}>
+          <UI.Button asChild>
+            <Link href={"/finances/initiate-payout"} className="flex items-center gap-2">
               Initiate Payout
               <SVG.MoneySend />
             </Link>
           </UI.Button>
         </div>
       </div>
-      <section className="mt-[2rem] w-full bg-background p-6 rounded-2xl border">
-        <Suspense>
-          <StatsContainer />
-        </Suspense>
 
+      <section className="mt-6">
         <Suspense>
-          <ExternalPayments />
+          <FinanceOverview />
         </Suspense>
       </section>
 
@@ -41,7 +43,13 @@ const FinancesPage = () => {
         <FinanceCharts />
       </Suspense>
 
-      <section className="mt-6 w-full bg-background p-6 rounded-2xl border">
+      <section className="mt-6">
+        <Suspense>
+          <ExternalPayments />
+        </Suspense>
+      </section>
+
+      <section className="mt-6 w-full rounded-2xl border bg-card p-6">
         <div className="mb-2">
           <UI.SectionHeader text="Transaction history" />
         </div>

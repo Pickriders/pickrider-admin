@@ -61,6 +61,31 @@ export const useGetOrderQuery = (orderId: string) =>
     enabled: !!orderId,
   });
 
+/** Live order counts per status for the orders board summary tiles. */
+export const useGetOrderStatusCountsQuery = () =>
+  useApiQuery({
+    queryKey: [ORDER_KEY.ORDERS, "status-counts"],
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const [total, initiated, accepted, ongoing, completed, cancelled] = await Promise.all([
+        apiService.getOrders({ limit: 1 }),
+        apiService.getOrders({ limit: 1, status: "INITIATED" }),
+        apiService.getOrders({ limit: 1, status: "ACCEPTED" }),
+        apiService.getOrders({ limit: 1, status: "ON_GOING" }),
+        apiService.getOrders({ limit: 1, status: "COMPLETED" }),
+        apiService.getOrders({ limit: 1, status: "CANCELLED" }),
+      ]);
+      return {
+        total: total?.totalRecords ?? 0,
+        initiated: initiated?.totalRecords ?? 0,
+        accepted: accepted?.totalRecords ?? 0,
+        ongoing: ongoing?.totalRecords ?? 0,
+        completed: completed?.totalRecords ?? 0,
+        cancelled: cancelled?.totalRecords ?? 0,
+      };
+    },
+  });
+
 /** Statuses the backend actually has — there is no REJECTED/MISSED. */
 export const ORDER_STATUS_SERIES = [
   { key: "completed", status: "COMPLETED", label: "Completed" },

@@ -1,49 +1,51 @@
-import { SVG } from "@/components/svg";
-import Link from "next/link";
+import { Database, ScrollText, Settings, ShieldCheck, UserPlus } from "lucide-react";
 import { NavigationLinks } from "./NavigationLink";
+
+const ITEMS = [
+  {
+    href: "/admin/add-team-member",
+    title: "Add team member",
+    description: "Create a new staff account with scoped access.",
+    icon: <UserPlus size={20} />,
+  },
+  {
+    href: "/admin/teams-and-permissions",
+    title: "Team & permissions",
+    description: "Manage platform staff and their roles.",
+    icon: <ShieldCheck size={20} />,
+  },
+  {
+    href: "/admin/app-settings",
+    title: "App settings",
+    description: "Countries, states, pricing and dispatch knobs.",
+    icon: <Settings size={20} />,
+  },
+  {
+    href: "/admin/audit-log",
+    title: "Audit log",
+    description: "Every admin and system action, timestamped.",
+    icon: <ScrollText size={20} />,
+  },
+  {
+    href: "/admin/data-log",
+    title: "Data log",
+    description: "System-level events and payloads.",
+    icon: <Database size={20} />,
+  },
+];
 
 export const SettingsNavigation = () => {
   return (
-    <div className="grid grid-cols-3 gap-6">
-      {/*  Add Team Member */}
-      <NavigationLinks
-        bgPatternIcon={<SVG.UserSwitchIcon />}
-        headIcon={<SVG.AddUserIcon />}
-        href="/admin/add-team-member"
-        title=" Add Team Member"
-      />
-
-      {/*  Permissions */}
-      <NavigationLinks
-        bgPatternIcon={<SVG.Shield />}
-        headIcon={<SVG.UserShield />}
-        href="/admin/teams-and-permissions"
-        title="Permissions"
-      />
-
-      {/* App Settings */}
-      <NavigationLinks
-        headIcon={<SVG.AppSettingicon />}
-        bgPatternIcon={<SVG.SettingsIcon />}
-        href="/admin/app-settings"
-        title="App Settings"
-      />
-
-      {/* Audit Log */}
-      <NavigationLinks
-        headIcon={<SVG.ArchiveIcon />}
-        bgPatternIcon={<SVG.ArchivesSettingIcon />}
-        href="/admin/audit-log"
-        title="Audit Log"
-      />
-
-      {/* Data Log */}
-      <NavigationLinks
-        headIcon={<SVG.Cloudicon />}
-        bgPatternIcon={<SVG.DataBaseicon />}
-        href="/admin/data-log"
-        title=" Data Log"
-      />
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {ITEMS.map((item) => (
+        <NavigationLinks
+          key={item.href}
+          href={item.href}
+          title={item.title}
+          description={item.description}
+          headIcon={item.icon}
+        />
+      ))}
     </div>
   );
 };
