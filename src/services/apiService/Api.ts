@@ -1525,6 +1525,67 @@ export class Api<
       format: "json",
       ...params,
     });
+  /** Hand-added — platform financial ops. Re-add after any regen. */
+  getBanks = (params: RequestParams = {}) =>
+    this.request<any, any>({ path: `/api/v1/admins/wallets/banks`, method: "GET", secure: true, format: "json", ...params });
+  getFinanceStatus = (params: RequestParams = {}) =>
+    this.request<import("./data-contracts").PlatformFinanceStatusDto, any>({
+      path: `/api/v1/admins/wallets/finance-status`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  updatePlatformSettlement = (data: { accountNumber: string; bankCode: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/settlement`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  setWithdrawalPin = (data: { pin: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/pin`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  initiatePlatformPayout = (data: { amount: number; pin: string; reason?: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/payout`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adminCancelOrder = (orderId: string, data: { reason: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/orders/${orderId}/cancel`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adminUpdateOrderStatus = (orderId: string, data: { status: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/orders/${orderId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
   /**
    * No description
    *

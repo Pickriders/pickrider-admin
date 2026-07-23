@@ -2653,3 +2653,17 @@ export interface TransactionMetricsSummaryResponseDto {
   charges: number;
   uniqueEntities: number;
 }
+
+/** Hand-added — platform finance status. Re-add after regen. */
+export interface PlatformFinanceStatusDto {
+  balance: number;
+  currency?: string;
+  hasPin: boolean;
+  hasBank: boolean;
+  settlement: {
+    bankName?: string;
+    accountName?: string;
+    accountNumberMasked?: string;
+    isVerified?: boolean;
+  } | null;
+}

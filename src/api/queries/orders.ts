@@ -1,10 +1,12 @@
 import { useApiQuery } from "@/hooks/useApiQuery";
+import { useApiMutation } from "@/hooks/useApiMutation";
 import { useApiReactTableQuery, UseApiReactTableQueryOptions } from "@/hooks/useApiReactTableQuery";
-import { apiService, GetOrdersParams, Order } from "@/services";
+import { apiService, GetOrdersParams, Order, queryClient } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { keepPreviousData } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const ORDER_KEY = {
   ORDERS: "orders",
@@ -59,6 +61,29 @@ export const useGetOrderQuery = (orderId: string) =>
     queryKey: [ORDER_KEY.ORDERS, orderId],
     queryFn: () => apiService.getOrder({ orderId }),
     enabled: !!orderId,
+  });
+
+const invalidateOrder = (orderId: string) => {
+  queryClient.invalidateQueries({ queryKey: [ORDER_KEY.ORDERS, orderId] });
+  queryClient.invalidateQueries({ queryKey: [ORDER_KEY.ORDERS] });
+};
+
+export const useAdminCancelOrderMn = (orderId: string) =>
+  useApiMutation({
+    mutationFn: (data: { reason: string }) => apiService.adminCancelOrder(orderId, data),
+    onSuccess: () => {
+      invalidateOrder(orderId);
+      toast.success("Order cancelled and customer refunded");
+    },
+  });
+
+export const useAdminUpdateOrderStatusMn = (orderId: string) =>
+  useApiMutation({
+    mutationFn: (data: { status: string }) => apiService.adminUpdateOrderStatus(orderId, data),
+    onSuccess: () => {
+      invalidateOrder(orderId);
+      toast.success("Order status updated");
+    },
   });
 
 /** Live order counts per status for the orders board summary tiles. */
