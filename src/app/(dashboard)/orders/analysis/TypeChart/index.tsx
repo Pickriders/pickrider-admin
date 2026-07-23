@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/Chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/Chart";
 import React from "react";
 import { Pie, PieChart } from "recharts";
-
-const initialData = [
-  { name: "Bulk pickup", value: 50, fill: "#2282C8" },
-  { name: "Single order", value: 25, fill: "#505582" },
-  { name: "Batch delivery", value: 25, fill: "#3FA49F" },
-];
+import { useGetOrderAnalyticsQuery } from "@/api/queries/orders";
 
 const chartConfig = {
   value: {
@@ -36,11 +26,24 @@ const chartConfig = {
 type ActiveSegments = Record<string, boolean>;
 
 export const TypeChart = () => {
+  const { data } = useGetOrderAnalyticsQuery();
   const [activeSegments, setActiveSegments] = React.useState<ActiveSegments>({
     "Bulk pickup": true,
     "Single order": true,
     "Batch delivery": true,
   });
+
+  const single = data?.typeTotals?.single ?? 0;
+  const batch = data?.typeTotals?.batch ?? 0;
+  const bulk = data?.typeTotals?.bulk ?? 0;
+  const total = single + batch + bulk;
+  const pct = (count: number) => (total === 0 ? 0 : Math.round((count / total) * 100));
+
+  const segments = [
+    { name: "Bulk pickup", value: bulk, percent: pct(bulk), fill: "#2282C8" },
+    { name: "Single order", value: single, percent: pct(single), fill: "#505582" },
+    { name: "Batch delivery", value: batch, percent: pct(batch), fill: "#3FA49F" },
+  ];
 
   const toggleSegment = (name: string) => {
     setActiveSegments((prev) => ({
@@ -49,20 +52,16 @@ export const TypeChart = () => {
     }));
   };
 
-  const filteredData = initialData.filter(
-    (segment) => activeSegments[segment.name]
-  );
+  const filteredData = segments.filter((segment) => activeSegments[segment.name] && segment.value > 0);
 
   return (
     <div>
-      <h2 className="text-primary-gray font-semibold font-clash-display">
-        Type Chart
-      </h2>
-      <div className="mt-4 flex items-center">
+      <h2 className="text-primary-gray font-semibold font-clash-display">Type Chart</h2>
+      <div className="mt-4 flex sm:flex-row flex-col sm:items-center">
         <div>
           <h4 className="text-xs font-bold font-montserrat">Distribution</h4>
           <div className="mt-2 space-y-2">
-            {initialData.map((segment) => (
+            {segments.map((segment) => (
               <button
                 key={segment.name}
                 className="flex items-center gap-x-1.5 text-primary-gray font-bold font-montserrat text-xs"
@@ -81,7 +80,7 @@ export const TypeChart = () => {
                     opacity: activeSegments[segment.name] ? 1 : 0.3,
                   }}
                 >
-                  {segment.value}%
+                  {segment.percent}%
                 </span>
                 {segment.name}
               </button>
@@ -89,12 +88,9 @@ export const TypeChart = () => {
           </div>
         </div>
         <div className="flex-1">
-          <ChartContainer config={chartConfig} className="w-[20rem]  h-[18rem]">
+          <ChartContainer config={chartConfig} className="w-full max-w-[20rem]  h-[18rem]">
             <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
               <Pie
                 data={filteredData}
                 dataKey="value"

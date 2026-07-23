@@ -1,6 +1,7 @@
 "use client";
 
 import { UI } from "@/components/ui";
+import { NotificationUnsupportedNote } from "@/components/NotificationUnsupportedNote";
 import { SelectedTags } from "@/components/SelectedTags";
 import { FormMessage } from "@/components/FormMessage";
 import React from "react";
@@ -20,6 +21,7 @@ const EmailPage = () => {
         currentPage="Email"
       />
       <section className="bg-background mt-10 px-7 py-6 rounded-lg">
+        <NotificationUnsupportedNote />
         <h2 className="font-montserrat text-xs font-semibold text-foreground">
           Push Notification
         </h2>

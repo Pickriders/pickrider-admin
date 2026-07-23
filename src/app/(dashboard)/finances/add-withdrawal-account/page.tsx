@@ -45,7 +45,7 @@ const AddWithDrawalAccount = () => {
             <UI.Input
               labelValue="Account Name"
               labelClassName="mb-1"
-              defaultValue={"Peterson Ugwu"}
+              placeholder="Resolved automatically after account lookup"
               disabled
               min={0}
             />
@@ -57,7 +57,11 @@ const AddWithDrawalAccount = () => {
               min={0}
             />
           </div>
-          <div className="mt-20 flex items-center gap-x-4">
+          <p className="mt-8 text-xs text-primary-gray font-montserrat">
+            Adding withdrawal accounts is not available yet — the core API has no endpoint for it. This form will go
+            live once the backend ships one.
+          </p>
+          <div className="mt-6 flex items-center gap-x-4">
             <UI.PrimaryButton variant="outline">Cancel</UI.PrimaryButton>
             <UI.PrimaryButton disabled>Submit & Proceed</UI.PrimaryButton>
           </div>

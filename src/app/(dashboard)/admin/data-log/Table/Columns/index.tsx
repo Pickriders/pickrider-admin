@@ -3,67 +3,81 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
+import { DataLog } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
+import dayjs from "dayjs";
 
-export type Rows = {
-  id: string;
-  user: { name: string; role: string };
-  timestamp: Date;
-  resource: string;
-  status: string;
+const LEVEL_COLORS: Record<string, string> = {
+  ERROR: "#FF5244",
+  DEBUG: "#DBAD0E",
+  INFO: "#2282C8",
+  LOG: "#32BA7C",
 };
 
-export const columns: ColumnDef<Rows>[] = [
+/** Extracts a short human summary from the mixed log payload. */
+const summarize = (data: unknown): string => {
+  if (!data || typeof data !== "object") return String(data ?? "—");
+  const record = data as Record<string, unknown>;
+  const candidate = record.message ?? record.name ?? record.event ?? Object.keys(record)[0];
+  return String(candidate ?? "—").slice(0, 60);
+};
+
+export const makeColumns = (onPreview: (log: DataLog) => void): ColumnDef<DataLog>[] => [
   {
-    header: "User",
-    accessorKey: "user",
-    cell: ({ row }) => <UI.TableUser name="Nnamani Kester" subText="Customer" />,
+    header: "Source",
+    accessorKey: "logType",
+    cell: ({ row }) => <UI.TableUser name={row.original.logType ?? "SYSTEM"} subText={row.original.level ?? "LOG"} />,
   },
   {
     header: "Timestamp",
     accessorKey: "timestamp",
     cell: ({ row }) => (
       <div>
-        <p>29 Jun 2024</p>
-        <span>21:09</span>
+        <p className="text-nowrap">{dayjs(row.original.createdAt).format("DD MMM YYYY")}</p>
+        <span>{dayjs(row.original.createdAt).format("HH:mm")}</span>
       </div>
     ),
   },
   {
-    accessorKey: "action",
-    header: () => <p className="text-center">Action</p>,
+    accessorKey: "level",
+    header: () => <p className="text-center">Level</p>,
     cell: ({ row }) => (
-      <div className="text-center">
-        <UI.Button variant={"ghost"}>Create</UI.Button>
+      <div className="text-center font-semibold" style={{ color: LEVEL_COLORS[row.original.level ?? "LOG"] }}>
+        {row.original.level ?? "LOG"}
       </div>
     ),
   },
   {
-    header: "Resource",
+    header: "Summary",
     accessorKey: "resource",
-    cell: ({ row }) => <p>Batch Delivery</p>,
+    cell: ({ row }) => <p className="max-w-[16rem] truncate">{summarize(row.original.data)}</p>,
   },
   {
     header: "Status",
     accessorKey: "status",
     cell: ({ row }) => (
       <div>
-        <span className="text-[#32BA7C]">Success</span>
+        {row.original.level === "ERROR" ? (
+          <span className="text-[#FF5244]">Error</span>
+        ) : (
+          <span className="text-[#32BA7C]">OK</span>
+        )}
       </div>
     ),
   },
   {
     id: "query",
     cell: ({ row }) => {
-      return <QueryButton />;
+      return <QueryButton log={row.original} onPreview={onPreview} />;
     },
   },
 ];
 
-const QueryButton = () => {
+const QueryButton = ({ log, onPreview }: { log: DataLog; onPreview: (log: DataLog) => void }) => {
   const setParam = useQueryModal([{ key: "jsonPreview", value: true }]).setParam;
 
   const handlePreview = () => {
+    onPreview(log);
     setParam("jsonPreview", "true");
   };
 

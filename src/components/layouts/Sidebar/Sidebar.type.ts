@@ -3,4 +3,5 @@ export type LinkProps = {
   label: string;
   icon: React.ReactNode;
   activeIcon: React.ReactNode;
+  onNavigate?: () => void;
 };

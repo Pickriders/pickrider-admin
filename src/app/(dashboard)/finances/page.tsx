@@ -1,6 +1,7 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { StatsContainer } from "./StatsContainer";
+import { ExternalPayments } from "./ExternalPayments";
 import { HistoryTable } from "./HistoryTable";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -28,6 +29,10 @@ const FinancesPage = () => {
       <section className="mt-[2rem] w-full bg-background p-6 rounded-2xl">
         <Suspense>
           <StatsContainer />
+        </Suspense>
+
+        <Suspense>
+          <ExternalPayments />
         </Suspense>
 
         <div className="mt-8">

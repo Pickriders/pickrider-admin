@@ -1,16 +1,8 @@
 import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 
-import { VechiclesTable } from "@/components/VehiclesTable";
 import { Suspense } from "react";
-
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
+import { BusinessVehiclesTable } from "./BusinessVehiclesTable";
 
 const VehiclesPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
@@ -21,7 +13,7 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
       <UI.BreadCrumbNav
         pageLinks={[
           { href: "/business", label: "Business" },
-          { href: "business-details", label: "Peterson Corp" },
+          { href: "business-details", label: "Business details" },
         ]}
         currentPage="Vehicles"
         rootPageLink="/business"
@@ -29,7 +21,7 @@ const VehiclesPage = ({ params }: { params: { id: string } }) => {
 
       <div className="mt-10">
         <Suspense>
-          <VechiclesTable />
+          <BusinessVehiclesTable businessId={params.id} />
         </Suspense>
       </div>
     </div>

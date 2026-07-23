@@ -1516,6 +1516,26 @@ export class Api<
       ...params,
     });
   /**
+   * Hand-added (not in the generated swagger yet) — re-add after any regen.
+   *
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   */
+  getExternalPaymentMetrics = (
+    query?: { dateRange?: string; entityId?: string },
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").ExternalPaymentMetricsResponseDto, any>({
+      path: `/api/v1/admins/transactions/metrics/external-payments`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
    * No description
    *
    * @tags admins/transactions
@@ -2220,6 +2240,26 @@ export class Api<
       path: `/api/v1/businesses/${businessId}/vehicles`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * Hand-added — re-add after any regen. Backend: GET /businesses/:businessId
+   * (guarded AdminRoles; platform admins allowed by the service check).
+   *
+   * @tags businesses
+   * @name GetBusinessById
+   * @request GET:/api/v1/businesses/{businessId}
+   * @secure
+   */
+  getBusinessById = (
+    { businessId }: { businessId: string },
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").Business, any>({
+      path: `/api/v1/businesses/${businessId}`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

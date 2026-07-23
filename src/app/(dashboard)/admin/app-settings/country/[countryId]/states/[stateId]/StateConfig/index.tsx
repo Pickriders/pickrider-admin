@@ -32,6 +32,15 @@ const FormValidation = Yup.object().shape({
     maxDistanceRadius: Yup.number()
       .required("Max distance radius is required")
       .min(0, "Max distance cannot be less than 0"),
+    locationUpdateEnabled: Yup.boolean(),
+    locationUpdateFreeRadiusMeters: Yup.number().min(1, "Free radius must be at least 1 meter"),
+    locationUpdateMaxPerLocation: Yup.number().min(1, "Must allow at least 1 update per location"),
+    locationUpdateMaxDeclinesPerLocation: Yup.number().min(1, "Must allow at least 1 decline per location"),
+    locationUpdateRiderAcceptTimeoutSec: Yup.number().min(30, "Timeout must be at least 30 seconds"),
+    arrivalGateEnabled: Yup.boolean(),
+    arrivalRadiusMeters: Yup.number().min(1, "Arrival radius must be at least 1 meter"),
+    etaEnabled: Yup.boolean(),
+    etaAverageSpeedKmh: Yup.number().min(1, "Average speed must be at least 1 km/h"),
   }),
 });
 
@@ -61,6 +70,15 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
         maxRidersPerQuery: state?.config?.maxRidersPerQuery ?? 5,
         maxActiveOrders: state?.config?.maxActiveOrders ?? 5,
         maxDistanceRadius: state?.config?.maxDistanceRadius ?? 20,
+        locationUpdateEnabled: state?.config?.locationUpdateEnabled ?? false,
+        locationUpdateFreeRadiusMeters: state?.config?.locationUpdateFreeRadiusMeters ?? 500,
+        locationUpdateMaxPerLocation: state?.config?.locationUpdateMaxPerLocation ?? 1,
+        locationUpdateMaxDeclinesPerLocation: state?.config?.locationUpdateMaxDeclinesPerLocation ?? 2,
+        locationUpdateRiderAcceptTimeoutSec: state?.config?.locationUpdateRiderAcceptTimeoutSec ?? 240,
+        arrivalGateEnabled: state?.config?.arrivalGateEnabled ?? false,
+        arrivalRadiusMeters: state?.config?.arrivalRadiusMeters ?? 40,
+        etaEnabled: state?.config?.etaEnabled ?? true,
+        etaAverageSpeedKmh: state?.config?.etaAverageSpeedKmh ?? 25,
       },
     },
     enableReinitialize: true,
@@ -249,6 +267,136 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               onCheckedChange={(checked) => formik.setFieldValue("config.queueOrderByDefault", checked)}
             />
           </div>
+
+          <div className="mt-12">
+            <UI.PrimaryHeading text="Mid-order location update" />
+            <p className="mt-2 text-xs text-primary-gray">
+              Lets a customer move the dropoff mid-order for a fee; the rider must accept. Applies to this state only.
+            </p>
+            <div className="mt-5 flex gap-y-4 flex-wrap items-center gap-x-4">
+              <UI.Label htmlFor="Location update enabled" className="text-xs">
+                Enable location updates
+              </UI.Label>
+              <UI.Switch
+                id="Location update enabled"
+                checked={formik.values.config?.locationUpdateEnabled}
+                onCheckedChange={(checked) => formik.setFieldValue("config.locationUpdateEnabled", checked)}
+              />
+            </div>
+            <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
+              <UI.Input
+                labelValue="Free radius (meters)"
+                placeholder="500"
+                id="locationUpdateFreeRadiusMeters"
+                type="number"
+                min={1}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.locationUpdateFreeRadiusMeters")}
+                errorMessage={
+                  formik.getFieldMeta("config.locationUpdateFreeRadiusMeters").touched &&
+                  formik.getFieldMeta("config.locationUpdateFreeRadiusMeters").error
+                }
+              />
+              <UI.Input
+                labelValue="Max updates per location"
+                placeholder="1"
+                id="locationUpdateMaxPerLocation"
+                type="number"
+                min={1}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.locationUpdateMaxPerLocation")}
+                errorMessage={
+                  formik.getFieldMeta("config.locationUpdateMaxPerLocation").touched &&
+                  formik.getFieldMeta("config.locationUpdateMaxPerLocation").error
+                }
+              />
+              <UI.Input
+                labelValue="Max rider declines per location"
+                placeholder="2"
+                id="locationUpdateMaxDeclinesPerLocation"
+                type="number"
+                min={1}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.locationUpdateMaxDeclinesPerLocation")}
+                errorMessage={
+                  formik.getFieldMeta("config.locationUpdateMaxDeclinesPerLocation").touched &&
+                  formik.getFieldMeta("config.locationUpdateMaxDeclinesPerLocation").error
+                }
+              />
+              <UI.Input
+                labelValue="Rider accept timeout (seconds)"
+                placeholder="240"
+                id="locationUpdateRiderAcceptTimeoutSec"
+                type="number"
+                min={30}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.locationUpdateRiderAcceptTimeoutSec")}
+                errorMessage={
+                  formik.getFieldMeta("config.locationUpdateRiderAcceptTimeoutSec").touched &&
+                  formik.getFieldMeta("config.locationUpdateRiderAcceptTimeoutSec").error
+                }
+              />
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <UI.PrimaryHeading text="Arrival gate & ETA" />
+            <p className="mt-2 text-xs text-primary-gray">
+              The arrival gate blocks the rider&apos;s ARRIVED action until they are within the radius of the dropoff.
+              ETA shows customers an estimated arrival time based on the average speed below.
+            </p>
+            <div className="mt-5 flex gap-y-4 flex-wrap items-center gap-x-8">
+              <div className="flex items-center gap-x-4">
+                <UI.Label htmlFor="Arrival gate enabled" className="text-xs">
+                  Enable arrival gate
+                </UI.Label>
+                <UI.Switch
+                  id="Arrival gate enabled"
+                  checked={formik.values.config?.arrivalGateEnabled}
+                  onCheckedChange={(checked) => formik.setFieldValue("config.arrivalGateEnabled", checked)}
+                />
+              </div>
+              <div className="flex items-center gap-x-4">
+                <UI.Label htmlFor="ETA enabled" className="text-xs">
+                  Enable ETA
+                </UI.Label>
+                <UI.Switch
+                  id="ETA enabled"
+                  checked={formik.values.config?.etaEnabled}
+                  onCheckedChange={(checked) => formik.setFieldValue("config.etaEnabled", checked)}
+                />
+              </div>
+            </div>
+            <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
+              <UI.Input
+                labelValue="Arrival radius (meters)"
+                placeholder="40"
+                id="arrivalRadiusMeters"
+                type="number"
+                min={1}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.arrivalRadiusMeters")}
+                errorMessage={
+                  formik.getFieldMeta("config.arrivalRadiusMeters").touched &&
+                  formik.getFieldMeta("config.arrivalRadiusMeters").error
+                }
+              />
+              <UI.Input
+                labelValue="ETA average speed (km/h)"
+                placeholder="25"
+                id="etaAverageSpeedKmh"
+                type="number"
+                min={1}
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.etaAverageSpeedKmh")}
+                errorMessage={
+                  formik.getFieldMeta("config.etaAverageSpeedKmh").touched &&
+                  formik.getFieldMeta("config.etaAverageSpeedKmh").error
+                }
+              />
+            </div>
+          </div>
+
           <div className="mt-12 flex items-center gap-x-4">
             <UI.PrimaryButton type="button" variant="outline" className="w-[10rem]" onClick={() => router.back()}>
               Back

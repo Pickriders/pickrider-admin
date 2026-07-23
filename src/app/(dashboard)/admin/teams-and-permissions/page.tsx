@@ -1,6 +1,6 @@
 import { UI } from "@/components/ui";
+import { Suspense } from "react";
 import { DataTable } from "./Table";
-import { columns } from "./Table/Column";
 
 const TermsAndPermissionsPage = () => {
   return (
@@ -12,7 +12,9 @@ const TermsAndPermissionsPage = () => {
       />
 
       <section className="mt-11">
-        <DataTable columns={columns} data={Array(10).fill(0)} />
+        <Suspense>
+          <DataTable />
+        </Suspense>
       </section>
     </div>
   );

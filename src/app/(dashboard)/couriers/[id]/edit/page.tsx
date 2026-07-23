@@ -3,14 +3,6 @@ import { notFound } from "next/navigation";
 import { RiderProfilePic } from "./RiderProfilePic";
 import { DetailsForm } from "./DetailsForm";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
-
 const EditPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();

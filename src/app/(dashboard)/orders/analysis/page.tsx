@@ -28,11 +28,11 @@ const OrderAnalysisPage = () => {
             <CalenderDate />
           </div>
         </div>
-        <div className="mt-5 flex  gap-x-8 justify-between">
-          <div className="w-[35rem] flex-shrink-0">
+        <div className="mt-5 flex lg:flex-row flex-col gap-x-8 gap-y-8 justify-between">
+          <div className="lg:w-[35rem] w-full lg:flex-shrink-0">
             <StatusOverview />
           </div>
-          <div className="flex-1 w-[30rem]">
+          <div className="flex-1 lg:w-[30rem] w-full min-w-0">
             <Suspense>
               <StatusChart />
             </Suspense>
@@ -42,11 +42,11 @@ const OrderAnalysisPage = () => {
           <Distributions />
         </Suspense>
         <div className="w-full border my-9" />
-        <div className="mt-5 flex  gap-x-8 justify-between">
-          <div className="w-[35rem]">
+        <div className="mt-5 flex lg:flex-row flex-col gap-x-8 gap-y-8 justify-between">
+          <div className="lg:w-[35rem] w-full">
             <TypeOverview />
           </div>
-          <div className="flex-1 w-[30rem]">
+          <div className="flex-1 lg:w-[30rem] w-full min-w-0">
             <TypeChart />
           </div>
         </div>

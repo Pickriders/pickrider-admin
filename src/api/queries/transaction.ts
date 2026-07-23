@@ -55,3 +55,20 @@ export const useGetTransactionsReactTableQuery = (
 
   return res;
 };
+
+/** Count-only query — fetches one record and reads totalRecords from the page meta. */
+export const useGetTransactionsCountQuery = (query?: GetTransactions2Params, enabled = true) =>
+  useApiQuery({
+    queryKey: [TRANSACTION_KEY.TRANSACTIONS, "count", query],
+    queryFn: () => apiService.getTransactions2({ ...query, limit: 1 }),
+    enabled,
+  });
+
+export const EXTERNAL_PAYMENT_METRICS_KEY = "external-payment-metrics";
+
+/** Someone Else Pays adoption metrics. dateRange format: "YYYY-MM-DD,YYYY-MM-DD". */
+export const useGetExternalPaymentMetricsQuery = (dateRange?: string) =>
+  useApiQuery({
+    queryKey: [EXTERNAL_PAYMENT_METRICS_KEY, dateRange],
+    queryFn: () => apiService.getExternalPaymentMetrics(dateRange ? { dateRange } : undefined),
+  });

@@ -7,9 +7,23 @@ import { useGetPlatformWalletQuery } from "@/api/queries";
 import { formatMoney, subUnitToBaseUnit } from "@/utils";
 import { useGetOrdersQuery } from "@/api/queries/orders";
 import { useGetUsersQuery } from "@/api/queries/user";
+import { useGetTransactionsCountQuery } from "@/api/queries/transaction";
 
 export const StatsContainer = () => {
   const { data: platformWallet } = useGetPlatformWalletQuery();
+  // No money-aggregate endpoint exists, so revenue/expenditure show successful
+  // transaction counts and the per-type tiles show completed-order counts.
+  const { data: credits } = useGetTransactionsCountQuery(
+    { entityId: platformWallet?.entityId, type: "CREDIT", status: "SUCCESS" },
+    !!platformWallet?.entityId,
+  );
+  const { data: debits } = useGetTransactionsCountQuery(
+    { entityId: platformWallet?.entityId, type: "DEBIT", status: "SUCCESS" },
+    !!platformWallet?.entityId,
+  );
+  const { data: singleCompleted } = useGetOrdersQuery({ limit: 1, type: "SINGLE", status: "COMPLETED" });
+  const { data: batchCompleted } = useGetOrdersQuery({ limit: 1, type: "BATCH", status: "COMPLETED" });
+  const { data: bulkCompleted } = useGetOrdersQuery({ limit: 1, type: "BULK", status: "COMPLETED" });
   const { data: singleOrders } = useGetOrdersQuery({ limit: 1, type: "SINGLE" });
   const { data: batchOrders } = useGetOrdersQuery({ limit: 1, type: "BATCH" });
   const { data: bulkOrders } = useGetOrdersQuery({ limit: 1, type: "BULK" });
@@ -19,9 +33,10 @@ export const StatsContainer = () => {
   const { data: allCouriers } = useGetUsersQuery({ limit: 1, isRider: "true" });
   const { data: activeCouriers } = useGetUsersQuery({ limit: 1, isRider: "true", status: "ACTIVE" });
   const { data: inactiveCouriers } = useGetUsersQuery({ limit: 1, isRider: "true", status: "INACTIVE" });
-  const { data: allBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS" });
-  const { data: activeBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS", status: "ACTIVE" });
-  const { data: inactiveBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS", status: "INACTIVE" });
+  // Business owners carry BUSINESS_ADMIN (there is no plain BUSINESS role).
+  const { data: allBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS_ADMIN" });
+  const { data: activeBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS_ADMIN", status: "ACTIVE" });
+  const { data: inactiveBusiness } = useGetUsersQuery({ limit: 1, role: "BUSINESS_ADMIN", status: "INACTIVE" });
 
   const numberOfSingleOrders = singleOrders?.totalRecords ?? 0;
   const numberOfBatchOrders = batchOrders?.totalRecords ?? 0;
@@ -37,17 +52,21 @@ export const StatsContainer = () => {
   const numberOfInactiveBusiness = inactiveBusiness?.totalRecords ?? 0;
 
   return (
-    <div className="mt-[1.5rem] grid grid-cols-3 gap-6">
+    <div className="mt-[1.5rem] grid sm:grid-cols-2 xl:grid-cols-3 grid-cols-1 gap-6">
       <SecondaryCard
         icon={<SVG.BalanceIcon />}
         title="Current Balance"
         value={formatMoney(subUnitToBaseUnit(platformWallet?.balance ?? 0), { currency: platformWallet?.currency })}
       />
-      <PrimaryStatsCard variant="positive" title="Total Revenue" value="$0" />
-      <PrimaryStatsCard variant="negative" title="Total Expenditure" value="$0" />
-      <PrimaryStatsCard variant="neutral" title="Single Order Earnings" value="$0" />
-      <PrimaryStatsCard variant="neutral" title="Batch Delivery Earnings" value="$0" />
-      <PrimaryStatsCard variant="neutral" title="Bulk Pickup Earnings" value="$0" />
+      <PrimaryStatsCard variant="positive" title="Total Revenue (credit txns)" value={credits?.totalRecords ?? 0} />
+      <PrimaryStatsCard variant="negative" title="Total Expenditure (debit txns)" value={debits?.totalRecords ?? 0} />
+      <PrimaryStatsCard
+        variant="neutral"
+        title="Single Orders Completed"
+        value={singleCompleted?.totalRecords ?? 0}
+      />
+      <PrimaryStatsCard variant="neutral" title="Batch Deliveries Completed" value={batchCompleted?.totalRecords ?? 0} />
+      <PrimaryStatsCard variant="neutral" title="Bulk Pickups Completed" value={bulkCompleted?.totalRecords ?? 0} />
       <PrimaryStatsCard variant="neutral" title="Single Order" value={numberOfSingleOrders} />
       <PrimaryStatsCard variant="neutral" title="Batch Delivery" value={numberOfBatchOrders} />
       <PrimaryStatsCard variant="neutral" title="Bulk Pickup" value={numberOfBulkOrders} />
