@@ -1252,6 +1252,60 @@ export class Api<
       ...params,
     });
   /**
+   * Hand-added — re-add after any regen. Admin customer-console actions.
+   * Backend: src/users/users.admins.controller.ts.
+   */
+  getUserWalletsAdmin = ({ userId }: { userId: string }, params: RequestParams = {}) =>
+    this.request<import("./data-contracts").WalletListResponseDto, any>({
+      path: `/api/v1/admins/users/${userId}/wallets`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  updateUserStatus = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminUpdateUserStatusDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").User, any>({
+      path: `/api/v1/admins/users/${userId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adjustUserWallet = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminAdjustWalletDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/users/${userId}/wallets/adjust`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  refundCustomerOrder = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminRefundOrderDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/users/${userId}/refund`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * No description
    *
    * @tags admins/users

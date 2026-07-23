@@ -2619,3 +2619,23 @@ export interface ExternalPaymentMetricsResponseDto {
   /** Distinct customers who used the feature */
   uniqueCustomers: number;
 }
+
+/** Hand-added — admin customer-console action DTOs. Re-add after any regen. */
+export interface AdminUpdateUserStatusDto {
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+  reason?: string;
+}
+
+export interface AdminAdjustWalletDto {
+  /** Amount in sub-units (10000 = ₦1). */
+  amount: number;
+  type: "CREDIT" | "DEBIT";
+  reason: string;
+}
+
+export interface AdminRefundOrderDto {
+  orderId: string;
+  /** Sub-units; defaults to the full order value. */
+  amount?: number;
+  reason: string;
+}
