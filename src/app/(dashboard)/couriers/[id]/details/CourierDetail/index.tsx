@@ -3,9 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { ArrowLeft, BadgeCheck, Bike, Mail, Phone, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bike, Mail, Phone, ShieldCheck, SquarePen, Wallet } from "lucide-react";
 import { UI } from "@/components/ui";
-import { SVG } from "@/components/svg";
 import { formatMoney, subUnitToBaseUnit } from "@/utils";
 import { useGetUserDetailsQuery } from "@/api/queries/user";
 import {
@@ -173,7 +172,7 @@ export const CourierDetail = ({ id }: { id: string }) => {
               </UI.Button>
               <UI.Button variant="outline" asChild>
                 <Link href="edit" className="flex items-center gap-1.5">
-                  <SVG.ShieldUser /> Edit
+                  <SquarePen size={15} /> Edit
                 </Link>
               </UI.Button>
             </div>

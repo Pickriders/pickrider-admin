@@ -18,6 +18,7 @@ import {
   DonutChart,
   TrendAreaChart,
 } from "@/components/charts";
+import { LiveOps } from "../LiveOps";
 
 const sum = (arr: any[] | undefined, key: string) => (arr ?? []).reduce((acc, row) => acc + (row[key] ?? 0), 0);
 const pctChange = (current: number, prior: number): number | null =>
@@ -102,6 +103,9 @@ export const StatsContainer = () => {
           loading={isLoading}
         />
       </div>
+
+      {/* Live operations — what's happening on the app right now */}
+      <LiveOps />
 
       {/* Orders trend + status */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">

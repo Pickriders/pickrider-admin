@@ -187,6 +187,36 @@ export const useGetOrdersTimeseriesQuery = (days = 30) =>
     },
   });
 
+/** Live operational snapshot — what's happening on the app right now. */
+export const useGetLiveOpsQuery = () =>
+  useQuery({
+    queryKey: [ANALYTICS_KEY, "live-ops"],
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const today = fmt(new Date());
+      const [ongoing, accepted, awaiting, cancelledToday] = await Promise.all([
+        apiService.getOrders({ limit: 1, status: "ON_GOING" }),
+        apiService.getOrders({ limit: 1, status: "ACCEPTED" }),
+        apiService.getOrders({ limit: 1, status: "INITIATED" }),
+        apiService.getOrders({ limit: 1, status: "CANCELLED", dateRange: `${today},${today}` }),
+      ]);
+      return {
+        ongoing: total(ongoing),
+        accepted: total(accepted),
+        awaiting: total(awaiting),
+        cancelledToday: total(cancelledToday),
+      };
+    },
+  });
+
+/** Most recent orders across the platform — a live feed. */
+export const useGetRecentOrdersFeedQuery = (limit = 8) =>
+  useQuery({
+    queryKey: [ANALYTICS_KEY, "recent-orders", limit],
+    refetchInterval: 30_000,
+    queryFn: () => apiService.getOrders({ limit, order: "DESC" }),
+  });
+
 const TXN_CATEGORIES = ["FEE", "DEPOSIT", "WITHDRAWAL", "REVERSAL", "CHARGE"] as const;
 
 /** Successful-transaction counts per category over the window — for a pie. */
