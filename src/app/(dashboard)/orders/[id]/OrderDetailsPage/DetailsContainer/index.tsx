@@ -48,8 +48,8 @@ export const DetailsContainer: React.FC<DetailsContainerProps> = ({ order }) => 
             <OrderLocations title="Drop-off" locations={dropOffLocations} />
           </div>
           <CourierDetails rider={order?.rider} />
-          <div className="mt-20">
-            <FooterControl />
+          <div className="mt-12">
+            <FooterControl order={order} />
           </div>
         </motion.div>
       )}

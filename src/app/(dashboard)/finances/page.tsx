@@ -3,7 +3,7 @@ import { UI } from "@/components/ui";
 import { FinanceOverview } from "./FinanceOverview";
 import { FinanceCharts } from "./FinanceCharts";
 import { ExternalPayments } from "./ExternalPayments";
-import { HistoryTable } from "./HistoryTable";
+import { TransactionTabs } from "./TransactionTabs";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -50,11 +50,8 @@ const FinancesPage = () => {
       </section>
 
       <section className="mt-6 w-full rounded-2xl border bg-card p-6">
-        <div className="mb-2">
-          <UI.SectionHeader text="Transaction history" />
-        </div>
         <Suspense>
-          <HistoryTable />
+          <TransactionTabs />
         </Suspense>
       </section>
     </div>
