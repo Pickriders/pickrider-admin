@@ -9,29 +9,39 @@ type TableSearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onSearch?: (text: string) => void;
 };
 
+const normalize = (raw: string) => {
+  const s = raw.trim();
+  return s.length > 2 ? s : "";
+};
+
 export const TableSearchInput = ({ className, onSearch, value, ...props }: TableSearchInputProps) => {
   const [text, setText] = React.useState(value?.toString() ?? "");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-  };
+  // Keep the latest onSearch without making the debounced fn (or the effect)
+  // depend on its identity — the callers pass a fresh inline arrow every render,
+  // which previously re-created the debouncer and re-fired onSearch on EVERY
+  // render (causing a navigation loop). We also only emit when the normalized
+  // value actually changes, so re-renders never trigger a spurious search.
+  const onSearchRef = React.useRef(onSearch);
+  onSearchRef.current = onSearch;
+  const lastEmitted = React.useRef<string>(normalize(value?.toString() ?? ""));
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debounceSearch = React.useCallback(
-    _.debounce((text: string) => {
-      const searchText = text.trim();
-      if (searchText.length > 2) {
-        onSearch?.(searchText);
-      } else {
-        onSearch?.("");
-      }
-    }, 800),
-    [onSearch],
+  const debounced = React.useMemo(
+    () =>
+      _.debounce((raw: string) => {
+        const out = normalize(raw);
+        if (out === lastEmitted.current) return;
+        lastEmitted.current = out;
+        onSearchRef.current?.(out);
+      }, 450),
+    [],
   );
 
   React.useEffect(() => {
-    debounceSearch?.(text);
-  }, [text, debounceSearch]);
+    debounced(text);
+  }, [text, debounced]);
+
+  React.useEffect(() => () => debounced.cancel(), [debounced]);
 
   return (
     <div className="relative flex items-center">
@@ -46,7 +56,7 @@ export const TableSearchInput = ({ className, onSearch, value, ...props }: Table
           className,
         )}
         value={text}
-        onChange={handleChange}
+        onChange={(e) => setText(e.target.value)}
         {...props}
       />
     </div>
