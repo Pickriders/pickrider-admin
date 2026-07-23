@@ -57,7 +57,11 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
         {data?.driversLicenseDoc ? (
           <motion.div layoutId="preview-courier" className="relative mt-4 overflow-hidden rounded-xl border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={data.driversLicenseDoc} alt="Driver's licence" className="w-full object-cover" />
+            <img
+              src={data.driversLicenseDoc}
+              alt="Driver's licence"
+              className="max-h-[22rem] w-full bg-muted object-contain"
+            />
             <button
               onClick={() => setPreviewDoc("preview-courier")}
               className="absolute bottom-3 right-3 grid size-9 place-items-center rounded-lg bg-black/70 text-white transition-transform hover:scale-105"
@@ -110,30 +114,43 @@ export const VerificationPanel = ({ userId }: IVerificationPanel) => {
 
         <div className="mt-6">
           {data?.driversLicenseVerified === "APPROVE" ? (
-            <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-600">
-              This courier&apos;s licence is verified.
-            </div>
-          ) : data?.driversLicenseVerified === "SUBMITTED" ? (
             <div className="flex flex-wrap items-center gap-3">
-              <UI.PrimaryButton
-                className="w-auto px-6"
-                isLoading={isVerifiying}
-                loadingText="Verifying..."
-                onClick={handleVerification}
-              >
-                Approve licence
-              </UI.PrimaryButton>
-              <UI.PrimaryButton disabled={isVerifiying} variant="outline" className="w-auto px-6" asChild>
+              <div className="flex-1 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-600">
+                This courier&apos;s licence is verified.
+              </div>
+              <UI.PrimaryButton variant="outline" className="w-auto px-6" asChild>
                 <Link scroll={false} href={"?reject-verification=true"}>
-                  Reject
+                  Revoke
                 </Link>
               </UI.PrimaryButton>
             </div>
+          ) : data?.driversLicense ? (
+            <div className="space-y-3">
+              {data?.driversLicenseVerified !== "SUBMITTED" && (
+                <p className="text-xs text-muted-foreground">
+                  This licence is marked <span className="font-semibold">{licenseStatus.text.toLowerCase()}</span>. You
+                  can still approve or reject it below.
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-3">
+                <UI.PrimaryButton
+                  className="w-auto px-6"
+                  isLoading={isVerifiying}
+                  loadingText="Approving..."
+                  onClick={handleVerification}
+                >
+                  Approve licence
+                </UI.PrimaryButton>
+                <UI.PrimaryButton disabled={isVerifiying} variant="outline" className="w-auto px-6" asChild>
+                  <Link scroll={false} href={"?reject-verification=true"}>
+                    Reject
+                  </Link>
+                </UI.PrimaryButton>
+              </div>
+            </div>
           ) : (
             <div className="rounded-xl bg-muted px-4 py-3 text-sm font-medium text-muted-foreground">
-              {data?.driversLicense
-                ? "Waiting for the courier to submit their licence for review."
-                : "This courier hasn't added a driver's licence yet."}
+              This courier hasn&apos;t added a driver&apos;s licence yet.
             </div>
           )}
         </div>
