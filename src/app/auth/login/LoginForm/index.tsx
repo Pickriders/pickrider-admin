@@ -45,8 +45,8 @@ export const LoginForm = () => {
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="rounded-3xl border bg-card p-6 shadow-sm sm:p-9"
     >
-      <div className="mb-6 lg:hidden">
-        <SVG.PickridersLogo className="h-6 w-auto" />
+      <div className="mb-6 flex justify-center lg:hidden">
+        <SVG.PickridersLogo className="h-[2.1rem] w-auto" />
       </div>
 
       <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
