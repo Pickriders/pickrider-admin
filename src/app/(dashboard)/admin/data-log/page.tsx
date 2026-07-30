@@ -1,6 +1,5 @@
 import { UI } from "@/components/ui";
 import { DataTable } from "./Table";
-import { columns } from "./Table/Columns";
 import { Suspense } from "react";
 
 const DataLog = () => {
@@ -9,7 +8,7 @@ const DataLog = () => {
       <UI.BreadCrumbNav pageLinks={[{ href: "/admin", label: "Admin" }]} rootPageLink="/admin" currentPage="Data Log" />
       <section className="mt-11">
         <Suspense>
-          <DataTable columns={columns} data={Array(5).fill(0)} />
+          <DataTable />
         </Suspense>
       </section>
     </div>

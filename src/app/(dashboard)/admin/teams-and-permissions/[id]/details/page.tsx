@@ -5,14 +5,6 @@ import { Permissions } from "../../../Permissions";
 import { Suspense } from "react";
 import { SaveChangesModal } from "./SaveChangesModal";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
-
 const DetailsPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();
@@ -23,15 +15,15 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
       <UI.BreadCrumbNav
         pageLinks={[
           { href: "/admin", label: "Admin" },
-          { href: "/admin/terms-and-permissions", label: "Team & Permissions" },
+          { href: "/admin/teams-and-permissions", label: "Team & Permissions" },
         ]}
         rootPageLink="/admin"
-        currentPage="Nnamani Kester"
+        currentPage="Team member"
       />
       <section className="bg-background flex  items-start rounded-lg px-14 gap-x-6 py-12 mt-11 ">
         <div className="flex-1">
           <Suspense>
-            <DetailsForm />
+            <DetailsForm userId={params.id} />
           </Suspense>
         </div>
         <div className="flex-1 ">

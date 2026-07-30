@@ -9,7 +9,11 @@ const AppSettings = () => {
         rootPageLink="/admin"
         currentPage="App settings"
       />
-      <section className="mt-12 bg-background rounded-2xl p-6">
+      <div className="mt-6">
+        <h1 className="text-2xl font-semibold text-foreground">App settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Countries, states, pricing and dispatch configuration.</p>
+      </div>
+      <section className="mt-6">
         <Countries />
       </section>
     </div>

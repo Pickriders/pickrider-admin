@@ -1,6 +1,7 @@
 import { UI } from "@/components/ui";
-import { ChevronDown } from "lucide-react";
 import { SelectRider } from "./SelectRider";
+import { PlatformBalance } from "../PlatformBalance";
+import { Suspense } from "react";
 
 const InitiatePayout = () => {
   return (
@@ -28,7 +29,9 @@ const InitiatePayout = () => {
               Amount
               <span className="text-xs text-primary-gray font-montserrat">
                 Current balance:{" "}
-                <span className="text-[#1E1F1F] dark:text-white">$500,000</span>
+                <Suspense>
+                  <PlatformBalance />
+                </Suspense>
               </span>
             </UI.Label>
             <UI.Input
@@ -66,6 +69,10 @@ const InitiatePayout = () => {
           </UI.Select>
           <SelectRider />
 
+          <p className="text-xs text-primary-gray font-montserrat">
+            Payouts are not available yet — the core API has no payout endpoint. This screen will go live once the
+            backend ships one.
+          </p>
           <UI.PrimaryButton disabled>Proceed</UI.PrimaryButton>
         </form>
       </section>

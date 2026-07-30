@@ -4,14 +4,6 @@ import { VerificationPanel } from "./VerificationPanels";
 import { Suspense } from "react";
 import { RejectVerificationModal } from "@/components/RejectVerificationModal";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
-
 const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();

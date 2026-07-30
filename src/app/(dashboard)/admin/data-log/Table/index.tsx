@@ -1,19 +1,45 @@
 "use client";
 
 import { UI } from "@/components/ui";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React, { Suspense } from "react";
 import { Filter } from "./Filter";
 import JsonPreviewModal from "../JsonPreviewModal";
+import { makeColumns } from "./Columns";
+import { useApiQuery } from "@/hooks/useApiQuery";
+import { apiService, DataLog } from "@/services";
+import dayjs from "dayjs";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
+const LIMIT = 10;
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable() {
+  const [search, setSearch] = React.useState("");
+  const [page, setPage] = React.useState(1);
+  const [preview, setPreview] = React.useState<DataLog | null>(null);
+
+  // GET /datalogs returns every record unpaginated — page + search client-side.
+  const { data, isLoading } = useApiQuery({
+    queryKey: ["data-logs"],
+    queryFn: () => apiService.getLogs(),
+  });
+
+  const filtered = React.useMemo(() => {
+    const records = data?.records ?? [];
+    if (!search) return records;
+    const term = search.toLowerCase();
+    return records.filter((log) => JSON.stringify(log).toLowerCase().includes(term));
+  }, [data, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / LIMIT));
+  const pageRows = React.useMemo(
+    () => filtered.slice((page - 1) * LIMIT, page * LIMIT),
+    [filtered, page],
+  );
+
+  const columns = React.useMemo(() => makeColumns(setPreview), []);
+
   const table = useReactTable({
-    data,
+    data: pageRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
     state: {},
@@ -22,7 +48,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   return (
     <div className="bg-background rounded-xl pb-4 border">
       <div className="px-[1.4rem] py-5 flex items-center gap-x-1 ">
-        <UI.TableSearchInput />
+        <UI.TableSearchInput
+          onSearch={(text: string) => {
+            setSearch(text);
+            setPage(1);
+          }}
+        />
         <Filter />
       </div>
       <div className="overflow-x-auto  w-full  scroll-bar">
@@ -52,6 +83,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                   ))}
                 </UI.TableRow>
               ))
+            ) : isLoading ? (
+              <UI.TableLoading rowCount={5} columnCount={columns.length} />
             ) : (
               <UI.TableRow>
                 <UI.TableCell colSpan={columns.length} className="h-24 text-center font-faktum-test font-semibold">
@@ -63,63 +96,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         </UI.Table>
       </div>
 
-      {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
-        <Suspense>
-          <UI.PaginationBtns currentPage={2} totalPages={4} />
-        </Suspense>
+      {/* Pagination — client-side buttons since the endpoint has no paging */}
+      <div className="mt-3 flex items-center gap-x-3 justify-end px-[1.5rem]">
+        <UI.Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          Previous
+        </UI.Button>
+        <span className="text-xs font-montserrat font-semibold text-primary-gray">
+          {page} / {totalPages}
+        </span>
+        <UI.Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+          Next
+        </UI.Button>
       </div>
 
-      <JsonPreviewModal code={jsonData} />
+      <Suspense>
+        <JsonPreviewModal
+          code={JSON.stringify(preview?.data ?? preview ?? {}, null, 2)}
+          title={
+            preview
+              ? `${preview.logType ?? "SYSTEM"} ${preview.level ?? "LOG"} on ${dayjs(preview.createdAt).format("DD MMM YYYY, HH:mm")}`
+              : undefined
+          }
+        />
+      </Suspense>
     </div>
   );
 }
-
-// TEST DATE
-const jsonData = JSON.stringify(
-  [
-    {
-      id: "ckeod@pcy0001ilpra5ojb551",
-      timestamp: "2020-09-04T14:54:50.000Z",
-      resource: "PROJECT",
-      action: "CREATE",
-      payload: {
-        name: "Project A",
-        region: "LOCAL",
-        status: "Active",
-        owner: "John Doe",
-      },
-      triggeredBy: "unknown",
-      triggerType: "USER",
-    },
-    {
-      id: "ckepx@qzv0002ilpra5kjb882",
-      timestamp: "2021-06-12T09:22:30.000Z",
-      resource: "TASK",
-      action: "UPDATE",
-      payload: {
-        title: "Fix UI bug",
-        priority: "High",
-        assignedTo: "Jane Smith",
-        dueDate: "2024-02-15",
-      },
-      triggeredBy: "admin",
-      triggerType: "SYSTEM",
-    },
-    {
-      id: "ckerg@mnx0003ilpra5llc913",
-      timestamp: "2023-11-22T16:40:10.000Z",
-      resource: "USER",
-      action: "DELETE",
-      payload: {
-        userId: "usr_928374",
-        reason: "Violation of terms",
-        deletedBy: "moderator",
-      },
-      triggeredBy: "moderator",
-      triggerType: "MANUAL",
-    },
-  ],
-  null,
-  2,
-);

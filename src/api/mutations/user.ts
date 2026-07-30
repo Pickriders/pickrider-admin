@@ -47,6 +47,18 @@ export const useVerifyDriversLicenseMn = (
     },
   });
 
+/** Reject / disapprove (or otherwise re-status) a courier's driver's licence. */
+export const useUpdateDriversLicenseMn = (userId: string, options?: { onSuccess?: () => void }) =>
+  useApiMutation({
+    mutationFn: (variables: { status: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING"; comment?: string }) =>
+      apiService.updateDriversLicense({ userId }, variables as never),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.USER] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.USERS] });
+      options?.onSuccess?.();
+    },
+  });
+
 export const useUpdateUserProfileMn = (
   options?: MutationOptions<UpdateUserProfileData, any, UpdateProfileRequestDto>,
 ) =>

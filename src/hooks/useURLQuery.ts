@@ -5,26 +5,36 @@ export const useURLQuery = () => {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const set = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    replace(`${pathname}?${params.toString()}`);
+  // Always build from the LIVE URL, not the render-time snapshot. Otherwise a
+  // navigation triggered from a stale closure (e.g. a debounced search that
+  // fires after you've already switched tabs) would rebuild the query from an
+  // outdated snapshot and revert your latest change — causing a back-and-forth
+  // oscillation between tabs.
+  const currentParams = () =>
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams(searchParams);
+
+  const commit = (params: URLSearchParams) => {
+    const qs = params.toString();
+    const next = qs ? `${pathname}?${qs}` : pathname;
+    // Skip no-op navigations entirely (prevents redundant replace() churn).
+    if (typeof window !== "undefined" && next === `${pathname}${window.location.search}`) return;
+    replace(next);
   };
 
-  const setMultiple = (params: Record<string, string | undefined>) => {
-    const newParams = new URLSearchParams(searchParams);
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      } else {
-        newParams.delete(key);
-      }
+  const set = (key: string, value: string) => {
+    const params = currentParams();
+    if (value) params.set(key, value);
+    else params.delete(key);
+    commit(params);
+  };
+
+  const setMultiple = (entries: Record<string, string | undefined>) => {
+    const params = currentParams();
+    Object.entries(entries).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
     });
-    replace(`${pathname}?${newParams.toString()}`);
+    commit(params);
   };
 
   const get = (key: string) => {
@@ -32,25 +42,19 @@ export const useURLQuery = () => {
   };
 
   const remove = (key: string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = currentParams();
     params.delete(key);
-    replace(`${pathname}?${params.toString()}`);
+    commit(params);
   };
 
   const removeMultiple = (keys: string[]) => {
-    const params = new URLSearchParams(searchParams);
-    keys.forEach((key) => {
-      params.delete(key);
-    });
-    replace(`${pathname}?${params.toString()}`);
+    const params = currentParams();
+    keys.forEach((key) => params.delete(key));
+    commit(params);
   };
 
   const removeAll = () => {
-    const params = new URLSearchParams(searchParams);
-    params.forEach((value, key) => {
-      params.delete(key);
-    });
-    replace(`${pathname}?${params.toString()}`);
+    commit(new URLSearchParams());
   };
 
   return { set, get, remove, searchParams, setMultiple, removeMultiple, removeAll };
