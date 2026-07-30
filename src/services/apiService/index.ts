@@ -41,22 +41,8 @@ const apiService = new Api({
 });
 
 apiService.instance.interceptors.request.use(
-  (config) => {
-    console.log("apiService request =============>>", {
-      headers: config.headers,
-      url: config.url,
-      data: config.data,
-    });
-
-    return config;
-  },
-  (err: AxiosError) => {
-    console.log(
-      "apiService request error =============>>",
-      err.response?.data ?? err.message
-    );
-    return Promise.reject(err);
-  }
+  (config) => config,
+  (err: AxiosError) => Promise.reject(err)
 );
 
 apiService.instance.interceptors.response.use(

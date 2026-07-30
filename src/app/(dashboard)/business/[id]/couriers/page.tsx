@@ -3,14 +3,6 @@ import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { CouriersTable } from "@/components/CouriersTable";
 
-// export async function generateStaticParams() {
-//   return Array(20)
-//     .fill(0)
-//     .map((_, id) => ({
-//       id: `${id}`,
-//     }));
-// }
-
 const BusinessCourierPage = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();

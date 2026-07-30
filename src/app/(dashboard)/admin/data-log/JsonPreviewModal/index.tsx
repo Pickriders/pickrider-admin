@@ -1,6 +1,5 @@
 "use client";
 
-import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
@@ -12,9 +11,11 @@ import { useQueryModal } from "@/hooks";
 
 interface ICodePreviewModalProps {
   code: string;
+  title?: string;
+  subTitle?: string;
 }
 
-const JsonPreviewModal = ({ code }: ICodePreviewModalProps) => {
+const JsonPreviewModal = ({ code, title, subTitle }: ICodePreviewModalProps) => {
   const [Iscopied, setIsCopied] = useState(false);
   const { isOpen, closeModal } = useQueryModal([{ key: "jsonPreview", value: true }]);
 
@@ -35,21 +36,15 @@ const JsonPreviewModal = ({ code }: ICodePreviewModalProps) => {
         )}
       >
         <header className="px-8 py-5">
-          <p className="font-semibold">Nnamani created content; Courier on 29 Jun 2024, 21:09.</p>
-          <p>
-            <span className="font-semibold">IP address:</span> <span className="font-medium">162,168.8080:1234</span>
-          </p>
+          <p className="font-semibold">{title ?? "Log payload"}</p>
+          {subTitle ? <p className="font-medium">{subTitle}</p> : null}
         </header>
         <div className="grow overflow-scroll scroll-bar">
           <SyntaxHighlighter language="json" style={syntaxColor} wrapLongLines>
             {code}
           </SyntaxHighlighter>
         </div>
-        <div className="px-8 py-5 flex items-center justify-between">
-          <button className="text-xs font-bold flex items-center gap-x-1.5 bg-[#F3F3F3] text-[#2282C8] h-10 px-3 rounded">
-            <SVG.AddNoteIcon />
-            Add note
-          </button>
+        <div className="px-8 py-5 flex items-center justify-end">
           <div className="flex items-center gap-x-3">
             <button
               onClick={closeModal}

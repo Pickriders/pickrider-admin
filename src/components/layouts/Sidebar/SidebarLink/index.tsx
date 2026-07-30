@@ -6,18 +6,20 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LinkProps } from "../Sidebar.type";
 
-export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
+export const SidebarLink = ({ path, icon, label, activeIcon, onNavigate }: LinkProps) => {
   const pathname = usePathname();
-  const active = pathname.startsWith(`${path}`);
+  // Match the exact section or any of its sub-routes (e.g. /orders/analysis),
+  // but only on a segment boundary so sibling sections never both light up.
+  const active = pathname === path || pathname.startsWith(`${path}/`);
 
   return (
     <Link
       href={path}
+      prefetch
+      onClick={onNavigate}
       className={cn(
-        "px-6 py-4 font-clash-display transition-colors duration-300 relative font-medium  flex items-center gap-x-4",
-        active
-          ? "bg-primary-black text-primary text-white"
-          : "hover:bg-primary-foreground text-primary-gray"
+        "px-6 py-4 font-clash-display relative font-medium flex items-center gap-x-4",
+        active ? "bg-primary-black text-white" : "text-primary-gray hover:bg-primary-foreground transition-colors"
       )}
     >
       {active && (
@@ -26,9 +28,9 @@ export const SidebarLink = ({ path, icon, label, activeIcon }: LinkProps) => {
         </span>
       )}
 
-      {active ? <span>{activeIcon}</span> : <span>{icon}</span>}
+      <span>{active ? activeIcon : icon}</span>
 
-      <span className={"text-sm "}>{label}</span>
+      <span className="text-sm">{label}</span>
     </Link>
   );
 };

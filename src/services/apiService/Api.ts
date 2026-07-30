@@ -1252,6 +1252,60 @@ export class Api<
       ...params,
     });
   /**
+   * Hand-added — re-add after any regen. Admin customer-console actions.
+   * Backend: src/users/users.admins.controller.ts.
+   */
+  getUserWalletsAdmin = ({ userId }: { userId: string }, params: RequestParams = {}) =>
+    this.request<import("./data-contracts").WalletListResponseDto, any>({
+      path: `/api/v1/admins/users/${userId}/wallets`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  updateUserStatus = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminUpdateUserStatusDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").User, any>({
+      path: `/api/v1/admins/users/${userId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adjustUserWallet = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminAdjustWalletDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/users/${userId}/wallets/adjust`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  refundCustomerOrder = (
+    { userId }: { userId: string },
+    data: import("./data-contracts").AdminRefundOrderDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/users/${userId}/refund`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * No description
    *
    * @tags admins/users
@@ -1471,6 +1525,67 @@ export class Api<
       format: "json",
       ...params,
     });
+  /** Hand-added — platform financial ops. Re-add after any regen. */
+  getBanks = (params: RequestParams = {}) =>
+    this.request<any, any>({ path: `/api/v1/admins/wallets/banks`, method: "GET", secure: true, format: "json", ...params });
+  getFinanceStatus = (params: RequestParams = {}) =>
+    this.request<import("./data-contracts").PlatformFinanceStatusDto, any>({
+      path: `/api/v1/admins/wallets/finance-status`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  updatePlatformSettlement = (data: { accountNumber: string; bankCode: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/settlement`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  setWithdrawalPin = (data: { pin: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/pin`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  initiatePlatformPayout = (data: { amount: number; pin: string; reason?: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/payout`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adminCancelOrder = (orderId: string, data: { reason: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/orders/${orderId}/cancel`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  adminUpdateOrderStatus = (orderId: string, data: { status: string }, params: RequestParams = {}) =>
+    this.request<any, any>({
+      path: `/api/v1/admins/orders/${orderId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
   /**
    * No description
    *
@@ -1509,6 +1624,36 @@ export class Api<
   ) =>
     this.request<GetTransactions2Data, any>({
       path: `/api/v1/admins/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * Hand-added (not in the generated swagger yet) — re-add after any regen.
+   *
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   */
+  getExternalPaymentMetrics = (
+    query?: { dateRange?: string; entityId?: string },
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").ExternalPaymentMetricsResponseDto, any>({
+      path: `/api/v1/admins/transactions/metrics/external-payments`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /** Hand-added — re-add after any regen. Money-flow summary for finances. */
+  getTransactionSummary = (query?: { dateRange?: string }, params: RequestParams = {}) =>
+    this.request<import("./data-contracts").TransactionMetricsSummaryResponseDto, any>({
+      path: `/api/v1/admins/transactions/metrics/summary`,
       method: "GET",
       query: query,
       secure: true,
@@ -2220,6 +2365,26 @@ export class Api<
       path: `/api/v1/businesses/${businessId}/vehicles`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * Hand-added — re-add after any regen. Backend: GET /businesses/:businessId
+   * (guarded AdminRoles; platform admins allowed by the service check).
+   *
+   * @tags businesses
+   * @name GetBusinessById
+   * @request GET:/api/v1/businesses/{businessId}
+   * @secure
+   */
+  getBusinessById = (
+    { businessId }: { businessId: string },
+    params: RequestParams = {},
+  ) =>
+    this.request<import("./data-contracts").Business, any>({
+      path: `/api/v1/businesses/${businessId}`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

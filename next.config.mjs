@@ -2,30 +2,15 @@
 const nextConfig = {
   // output: "export",
   images: {
+    // Avatars/photos come from many providers (Google, Cloudinary, uploaded
+    // storage, IPFS seed data, etc.). Skip server-side optimization so a broken
+    // or unreachable source can't 500 the image endpoint — the browser just
+    // fails the <img> and our components fall back to initials.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "placehold.it",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "2Fcloudflare-ipfs.com",
-        port: "",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },

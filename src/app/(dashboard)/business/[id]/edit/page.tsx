@@ -2,14 +2,6 @@ import { UI } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { ProfilePic } from "./ProfilePic";
 
-export async function generateStaticParams() {
-  return Array(20)
-    .fill(0)
-    .map((_, id) => ({
-      id: `${id}`,
-    }));
-}
-
 const EditBusinessDetails = ({ params }: { params: { id: string } }) => {
   if (!params.id) {
     notFound();

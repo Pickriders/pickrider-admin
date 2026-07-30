@@ -1,5 +1,12 @@
-import { Montserrat } from "next/font/google";
+import { Montserrat, Urbanist } from "next/font/google";
 import localFont from "next/font/local";
+
+// Urbanist is the Pickriders storefront's default face — the admin now matches it.
+export const urbanist = Urbanist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-urbanist",
+});
 
 export const clashDisplay = localFont({
   src: [

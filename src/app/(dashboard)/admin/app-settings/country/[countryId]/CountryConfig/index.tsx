@@ -73,13 +73,12 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         formik.handleSubmit(e);
       }}
     >
-      {JSON.stringify(formik.errors)}
-      <div className="mt-8">
-        <div className="flex items-center gap-x-8">
+      <div className="mt-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <UI.Input
             labelValue="Country name"
             id="Country name"
-            className="w-[21rem]"
+            className="w-full"
             {...formik.getFieldProps("name")}
             errorMessage={formik.touched.name && formik.errors.name}
           />
@@ -88,24 +87,24 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
             defaultValue={country?.code}
             placeholder="NG"
             id="Code"
-            className="w-[21rem]"
+            className="w-full"
             disabled
           />
         </div>
-        <div className="flex items-center mt-6 gap-x-8 mb-8">
+        <div className="mt-6 mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <UI.Input
             defaultValue={country?.currencyName}
             placeholder="Naira"
             labelValue="Currency name"
             id="Currency name"
-            className="w-[21rem]"
+            className="w-full"
             disabled
           />
 
           <UI.Input
             labelValue="Currency code"
             id="Currency code"
-            className="w-[21rem]"
+            className="w-full"
             placeholder="NGN"
             defaultValue={country?.currencyCode}
             disabled
@@ -127,11 +126,11 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <UI.PrimaryHeading text="Country Config" />
 
         <div className="my-8">
-          <div className="flex items-center gap-x-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UI.Input
               labelValue="Exchange rate (subunit)"
               id="exchangeRate"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.exchangeRate")}
               value={formik.values.config?.exchangeRate}
               onChange={({ target }) => {
@@ -147,7 +146,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
               labelValue="Minimum Offer Percentage (%)"
               placeholder="0"
               id="minimumOfferPercentage"
-              className="w-[21rem]"
+              className="w-full"
               type="number"
               min={0}
               max={100}
@@ -163,11 +162,11 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <UI.SectionHeader text="Courier Withdrawal Limits" />
 
         <div className="my-8">
-          <div className="flex items-center gap-x-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UI.Input
               labelValue="Minimum withdrawal amount (subunit)"
               id="userMinimumWithdrawal"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.userWithdrawalLimits.minimumAmount")}
               value={formik.values.config?.userWithdrawalLimits?.minimumAmount}
               onChange={({ target }) => {
@@ -183,7 +182,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
             <UI.Input
               labelValue="Maximum withdrawal amount (subunit)"
               id="userMaximumWithdrawal"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.userWithdrawalLimits.maximumAmount")}
               value={formik.values.config?.userWithdrawalLimits?.maximumAmount}
               onChange={({ target }) => {
@@ -202,11 +201,11 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
         <UI.SectionHeader text="Business Withdrawal Limits" />
 
         <div className="my-8">
-          <div className="flex items-center gap-x-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UI.Input
               labelValue="Minimum withdrawal amount (subunit)"
               id="businessMinimumWithdrawal"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.businessWithdrawalLimits.minimumAmount")}
               value={formik.values.config?.businessWithdrawalLimits?.minimumAmount}
               onChange={({ target }) => {
@@ -222,7 +221,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
             <UI.Input
               labelValue="Maximum withdrawal amount (subunit)"
               id="businessMaximumWithdrawal"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.businessWithdrawalLimits.maximumAmount")}
               value={formik.values.config?.businessWithdrawalLimits?.maximumAmount}
               onChange={({ target }) => {
@@ -247,11 +246,11 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
             />
           </div>
 
-          <div className="flex items-center gap-x-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UI.Input
               labelValue="Referral earn amount (subunit)"
               id="referralEarnAmount"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.referralEarnAmount")}
               value={formik.values.config?.referralEarnAmount}
               onChange={({ target }) => {
@@ -267,7 +266,7 @@ const CountryConfig: React.FC<CountryConfigProps> = ({ countryId }) => {
             <UI.Input
               labelValue="Orders required before earn"
               id="ordersRequiredBeforeEarn"
-              className="w-[21rem]"
+              className="w-full"
               {...formik.getFieldProps("config.ordersRequiredBeforeEarn")}
               value={formik.values.config?.ordersRequiredBeforeEarn}
               onChange={({ target }) => {

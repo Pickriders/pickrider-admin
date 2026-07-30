@@ -12,9 +12,16 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        "clash-display": ["var(--font-clash-display)"],
-        montserrat: ["var(--font-montserrat)"],
-        "faktum-test": ["var(--font-faktum-test)"],
+        // The interface font is driven by one variable, --admin-font (default
+        // Urbanist, matching the storefront). Every font utility in the app —
+        // including the previously hardcoded clash-display / montserrat /
+        // faktum faces — resolves to it, so the header switcher changes the
+        // font EVERYWHERE. `urbanist` stays fixed for anything that must pin it.
+        sans: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "system-ui", "sans-serif"],
+        "clash-display": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        montserrat: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        "faktum-test": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        urbanist: ["var(--font-urbanist)"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -24,7 +31,13 @@ module.exports = {
 
       colors: {
         background: "hsl(var(--background))",
-
+        foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
+        brand: {
+          DEFAULT: "var(--brand)",
+          dark: "var(--brand-dark)",
+          soft: "var(--brand-soft)",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

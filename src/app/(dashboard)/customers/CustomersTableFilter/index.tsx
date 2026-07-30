@@ -1,95 +1,70 @@
 "use client";
 
 import React from "react";
-import { SVG } from "@/components/svg";
+import { SlidersHorizontal } from "lucide-react";
 import { UI } from "@/components/ui";
-import { status } from "@/constant";
 import { useURLQuery } from "@/hooks";
 
-interface CustomerFilters {
-  status: string;
-}
+const STATUSES = ["ALL", "ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"];
 
 export const CustomersTableFilter = () => {
   const query = useURLQuery();
-  const [filters, setFilters] = React.useState<CustomerFilters>({
-    status: "ALL",
-  });
+  const [status, setStatus] = React.useState(query.get("status") || "ALL");
+  const [verifiedOnly, setVerifiedOnly] = React.useState(query.get("verified") === "true");
 
-  const handleFilter = () => {
-    query.setMultiple({ status: filters.status.toUpperCase(), page: "1" });
+  const apply = () => {
+    query.setMultiple({
+      status: status === "ALL" ? undefined : status,
+      verified: verifiedOnly ? "true" : undefined,
+      page: "1",
+    });
+  };
+
+  const reset = () => {
+    setStatus("ALL");
+    setVerifiedOnly(false);
+    query.setMultiple({ status: undefined, verified: undefined, page: "1" });
   };
 
   return (
     <UI.Popover>
       <UI.PopoverTrigger asChild>
-        <UI.Button variant={"ghost"}>
-          <SVG.FilterIcon />
+        <UI.Button variant="outline">
+          <SlidersHorizontal size={15} />
+          Filter
         </UI.Button>
       </UI.PopoverTrigger>
-      <UI.PopoverContent sideOffset={10} className="mr-10 p-0 w-[19rem]">
-        <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">Filter Customers</h4>
-        <div className="py-4 px-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-x-2">
-              <UI.Checkbox id="have balance" />{" "}
-              <label htmlFor="have balance" className="text-primary-gray text-xs font-montserrat font-semibold">
-                Have Balance
-              </label>
-            </div>
-            <div className="flex items-center gap-x-2">
-              <UI.Checkbox id="KYC Verified" />{" "}
-              <label htmlFor="KYC Verified" className="text-primary-gray text-xs font-montserrat font-semibold">
-                KYC Verified
-              </label>
-            </div>
+      <UI.PopoverContent sideOffset={10} align="end" className="w-[19rem] p-0">
+        <h4 className="border-b px-4 py-3 text-sm font-semibold">Filter customers</h4>
+        <div className="space-y-4 px-4 py-4">
+          <div>
+            <UI.Label className="text-xs">Status</UI.Label>
+            <UI.Select value={status} onValueChange={setStatus}>
+              <UI.SelectTrigger className="mt-1 w-full">
+                <UI.SelectValue />
+              </UI.SelectTrigger>
+              <UI.SelectContent>
+                {STATUSES.map((s) => (
+                  <UI.SelectItem key={s} value={s}>
+                    {s.charAt(0) + s.slice(1).toLowerCase()}
+                  </UI.SelectItem>
+                ))}
+              </UI.SelectContent>
+            </UI.Select>
           </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            <div>
-              <UI.Label htmlFor="TYPE" className="text-xs font-faktum-test">
-                TYPE
-              </UI.Label>
+          <label className="flex cursor-pointer items-center gap-2">
+            <UI.Checkbox checked={verifiedOnly} onCheckedChange={(v) => setVerifiedOnly(!!v)} />
+            <span className="text-sm font-semibold text-foreground">Phone-verified only</span>
+          </label>
 
-              <UI.Select defaultValue="all">
-                <UI.SelectTrigger id="TYPE" className="w-[6rem]">
-                  <UI.SelectValue />
-                </UI.SelectTrigger>
-                <UI.SelectContent>
-                  <UI.SelectGroup>
-                    <UI.SelectItem value="all">All</UI.SelectItem>
-                    <UI.SelectItem value="regular">Regular</UI.SelectItem>
-                    <UI.SelectItem value="vendor">Vendor</UI.SelectItem>
-                  </UI.SelectGroup>
-                </UI.SelectContent>
-              </UI.Select>
-            </div>
-            <div>
-              <UI.Label htmlFor="STATUS" className="text-xs font-faktum-test">
-                STATUS
-              </UI.Label>
-
-              <UI.Select onValueChange={(value) => setFilters({ ...filters, status: value })} value={filters.status}>
-                <UI.SelectTrigger id="STATUS" className="w-[6rem]">
-                  <UI.SelectValue />
-                </UI.SelectTrigger>
-                <UI.SelectContent>
-                  <UI.SelectGroup>
-                    {["ALL", ...status].map((stat, i) => {
-                      return (
-                        <UI.SelectItem key={i} value={stat}>
-                          {stat}
-                        </UI.SelectItem>
-                      );
-                    })}
-                  </UI.SelectGroup>
-                </UI.SelectContent>
-              </UI.Select>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <UI.Button onClick={handleFilter}>Save Filter</UI.Button>
+          <div className="flex items-center justify-between pt-1">
+            <UI.Button variant="ghost" size="sm" onClick={reset}>
+              Reset
+            </UI.Button>
+            <UI.Button size="sm" onClick={apply}>
+              Apply filter
+            </UI.Button>
           </div>
         </div>
       </UI.PopoverContent>

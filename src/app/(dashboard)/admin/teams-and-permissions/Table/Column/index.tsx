@@ -1,39 +1,25 @@
 "use client";
 
 import { UI } from "@/components/ui";
+import { User } from "@/services";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronRight, Trash2 } from "lucide-react";
+import dayjs from "dayjs";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { PLATFORM_STAFF_ROLES } from "@/lib/admin-access";
 
-export type Rows = {
-  id: string;
-  serialNumber: number;
-  name: ReactNode;
-  role: string;
-  email: string;
-  phoneNumber: number;
-  dateAdded: Date;
-};
-
-export const columns: ColumnDef<Rows>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <UI.Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
-      <UI.Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
+      <UI.Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} />
     ),
   },
   {
@@ -44,38 +30,41 @@ export const columns: ColumnDef<Rows>[] = [
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ row }) => <UI.TableUser name="Nnamani Kester" />,
+    cell: ({ row }) => (
+      <UI.TableUser img={row.original.photo} name={`${row.original.firstname} ${row.original.lastname}`} />
+    ),
   },
   {
     header: "Role",
     accessorKey: "role",
-    cell: ({ row }) => <p>admin</p>,
+    cell: ({ row }) => (
+      <p className="text-nowrap">
+        {row.original.roles.filter((role) => (PLATFORM_STAFF_ROLES as string[]).includes(role)).join(", ") || "—"}
+      </p>
+    ),
   },
   {
     header: "Email Address",
     accessorKey: "email",
-    cell: ({ row }) => <p>example@gmail.com</p>,
+    cell: ({ row }) => <p>{row.original.email}</p>,
   },
   {
     header: "Phone Number",
     accessorKey: "phoneNumber",
-    cell: ({ row }) => <p>08123456789</p>,
+    cell: ({ row }) => <p>+{row.original.phone}</p>,
   },
   {
     header: "Date Added",
     accessorKey: "dateAdded",
-    cell: ({ row }) => <p>09/12/24</p>,
+    cell: ({ row }) => <p className="text-nowrap">{dayjs(row.original.createdAt).format("DD/MM/YY")}</p>,
   },
   {
     header: "action",
     id: "action",
     cell: ({ row }) => (
       <div className=" flex   items-center gap-x-2">
-        <UI.Button size={"icon"} variant={"ghost"}>
-          <Trash2 color="#FF5244" size={20} />
-        </UI.Button>
         <Link
-          href={`/admin/terms-and-permissions/${row.index}/details`}
+          href={`/admin/teams-and-permissions/${row.original._id}/details`}
           className="size-[1.3rem] grid place-items-center rounded-full border"
         >
           <ChevronRight size={12} />

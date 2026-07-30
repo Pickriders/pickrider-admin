@@ -16,23 +16,28 @@ export const CustomersTable: React.FC = () => {
   const query = useURLQuery();
   const customerSearch = query.get("search");
   const status = query.get("status");
+  const verified = query.get("verified");
 
   const { data, isLoading, table } = useGetUsersReactTableQuery(columns, {
     limit: LIMIT,
     isRider: "false",
-    userSearch: customerSearch,
-    status: status.toLowerCase() === "all" ? undefined : status,
+    role: "USER",
+    userSearch: customerSearch || undefined,
+    status: !status || status.toLowerCase() === "all" ? undefined : status,
+    phoneVerified: verified === "true" ? "true" : undefined,
   });
 
   return (
     <div>
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
+      <div className="px-[1.4rem] py-5 flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
         <CustomersTableBulkAction />
         <div className="flex items-center gap-x-2">
           <Suspense>
             <UI.TableSearchInput
+              placeholder="Search name, phone, email or NIN..."
+              className="sm:w-72"
               onSearch={(text) => {
-                query.set("search", text);
+                query.setMultiple({ search: text, page: "1" });
               }}
               value={customerSearch}
             />
