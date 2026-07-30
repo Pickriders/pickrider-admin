@@ -238,6 +238,51 @@ export interface StateConfigDto {
    * @default false
    */
   queueOrderByDefault: boolean;
+  /**
+   * Mid-order location update — master toggle (Feature A)
+   * @default false
+   */
+  locationUpdateEnabled?: boolean;
+  /**
+   * Free grace radius for route-delta before the customer pays (metres)
+   * @default 500
+   */
+  locationUpdateFreeRadiusMeters?: number;
+  /**
+   * Max ACCEPTED location updates per stop
+   * @default 1
+   */
+  locationUpdateMaxPerLocation?: number;
+  /**
+   * Max rider-DECLINED updates per stop before blocking further requests
+   * @default 2
+   */
+  locationUpdateMaxDeclinesPerLocation?: number;
+  /**
+   * Rider accept window before auto-decline + refund (seconds)
+   * @default 240
+   */
+  locationUpdateRiderAcceptTimeoutSec?: number;
+  /**
+   * Arrival gate — geo-gate ARRIVED transitions (Feature B)
+   * @default false
+   */
+  arrivalGateEnabled?: boolean;
+  /**
+   * Radius the rider must be within to mark arrived (metres)
+   * @default 40
+   */
+  arrivalRadiusMeters?: number;
+  /**
+   * Show estimated pickup/dropoff times
+   * @default true
+   */
+  etaEnabled?: boolean;
+  /**
+   * Average speed used for the cheap ETA calc (km/h)
+   * @default 25
+   */
+  etaAverageSpeedKmh?: number;
 }
 
 export interface StateDto {
@@ -273,6 +318,51 @@ export interface State {
     maxDistanceRadius?: number;
     /** @default false */
     queueOrderByDefault?: boolean;
+    /**
+     * Mid-order location update — master toggle (Feature A)
+     * @default false
+     */
+    locationUpdateEnabled?: boolean;
+    /**
+     * Free grace radius for route-delta before the customer pays (metres)
+     * @default 500
+     */
+    locationUpdateFreeRadiusMeters?: number;
+    /**
+     * Max ACCEPTED location updates per stop
+     * @default 1
+     */
+    locationUpdateMaxPerLocation?: number;
+    /**
+     * Max rider-DECLINED updates per stop before blocking further requests
+     * @default 2
+     */
+    locationUpdateMaxDeclinesPerLocation?: number;
+    /**
+     * Rider accept window before auto-decline + refund (seconds)
+     * @default 240
+     */
+    locationUpdateRiderAcceptTimeoutSec?: number;
+    /**
+     * Arrival gate — geo-gate ARRIVED transitions (Feature B)
+     * @default false
+     */
+    arrivalGateEnabled?: boolean;
+    /**
+     * Radius the rider must be within to mark arrived (metres)
+     * @default 40
+     */
+    arrivalRadiusMeters?: number;
+    /**
+     * Show estimated pickup/dropoff times
+     * @default true
+     */
+    etaEnabled?: boolean;
+    /**
+     * Average speed used for the cheap ETA calc (km/h)
+     * @default 25
+     */
+    etaAverageSpeedKmh?: number;
   };
   _id: string;
   /** @format date-time */
@@ -2516,3 +2606,64 @@ export interface HandleWebhookEventsParams {
 export type HandleWebhookEventsData = object;
 
 export type RunData = any;
+
+export interface ExternalPaymentMetricsResponseDto {
+  /** Number of orders paid via a share link */
+  count: number;
+  /** Gross amount paid through link payments (sub-units) */
+  totalFunded: number;
+  /** Paystack processing fees on those payments (sub-units) */
+  totalFees: number;
+  /** Cash received after fees (sub-units) */
+  netReceived: number;
+  /** Distinct customers who used the feature */
+  uniqueCustomers: number;
+}
+
+/** Hand-added — admin customer-console action DTOs. Re-add after any regen. */
+export interface AdminUpdateUserStatusDto {
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+  reason?: string;
+}
+
+export interface AdminAdjustWalletDto {
+  /** Amount in sub-units (10000 = ₦1). */
+  amount: number;
+  type: "CREDIT" | "DEBIT";
+  reason: string;
+}
+
+export interface AdminRefundOrderDto {
+  orderId: string;
+  /** Sub-units; defaults to the full order value. */
+  amount?: number;
+  reason: string;
+}
+
+/** Hand-added — money-flow summary for the finances dashboard. Re-add after regen. */
+export interface TransactionMetricsSummaryResponseDto {
+  totalVolume: number;
+  count: number;
+  inflow: number;
+  outflow: number;
+  deposits: number;
+  withdrawals: number;
+  fees: number;
+  refunds: number;
+  charges: number;
+  uniqueEntities: number;
+}
+
+/** Hand-added — platform finance status. Re-add after regen. */
+export interface PlatformFinanceStatusDto {
+  balance: number;
+  currency?: string;
+  hasPin: boolean;
+  hasBank: boolean;
+  settlement: {
+    bankName?: string;
+    accountName?: string;
+    accountNumberMasked?: string;
+    isVerified?: boolean;
+  } | null;
+}

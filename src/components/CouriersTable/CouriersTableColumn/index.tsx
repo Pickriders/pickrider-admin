@@ -7,8 +7,23 @@ import { Eye } from "lucide-react";
 import { SVG } from "@/components/svg";
 import { User } from "@/services";
 import dayjs from "dayjs";
+import { formatMoney, subUnitToBaseUnit } from "@/utils";
+import { useGetCustomerLatestBalanceQuery } from "@/api/queries/customer";
+import { useGetCourierCompletedCountQuery } from "@/api/queries/courier";
 
-type liscenceVerified = "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
+type LicenceVerified = "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
+
+const BalanceCell = ({ userId }: { userId: string }) => {
+  const { data, isLoading } = useGetCustomerLatestBalanceQuery(userId);
+  if (isLoading) return <span className="text-muted-foreground">…</span>;
+  if (!data?.hasHistory) return <span className="text-muted-foreground">—</span>;
+  return <span className="font-semibold">{formatMoney(subUnitToBaseUnit(data.balance), { currency: data.currency })}</span>;
+};
+
+const DeliveriesCell = ({ riderId }: { riderId: string }) => {
+  const { data, isLoading } = useGetCourierCompletedCountQuery(riderId);
+  return <span>{isLoading ? "…" : `${data ?? 0} completed`}</span>;
+};
 
 export const couriersTableColumn: ColumnDef<User>[] = [
   {
@@ -26,81 +41,78 @@ export const couriersTableColumn: ColumnDef<User>[] = [
   },
   {
     header: "S/N",
-    cell: ({ row }) => <div>{row.index + 1}</div>,
-  },
-  {
-    accessorKey: "firstname",
-    header: "Courier Name	",
-    cell: ({ row }) => {
-      const firstname = row.getValue("firstname") ?? "N/A";
-      const lastname = row.original.lastname ?? "N/A";
-      const email = row.original.email ?? "N/A";
-      return <UI.TableUser name={`${firstname} ${lastname}`} subText={email} />;
+    cell: ({ table, row }) => {
+      const { pageIndex, pageSize } = table.getState().pagination;
+      return <div>{pageIndex * pageSize + row.index + 1}</div>;
     },
   },
   {
-    accessorKey: "phone",
-    header: "Phone Number	",
-    cell: ({ row }) => <p>{row.getValue("phone")}</p>,
-  },
-  {
-    accessorKey: "address",
-    header: "Address",
-    cell: ({ row }) => <p>endim young</p>,
-  },
-  {
-    accessorKey: "driversLicenseVerified",
-    header: "Liscence",
+    accessorKey: "firstname",
+    header: "Courier",
     cell: ({ row }) => {
-      const userId = row.original._id;
-      const isVerified = row.getValue("driversLicenseVerified") as liscenceVerified;
-
+      const u = row.original;
       return (
-        <Link href={`/couriers/${userId}/verification`} className="group">
-          {isVerified === "APPROVE" ? (
-            <div className="flex items-center font-bold gap-x-4">
-              <SVG.VerificationBadgeIcon /> Verified
-              <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
-                <Eye size={15} />
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center font-bold gap-x-2">
-              <SVG.HelpIcon />
-              Pending{" "}
-              <div className="rounded-lg group-hover:bg-[#956810]/10 transition-colors duration-200 p-2">
-                <Eye size={15} />
-              </div>
-            </div>
-          )}
+        <Link href={`/couriers/${u._id}/details`}>
+          <UI.TableUser img={u.photo} name={`${u.firstname ?? "N/A"} ${u.lastname ?? ""}`} subText={u.phone ? `+${u.phone}` : u.email} />
         </Link>
       );
     },
   },
   {
-    accessorKey: "dateJoined",
-    header: "Date Joined	",
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => <BalanceCell userId={row.original._id} />,
+  },
+  {
+    accessorKey: "deliveries",
+    header: "Deliveries",
+    cell: ({ row }) => <DeliveriesCell riderId={row.original._id} />,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <UI.TableStatus status={row.getValue("status")} />,
+  },
+  {
+    accessorKey: "driversLicenseVerified",
+    header: "Licence",
     cell: ({ row }) => {
-      const date = row.getValue("dateJoined") as Date;
-      if (!date) return <div>N/A</div>;
-
-      return <p className="mt-1">1/3/24</p>;
+      const userId = row.original._id;
+      const isVerified = row.getValue("driversLicenseVerified") as LicenceVerified;
+      return (
+        <Link href={`/couriers/${userId}/verification`} className="group inline-flex items-center gap-2 font-semibold">
+          {isVerified === "APPROVE" ? (
+            <>
+              <SVG.VerificationBadgeIcon /> Verified
+            </>
+          ) : (
+            <>
+              <SVG.HelpIcon /> {isVerified ? isVerified.charAt(0) + isVerified.slice(1).toLowerCase() : "Pending"}
+            </>
+          )}
+          <Eye size={14} className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+        </Link>
+      );
     },
   },
   {
-    header: "Action",
+    accessorKey: "createdAt",
+    header: "Joined",
     cell: ({ row }) => {
-      const userId = row.original._id;
-      return (
-        <div className="flex items-center  gap-x-8">
-          <UI.Switch />
-          <UI.Button size={"icon"} variant={"outline"} className="rounded-full shrink-0 size-6 [&_svg]:size-2" asChild>
-            <Link href={`/couriers/${userId}/details`}>
-              <SVG.ChevronRightIcon />
-            </Link>
-          </UI.Button>
-        </div>
-      );
+      const date = row.getValue("createdAt") as string;
+      return <p className="text-nowrap">{date ? dayjs(date).format("DD/MM/YY") : "N/A"}</p>;
     },
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => (
+      <UI.Button variant="outline" size="sm" asChild>
+        <Link href={`/couriers/${row.original._id}/details`} className="flex items-center gap-1.5">
+          <Eye size={14} />
+          View details
+        </Link>
+      </UI.Button>
+    ),
   },
 ];

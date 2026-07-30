@@ -1,14 +1,17 @@
-import { OrdersTable } from "@/components/OrdersTable";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
 import { Suspense } from "react";
+import { OrdersBoard } from "./OrdersBoard";
 
 const OrdersPage = () => {
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <UI.PrimaryHeading text="Orders" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Orders</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Everything happening across the platform, live.</p>
+        </div>
         <UI.Button asChild>
           <Link href={"/orders/analysis"} className="flex items-center gap-x-2">
             View Analysis
@@ -16,9 +19,9 @@ const OrdersPage = () => {
           </Link>
         </UI.Button>
       </div>
-      <section className="mt-[2rem]">
+      <section className="mt-6">
         <Suspense>
-          <OrdersTable />
+          <OrdersBoard />
         </Suspense>
       </section>
     </div>

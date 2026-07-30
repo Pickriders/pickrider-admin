@@ -1,19 +1,16 @@
 import { Suspense } from "react";
 import { CouriersTable } from "@/components/CouriersTable";
-import { SVG } from "@/components/svg";
-import { UI } from "@/components/ui";
 
 const CouriersPage = () => {
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <UI.PrimaryHeading text="Courier Management" />
-        <UI.Button>
-          <SVG.PlusIcon />
-          Add Driver
-        </UI.Button>
+      <div>
+        <h1 className="font-clash-display text-2xl font-semibold text-foreground">Couriers</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Review rider balances and deliveries, verify licences, and resolve rider issues.
+        </p>
       </div>
-      <section className="mt-[2rem] w-full">
+      <section className="mt-6 w-full">
         <Suspense>
           <CouriersTable />
         </Suspense>

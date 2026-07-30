@@ -1,15 +1,23 @@
 "use client";
 
+import * as React from "react";
+import { BarChart3 } from "lucide-react";
 import { SVG } from "@/components/svg";
 import { SidebarLink } from "./SidebarLink";
-import { useTheme } from "next-themes";
+import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
 
-const SIDEBAR_LINKS = [
+export const SIDEBAR_LINKS = [
   {
     activeIcon: <SVG.HomeIconFill />,
     icon: <SVG.HomeIcon />,
     label: "Dashboard",
     href: "/dashboard",
+  },
+  {
+    activeIcon: <BarChart3 size={21} strokeWidth={2.4} />,
+    icon: <BarChart3 size={21} />,
+    label: "Analytics",
+    href: "/analytics",
   },
   {
     activeIcon: <SVG.PersonGroupBoldFillIcon width={25} height={25} />,
@@ -48,11 +56,6 @@ const SIDEBAR_LINKS = [
     href: "/orders",
   },
   {
-    icon: <SVG.ReportIcon />,
-    label: "Reports & Complaints",
-    href: "/reports",
-  },
-  {
     activeIcon: <SVG.ShieldKeyFill />,
     icon: <SVG.ShieldKey />,
     label: "Admin",
@@ -60,25 +63,41 @@ const SIDEBAR_LINKS = [
   },
 ];
 
-export const Sidebar = () => {
-  const { setTheme, theme } = useTheme();
+/**
+ * Nav list filtered by the signed-in admin's roles. Roles are read from the
+ * JWT after mount; until then all links render so full-access admins (the
+ * common case) never see a flash.
+ */
+export const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => {
+  const [roles, setRoles] = React.useState<AdminRole[] | null>(null);
+  React.useEffect(() => setRoles(getAdminRoles()), []);
+
+  const links =
+    roles === null || roles.length === 0
+      ? SIDEBAR_LINKS
+      : SIDEBAR_LINKS.filter((link) => canAccessSection(link.href, roles));
 
   return (
+    <ul className="max-h-full">
+      {links.map((link) => (
+        <li key={link.href}>
+          <SidebarLink
+            path={link.href}
+            label={link.label}
+            icon={link.icon}
+            activeIcon={link.activeIcon}
+            onNavigate={onNavigate}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export const Sidebar = () => {
+  return (
     <aside className="w-[15rem] sticky top-[6.2rem] left-0 bg-background border-r  h-[calc(100vh-6.2rem)] pt-6">
-      <ul className=" max-h-full ">
-        {SIDEBAR_LINKS.map((link, i) => {
-          return (
-            <li key={i}>
-              <SidebarLink
-                path={link.href}
-                label={link.label}
-                icon={link.icon}
-                activeIcon={link.activeIcon}
-              />
-            </li>
-          );
-        })}
-      </ul>
+      <SidebarNav />
     </aside>
   );
 };
