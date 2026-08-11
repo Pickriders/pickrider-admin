@@ -18,7 +18,7 @@ export const CouriersTableFilter = () => {
           <SVG.FilterIcon />
         </UI.Button>
       </UI.PopoverTrigger>
-      <UI.PopoverContent sideOffset={10} className="mr-10 p-0 w-[19rem]">
+      <UI.PopoverContent sideOffset={10} className="mr-2 sm:mr-10 p-0 w-[92vw] sm:w-[19rem] max-w-[19rem]">
         <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">Filter Courier</h4>
         <div className="py-4 px-3">
           <div className="flex items-center justify-between">

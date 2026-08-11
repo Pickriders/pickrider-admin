@@ -47,7 +47,7 @@ export function DataTable() {
 
   return (
     <div className="bg-background rounded-xl pb-4 border">
-      <div className="px-[1.4rem] py-5 flex items-center gap-x-1 ">
+      <div className="px-3 sm:px-[1.4rem] py-5 flex flex-wrap items-center gap-x-1 gap-y-2 ">
         <UI.TableSearchInput
           onSearch={(text: string) => {
             setSearch(text);

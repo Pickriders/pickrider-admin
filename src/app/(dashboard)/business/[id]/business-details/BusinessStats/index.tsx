@@ -12,7 +12,7 @@ export const BusinessStats = ({ businessId }: { businessId: string }) => {
   return (
     <div className="font-montserrat">
       <UI.SectionHeader text="BUSINESS STATS" />
-      <div className="mt-5  grid grid-cols-2 gap-x-14 gap-y-8 w-[19rem] ">
+      <div className="mt-5 grid grid-cols-2 gap-x-8 sm:gap-x-14 gap-y-8 w-full sm:w-[19rem] ">
         <div className="space-y-2">
           <h4 className="font-semibold text-primary-gray text-xs">Phone Number</h4>
           <p className="font-semibold text-primary-purple text-xs">{business?.phone ?? "—"}</p>

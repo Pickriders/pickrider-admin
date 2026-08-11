@@ -23,7 +23,7 @@ export const BusinessTable = () => {
   return (
     <div className="bg-background rounded-lg pb-6 w-full">
       {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex sm:flex-row flex-col gap-y-3 sm:items-center justify-between">
+      <div className="px-3 sm:px-[1.4rem] py-5 flex sm:flex-row flex-col gap-y-3 sm:items-center justify-between">
         <BusinessTableBulkAction />
         <div className="flex items-center gap-x-2">
           <UI.TableSearchInput onSearch={setSearch} />
