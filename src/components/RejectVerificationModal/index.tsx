@@ -46,7 +46,7 @@ export const RejectVerificationModal = ({ userId }: { userId?: string }) => {
 
   return (
     <UI.AlertDialog open={isOpen}>
-      <UI.AlertDialogContent className="max-w-[34rem]">
+      <UI.AlertDialogContent className="w-[92vw] max-w-[34rem]">
         <UI.AlertDialogHeader>
           <UI.AlertDialogTitle className="font-clash-display">Reject licence</UI.AlertDialogTitle>
         </UI.AlertDialogHeader>

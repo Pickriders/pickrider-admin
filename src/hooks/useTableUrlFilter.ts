@@ -11,6 +11,10 @@ export const useTableUrlFilter = () => {
 
     if (value) {
       params.set(key, value);
+    } else {
+      // Empty value clears the filter (e.g. selecting "All") instead of leaving
+      // a stale param in the URL.
+      params.delete(key);
     }
     replace(`${pathname}?${params.toString()}`);
   };

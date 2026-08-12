@@ -7,16 +7,31 @@ import { flexRender } from "@tanstack/react-table";
 import { couriersTableColumn as columns } from "../CouriersTableColumn";
 import { useGetUsersReactTableQuery } from "@/api";
 import { useURLQuery } from "@/hooks";
+import { GetUsersParams } from "@/services";
 
 const LIMIT = 10;
 export const DataTable = () => {
   const query = useURLQuery();
   const userSearch = query.get("search");
-  const { data, isLoading, table, rowSelection } = useGetUsersReactTableQuery(
-    columns,
-    { limit: LIMIT, isRider: "true", userSearch },
-    {},
-  );
+  // The sort control + filter popover write these to the URL; pass them through so they
+  // actually reach the API (the hook otherwise only forwards `status` and `search`). The
+  // backend rider list ranks by `sortBy` and returns completedDeliveries + totalEarned.
+  const sortBy = query.get("sortBy") || "completedDeliveries";
+  const order = (query.get("order") || "DESC") as "ASC" | "DESC";
+  const bvnVerified = query.get("bvnVerified");
+  const driversLicenseVerified = query.get("driversLicenseVerified");
+
+  const params = {
+    limit: LIMIT,
+    isRider: "true",
+    userSearch,
+    order,
+    sortBy,
+    ...(bvnVerified ? { bvnVerified } : {}),
+    ...(driversLicenseVerified ? { driversLicenseVerified } : {}),
+  } as GetUsersParams;
+
+  const { data, isLoading, table, rowSelection } = useGetUsersReactTableQuery(columns, params, {});
 
   return (
     <div>

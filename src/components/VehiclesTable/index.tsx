@@ -27,9 +27,9 @@ export const VechiclesTable: React.FC = () => {
   return (
     <div className="bg-background rounded-lg pb-6">
       {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
+      <div className="px-3 sm:px-[1.4rem] py-5 flex flex-wrap items-center gap-3 justify-between">
         <VehiclesTableBulkActions />
-        <div className="flex items-center gap-x-2">
+        <div className="flex flex-1 sm:flex-none items-center gap-x-2">
           <UI.TableSearchInput
             value={vehicleSearch}
             onSearch={(text) => {
@@ -41,7 +41,7 @@ export const VechiclesTable: React.FC = () => {
       </div>
 
       {/* Table date */}
-      <div>
+      <div className="w-full overflow-x-auto">
         <UI.Table>
           <UI.TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

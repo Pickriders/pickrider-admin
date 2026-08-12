@@ -29,7 +29,7 @@ export const CustomersTable: React.FC = () => {
 
   return (
     <div>
-      <div className="px-[1.4rem] py-5 flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
+      <div className="px-3 sm:px-[1.4rem] py-5 flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
         <CustomersTableBulkAction />
         <div className="flex items-center gap-x-2">
           <Suspense>
