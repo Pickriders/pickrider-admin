@@ -219,6 +219,16 @@ export interface StateConfigDto {
    */
   minimumOrderPrice: number;
   /**
+   * Distance taper: raw price (sub-units) up to which the full per-km rate applies
+   * @default 300000
+   */
+  distanceTaperThreshold?: number;
+  /**
+   * Distance taper: flat per-km rate (sub-units) charged beyond the threshold
+   * @default 18000
+   */
+  distanceTaperBeyondRate?: number;
+  /**
    * Maximum riders per query
    * @default 5
    */
@@ -310,6 +320,10 @@ export interface State {
     percentageCharge?: number;
     /** @default 2000000 */
     minimumOrderPrice?: number;
+    /** @default 300000 */
+    distanceTaperThreshold?: number;
+    /** @default 18000 */
+    distanceTaperBeyondRate?: number;
     /** @default 5 */
     maxRidersPerQuery?: number;
     /** @default 1 */

@@ -44,7 +44,7 @@ export const SelectedListTable = <TData,>({ data }: DataTableProps<TData>) => {
   return (
     <div
       className={cn(
-        "fixed w-[34.7rem] pt-4 px-5 bg-background z-50 h-screen right-0 top-0 shadow-[0px_12px_16px_0px_#00000033] transition-transform duration-500 ease-in-out",
+        "fixed w-[90vw] sm:w-[34.7rem] max-w-[34.7rem] pt-4 px-4 sm:px-5 bg-background z-50 h-screen right-0 top-0 shadow-[0px_12px_16px_0px_#00000033] transition-transform duration-500 ease-in-out",
         isOpen ? "translate-x-0" : "translate-x-full"
       )}
     >

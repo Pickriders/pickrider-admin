@@ -23,6 +23,8 @@ const FormValidation = Yup.object().shape({
     minimumOrderPrice: Yup.number()
       .required("Minimum order price is required")
       .min(0, "Minimum order price cannot be less than 0"),
+    distanceTaperThreshold: Yup.number().min(0, "Taper threshold cannot be less than 0"),
+    distanceTaperBeyondRate: Yup.number().min(0, "Beyond rate cannot be less than 0"),
     maxRidersPerQuery: Yup.number()
       .required("Max riders per query is required")
       .min(0, "Max riders per query cannot be less than 0"),
@@ -67,6 +69,8 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
         serviceCharge: state?.config?.serviceCharge ?? 0,
         queueOrderByDefault: state?.config?.queueOrderByDefault ?? true,
         minimumOrderPrice: state?.config?.minimumOrderPrice ?? 1,
+        distanceTaperThreshold: state?.config?.distanceTaperThreshold ?? 300000,
+        distanceTaperBeyondRate: state?.config?.distanceTaperBeyondRate ?? 18000,
         maxRidersPerQuery: state?.config?.maxRidersPerQuery ?? 5,
         maxActiveOrders: state?.config?.maxActiveOrders ?? 5,
         maxDistanceRadius: state?.config?.maxDistanceRadius ?? 20,
@@ -257,6 +261,51 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               }
             />
           </div>
+          <div className="mt-12">
+            <UI.PrimaryHeading text="Distance fee taper" />
+            <p className="mt-2 text-xs text-primary-gray">
+              Long deliveries don&apos;t scale linearly. Up to the threshold the full per-km rate applies;
+              beyond it, the flat &quot;beyond rate&quot; per km is used. Both are in sub-units (e.g. ₦3,000 = 300000,
+              ₦180/km = 18000). Continuous — no price jump at the threshold.
+            </p>
+            <div className="my-8 flex gap-y-4 flex-wrap items-center gap-x-4">
+              <UI.Input
+                labelValue="Taper threshold (subunit)"
+                placeholder="300000"
+                id="distanceTaperThreshold"
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.distanceTaperThreshold")}
+                value={formik.values.config?.distanceTaperThreshold}
+                onChange={({ target }) => {
+                  const value = target.value?.replace(/[₦,.\s]/g, "");
+                  if (isNaN(Number(value))) return;
+                  formik.setFieldValue("config.distanceTaperThreshold", Number(value));
+                }}
+                errorMessage={
+                  formik.getFieldMeta("config.distanceTaperThreshold").touched &&
+                  formik.getFieldMeta("config.distanceTaperThreshold").error
+                }
+              />
+              <UI.Input
+                labelValue="Beyond-threshold rate per km (subunit)"
+                placeholder="18000"
+                id="distanceTaperBeyondRate"
+                className="w-[21rem]"
+                {...formik.getFieldProps("config.distanceTaperBeyondRate")}
+                value={formik.values.config?.distanceTaperBeyondRate}
+                onChange={({ target }) => {
+                  const value = target.value?.replace(/[₦,.\s]/g, "");
+                  if (isNaN(Number(value))) return;
+                  formik.setFieldValue("config.distanceTaperBeyondRate", Number(value));
+                }}
+                errorMessage={
+                  formik.getFieldMeta("config.distanceTaperBeyondRate").touched &&
+                  formik.getFieldMeta("config.distanceTaperBeyondRate").error
+                }
+              />
+            </div>
+          </div>
+
           <div className="mt-5 flex gap-y-4 flex-wrap items-center gap-x-4">
             <UI.Label htmlFor="Queue order by default" className="text-xs">
               Queue order by default

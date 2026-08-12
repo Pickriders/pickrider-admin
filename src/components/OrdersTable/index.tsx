@@ -20,7 +20,7 @@ export const OrdersTable = () => {
   return (
     <div className="bg-background rounded-lg pb-6">
       {/* Query components */}
-      <div className="px-[1.4rem] py-5 flex items-center justify-between">
+      <div className="px-3 sm:px-[1.4rem] py-5 flex flex-wrap items-center gap-3 justify-between">
         <div className="flex items-center gap-x-3">
           <OrdersTableBulkActions />
           {!pathname.startsWith("/orders") && (

@@ -58,7 +58,7 @@ export const RejectVerificationModal: React.FC<RejectVerificationModalProps> = (
   return (
     <UI.AlertDialog open={isOpen}>
       <form action="">
-        <UI.AlertDialogContent className="max-w-[40rem]">
+        <UI.AlertDialogContent className="w-[92vw] max-w-[40rem]">
           <UI.AlertDialogHeader>
             <UI.AlertDialogTitle className="text-primary-gray font-clash-display">Reason</UI.AlertDialogTitle>
           </UI.AlertDialogHeader>
