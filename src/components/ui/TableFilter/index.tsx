@@ -22,7 +22,7 @@ export const TableFilter = () => {
           <SVG.FilterIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent sideOffset={10} className="mr-10 p-0 w-[19rem]">
+      <PopoverContent sideOffset={10} className="mr-2 sm:mr-10 p-0 w-[92vw] sm:w-[19rem] max-w-[19rem]">
         <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">
           Filter Customers
         </h4>

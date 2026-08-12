@@ -13,9 +13,9 @@ export const UserMenu = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-x-2 w-[10rem]">
+      <div className="flex items-center gap-x-2 md:w-[10rem]">
         <UI.Skeleton className="size-[2.3rem] rounded-full shrink-0" />
-        <div className="w-full space-y-1">
+        <div className="hidden w-full space-y-1 md:block">
           <UI.Skeleton className="h-3 w-full rounded-2xl" />
           <UI.Skeleton className="h-3 w-full rounded-2xl" />
         </div>
@@ -27,17 +27,17 @@ export const UserMenu = () => {
     <UI.DropdownMenu>
       <UI.DropdownMenuTrigger asChild>
         <div role="button" className="flex items-center gap-x-2.5">
-          <div className="size-[2.3rem] font-clash-display rounded-full bg-primary-black text-white text-md grid place-items-center font-semibold">
+          <div className="size-[2.3rem] shrink-0 font-clash-display rounded-full bg-primary-black text-white text-md grid place-items-center font-semibold uppercase">
             {data?.firstname.charAt(0)}
             {data?.lastname.charAt(0)}
           </div>
-          <div>
-            <span className="font-clash-display font-semibold text-sm ">
+          <div className="hidden min-w-0 text-left md:block">
+            <span className="block truncate font-clash-display font-semibold text-sm">
               {data?.firstname} {data?.lastname}
             </span>
-            <p className="text-xs text-primary-gray">{data?.email}</p>
+            <p className="truncate text-xs text-primary-gray">{data?.email}</p>
           </div>
-          <span>
+          <span className="hidden md:inline">
             <SVG.ChevronDown />
           </span>
         </div>

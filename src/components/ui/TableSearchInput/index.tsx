@@ -52,7 +52,7 @@ export const TableSearchInput = ({ className, onSearch, value, ...props }: Table
         type="text"
         placeholder="Search"
         className={cn(
-          "w-[20rem] outline-none text-sm text-primary-gray dark:hover:bg-zinc-800 focus:dark:bg-zinc-900 pl-12 rounded-full pr-3 dark:bg-zinc-900 hover:bg-gray-200 focus:hover:bg-muted transition-all duration-300  bg-muted py-2.5 font-semibold font-montserrat",
+          "w-full sm:w-[20rem] outline-none text-sm text-primary-gray dark:hover:bg-zinc-800 focus:dark:bg-zinc-900 pl-12 rounded-full pr-3 dark:bg-zinc-900 hover:bg-gray-200 focus:hover:bg-muted transition-all duration-300  bg-muted py-2.5 font-semibold font-montserrat",
           className,
         )}
         value={text}

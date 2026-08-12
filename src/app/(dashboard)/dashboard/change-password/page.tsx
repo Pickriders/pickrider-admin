@@ -9,7 +9,7 @@ const ChangePasswordPage = () => {
         currentPage="Change Password"
         pageLinks={[{ href: "/dashboard", label: "Dashboard" }]}
       />
-      <section className="mt-[3rem] bg-background rounded-2xl py-14 px-8">
+      <section className="mt-[3rem] bg-background rounded-2xl py-8 sm:py-14 px-4 sm:px-8">
         <div className="w-[25rem] mx-auto ">
           <h1 className="text-center text-[1.5rem] font-clash-display font-semibold">
             Change Password

@@ -8,22 +8,11 @@ import { SVG } from "@/components/svg";
 import { User } from "@/services";
 import dayjs from "dayjs";
 import { formatMoney, subUnitToBaseUnit } from "@/utils";
-import { useGetCustomerLatestBalanceQuery } from "@/api/queries/customer";
-import { useGetCourierCompletedCountQuery } from "@/api/queries/courier";
 
 type LicenceVerified = "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
 
-const BalanceCell = ({ userId }: { userId: string }) => {
-  const { data, isLoading } = useGetCustomerLatestBalanceQuery(userId);
-  if (isLoading) return <span className="text-muted-foreground">…</span>;
-  if (!data?.hasHistory) return <span className="text-muted-foreground">—</span>;
-  return <span className="font-semibold">{formatMoney(subUnitToBaseUnit(data.balance), { currency: data.currency })}</span>;
-};
-
-const DeliveriesCell = ({ riderId }: { riderId: string }) => {
-  const { data, isLoading } = useGetCourierCompletedCountQuery(riderId);
-  return <span>{isLoading ? "…" : `${data ?? 0} completed`}</span>;
-};
+// The rider list now returns these lifetime metrics inline (see backend findAll).
+type RiderRow = User & { completedDeliveries?: number; totalEarned?: number; currency?: string };
 
 export const couriersTableColumn: ColumnDef<User>[] = [
   {
@@ -40,10 +29,23 @@ export const couriersTableColumn: ColumnDef<User>[] = [
     ),
   },
   {
-    header: "S/N",
+    header: "#",
     cell: ({ table, row }) => {
       const { pageIndex, pageSize } = table.getState().pagination;
-      return <div>{pageIndex * pageSize + row.index + 1}</div>;
+      const rank = pageIndex * pageSize + row.index + 1;
+      const medal =
+        rank === 1
+          ? "bg-amber-100 text-amber-700"
+          : rank === 2
+            ? "bg-zinc-200 text-zinc-700"
+            : rank === 3
+              ? "bg-orange-100 text-orange-700"
+              : "text-muted-foreground";
+      return (
+        <span className={`grid size-6 place-items-center rounded-full text-xs font-bold ${rank <= 3 ? medal : ""}`}>
+          {rank}
+        </span>
+      );
     },
   },
   {
@@ -53,25 +55,34 @@ export const couriersTableColumn: ColumnDef<User>[] = [
       const u = row.original;
       return (
         <Link href={`/couriers/${u._id}/details`}>
-          <UI.TableUser img={u.photo} name={`${u.firstname ?? "N/A"} ${u.lastname ?? ""}`} subText={u.phone ? `+${u.phone}` : u.email} />
+          <UI.TableUser
+            img={u.photo}
+            name={`${u.firstname ?? "N/A"} ${u.lastname ?? ""}`}
+            subText={u.phone ? `+${u.phone}` : u.email}
+          />
         </Link>
       );
     },
   },
   {
-    accessorKey: "balance",
-    header: "Balance",
-    cell: ({ row }) => <BalanceCell userId={row.original._id} />,
-  },
-  {
-    accessorKey: "deliveries",
+    id: "deliveries",
     header: "Deliveries",
-    cell: ({ row }) => <DeliveriesCell riderId={row.original._id} />,
+    cell: ({ row }) => {
+      const r = row.original as RiderRow;
+      return <span className="font-semibold text-nowrap">{r.completedDeliveries ?? 0}</span>;
+    },
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <UI.TableStatus status={row.getValue("status")} />,
+    id: "amountMade",
+    header: "Amount made",
+    cell: ({ row }) => {
+      const r = row.original as RiderRow;
+      return (
+        <span className="font-semibold text-nowrap">
+          {formatMoney(subUnitToBaseUnit(r.totalEarned ?? 0), { currency: r.currency ?? "NGN" })}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "driversLicenseVerified",
@@ -96,11 +107,18 @@ export const couriersTableColumn: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Joined",
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <UI.TableStatus status={row.getValue("status")} />,
+  },
+  {
+    accessorKey: "lastLoginDate",
+    header: "Last login",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return <p className="text-nowrap">{date ? dayjs(date).format("DD/MM/YY") : "N/A"}</p>;
+      const d = (row.original as RiderRow).lastLoginDate;
+      return (
+        <p className="text-nowrap text-muted-foreground">{d ? dayjs(d).format("DD/MM/YY, HH:mm") : "Never"}</p>
+      );
     },
   },
   {
