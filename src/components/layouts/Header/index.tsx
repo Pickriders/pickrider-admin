@@ -1,7 +1,6 @@
 import { SVG } from "@/components/svg";
 import Link from "next/link";
 import { UserMenu } from "./UserMenu";
-import { Notification } from "./Notification";
 import { Suspense } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { FontSwitcher } from "./FontSwitcher";
@@ -12,7 +11,10 @@ export const Header = () => {
     <header className="h-[6.2rem] py-3 sm:pl-6 sm:pr-9 px-4 bg-background sticky top-0 z-30 border-b  flex items-center justify-between">
       <div className="flex items-center gap-x-3">
         <MobileNav />
-        <Link href={"/dashboard"} className=" pt-2 inline-block mb-0">
+        <Link
+          href={"/dashboard"}
+          className="pt-2 inline-block mb-0 [&_svg]:h-auto [&_svg]:w-24 sm:[&_svg]:w-[161px]"
+        >
           <SVG.LogoIcon />
         </Link>
       </div>
@@ -20,7 +22,6 @@ export const Header = () => {
         <FontSwitcher />
         <ThemeToggle />
         <Suspense>
-          <Notification />
           <UserMenu />
         </Suspense>
       </div>

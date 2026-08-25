@@ -28,12 +28,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ orderId }) => {
     <div>
       <UI.BreadCrumbNav pageLinks={[{ href: "/orders", label: "Orders" }]} rootPageLink="/orders" currentPage="4324" />
 
-      <section className="bg-background p-6 mt-12 rounded-lg flex gap-x-14  *:font-montserrat">
-        <div className="flex-1">
+      <section className="bg-background p-4 sm:p-6 mt-8 sm:mt-12 rounded-lg flex flex-col lg:flex-row gap-8 lg:gap-x-14 *:font-montserrat">
+        <div className="flex-1 min-w-0">
           <DetailsContainer order={data} />
         </div>
 
-        <div className="w-[27rem] min-h-[32rem]">
+        <div className="w-full lg:w-[27rem] min-h-[28rem] sm:min-h-[32rem]">
           <APIProvider apiKey={GOOGLE_MAP_API_KEY ?? ""}>
             <MapView order={data} />
           </APIProvider>

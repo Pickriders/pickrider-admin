@@ -77,7 +77,7 @@ export const CountryForm = () => {
           />
           <div className="flex flex-col gap-y-1.5">
             <UI.Label className="text-xs font-montserrat">Exchange rate</UI.Label>
-            <div className="flex  text-xs items-center gap-x-3 w-[21rem] border rounded-lg justify-between h-9 py-1 px-4">
+            <div className="flex  text-xs items-center gap-x-3 w-full sm:w-[21rem] border rounded-lg justify-between h-9 py-1 px-4">
               <span>$1</span>
               <span className="grow border-dashed border"></span>
               <span>N 1,700</span>
