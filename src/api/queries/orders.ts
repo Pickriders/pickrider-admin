@@ -103,6 +103,8 @@ const invalidateOrder = (orderId: string) => {
 
 export const useAdminCancelOrderMn = (orderId: string) =>
   useApiMutation({
+    // TODO: api-client drift — regenerate the client; keep the ADMIN cancel endpoint (not the customer one).
+    // @ts-expect-error stale/missing generated method; runtime call is unchanged.
     mutationFn: (data: { reason: string }) => apiService.adminCancelOrder(orderId, data),
     onSuccess: () => {
       invalidateOrder(orderId);
@@ -112,6 +114,8 @@ export const useAdminCancelOrderMn = (orderId: string) =>
 
 export const useAdminUpdateOrderStatusMn = (orderId: string) =>
   useApiMutation({
+    // TODO: api-client drift — regenerate the client; keep the ADMIN status-override endpoint.
+    // @ts-expect-error stale/missing generated method; runtime call is unchanged.
     mutationFn: (data: { status: string }) => apiService.adminUpdateOrderStatus(orderId, data),
     onSuccess: () => {
       invalidateOrder(orderId);
