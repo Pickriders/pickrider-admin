@@ -115,13 +115,13 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             <UI.Input
               labelValue="State name"
               id="State name"
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               placeholder="State name"
               {...formik.getFieldProps("name")}
               errorMessage={formik.touched.name && formik.errors.name}
             />
 
-            <UI.Input labelValue="Code" id="Code" className="w-[21rem]" defaultValue={state?.code} placeholder="EN" />
+            <UI.Input labelValue="Code" id="Code" className="w-full sm:w-[21rem]" defaultValue={state?.code} placeholder="EN" />
           </div>
 
           <UI.PrimaryHeading text="State Config" />
@@ -130,7 +130,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             <UI.Input
               labelValue="Base fuel price (subunit)"
               id="Base fuel price"
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.baseFuelPrice")}
               value={formik.values.config?.baseFuelPrice}
               onChange={({ target }) => {
@@ -144,7 +144,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             <UI.Input
               labelValue="Current fuel price (subunit)"
               id="Current fuel price"
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.currentFuelPrice")}
               value={formik.values.config?.currentFuelPrice}
               onChange={({ target }) => {
@@ -160,7 +160,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             <UI.Input
               labelValue="Price per km (subunit)"
               id="Price per km"
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.basePricePerKm")}
               value={formik.values.config?.basePricePerKm}
               onChange={({ target }) => {
@@ -180,7 +180,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               type="number"
               min={0}
               max={100}
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.percentageCharge")}
               errorMessage={
                 formik.getFieldMeta("config.percentageCharge").touched &&
@@ -193,7 +193,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               id="serviceCharge"
               type="number"
               min={0}
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.serviceCharge")}
               value={formik.values.config?.serviceCharge}
               onChange={({ target }) => {
@@ -208,7 +208,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
             <UI.Input
               labelValue="Minimum order price (subunit)"
               id="minimumOrderPrice"
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.minimumOrderPrice")}
               value={formik.values.config?.minimumOrderPrice}
               onChange={({ target }) => {
@@ -227,7 +227,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               id="maxActiveOrders"
               type="number"
               min={1}
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.maxActiveOrders")}
               errorMessage={
                 formik.getFieldMeta("config.maxActiveOrders").touched &&
@@ -240,7 +240,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               id="maxRidersPerQuery"
               type="number"
               min={1}
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.maxRidersPerQuery")}
               errorMessage={
                 formik.getFieldMeta("config.maxRidersPerQuery").touched &&
@@ -253,7 +253,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
               id="maxDistanceRadius"
               type="number"
               min={1}
-              className="w-[21rem]"
+              className="w-full sm:w-[21rem]"
               {...formik.getFieldProps("config.maxDistanceRadius")}
               errorMessage={
                 formik.getFieldMeta("config.maxDistanceRadius").touched &&
@@ -273,7 +273,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 labelValue="Taper threshold (subunit)"
                 placeholder="300000"
                 id="distanceTaperThreshold"
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.distanceTaperThreshold")}
                 value={formik.values.config?.distanceTaperThreshold}
                 onChange={({ target }) => {
@@ -290,7 +290,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 labelValue="Beyond-threshold rate per km (subunit)"
                 placeholder="18000"
                 id="distanceTaperBeyondRate"
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.distanceTaperBeyondRate")}
                 value={formik.values.config?.distanceTaperBeyondRate}
                 onChange={({ target }) => {
@@ -339,7 +339,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="locationUpdateFreeRadiusMeters"
                 type="number"
                 min={1}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.locationUpdateFreeRadiusMeters")}
                 errorMessage={
                   formik.getFieldMeta("config.locationUpdateFreeRadiusMeters").touched &&
@@ -352,7 +352,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="locationUpdateMaxPerLocation"
                 type="number"
                 min={1}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.locationUpdateMaxPerLocation")}
                 errorMessage={
                   formik.getFieldMeta("config.locationUpdateMaxPerLocation").touched &&
@@ -365,7 +365,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="locationUpdateMaxDeclinesPerLocation"
                 type="number"
                 min={1}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.locationUpdateMaxDeclinesPerLocation")}
                 errorMessage={
                   formik.getFieldMeta("config.locationUpdateMaxDeclinesPerLocation").touched &&
@@ -378,7 +378,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="locationUpdateRiderAcceptTimeoutSec"
                 type="number"
                 min={30}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.locationUpdateRiderAcceptTimeoutSec")}
                 errorMessage={
                   formik.getFieldMeta("config.locationUpdateRiderAcceptTimeoutSec").touched &&
@@ -423,7 +423,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="arrivalRadiusMeters"
                 type="number"
                 min={1}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.arrivalRadiusMeters")}
                 errorMessage={
                   formik.getFieldMeta("config.arrivalRadiusMeters").touched &&
@@ -436,7 +436,7 @@ const StateConfig: React.FC<StateConfigProps> = ({ countryId, stateId }) => {
                 id="etaAverageSpeedKmh"
                 type="number"
                 min={1}
-                className="w-[21rem]"
+                className="w-full sm:w-[21rem]"
                 {...formik.getFieldProps("config.etaAverageSpeedKmh")}
                 errorMessage={
                   formik.getFieldMeta("config.etaAverageSpeedKmh").touched &&

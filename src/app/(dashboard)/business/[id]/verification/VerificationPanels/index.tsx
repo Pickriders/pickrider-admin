@@ -44,7 +44,7 @@ export const VerificationPanel = () => {
 
                 <motion.div
                   layoutId="preview-KYC"
-                  className="mt-5 relative w-[26rem]"
+                  className="mt-5 relative w-full max-w-[26rem]"
                 >
                   <Image
                     alt="demo"
@@ -110,7 +110,7 @@ export const VerificationPanel = () => {
 
                 <motion.div
                   layoutId="preview-KYB"
-                  className="mt-5 relative w-[26rem]"
+                  className="mt-5 relative w-full max-w-[26rem]"
                 >
                   <Image
                     alt="demo"

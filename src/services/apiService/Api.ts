@@ -13,7 +13,9 @@
 import {
   AcceptOrRejectOrderOfferData,
   AcceptOrRejectOrderOfferParams,
+  AcceptRejectLocationUpdateRequestDto,
   AcceptRejectOfferRequestDto,
+  AcknowledgeWalletTermsData,
   AddCountryData,
   AddCountryDto,
   AddCountryStatesData,
@@ -25,6 +27,11 @@ import {
   AddKycDetailsParams,
   AddVehiclesData,
   AddVehiclesDto,
+  AdjustUserWalletData,
+  AdjustUserWalletParams,
+  AdjustWalletRequestDto,
+  AdminCancelOrderRequestDto,
+  AdminUpdateOrderStatusRequestDto,
   ApplyOrderCouponData,
   ApplyOrderCouponParams,
   ApproveDriversLicenseSubmissionData,
@@ -33,7 +40,12 @@ import {
   AssignUserVehicleParams,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
+  CancelFundWalletData,
+  CancelFundWalletParams,
+  CancelFundWalletRequestDto,
   CancelLocationRequestDto,
+  CancelOrder2Data,
+  CancelOrder2Params,
   CancelOrderData,
   CancelOrderLocationData,
   CancelOrderLocationParams,
@@ -48,6 +60,8 @@ import {
   CompleteOrderLocationData,
   CompleteOrderLocationParams,
   CompleteOrderParams,
+  ConfirmExternalPaymentByReferenceData,
+  ConfirmExternalPaymentByReferenceParams,
   CreateBatchOrderData,
   CreateBatchOrderDto,
   CreateBulkOrderData,
@@ -61,8 +75,13 @@ import {
   CreateDedicatedVirtualAccountData,
   CreateGroupData,
   CreateGroupRequestDto,
+  CreateOrderPaymentLinkData,
+  CreateOrderPaymentLinkParams,
   CreateSingleOrderData,
   CreateSingleOrderDto,
+  CreateTeam2Data,
+  CreateTeamData,
+  CreateTeamRequestDto,
   CreateTemplateData,
   CreateTemplateRequestDto,
   CreateUser2Data,
@@ -71,6 +90,7 @@ import {
   CreateUserRequestDto,
   CreateVirtualAccountRequestDto,
   CreateWalletData,
+  CreditPlatformWalletData,
   DeactivateCouponData,
   DeactivateCouponParams,
   DeleteUserAccountData,
@@ -78,6 +98,7 @@ import {
   DeleteUserVehicleParams,
   DeleteVehicleData,
   DeleteVehicleParams,
+  FindAll2Data,
   FindAllData,
   FindAllParams,
   FundWalletRequestDto,
@@ -86,6 +107,7 @@ import {
   GetActiveOffersParams,
   GetAllReferralsData,
   GetAllReferralsParams,
+  GetBanks2Data,
   GetBanksData,
   GetBanksParams,
   GetBusinessData,
@@ -122,29 +144,44 @@ import {
   GetCountryStateByIdParams,
   GetCountryStatesData,
   GetCountryStatesParams,
+  GetDeliveryPricingData,
+  GetExternalPaymentMetricsData,
+  GetExternalPaymentMetricsParams,
+  GetFinanceStatusData,
   GetHeartbeatData,
+  GetLatestLocationUpdateForCustomerData,
+  GetLatestLocationUpdateForCustomerParams,
   GetLogsData,
   GetNotificationsData,
   GetNotificationsParams,
   GetOrderData,
+  GetOrderEtaData,
+  GetOrderEtaParams,
   GetOrderParams,
+  GetOrderPaymentInfoData,
+  GetOrderPaymentInfoParams,
   GetOrderStatusChartData,
   GetOrderStatusChartParams,
   GetOrderTypeChartData,
   GetOrderTypeChartParams,
   GetOrdersData,
   GetOrdersParams,
+  GetPendingLocationUpdateData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
   GetReviewsData,
+  GetRiderLocationsData,
   GetRiderOrderData,
   GetRiderOrderParams,
   GetRiderOrderStatisticsData,
   GetRiderOrderStatisticsParams,
   GetRiderOrdersData,
   GetRiderOrdersParams,
+  GetRidersLeaderboardData,
   GetTransactionData,
   GetTransactionParams,
+  GetTransactionSummaryData,
+  GetTransactionSummaryParams,
   GetTransactions2Data,
   GetTransactions2Params,
   GetTransactionsData,
@@ -161,13 +198,19 @@ import {
   GetUserProfileData,
   GetUserReviewsData,
   GetUserReviewsParams,
+  GetUserTeamData,
+  GetUserTeamParams,
   GetUserTransactionData,
   GetUserTransactionParams,
   GetUserTransactionsData,
   GetUserTransactionsParams,
+  GetUserTransactionsSummaryData,
+  GetUserTransactionsSummaryParams,
   GetUserVehicleData,
   GetUserWalletData,
   GetUserWalletParams,
+  GetUserWallets2Data,
+  GetUserWallets2Params,
   GetUserWalletsData,
   GetUsersData,
   GetUsersParams,
@@ -181,14 +224,20 @@ import {
   GoogleSignInRequestDto,
   HandleWebhookEventsData,
   HandleWebhookEventsParams,
+  InitializeExternalOrderPaymentData,
+  InitializeExternalOrderPaymentParams,
   InitializeFundWalletData,
   InitializeFundWalletParams,
+  InitializeOrderPaymentRequestDto,
   InitiateOrderPaymentData,
   InitiateOrderPaymentParams,
+  InitiatePayoutData,
+  InitiatePayoutDto,
   InitiateWithdrawalData,
   InitiateWithdrawalParams,
   InitiateWithdrawalRequestDto,
   KYCDetailsDto,
+  ListAllRidersData,
   LoginAdminsData,
   LoginBusinessData,
   LoginData,
@@ -196,14 +245,30 @@ import {
   MakeOfferRequestDto,
   MakeOrderOfferData,
   MakeOrderOfferParams,
-  NewFeatureLaunchNotificationData,
   Object,
   PasswordResetData,
   PasswordResetRequestData,
   QueueOrderData,
   QueueOrderParams,
+  QuoteBatchOrderData,
+  QuoteBatchOrderRequestDto,
+  QuoteBulkOrderData,
+  QuoteBulkOrderRequestDto,
+  QuoteOrderData,
+  QuoteOrderLocationData,
+  QuoteOrderLocationParams,
+  QuoteOrderRequestDto,
   RateRiderData,
   RateRiderRequestDto,
+  ReDispatchData,
+  ReDispatchParams,
+  ReDispatchRequestDto,
+  ReassignRiderData,
+  ReassignRiderParams,
+  ReassignRiderRequestDto,
+  RefundCustomerOrderData,
+  RefundCustomerOrderParams,
+  RefundOrderRequestDto,
   RejectVehicleData,
   RejectVehicleParams,
   RemoveGroupUsersData,
@@ -216,8 +281,13 @@ import {
   RequestOrderRidersParams,
   ResendTokenData,
   ResetPasswordRequestDto,
+  RespondToLocationUpdateData,
+  RespondToLocationUpdateParams,
+  RiderLocationsRequestDto,
   RidersRequestDto,
   RunData,
+  SetPinData,
+  SetWithdrawalPinDto,
   StartOrderData,
   StartOrderLocationData,
   StartOrderLocationParams,
@@ -255,11 +325,17 @@ import {
   UpdateLocationRequestDto,
   UpdateLocationStatusRequestDto,
   UpdateNotificationsRequestDto,
+  UpdateOrderLocationData,
+  UpdateOrderLocationDto,
+  UpdateOrderLocationParams,
   UpdateOrderLocationStatusData,
   UpdateOrderLocationStatusParams,
+  UpdateOrderStatusData,
+  UpdateOrderStatusParams,
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
+  UpdatePlatformSettlementDto,
   UpdatePreferencesRequestDto,
   UpdateProfilePhoto2Data,
   UpdateProfilePhotoData,
@@ -269,12 +345,16 @@ import {
   UpdateSettlementAccountData,
   UpdateSettlementAccountParams,
   UpdateSettlementAccountRequestDto,
+  UpdateSettlementData,
   UpdateStateDto,
   UpdateUserAddresses2Data,
   UpdateUserAddressesData,
   UpdateUserLocationData,
   UpdateUserPreferencesData,
   UpdateUserProfileData,
+  UpdateUserStatusData,
+  UpdateUserStatusParams,
+  UpdateUserStatusRequestDto,
   UpdateUserVehicle2Data,
   UpdateUserVehicle2Params,
   UpdateUserVehicleData,
@@ -287,6 +367,8 @@ import {
   VerifyDriversLicenseData,
   VerifyEmailData,
   VerifyEmailRequestDto,
+  VerifyOrderPaymentData,
+  VerifyOrderPaymentParams,
   VerifyPhoneData,
   VerifyPhoneRequestDto,
   VerifyVehicleData,
@@ -315,12 +397,27 @@ export class Api<
    * No description
    *
    * @tags admin-configs
+   * @name GetDeliveryPricing
+   * @request GET:/api/v1/admin-configs/delivery-pricing
+   * @response `200` `GetDeliveryPricingData`
+   */
+  getDeliveryPricing = (params: RequestParams = {}) =>
+    this.request<GetDeliveryPricingData, any>({
+      path: `/api/v1/admin-configs/delivery-pricing`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admin-configs
    * @name GetCountries
    * @request GET:/api/v1/admin-configs/countries
    * @secure
    * @response `200` `GetCountriesData`
    */
-  getCountries = (query: GetCountriesParams, params: RequestParams = {}) =>
+  getCountries = (query: GetCountriesParams = {}, params: RequestParams = {}) =>
     this.request<GetCountriesData, any>({
       path: `/api/v1/admin-configs/countries`,
       method: "GET",
@@ -358,7 +455,7 @@ export class Api<
    * @response `200` `UpdateCountryData`
    */
   updateCountry = (
-    { countryId, ...query }: UpdateCountryParams,
+    { countryId }: UpdateCountryParams,
     data: UpdateCountryDto,
     params: RequestParams = {},
   ) =>
@@ -381,7 +478,7 @@ export class Api<
    * @response `200` `GetCountryByIdData`
    */
   getCountryById = (
-    { countryId, ...query }: GetCountryByIdParams,
+    { countryId }: GetCountryByIdParams,
     params: RequestParams = {},
   ) =>
     this.request<GetCountryByIdData, any>({
@@ -401,7 +498,7 @@ export class Api<
    * @response `201` `AddCountryStatesData`
    */
   addCountryStates = (
-    { countryId, ...query }: AddCountryStatesParams,
+    { countryId }: AddCountryStatesParams,
     data: AddCountryStatesPayload,
     params: RequestParams = {},
   ) =>
@@ -424,7 +521,7 @@ export class Api<
    * @response `200` `GetCountryStatesData`
    */
   getCountryStates = (
-    { countryId, ...query }: GetCountryStatesParams,
+    { countryId }: GetCountryStatesParams,
     params: RequestParams = {},
   ) =>
     this.request<GetCountryStatesData, any>({
@@ -444,7 +541,7 @@ export class Api<
    * @response `200` `GetCountryStateByIdData`
    */
   getCountryStateById = (
-    { countryId, stateId, ...query }: GetCountryStateByIdParams,
+    { countryId, stateId }: GetCountryStateByIdParams,
     params: RequestParams = {},
   ) =>
     this.request<GetCountryStateByIdData, any>({
@@ -464,7 +561,7 @@ export class Api<
    * @response `200` `UpdateCountryStateData`
    */
   updateCountryState = (
-    { countryId, stateId, ...query }: UpdateCountryStateParams,
+    { countryId, stateId }: UpdateCountryStateParams,
     data: UpdateStateDto,
     params: RequestParams = {},
   ) =>
@@ -659,8 +756,8 @@ export class Api<
    * @response `201` `CreateUserData`
    */
   createUser = (
-    query: CreateUserParams,
     data: CreateUserRequestDto,
+    query: CreateUserParams = {},
     params: RequestParams = {},
   ) =>
     this.request<CreateUserData, any>({
@@ -708,6 +805,23 @@ export class Api<
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
+   * @name AcknowledgeWalletTerms
+   * @request PATCH:/api/v1/users/me/acknowledge-wallet-terms
+   * @secure
+   * @response `200` `AcknowledgeWalletTermsData`
+   */
+  acknowledgeWalletTerms = (params: RequestParams = {}) =>
+    this.request<AcknowledgeWalletTermsData, any>({
+      path: `/api/v1/users/me/acknowledge-wallet-terms`,
+      method: "PATCH",
+      secure: true,
       format: "json",
       ...params,
     });
@@ -845,7 +959,7 @@ export class Api<
    * @response `200` `GetUserWalletData`
    */
   getUserWallet = (
-    { walletId, ...query }: GetUserWalletParams,
+    { walletId }: GetUserWalletParams,
     params: RequestParams = {},
   ) =>
     this.request<GetUserWalletData, any>({
@@ -865,12 +979,35 @@ export class Api<
    * @response `201` `InitializeFundWalletData`
    */
   initializeFundWallet = (
-    { walletId, ...query }: InitializeFundWalletParams,
+    { walletId }: InitializeFundWalletParams,
     data: FundWalletRequestDto,
     params: RequestParams = {},
   ) =>
     this.request<InitializeFundWalletData, any>({
       path: `/api/v1/users/me/wallets/${walletId}/initialize-funding`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
+   * @name CancelFundWallet
+   * @request POST:/api/v1/users/me/wallets/{walletId}/cancel-funding
+   * @secure
+   * @response `201` `CancelFundWalletData`
+   */
+  cancelFundWallet = (
+    { walletId }: CancelFundWalletParams,
+    data: CancelFundWalletRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<CancelFundWalletData, any>({
+      path: `/api/v1/users/me/wallets/${walletId}/cancel-funding`,
       method: "POST",
       body: data,
       secure: true,
@@ -888,7 +1025,7 @@ export class Api<
    * @response `200` `UpdateSettlementAccountData`
    */
   updateSettlementAccount = (
-    { walletId, ...query }: UpdateSettlementAccountParams,
+    { walletId }: UpdateSettlementAccountParams,
     data: UpdateSettlementAccountRequestDto,
     params: RequestParams = {},
   ) =>
@@ -911,7 +1048,7 @@ export class Api<
    * @response `200` `InitiateWithdrawalData`
    */
   initiateWithdrawal = (
-    { walletId, ...query }: InitiateWithdrawalParams,
+    { walletId }: InitiateWithdrawalParams,
     data: InitiateWithdrawalRequestDto,
     params: RequestParams = {},
   ) =>
@@ -951,7 +1088,7 @@ export class Api<
    * @response `200` `GetAllReferralsData`
    */
   getAllReferrals = (
-    query: GetAllReferralsParams,
+    query: GetAllReferralsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetAllReferralsData, any>({
@@ -972,11 +1109,32 @@ export class Api<
    * @response `200` `GetUserTransactionsData`
    */
   getUserTransactions = (
-    query: GetUserTransactionsParams,
+    query: GetUserTransactionsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetUserTransactionsData, any>({
       path: `/api/v1/users/me/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
+   * @name GetUserTransactionsSummary
+   * @request GET:/api/v1/users/me/transactions/summary
+   * @secure
+   * @response `200` `GetUserTransactionsSummaryData`
+   */
+  getUserTransactionsSummary = (
+    query: GetUserTransactionsSummaryParams = {},
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserTransactionsSummaryData, any>({
+      path: `/api/v1/users/me/transactions/summary`,
       method: "GET",
       query: query,
       secure: true,
@@ -993,7 +1151,7 @@ export class Api<
    * @response `200` `GetUserTransactionData`
    */
   getUserTransaction = (
-    { transactionId, ...query }: GetUserTransactionParams,
+    { transactionId }: GetUserTransactionParams,
     params: RequestParams = {},
   ) =>
     this.request<GetUserTransactionData, any>({
@@ -1110,7 +1268,7 @@ export class Api<
    * @response `200` `GetRiderOrderData`
    */
   getRiderOrder = (
-    { orderId, ...query }: GetRiderOrderParams,
+    { orderId }: GetRiderOrderParams,
     params: RequestParams = {},
   ) =>
     this.request<GetRiderOrderData, any>({
@@ -1185,22 +1343,6 @@ export class Api<
    * No description
    *
    * @tags admins/users
-   * @name NewFeatureLaunchNotification
-   * @request PATCH:/api/v1/admins/users/new-features-nofitication
-   * @secure
-   * @response `200` `NewFeatureLaunchNotificationData`
-   */
-  newFeatureLaunchNotification = (params: RequestParams = {}) =>
-    this.request<NewFeatureLaunchNotificationData, any>({
-      path: `/api/v1/admins/users/new-features-nofitication`,
-      method: "PATCH",
-      secure: true,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags admins/users
    * @name CreateUser2
    * @request POST:/api/v1/admins/users
    * @originalName createUser
@@ -1225,7 +1367,7 @@ export class Api<
    * @secure
    * @response `200` `GetUsersData`
    */
-  getUsers = (query: GetUsersParams, params: RequestParams = {}) =>
+  getUsers = (query: GetUsersParams = {}, params: RequestParams = {}) =>
     this.request<GetUsersData, any>({
       path: `/api/v1/admins/users`,
       method: "GET",
@@ -1243,7 +1385,7 @@ export class Api<
    * @secure
    * @response `200` `GetUserData`
    */
-  getUser = ({ userId, ...query }: GetUserParams, params: RequestParams = {}) =>
+  getUser = ({ userId }: GetUserParams, params: RequestParams = {}) =>
     this.request<GetUserData, any>({
       path: `/api/v1/admins/users/${userId}`,
       method: "GET",
@@ -1252,23 +1394,42 @@ export class Api<
       ...params,
     });
   /**
-   * Hand-added — re-add after any regen. Admin customer-console actions.
-   * Backend: src/users/users.admins.controller.ts.
+   * No description
+   *
+   * @tags admins/users
+   * @name GetUserWallets2
+   * @request GET:/api/v1/admins/users/{userId}/wallets
+   * @originalName getUserWallets
+   * @duplicate
+   * @secure
+   * @response `200` `GetUserWallets2Data`
    */
-  getUserWalletsAdmin = ({ userId }: { userId: string }, params: RequestParams = {}) =>
-    this.request<import("./data-contracts").WalletListResponseDto, any>({
+  getUserWallets2 = (
+    { userId }: GetUserWallets2Params,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserWallets2Data, any>({
       path: `/api/v1/admins/users/${userId}/wallets`,
       method: "GET",
       secure: true,
       format: "json",
       ...params,
     });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name UpdateUserStatus
+   * @request PATCH:/api/v1/admins/users/{userId}/status
+   * @secure
+   * @response `200` `UpdateUserStatusData`
+   */
   updateUserStatus = (
-    { userId }: { userId: string },
-    data: import("./data-contracts").AdminUpdateUserStatusDto,
+    { userId }: UpdateUserStatusParams,
+    data: UpdateUserStatusRequestDto,
     params: RequestParams = {},
   ) =>
-    this.request<import("./data-contracts").User, any>({
+    this.request<UpdateUserStatusData, any>({
       path: `/api/v1/admins/users/${userId}/status`,
       method: "PATCH",
       body: data,
@@ -1277,12 +1438,21 @@ export class Api<
       format: "json",
       ...params,
     });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name AdjustUserWallet
+   * @request POST:/api/v1/admins/users/{userId}/wallets/adjust
+   * @secure
+   * @response `201` `AdjustUserWalletData`
+   */
   adjustUserWallet = (
-    { userId }: { userId: string },
-    data: import("./data-contracts").AdminAdjustWalletDto,
+    { userId }: AdjustUserWalletParams,
+    data: AdjustWalletRequestDto,
     params: RequestParams = {},
   ) =>
-    this.request<any, any>({
+    this.request<AdjustUserWalletData, any>({
       path: `/api/v1/admins/users/${userId}/wallets/adjust`,
       method: "POST",
       body: data,
@@ -1291,12 +1461,21 @@ export class Api<
       format: "json",
       ...params,
     });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name RefundCustomerOrder
+   * @request POST:/api/v1/admins/users/{userId}/refund
+   * @secure
+   * @response `201` `RefundCustomerOrderData`
+   */
   refundCustomerOrder = (
-    { userId }: { userId: string },
-    data: import("./data-contracts").AdminRefundOrderDto,
+    { userId }: RefundCustomerOrderParams,
+    data: RefundOrderRequestDto,
     params: RequestParams = {},
   ) =>
-    this.request<any, any>({
+    this.request<RefundCustomerOrderData, any>({
       path: `/api/v1/admins/users/${userId}/refund`,
       method: "POST",
       body: data,
@@ -1317,7 +1496,7 @@ export class Api<
    * @response `200` `VerifyDriversLicense2Data`
    */
   verifyDriversLicense2 = (
-    { userId, ...query }: VerifyDriversLicense2Params,
+    { userId }: VerifyDriversLicense2Params,
     data: SubmitDriversLicenseRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1340,7 +1519,7 @@ export class Api<
    * @response `200` `ApproveDriversLicenseSubmissionData`
    */
   approveDriversLicenseSubmission = (
-    { userId, ...query }: ApproveDriversLicenseSubmissionParams,
+    { userId }: ApproveDriversLicenseSubmissionParams,
     params: RequestParams = {},
   ) =>
     this.request<ApproveDriversLicenseSubmissionData, any>({
@@ -1360,7 +1539,7 @@ export class Api<
    * @response `200` `UpdateDriversLicenseData`
    */
   updateDriversLicense = (
-    { userId, ...query }: UpdateDriversLicenseParams,
+    { userId }: UpdateDriversLicenseParams,
     data: UpdateDriverLicenseRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1385,7 +1564,7 @@ export class Api<
    * @response `200` `UpdateSettlementAccount2Data`
    */
   updateSettlementAccount2 = (
-    { userId, walletId, ...query }: UpdateSettlementAccount2Params,
+    { userId, walletId }: UpdateSettlementAccount2Params,
     data: UpdateSettlementAccountRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1511,6 +1690,22 @@ export class Api<
   /**
    * No description
    *
+   * @tags wallets
+   * @name CreditPlatformWallet
+   * @request POST:/api/v1/wallets/credit-platform
+   * @secure
+   * @response `201` `CreditPlatformWalletData`
+   */
+  creditPlatformWallet = (params: RequestParams = {}) =>
+    this.request<CreditPlatformWalletData, any>({
+      path: `/api/v1/wallets/credit-platform`,
+      method: "POST",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
    * @tags admins/wallets
    * @name GetPlatformWallet
    * @request GET:/api/v1/admins/wallets/platform-wallet
@@ -1525,67 +1720,6 @@ export class Api<
       format: "json",
       ...params,
     });
-  /** Hand-added — platform financial ops. Re-add after any regen. */
-  getBanks = (params: RequestParams = {}) =>
-    this.request<any, any>({ path: `/api/v1/admins/wallets/banks`, method: "GET", secure: true, format: "json", ...params });
-  getFinanceStatus = (params: RequestParams = {}) =>
-    this.request<import("./data-contracts").PlatformFinanceStatusDto, any>({
-      path: `/api/v1/admins/wallets/finance-status`,
-      method: "GET",
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  updatePlatformSettlement = (data: { accountNumber: string; bankCode: string }, params: RequestParams = {}) =>
-    this.request<any, any>({
-      path: `/api/v1/admins/wallets/platform-wallet/settlement`,
-      method: "POST",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
-  setWithdrawalPin = (data: { pin: string }, params: RequestParams = {}) =>
-    this.request<any, any>({
-      path: `/api/v1/admins/wallets/pin`,
-      method: "POST",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
-  initiatePlatformPayout = (data: { amount: number; pin: string; reason?: string }, params: RequestParams = {}) =>
-    this.request<any, any>({
-      path: `/api/v1/admins/wallets/platform-wallet/payout`,
-      method: "POST",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
-  adminCancelOrder = (orderId: string, data: { reason: string }, params: RequestParams = {}) =>
-    this.request<any, any>({
-      path: `/api/v1/admins/orders/${orderId}/cancel`,
-      method: "POST",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
-  adminUpdateOrderStatus = (orderId: string, data: { status: string }, params: RequestParams = {}) =>
-    this.request<any, any>({
-      path: `/api/v1/admins/orders/${orderId}/status`,
-      method: "PATCH",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
   /**
    * No description
    *
@@ -1596,7 +1730,7 @@ export class Api<
    * @response `200` `GetTransactionsData`
    */
   getTransactions = (
-    query: GetTransactionsParams,
+    query: GetTransactionsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetTransactionsData, any>({
@@ -1619,7 +1753,7 @@ export class Api<
    * @response `200` `GetTransactions2Data`
    */
   getTransactions2 = (
-    query: GetTransactions2Params,
+    query: GetTransactions2Params = {},
     params: RequestParams = {},
   ) =>
     this.request<GetTransactions2Data, any>({
@@ -1631,18 +1765,19 @@ export class Api<
       ...params,
     });
   /**
-   * Hand-added (not in the generated swagger yet) — re-add after any regen.
+   * No description
    *
    * @tags admins/transactions
    * @name GetExternalPaymentMetrics
    * @request GET:/api/v1/admins/transactions/metrics/external-payments
    * @secure
+   * @response `200` `GetExternalPaymentMetricsData`
    */
   getExternalPaymentMetrics = (
-    query?: { dateRange?: string; entityId?: string },
+    query: GetExternalPaymentMetricsParams = {},
     params: RequestParams = {},
   ) =>
-    this.request<import("./data-contracts").ExternalPaymentMetricsResponseDto, any>({
+    this.request<GetExternalPaymentMetricsData, any>({
       path: `/api/v1/admins/transactions/metrics/external-payments`,
       method: "GET",
       query: query,
@@ -1650,9 +1785,20 @@ export class Api<
       format: "json",
       ...params,
     });
-  /** Hand-added — re-add after any regen. Money-flow summary for finances. */
-  getTransactionSummary = (query?: { dateRange?: string }, params: RequestParams = {}) =>
-    this.request<import("./data-contracts").TransactionMetricsSummaryResponseDto, any>({
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetTransactionSummary
+   * @request GET:/api/v1/admins/transactions/metrics/summary
+   * @secure
+   * @response `200` `GetTransactionSummaryData`
+   */
+  getTransactionSummary = (
+    query: GetTransactionSummaryParams = {},
+    params: RequestParams = {},
+  ) =>
+    this.request<GetTransactionSummaryData, any>({
       path: `/api/v1/admins/transactions/metrics/summary`,
       method: "GET",
       query: query,
@@ -1670,7 +1816,7 @@ export class Api<
    * @response `200` `GetTransactionData`
    */
   getTransaction = (
-    { transactionId, ...query }: GetTransactionParams,
+    { transactionId }: GetTransactionParams,
     params: RequestParams = {},
   ) =>
     this.request<GetTransactionData, any>({
@@ -1728,7 +1874,7 @@ export class Api<
    * @response `200` `AddGroupUsersData`
    */
   addGroupUsers = (
-    { groupId, ...query }: AddGroupUsersParams,
+    { groupId }: AddGroupUsersParams,
     data: UpdateGroupUsersRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1751,7 +1897,7 @@ export class Api<
    * @response `200` `RemoveGroupUsersData`
    */
   removeGroupUsers = (
-    { groupId, ...query }: RemoveGroupUsersParams,
+    { groupId }: RemoveGroupUsersParams,
     data: UpdateGroupUsersRequestDto,
     params: RequestParams = {},
   ) =>
@@ -1774,7 +1920,7 @@ export class Api<
    * @response `200` `DeactivateCouponData`
    */
   deactivateCoupon = (
-    { couponCode, ...query }: DeactivateCouponParams,
+    { couponCode }: DeactivateCouponParams,
     params: RequestParams = {},
   ) =>
     this.request<DeactivateCouponData, any>({
@@ -1829,6 +1975,98 @@ export class Api<
   /**
    * No description
    *
+   * @tags admins/wallets
+   * @name GetBanks2
+   * @request GET:/api/v1/admins/wallets/banks
+   * @originalName getBanks
+   * @duplicate
+   * @secure
+   * @response `200` `GetBanks2Data`
+   */
+  getBanks2 = (params: RequestParams = {}) =>
+    this.request<GetBanks2Data, any>({
+      path: `/api/v1/admins/wallets/banks`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/wallets
+   * @name GetFinanceStatus
+   * @request GET:/api/v1/admins/wallets/finance-status
+   * @secure
+   * @response `200` `GetFinanceStatusData`
+   */
+  getFinanceStatus = (params: RequestParams = {}) =>
+    this.request<GetFinanceStatusData, any>({
+      path: `/api/v1/admins/wallets/finance-status`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/wallets
+   * @name UpdateSettlement
+   * @request POST:/api/v1/admins/wallets/platform-wallet/settlement
+   * @secure
+   * @response `201` `UpdateSettlementData`
+   */
+  updateSettlement = (
+    data: UpdatePlatformSettlementDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<UpdateSettlementData, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/settlement`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/wallets
+   * @name SetPin
+   * @request POST:/api/v1/admins/wallets/pin
+   * @secure
+   * @response `201` `SetPinData`
+   */
+  setPin = (data: SetWithdrawalPinDto, params: RequestParams = {}) =>
+    this.request<SetPinData, any>({
+      path: `/api/v1/admins/wallets/pin`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/wallets
+   * @name InitiatePayout
+   * @request POST:/api/v1/admins/wallets/platform-wallet/payout
+   * @secure
+   * @response `201` `InitiatePayoutData`
+   */
+  initiatePayout = (data: InitiatePayoutDto, params: RequestParams = {}) =>
+    this.request<InitiatePayoutData, any>({
+      path: `/api/v1/admins/wallets/platform-wallet/payout`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
    * @tags notifications
    * @name GetNotifications
    * @request GET:/api/v1/notifications
@@ -1836,7 +2074,7 @@ export class Api<
    * @response `200` `GetNotificationsData`
    */
   getNotifications = (
-    query: GetNotificationsParams,
+    query: GetNotificationsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetNotificationsData, any>({
@@ -1857,7 +2095,7 @@ export class Api<
    * @response `200` `GetUserNotificationData`
    */
   getUserNotification = (
-    { notificationId, ...query }: GetUserNotificationParams,
+    { notificationId }: GetUserNotificationParams,
     params: RequestParams = {},
   ) =>
     this.request<GetUserNotificationData, any>({
@@ -1984,7 +2222,7 @@ export class Api<
    * @response `200` `GetBusinessUserData`
    */
   getBusinessUser = (
-    { businessId, userId, ...query }: GetBusinessUserParams,
+    { businessId, userId }: GetBusinessUserParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessUserData, any>({
@@ -2004,7 +2242,7 @@ export class Api<
    * @response `200` `UpdateBusinessUserData`
    */
   updateBusinessUser = (
-    { businessId, userId, ...query }: UpdateBusinessUserParams,
+    { businessId, userId }: UpdateBusinessUserParams,
     data: UpdateProfileRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2027,7 +2265,7 @@ export class Api<
    * @response `200` `RemoveUserFromBusinessData`
    */
   removeUserFromBusiness = (
-    { businessId, userId, ...query }: RemoveUserFromBusinessParams,
+    { businessId, userId }: RemoveUserFromBusinessParams,
     params: RequestParams = {},
   ) =>
     this.request<RemoveUserFromBusinessData, any>({
@@ -2087,7 +2325,7 @@ export class Api<
    * @response `200` `AssignUserVehicleData`
    */
   assignUserVehicle = (
-    { vehicleId, ...query }: AssignUserVehicleParams,
+    { vehicleId }: AssignUserVehicleParams,
     data: AssignVehicleDto,
     params: RequestParams = {},
   ) =>
@@ -2110,7 +2348,7 @@ export class Api<
    * @response `200` `AddKycDetailsData`
    */
   addKycDetails = (
-    { businessId, ...query }: AddKycDetailsParams,
+    { businessId }: AddKycDetailsParams,
     data: KYCDetailsDto,
     params: RequestParams = {},
   ) =>
@@ -2133,7 +2371,7 @@ export class Api<
    * @response `200` `GetUserReviewsData`
    */
   getUserReviews = (
-    { userId, ...query }: GetUserReviewsParams,
+    { userId }: GetUserReviewsParams,
     params: RequestParams = {},
   ) =>
     this.request<GetUserReviewsData, any>({
@@ -2174,7 +2412,7 @@ export class Api<
    * @response `200` `GetBusinessTransactionData`
    */
   getBusinessTransaction = (
-    { businessId, transactionId, ...query }: GetBusinessTransactionParams,
+    { businessId, transactionId }: GetBusinessTransactionParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessTransactionData, any>({
@@ -2215,7 +2453,7 @@ export class Api<
    * @response `200` `GetBusinessOrderData`
    */
   getBusinessOrder = (
-    { businessId, orderId, ...query }: GetBusinessOrderParams,
+    { businessId, orderId }: GetBusinessOrderParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessOrderData, any>({
@@ -2235,7 +2473,7 @@ export class Api<
    * @response `200` `GetBusinessWalletsData`
    */
   getBusinessWallets = (
-    { businessId, ...query }: GetBusinessWalletsParams,
+    { businessId }: GetBusinessWalletsParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessWalletsData, any>({
@@ -2255,7 +2493,7 @@ export class Api<
    * @response `200` `GetBusinessWalletData`
    */
   getBusinessWallet = (
-    { walletId, businessId, ...query }: GetBusinessWalletParams,
+    { walletId, businessId }: GetBusinessWalletParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessWalletData, any>({
@@ -2338,7 +2576,7 @@ export class Api<
    * @response `200` `GetBusinessData`
    */
   getBusiness = (
-    { businessId, ...query }: GetBusinessParams,
+    { businessId }: GetBusinessParams,
     params: RequestParams = {},
   ) =>
     this.request<GetBusinessData, any>({
@@ -2370,26 +2608,6 @@ export class Api<
       ...params,
     });
   /**
-   * Hand-added — re-add after any regen. Backend: GET /businesses/:businessId
-   * (guarded AdminRoles; platform admins allowed by the service check).
-   *
-   * @tags businesses
-   * @name GetBusinessById
-   * @request GET:/api/v1/businesses/{businessId}
-   * @secure
-   */
-  getBusinessById = (
-    { businessId }: { businessId: string },
-    params: RequestParams = {},
-  ) =>
-    this.request<import("./data-contracts").Business, any>({
-      path: `/api/v1/businesses/${businessId}`,
-      method: "GET",
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
    * No description
    *
    * @tags businesses
@@ -2399,7 +2617,7 @@ export class Api<
    * @response `200` `UpdateBusinessPreferencesData`
    */
   updateBusinessPreferences = (
-    { businessId, ...query }: UpdateBusinessPreferencesParams,
+    { businessId }: UpdateBusinessPreferencesParams,
     data: UpdatePreferencesRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2422,7 +2640,7 @@ export class Api<
    * @response `200` `SuspendBusinessUserData`
    */
   suspendBusinessUser = (
-    { businessId, userId, ...query }: SuspendBusinessUserParams,
+    { businessId, userId }: SuspendBusinessUserParams,
     params: RequestParams = {},
   ) =>
     this.request<SuspendBusinessUserData, any>({
@@ -2442,7 +2660,7 @@ export class Api<
    * @response `200` `UnsuspendBusinessUserData`
    */
   unsuspendBusinessUser = (
-    { businessId, userId, ...query }: UnsuspendBusinessUserParams,
+    { businessId, userId }: UnsuspendBusinessUserParams,
     params: RequestParams = {},
   ) =>
     this.request<UnsuspendBusinessUserData, any>({
@@ -2462,7 +2680,7 @@ export class Api<
    * @response `200` `UpdateBusinessVehicleData`
    */
   updateBusinessVehicle = (
-    { businessId, vehicleId, ...query }: UpdateBusinessVehicleParams,
+    { businessId, vehicleId }: UpdateBusinessVehicleParams,
     data: UpdateVehicleRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2542,10 +2760,7 @@ export class Api<
    * @secure
    * @response `200` `GetVehicleData`
    */
-  getVehicle = (
-    { vehicleId, ...query }: GetVehicleParams,
-    params: RequestParams = {},
-  ) =>
+  getVehicle = ({ vehicleId }: GetVehicleParams, params: RequestParams = {}) =>
     this.request<GetVehicleData, any>({
       path: `/api/v1/vehicles/${vehicleId}`,
       method: "GET",
@@ -2563,7 +2778,7 @@ export class Api<
    * @response `200` `DeleteUserVehicleData`
    */
   deleteUserVehicle = (
-    { vehicleId, ...query }: DeleteUserVehicleParams,
+    { vehicleId }: DeleteUserVehicleParams,
     params: RequestParams = {},
   ) =>
     this.request<DeleteUserVehicleData, any>({
@@ -2582,7 +2797,7 @@ export class Api<
    * @secure
    * @response `200` `GetVehiclesData`
    */
-  getVehicles = (query: GetVehiclesParams, params: RequestParams = {}) =>
+  getVehicles = (query: GetVehiclesParams = {}, params: RequestParams = {}) =>
     this.request<GetVehiclesData, any>({
       path: `/api/v1/admins/vehicles`,
       method: "GET",
@@ -2603,7 +2818,7 @@ export class Api<
    * @response `201` `UpdateUserVehicle2Data`
    */
   updateUserVehicle2 = (
-    { userId, ...query }: UpdateUserVehicle2Params,
+    { userId }: UpdateUserVehicle2Params,
     data: UpdateVehicleRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2626,7 +2841,7 @@ export class Api<
    * @response `200` `VerifyVehicleData`
    */
   verifyVehicle = (
-    { vehicleId, userId, ...query }: VerifyVehicleParams,
+    { vehicleId, userId }: VerifyVehicleParams,
     params: RequestParams = {},
   ) =>
     this.request<VerifyVehicleData, any>({
@@ -2646,7 +2861,7 @@ export class Api<
    * @response `200` `RejectVehicleData`
    */
   rejectVehicle = (
-    { vehicleId, userId, ...query }: RejectVehicleParams,
+    { vehicleId, userId }: RejectVehicleParams,
     data: UpdateVehicleStatusRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2669,7 +2884,7 @@ export class Api<
    * @response `200` `SuspendVehicleData`
    */
   suspendVehicle = (
-    { vehicleId, userId, ...query }: SuspendVehicleParams,
+    { vehicleId, userId }: SuspendVehicleParams,
     data: UpdateVehicleStatusRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2694,7 +2909,7 @@ export class Api<
    * @response `200` `GetVehicle2Data`
    */
   getVehicle2 = (
-    { vehicleId, ...query }: GetVehicle2Params,
+    { vehicleId }: GetVehicle2Params,
     params: RequestParams = {},
   ) =>
     this.request<GetVehicle2Data, any>({
@@ -2714,7 +2929,7 @@ export class Api<
    * @response `200` `DeleteVehicleData`
    */
   deleteVehicle = (
-    { vehicleId, ...query }: DeleteVehicleParams,
+    { vehicleId }: DeleteVehicleParams,
     params: RequestParams = {},
   ) =>
     this.request<DeleteVehicleData, any>({
@@ -2769,6 +2984,64 @@ export class Api<
    * No description
    *
    * @tags orders
+   * @name QuoteOrder
+   * @request POST:/api/v1/orders/quote
+   * @secure
+   * @response `201` `QuoteOrderData`
+   */
+  quoteOrder = (data: QuoteOrderRequestDto, params: RequestParams = {}) =>
+    this.request<QuoteOrderData, any>({
+      path: `/api/v1/orders/quote`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name QuoteBatchOrder
+   * @request POST:/api/v1/orders/quote-batch
+   * @response `201` `QuoteBatchOrderData`
+   */
+  quoteBatchOrder = (
+    data: QuoteBatchOrderRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<QuoteBatchOrderData, any>({
+      path: `/api/v1/orders/quote-batch`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name QuoteBulkOrder
+   * @request POST:/api/v1/orders/quote-bulk
+   * @secure
+   * @response `201` `QuoteBulkOrderData`
+   */
+  quoteBulkOrder = (
+    data: QuoteBulkOrderRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<QuoteBulkOrderData, any>({
+      path: `/api/v1/orders/quote-bulk`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
    * @name CreateBatchOrder
    * @request POST:/api/v1/orders/batch
    * @secure
@@ -2794,7 +3067,7 @@ export class Api<
    * @response `201` `RequestOrderRidersData`
    */
   requestOrderRiders = (
-    { orderId, ...query }: RequestOrderRidersParams,
+    { orderId }: RequestOrderRidersParams,
     data: RidersRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2811,13 +3084,114 @@ export class Api<
    * No description
    *
    * @tags orders
+   * @name ReDispatch
+   * @request POST:/api/v1/orders/{orderId}/re-dispatch
+   * @secure
+   * @response `201` `ReDispatchData`
+   */
+  reDispatch = (
+    { orderId }: ReDispatchParams,
+    data: ReDispatchRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<ReDispatchData, any>({
+      path: `/api/v1/orders/${orderId}/re-dispatch`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name ReassignRider
+   * @request POST:/api/v1/orders/{orderId}/reassign
+   * @secure
+   * @response `201` `ReassignRiderData`
+   */
+  reassignRider = (
+    { orderId }: ReassignRiderParams,
+    data: ReassignRiderRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<ReassignRiderData, any>({
+      path: `/api/v1/orders/${orderId}/reassign`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetRidersLeaderboard
+   * @request GET:/api/v1/orders/riders/leaderboard
+   * @secure
+   * @response `200` `GetRidersLeaderboardData`
+   */
+  getRidersLeaderboard = (params: RequestParams = {}) =>
+    this.request<GetRidersLeaderboardData, any>({
+      path: `/api/v1/orders/riders/leaderboard`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name ListAllRiders
+   * @summary Deprecated alias — use GET /orders/riders/leaderboard
+   * @request GET:/api/v1/orders/riders/list
+   * @deprecated
+   * @secure
+   * @response `200` `ListAllRidersData`
+   */
+  listAllRiders = (params: RequestParams = {}) =>
+    this.request<ListAllRidersData, any>({
+      path: `/api/v1/orders/riders/list`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetRiderLocations
+   * @request POST:/api/v1/orders/riders/locations
+   * @secure
+   * @response `201` `GetRiderLocationsData`
+   */
+  getRiderLocations = (
+    data: RiderLocationsRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetRiderLocationsData, any>({
+      path: `/api/v1/orders/riders/locations`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
    * @name CancelOrderLocation
    * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}/cancel
    * @secure
    * @response `200` `CancelOrderLocationData`
    */
   cancelOrderLocation = (
-    { orderId, locationId, ...query }: CancelOrderLocationParams,
+    { orderId, locationId }: CancelOrderLocationParams,
     data: CancelLocationRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2840,7 +3214,7 @@ export class Api<
    * @response `200` `CancelOrderData`
    */
   cancelOrder = (
-    { orderId, ...query }: CancelOrderParams,
+    { orderId }: CancelOrderParams,
     data: CancelOrderRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2863,7 +3237,7 @@ export class Api<
    * @response `201` `MakeOrderOfferData`
    */
   makeOrderOffer = (
-    { orderId, ...query }: MakeOrderOfferParams,
+    { orderId }: MakeOrderOfferParams,
     data: MakeOfferRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2886,7 +3260,7 @@ export class Api<
    * @response `200` `InitiateOrderPaymentData`
    */
   initiateOrderPayment = (
-    { orderId, walletId, ...query }: InitiateOrderPaymentParams,
+    { orderId, walletId }: InitiateOrderPaymentParams,
     params: RequestParams = {},
   ) =>
     this.request<InitiateOrderPaymentData, any>({
@@ -2900,13 +3274,107 @@ export class Api<
    * No description
    *
    * @tags orders
+   * @name CreateOrderPaymentLink
+   * @request POST:/api/v1/orders/{orderId}/payment-link
+   * @secure
+   * @response `201` `CreateOrderPaymentLinkData`
+   */
+  createOrderPaymentLink = (
+    { orderId }: CreateOrderPaymentLinkParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<CreateOrderPaymentLinkData, any>({
+      path: `/api/v1/orders/${orderId}/payment-link`,
+      method: "POST",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name VerifyOrderPayment
+   * @request GET:/api/v1/orders/{orderId}/payment-status
+   * @secure
+   * @response `200` `VerifyOrderPaymentData`
+   */
+  verifyOrderPayment = (
+    { orderId }: VerifyOrderPaymentParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<VerifyOrderPaymentData, any>({
+      path: `/api/v1/orders/${orderId}/payment-status`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetOrderPaymentInfo
+   * @request GET:/api/v1/orders/pay/{token}
+   * @response `200` `GetOrderPaymentInfoData`
+   */
+  getOrderPaymentInfo = (
+    { token }: GetOrderPaymentInfoParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetOrderPaymentInfoData, any>({
+      path: `/api/v1/orders/pay/${token}`,
+      method: "GET",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name ConfirmExternalPaymentByReference
+   * @request GET:/api/v1/orders/payment/confirm
+   * @response `200` `ConfirmExternalPaymentByReferenceData`
+   */
+  confirmExternalPaymentByReference = (
+    query: ConfirmExternalPaymentByReferenceParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<ConfirmExternalPaymentByReferenceData, any>({
+      path: `/api/v1/orders/payment/confirm`,
+      method: "GET",
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name InitializeExternalOrderPayment
+   * @request POST:/api/v1/orders/pay/{token}/initialize
+   * @response `201` `InitializeExternalOrderPaymentData`
+   */
+  initializeExternalOrderPayment = (
+    { token }: InitializeExternalOrderPaymentParams,
+    data: InitializeOrderPaymentRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<InitializeExternalOrderPaymentData, any>({
+      path: `/api/v1/orders/pay/${token}/initialize`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
    * @name AcceptOrRejectOrderOffer
    * @request PATCH:/api/v1/orders/{orderId}/offers/{offerId}
    * @secure
    * @response `200` `AcceptOrRejectOrderOfferData`
    */
   acceptOrRejectOrderOffer = (
-    { orderId, offerId, ...query }: AcceptOrRejectOrderOfferParams,
+    { orderId, offerId }: AcceptOrRejectOrderOfferParams,
     data: AcceptRejectOfferRequestDto,
     params: RequestParams = {},
   ) =>
@@ -2928,10 +3396,7 @@ export class Api<
    * @secure
    * @response `200` `StartOrderData`
    */
-  startOrder = (
-    { orderId, ...query }: StartOrderParams,
-    params: RequestParams = {},
-  ) =>
+  startOrder = ({ orderId }: StartOrderParams, params: RequestParams = {}) =>
     this.request<StartOrderData, any>({
       path: `/api/v1/orders/${orderId}/start`,
       method: "PATCH",
@@ -2949,7 +3414,7 @@ export class Api<
    * @response `200` `StartOrderLocationData`
    */
   startOrderLocation = (
-    { orderId, locationId, ...query }: StartOrderLocationParams,
+    { orderId, locationId }: StartOrderLocationParams,
     params: RequestParams = {},
   ) =>
     this.request<StartOrderLocationData, any>({
@@ -2969,12 +3434,96 @@ export class Api<
    * @response `200` `UpdateOrderLocationStatusData`
    */
   updateOrderLocationStatus = (
-    { orderId, locationId, ...query }: UpdateOrderLocationStatusParams,
+    { orderId, locationId }: UpdateOrderLocationStatusParams,
     data: UpdateLocationStatusRequestDto,
     params: RequestParams = {},
   ) =>
     this.request<UpdateOrderLocationStatusData, any>({
       path: `/api/v1/orders/${orderId}/locations/${locationId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetOrderEta
+   * @request GET:/api/v1/orders/{orderId}/eta
+   * @secure
+   * @response `200` `GetOrderEtaData`
+   */
+  getOrderEta = ({ orderId }: GetOrderEtaParams, params: RequestParams = {}) =>
+    this.request<GetOrderEtaData, any>({
+      path: `/api/v1/orders/${orderId}/eta`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name QuoteOrderLocation
+   * @request POST:/api/v1/orders/{orderId}/locations/{locationId}/quote
+   * @secure
+   * @response `201` `QuoteOrderLocationData`
+   */
+  quoteOrderLocation = (
+    { orderId, locationId }: QuoteOrderLocationParams,
+    data: UpdateOrderLocationDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<QuoteOrderLocationData, any>({
+      path: `/api/v1/orders/${orderId}/locations/${locationId}/quote`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name UpdateOrderLocation
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}
+   * @secure
+   * @response `200` `UpdateOrderLocationData`
+   */
+  updateOrderLocation = (
+    { orderId, locationId }: UpdateOrderLocationParams,
+    data: UpdateOrderLocationDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<UpdateOrderLocationData, any>({
+      path: `/api/v1/orders/${orderId}/locations/${locationId}`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name RespondToLocationUpdate
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}/updates/{updateId}
+   * @secure
+   * @response `200` `RespondToLocationUpdateData`
+   */
+  respondToLocationUpdate = (
+    { orderId, locationId, updateId }: RespondToLocationUpdateParams,
+    data: AcceptRejectLocationUpdateRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<RespondToLocationUpdateData, any>({
+      path: `/api/v1/orders/${orderId}/locations/${locationId}/updates/${updateId}`,
       method: "PATCH",
       body: data,
       secure: true,
@@ -2992,7 +3541,7 @@ export class Api<
    * @response `200` `ApplyOrderCouponData`
    */
   applyOrderCoupon = (
-    { orderId, couponCode, ...query }: ApplyOrderCouponParams,
+    { orderId, couponCode }: ApplyOrderCouponParams,
     params: RequestParams = {},
   ) =>
     this.request<ApplyOrderCouponData, any>({
@@ -3012,7 +3561,7 @@ export class Api<
    * @response `200` `RemoveOrderCouponData`
    */
   removeOrderCoupon = (
-    { orderId, couponCode, ...query }: RemoveOrderCouponParams,
+    { orderId, couponCode }: RemoveOrderCouponParams,
     params: RequestParams = {},
   ) =>
     this.request<RemoveOrderCouponData, any>({
@@ -3032,7 +3581,7 @@ export class Api<
    * @response `200` `CompleteOrderLocationData`
    */
   completeOrderLocation = (
-    { orderId, locationId, ...query }: CompleteOrderLocationParams,
+    { orderId, locationId }: CompleteOrderLocationParams,
     data: CompleteLocationRequestDto,
     params: RequestParams = {},
   ) =>
@@ -3055,7 +3604,7 @@ export class Api<
    * @response `200` `CompleteOrderData`
    */
   completeOrder = (
-    { orderId, ...query }: CompleteOrderParams,
+    { orderId }: CompleteOrderParams,
     params: RequestParams = {},
   ) =>
     this.request<CompleteOrderData, any>({
@@ -3074,10 +3623,7 @@ export class Api<
    * @secure
    * @response `200` `QueueOrderData`
    */
-  queueOrder = (
-    { orderId, ...query }: QueueOrderParams,
-    params: RequestParams = {},
-  ) =>
+  queueOrder = ({ orderId }: QueueOrderParams, params: RequestParams = {}) =>
     this.request<QueueOrderData, any>({
       path: `/api/v1/orders/${orderId}/queue`,
       method: "PATCH",
@@ -3112,7 +3658,7 @@ export class Api<
    * @response `200` `GetActiveOffersData`
    */
   getActiveOffers = (
-    { orderId, ...query }: GetActiveOffersParams,
+    { orderId }: GetActiveOffersParams,
     params: RequestParams = {},
   ) =>
     this.request<GetActiveOffersData, any>({
@@ -3131,7 +3677,10 @@ export class Api<
    * @secure
    * @response `200` `GetUserOrdersData`
    */
-  getUserOrders = (query: GetUserOrdersParams, params: RequestParams = {}) =>
+  getUserOrders = (
+    query: GetUserOrdersParams = {},
+    params: RequestParams = {},
+  ) =>
     this.request<GetUserOrdersData, any>({
       path: `/api/v1/orders`,
       method: "GET",
@@ -3149,11 +3698,51 @@ export class Api<
    * @secure
    * @response `200` `GetRiderOrdersData`
    */
-  getRiderOrders = (query: GetRiderOrdersParams, params: RequestParams = {}) =>
+  getRiderOrders = (
+    query: GetRiderOrdersParams = {},
+    params: RequestParams = {},
+  ) =>
     this.request<GetRiderOrdersData, any>({
       path: `/api/v1/orders/riders`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetPendingLocationUpdate
+   * @request GET:/api/v1/orders/location-updates/pending
+   * @secure
+   * @response `200` `GetPendingLocationUpdateData`
+   */
+  getPendingLocationUpdate = (params: RequestParams = {}) =>
+    this.request<GetPendingLocationUpdateData, any>({
+      path: `/api/v1/orders/location-updates/pending`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetLatestLocationUpdateForCustomer
+   * @request GET:/api/v1/orders/{orderId}/location-updates/latest
+   * @secure
+   * @response `200` `GetLatestLocationUpdateForCustomerData`
+   */
+  getLatestLocationUpdateForCustomer = (
+    { orderId }: GetLatestLocationUpdateForCustomerParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetLatestLocationUpdateForCustomerData, any>({
+      path: `/api/v1/orders/${orderId}/location-updates/latest`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,
@@ -3168,7 +3757,7 @@ export class Api<
    * @response `200` `GetUserOrderData`
    */
   getUserOrder = (
-    { orderId, ...query }: GetUserOrderParams,
+    { orderId }: GetUserOrderParams,
     params: RequestParams = {},
   ) =>
     this.request<GetUserOrderData, any>({
@@ -3188,7 +3777,7 @@ export class Api<
    * @response `200` `GetRiderOrderStatisticsData`
    */
   getRiderOrderStatistics = (
-    query: GetRiderOrderStatisticsParams,
+    query: GetRiderOrderStatisticsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetRiderOrderStatisticsData, any>({
@@ -3209,7 +3798,7 @@ export class Api<
    * @response `200` `GetOrderStatusChartData`
    */
   getOrderStatusChart = (
-    query: GetOrderStatusChartParams,
+    query: GetOrderStatusChartParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetOrderStatusChartData, any>({
@@ -3230,7 +3819,7 @@ export class Api<
    * @response `200` `GetOrderTypeChartData`
    */
   getOrderTypeChart = (
-    query: GetOrderTypeChartParams,
+    query: GetOrderTypeChartParams = {},
     params: RequestParams = {},
   ) =>
     this.request<GetOrderTypeChartData, any>({
@@ -3250,7 +3839,7 @@ export class Api<
    * @secure
    * @response `200` `GetOrdersData`
    */
-  getOrders = (query: GetOrdersParams, params: RequestParams = {}) =>
+  getOrders = (query: GetOrdersParams = {}, params: RequestParams = {}) =>
     this.request<GetOrdersData, any>({
       path: `/api/v1/admins/orders`,
       method: "GET",
@@ -3268,14 +3857,59 @@ export class Api<
    * @secure
    * @response `200` `GetOrderData`
    */
-  getOrder = (
-    { orderId, ...query }: GetOrderParams,
-    params: RequestParams = {},
-  ) =>
+  getOrder = ({ orderId }: GetOrderParams, params: RequestParams = {}) =>
     this.request<GetOrderData, any>({
       path: `/api/v1/admins/orders/${orderId}`,
       method: "GET",
       secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
+   * @name CancelOrder2
+   * @request POST:/api/v1/admins/orders/{orderId}/cancel
+   * @originalName cancelOrder
+   * @duplicate
+   * @secure
+   * @response `201` `CancelOrder2Data`
+   */
+  cancelOrder2 = (
+    { orderId }: CancelOrder2Params,
+    data: AdminCancelOrderRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<CancelOrder2Data, any>({
+      path: `/api/v1/admins/orders/${orderId}/cancel`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
+   * @name UpdateOrderStatus
+   * @request PATCH:/api/v1/admins/orders/{orderId}/status
+   * @secure
+   * @response `200` `UpdateOrderStatusData`
+   */
+  updateOrderStatus = (
+    { orderId }: UpdateOrderStatusParams,
+    data: AdminUpdateOrderStatusRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<UpdateOrderStatusData, any>({
+      path: `/api/v1/admins/orders/${orderId}/status`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -3305,7 +3939,7 @@ export class Api<
    * @secure
    * @response `200` `FindAllData`
    */
-  findAll = (query: FindAllParams, params: RequestParams = {}) =>
+  findAll = (query: FindAllParams = {}, params: RequestParams = {}) =>
     this.request<FindAllData, any>({
       path: `/api/v1/audit-logs`,
       method: "GET",
@@ -3323,7 +3957,7 @@ export class Api<
    * @response `200` `HandleWebhookEventsData`
    */
   handleWebhookEvents = (
-    { provider, ...query }: HandleWebhookEventsParams,
+    { provider }: HandleWebhookEventsParams,
     data: Object,
     params: RequestParams = {},
   ) =>
@@ -3338,15 +3972,93 @@ export class Api<
   /**
    * No description
    *
+   * @tags teams
+   * @name CreateTeam
+   * @request POST:/api/v1/teams
+   * @response `201` `CreateTeamData`
+   */
+  createTeam = (data: CreateTeamRequestDto, params: RequestParams = {}) =>
+    this.request<CreateTeamData, any>({
+      path: `/api/v1/teams`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags teams
+   * @name GetUserTeam
+   * @request GET:/api/v1/teams/{teamId}
+   * @response `200` `GetUserTeamData`
+   */
+  getUserTeam = (
+    { teamId, ...query }: GetUserTeamParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserTeamData, any>({
+      path: `/api/v1/teams/${teamId}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/teams
+   * @name CreateTeam2
+   * @request POST:/api/v1/admins/teams
+   * @originalName createTeam
+   * @duplicate
+   * @secure
+   * @response `201` `CreateTeam2Data`
+   */
+  createTeam2 = (data: CreateTeamRequestDto, params: RequestParams = {}) =>
+    this.request<CreateTeam2Data, any>({
+      path: `/api/v1/admins/teams`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/teams
+   * @name FindAll2
+   * @request GET:/api/v1/admins/teams
+   * @originalName findAll
+   * @duplicate
+   * @secure
+   * @response `200` `FindAll2Data`
+   */
+  findAll2 = (params: RequestParams = {}) =>
+    this.request<FindAll2Data, any>({
+      path: `/api/v1/admins/teams`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
    * @tags crons
    * @name Run
    * @request GET:/api/v1/crons/run
+   * @secure
    * @response `200` `RunData`
    */
   run = (params: RequestParams = {}) =>
     this.request<RunData, any>({
       path: `/api/v1/crons/run`,
       method: "GET",
+      secure: true,
       ...params,
     });
 }

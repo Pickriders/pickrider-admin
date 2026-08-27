@@ -47,7 +47,7 @@ export const VerificationPanel: React.FC<VerificationPanelProps> = ({ vehicleId 
   }
 
   return (
-    <div className="bg-background rounded-2xl p-10  *:font-montserrat">
+    <div className="bg-background rounded-2xl p-5 sm:p-10  *:font-montserrat">
       <div className="space-y-4">
         <div>
           <UI.SectionHeader text="Vehicle Type" />
