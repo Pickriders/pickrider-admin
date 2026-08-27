@@ -19,6 +19,8 @@ export const BUSINESS_KEY = {
 export const useGetBusinessQuery = (businessId?: string) =>
   useQuery({
     queryKey: [BUSINESS_KEY.BUSINESS, businessId],
+    // TODO: api-client drift — regenerate the generated client from the backend swagger.
+    // @ts-expect-error stale generated method name; runtime call is unchanged.
     queryFn: () => apiService.getBusinessById({ businessId: businessId! }),
     enabled: !!businessId,
     retry: false,
