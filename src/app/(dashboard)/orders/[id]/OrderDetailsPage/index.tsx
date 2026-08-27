@@ -1,6 +1,7 @@
 "use client";
 
 import { MapView } from "./Map";
+import { RiderBids } from "./RiderBids";
 
 import { DetailsContainer } from "./DetailsContainer";
 import { UI } from "@/components/ui";
@@ -39,6 +40,8 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ orderId }) => {
           </APIProvider>
         </div>
       </section>
+
+      <RiderBids orderId={orderId} />
     </div>
   );
 };

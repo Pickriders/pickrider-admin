@@ -36,6 +36,7 @@ import { Label } from "./Label";
 import { Overlay } from "./Overlay";
 import { PageLoadingUI } from "./PageLoading";
 import { PaginationBtns } from "./PaginationBtns";
+import { PaginationInfo } from "./PaginationInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "./Popup";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -114,6 +115,7 @@ export const UI = {
   TableUser,
   TableStatus,
   PaginationBtns,
+  PaginationInfo,
   TextArea,
 
   Table,
