@@ -29,13 +29,13 @@ const JsonPreviewModal = ({ code, title, subTitle }: ICodePreviewModalProps) => 
     <div>
       <div
         className={cn(
-          "z-[60] w-[42rem] flex flex-col font-montserrat  bg-background border h-[35rem] rounded-2xl fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2",
+          "z-[60] w-[42rem] max-w-[calc(100vw-2rem)] flex flex-col font-montserrat  bg-background border h-[35rem] max-h-[85vh] rounded-2xl fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2",
           isOpen
             ? "opacity-100 transition-all  fade-in-0 visible zoom-in-95"
             : "opacity-0  fade-out-0 invisible zoom-out-95",
         )}
       >
-        <header className="px-8 py-5">
+        <header className="px-4 sm:px-8 py-5">
           <p className="font-semibold">{title ?? "Log payload"}</p>
           {subTitle ? <p className="font-medium">{subTitle}</p> : null}
         </header>
@@ -44,7 +44,7 @@ const JsonPreviewModal = ({ code, title, subTitle }: ICodePreviewModalProps) => 
             {code}
           </SyntaxHighlighter>
         </div>
-        <div className="px-8 py-5 flex items-center justify-end">
+        <div className="px-4 sm:px-8 py-5 flex items-center justify-end">
           <div className="flex items-center gap-x-3">
             <button
               onClick={closeModal}

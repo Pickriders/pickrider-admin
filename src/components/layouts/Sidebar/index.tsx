@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Calculator } from "lucide-react";
 import { SVG } from "@/components/svg";
 import { SidebarLink } from "./SidebarLink";
 import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
@@ -18,6 +18,12 @@ export const SIDEBAR_LINKS = [
     icon: <BarChart3 size={21} />,
     label: "Analytics",
     href: "/analytics",
+  },
+  {
+    activeIcon: <Calculator size={21} strokeWidth={2.4} />,
+    icon: <Calculator size={21} />,
+    label: "Delivery Price",
+    href: "/delivery-price",
   },
   {
     activeIcon: <SVG.PersonGroupBoldFillIcon width={25} height={25} />,

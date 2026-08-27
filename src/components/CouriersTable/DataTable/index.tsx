@@ -75,7 +75,12 @@ export const DataTable = () => {
         </UI.Table>
       </div>
       {/* Pagination */}
-      <div className="mt-3 flex justify-end px-[1.5rem]">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 px-[1.5rem]">
+        <UI.PaginationInfo
+          currentPage={data?.currentPage ?? 1}
+          perPageLimit={data?.perPageLimit ?? LIMIT}
+          totalRecords={data?.totalRecords ?? 0}
+        />
         <Suspense>
           <UI.PaginationBtns totalPages={data?.totalPages ?? 0} />
         </Suspense>

@@ -17,13 +17,13 @@ const EditBusinessDetails = ({ params }: { params: { id: string } }) => {
         currentPage="Edit Details"
         rootPageLink="/business"
       />
-      <section className="bg-background rounded-2xl p-10 mt-10">
+      <section className="bg-background rounded-2xl p-5 sm:p-10 mt-8 sm:mt-10">
         <form>
-          <div className="flex gap-x-8 items-start">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-x-8 items-start">
             <div className="">
               <ProfilePic />
             </div>
-            <div className="flex-1 space-y-4 ">
+            <div className="flex-1 min-w-0 w-full space-y-4 ">
               <UI.Input
                 id="bus-name"
                 labelClassName="font-montserrat"

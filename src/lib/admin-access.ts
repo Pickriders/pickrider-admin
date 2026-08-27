@@ -37,6 +37,7 @@ const FULL_ACCESS: AdminRole[] = ["SUPER_ADMIN", "ADMIN", "PLATFORM_ADMIN", "PLA
 const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/dashboard": PLATFORM_STAFF_ROLES,
   "/analytics": [...FULL_ACCESS, "PLATFORM_FINANCE", "PLATFORM_OPERATION"],
+  "/delivery-price": [...FULL_ACCESS, "PLATFORM_FINANCE", "PLATFORM_OPERATION"],
   "/customers": [...FULL_ACCESS, "PLATFORM_OPERATION"],
   "/business": [...FULL_ACCESS, "PLATFORM_OPERATION"],
   "/couriers": [...FULL_ACCESS, "PLATFORM_OPERATION"],

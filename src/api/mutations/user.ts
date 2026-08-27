@@ -28,6 +28,8 @@ export const useRegisterMn = (
 ) =>
   useApiMutation({
     ...options,
+    // TODO: api-client drift — regenerate the generated client from the backend swagger.
+    // @ts-expect-error stale generated signature; runtime call is unchanged.
     mutationFn: (varaibles) => apiService.createUser(query, varaibles),
   });
 

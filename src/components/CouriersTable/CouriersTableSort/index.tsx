@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const SORTS = [
   { label: "Deliveries", value: "completedDeliveries" },
   { label: "Amount made", value: "totalEarned" },
+  { label: "Deliveries + Amount", value: "deliveriesAndEarnings" },
   { label: "Last login", value: "lastLoginDate" },
   { label: "Newest", value: "createdAt" },
 ];
