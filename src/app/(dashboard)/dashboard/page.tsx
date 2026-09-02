@@ -1,7 +1,12 @@
+"use client";
+
+import * as React from "react";
 import { StatsContainer } from "./StatsContainer";
-import { FilterDyDate } from "./FilterByDate";
+import { RangeTabs } from "../analytics/RangeTabs";
 
 export default function Home() {
+  const [days, setDays] = React.useState(30);
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -11,10 +16,10 @@ export default function Home() {
             Everything happening across Pickriders at a glance.
           </p>
         </div>
-        <FilterDyDate />
+        <RangeTabs value={days} onChange={setDays} />
       </div>
 
-      <StatsContainer />
+      <StatsContainer days={days} />
     </div>
   );
 }

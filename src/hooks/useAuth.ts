@@ -14,7 +14,7 @@ export const useAuth = () => {
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
-    toast.success("Login successful! 🎉");
+    toast.success("Login successful", { description: "Welcome back to Pickriders Admin." });
     router.push(redirect ? decodeURIComponent(redirect) : "/dashboard");
   };
 

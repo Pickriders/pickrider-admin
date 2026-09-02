@@ -38,11 +38,11 @@ const MiniStat = ({ label, value, tone }: { label: string; value: number; tone?:
   </div>
 );
 
-export const StatsContainer = () => {
+export const StatsContainer = ({ days = 30 }: { days?: number }) => {
   const { data: overview, isLoading } = useGetPlatformOverviewQuery();
-  const { data: timeseries } = useGetOrdersTimeseriesQuery(30);
-  const { data: userGrowth } = useGetUserGrowthQuery(30);
-  const { data: txnMix } = useGetTransactionMixQuery(30);
+  const { data: timeseries } = useGetOrdersTimeseriesQuery(days);
+  const { data: userGrowth } = useGetUserGrowthQuery(days);
+  const { data: txnMix } = useGetTransactionMixQuery(days);
 
   const currency = overview?.currency;
   const revenue30 = sum(timeseries, "revenue");

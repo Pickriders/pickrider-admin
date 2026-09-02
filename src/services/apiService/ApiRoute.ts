@@ -12,7 +12,9 @@
 
 import {
   AcceptOrRejectOrderOfferData,
+  AcceptRejectLocationUpdateRequestDto,
   AcceptRejectOfferRequestDto,
+  AcknowledgeWalletTermsData,
   AddCountryData,
   AddCountryDto,
   AddCountryStatesData,
@@ -21,12 +23,19 @@ import {
   AddKycDetailsData,
   AddVehiclesData,
   AddVehiclesDto,
+  AdjustUserWalletData,
+  AdjustWalletRequestDto,
+  AdminCancelOrderRequestDto,
+  AdminUpdateOrderStatusRequestDto,
   ApplyOrderCouponData,
   ApproveDriversLicenseSubmissionData,
   AssignUserVehicleData,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
+  CancelFundWalletData,
+  CancelFundWalletRequestDto,
   CancelLocationRequestDto,
+  CancelOrder2Data,
   CancelOrderData,
   CancelOrderLocationData,
   CancelOrderRequestDto,
@@ -37,6 +46,7 @@ import {
   CompleteLocationRequestDto,
   CompleteOrderData,
   CompleteOrderLocationData,
+  ConfirmExternalPaymentByReferenceData,
   CreateBatchOrderData,
   CreateBatchOrderDto,
   CreateBulkOrderData,
@@ -50,8 +60,12 @@ import {
   CreateDedicatedVirtualAccountData,
   CreateGroupData,
   CreateGroupRequestDto,
+  CreateOrderPaymentLinkData,
   CreateSingleOrderData,
   CreateSingleOrderDto,
+  CreateTeam2Data,
+  CreateTeamData,
+  CreateTeamRequestDto,
   CreateTemplateData,
   CreateTemplateRequestDto,
   CreateUser2Data,
@@ -59,15 +73,18 @@ import {
   CreateUserRequestDto,
   CreateVirtualAccountRequestDto,
   CreateWalletData,
+  CreditPlatformWalletData,
   DeactivateCouponData,
   DeleteUserAccountData,
   DeleteUserVehicleData,
   DeleteVehicleData,
+  FindAll2Data,
   FindAllData,
   FundWalletRequestDto,
   GetActiveCouponsData,
   GetActiveOffersData,
   GetAllReferralsData,
+  GetBanks2Data,
   GetBanksData,
   GetBusinessData,
   GetBusinessOrderData,
@@ -86,20 +103,30 @@ import {
   GetCountryByIdData,
   GetCountryStateByIdData,
   GetCountryStatesData,
+  GetDeliveryPricingData,
+  GetExternalPaymentMetricsData,
+  GetFinanceStatusData,
   GetHeartbeatData,
+  GetLatestLocationUpdateForCustomerData,
   GetLogsData,
   GetNotificationsData,
   GetOrderData,
+  GetOrderEtaData,
+  GetOrderPaymentInfoData,
   GetOrderStatusChartData,
   GetOrderTypeChartData,
   GetOrdersData,
+  GetPendingLocationUpdateData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
   GetReviewsData,
+  GetRiderLocationsData,
   GetRiderOrderData,
   GetRiderOrderStatisticsData,
   GetRiderOrdersData,
+  GetRidersLeaderboardData,
   GetTransactionData,
+  GetTransactionSummaryData,
   GetTransactions2Data,
   GetTransactionsData,
   GetUserData,
@@ -109,10 +136,13 @@ import {
   GetUserProfile2Data,
   GetUserProfileData,
   GetUserReviewsData,
+  GetUserTeamData,
   GetUserTransactionData,
   GetUserTransactionsData,
+  GetUserTransactionsSummaryData,
   GetUserVehicleData,
   GetUserWalletData,
+  GetUserWallets2Data,
   GetUserWalletsData,
   GetUsersData,
   GetVehicle2Data,
@@ -121,24 +151,41 @@ import {
   GoogleSignInData,
   GoogleSignInRequestDto,
   HandleWebhookEventsData,
+  InitializeExternalOrderPaymentData,
   InitializeFundWalletData,
+  InitializeOrderPaymentRequestDto,
   InitiateOrderPaymentData,
+  InitiatePayoutData,
+  InitiatePayoutDto,
   InitiateWithdrawalData,
   InitiateWithdrawalRequestDto,
   KYCDetailsDto,
+  ListAllRidersData,
   LoginAdminsData,
   LoginBusinessData,
   LoginData,
   LoginRequestDto,
   MakeOfferRequestDto,
   MakeOrderOfferData,
-  NewFeatureLaunchNotificationData,
   Object,
   PasswordResetData,
   PasswordResetRequestData,
   QueueOrderData,
+  QuoteBatchOrderData,
+  QuoteBatchOrderRequestDto,
+  QuoteBulkOrderData,
+  QuoteBulkOrderRequestDto,
+  QuoteOrderData,
+  QuoteOrderLocationData,
+  QuoteOrderRequestDto,
   RateRiderData,
   RateRiderRequestDto,
+  ReDispatchData,
+  ReDispatchRequestDto,
+  ReassignRiderData,
+  ReassignRiderRequestDto,
+  RefundCustomerOrderData,
+  RefundOrderRequestDto,
   RejectVehicleData,
   RemoveGroupUsersData,
   RemoveOrderCouponData,
@@ -146,8 +193,12 @@ import {
   RequestOrderRidersData,
   ResendTokenData,
   ResetPasswordRequestDto,
+  RespondToLocationUpdateData,
+  RiderLocationsRequestDto,
   RidersRequestDto,
   RunData,
+  SetPinData,
+  SetWithdrawalPinDto,
   StartOrderData,
   StartOrderLocationData,
   SubmitDriversLicenseData,
@@ -174,10 +225,14 @@ import {
   UpdateLocationRequestDto,
   UpdateLocationStatusRequestDto,
   UpdateNotificationsRequestDto,
+  UpdateOrderLocationData,
+  UpdateOrderLocationDto,
   UpdateOrderLocationStatusData,
+  UpdateOrderStatusData,
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
+  UpdatePlatformSettlementDto,
   UpdatePreferencesRequestDto,
   UpdateProfilePhoto2Data,
   UpdateProfilePhotoData,
@@ -185,12 +240,15 @@ import {
   UpdateSettlementAccount2Data,
   UpdateSettlementAccountData,
   UpdateSettlementAccountRequestDto,
+  UpdateSettlementData,
   UpdateStateDto,
   UpdateUserAddresses2Data,
   UpdateUserAddressesData,
   UpdateUserLocationData,
   UpdateUserPreferencesData,
   UpdateUserProfileData,
+  UpdateUserStatusData,
+  UpdateUserStatusRequestDto,
   UpdateUserVehicle2Data,
   UpdateUserVehicleData,
   UpdateVehicleRequestDto,
@@ -201,6 +259,7 @@ import {
   VerifyDriversLicenseData,
   VerifyEmailData,
   VerifyEmailRequestDto,
+  VerifyOrderPaymentData,
   VerifyPhoneData,
   VerifyPhoneRequestDto,
   VerifyVehicleData,
@@ -222,6 +281,24 @@ export namespace Api {
       "x-api-key"?: string;
     };
     export type ResponseBody = GetHeartbeatData;
+  }
+
+  /**
+   * No description
+   * @tags admin-configs
+   * @name GetDeliveryPricing
+   * @request GET:/api/v1/admin-configs/delivery-pricing
+   * @response `200` `GetDeliveryPricingData`
+   */
+  export namespace GetDeliveryPricing {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = GetDeliveryPricingData;
   }
 
   /**
@@ -572,6 +649,22 @@ export namespace Api {
   /**
    * No description
    * @tags users
+   * @name AcknowledgeWalletTerms
+   * @request PATCH:/api/v1/users/me/acknowledge-wallet-terms
+   * @secure
+   * @response `200` `AcknowledgeWalletTermsData`
+   */
+  export namespace AcknowledgeWalletTerms {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AcknowledgeWalletTermsData;
+  }
+
+  /**
+   * No description
+   * @tags users
    * @name UpdateUserLocation
    * @request PATCH:/api/v1/users/me/update-location
    * @secure
@@ -704,6 +797,24 @@ export namespace Api {
   /**
    * No description
    * @tags users
+   * @name CancelFundWallet
+   * @request POST:/api/v1/users/me/wallets/{walletId}/cancel-funding
+   * @secure
+   * @response `201` `CancelFundWalletData`
+   */
+  export namespace CancelFundWallet {
+    export type RequestParams = {
+      walletId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CancelFundWalletRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CancelFundWalletData;
+  }
+
+  /**
+   * No description
+   * @tags users
    * @name UpdateSettlementAccount
    * @request PATCH:/api/v1/users/me/wallets/{walletId}/settlement-account
    * @secure
@@ -800,6 +911,31 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetUserTransactionsData;
+  }
+
+  /**
+   * No description
+   * @tags users
+   * @name GetUserTransactionsSummary
+   * @request GET:/api/v1/users/me/transactions/summary
+   * @secure
+   * @response `200` `GetUserTransactionsSummaryData`
+   */
+  export namespace GetUserTransactionsSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+      /** transaction type filter. comma separated list of TransactionType */
+      type?: string;
+      /** transaction category filter. comma separated list of TransactionCategory */
+      category?: string;
+      /** transaction status filter. comma separated list of TransactionStatus */
+      status?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetUserTransactionsSummaryData;
   }
 
   /**
@@ -969,22 +1105,6 @@ export namespace Api {
   /**
    * No description
    * @tags admins/users
-   * @name NewFeatureLaunchNotification
-   * @request PATCH:/api/v1/admins/users/new-features-nofitication
-   * @secure
-   * @response `200` `NewFeatureLaunchNotificationData`
-   */
-  export namespace NewFeatureLaunchNotification {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = NewFeatureLaunchNotificationData;
-  }
-
-  /**
-   * No description
-   * @tags admins/users
    * @name CreateUser2
    * @request POST:/api/v1/admins/users
    * @originalName createUser
@@ -1010,6 +1130,19 @@ export namespace Api {
   export namespace GetUsers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
+      sortBy?:
+        | "createdAt"
+        | "lastLoginDate"
+        | "completedDeliveries"
+        | "totalEarned";
+      /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
+      driversLicenseVerified?:
+        | "APPROVE"
+        | "DISAPPROVE"
+        | "SUSPENDED"
+        | "SUBMITTED"
+        | "PENDING";
       /** Search by user email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
       userSearch?: string;
       /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
@@ -1050,6 +1183,80 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetUserData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name GetUserWallets2
+   * @request GET:/api/v1/admins/users/{userId}/wallets
+   * @originalName getUserWallets
+   * @duplicate
+   * @secure
+   * @response `200` `GetUserWallets2Data`
+   */
+  export namespace GetUserWallets2 {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetUserWallets2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name UpdateUserStatus
+   * @request PATCH:/api/v1/admins/users/{userId}/status
+   * @secure
+   * @response `200` `UpdateUserStatusData`
+   */
+  export namespace UpdateUserStatus {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateUserStatusRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateUserStatusData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name AdjustUserWallet
+   * @request POST:/api/v1/admins/users/{userId}/wallets/adjust
+   * @secure
+   * @response `201` `AdjustUserWalletData`
+   */
+  export namespace AdjustUserWallet {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdjustWalletRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdjustUserWalletData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name RefundCustomerOrder
+   * @request POST:/api/v1/admins/users/{userId}/refund
+   * @secure
+   * @response `201` `RefundCustomerOrderData`
+   */
+  export namespace RefundCustomerOrder {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RefundOrderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RefundCustomerOrderData;
   }
 
   /**
@@ -1219,6 +1426,22 @@ export namespace Api {
 
   /**
    * No description
+   * @tags wallets
+   * @name CreditPlatformWallet
+   * @request POST:/api/v1/wallets/credit-platform
+   * @secure
+   * @response `201` `CreditPlatformWalletData`
+   */
+  export namespace CreditPlatformWallet {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreditPlatformWalletData;
+  }
+
+  /**
+   * No description
    * @tags admins/wallets
    * @name GetPlatformWallet
    * @request GET:/api/v1/admins/wallets/platform-wallet
@@ -1293,6 +1516,46 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetTransactions2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   * @response `200` `GetExternalPaymentMetricsData`
+   */
+  export namespace GetExternalPaymentMetrics {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** provide a user (entity) id to scope metrics to a single customer */
+      entityId?: string;
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetExternalPaymentMetricsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetTransactionSummary
+   * @request GET:/api/v1/admins/transactions/metrics/summary
+   * @secure
+   * @response `200` `GetTransactionSummaryData`
+   */
+  export namespace GetTransactionSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionSummaryData;
   }
 
   /**
@@ -1442,6 +1705,88 @@ export namespace Api {
       provider: string;
     };
     export type ResponseBody = CreateDedicatedVirtualAccountData;
+  }
+
+  /**
+   * No description
+   * @tags admins/wallets
+   * @name GetBanks2
+   * @request GET:/api/v1/admins/wallets/banks
+   * @originalName getBanks
+   * @duplicate
+   * @secure
+   * @response `200` `GetBanks2Data`
+   */
+  export namespace GetBanks2 {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetBanks2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/wallets
+   * @name GetFinanceStatus
+   * @request GET:/api/v1/admins/wallets/finance-status
+   * @secure
+   * @response `200` `GetFinanceStatusData`
+   */
+  export namespace GetFinanceStatus {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetFinanceStatusData;
+  }
+
+  /**
+   * No description
+   * @tags admins/wallets
+   * @name UpdateSettlement
+   * @request POST:/api/v1/admins/wallets/platform-wallet/settlement
+   * @secure
+   * @response `201` `UpdateSettlementData`
+   */
+  export namespace UpdateSettlement {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UpdatePlatformSettlementDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateSettlementData;
+  }
+
+  /**
+   * No description
+   * @tags admins/wallets
+   * @name SetPin
+   * @request POST:/api/v1/admins/wallets/pin
+   * @secure
+   * @response `201` `SetPinData`
+   */
+  export namespace SetPin {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SetWithdrawalPinDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = SetPinData;
+  }
+
+  /**
+   * No description
+   * @tags admins/wallets
+   * @name InitiatePayout
+   * @request POST:/api/v1/admins/wallets/platform-wallet/payout
+   * @secure
+   * @response `201` `InitiatePayoutData`
+   */
+  export namespace InitiatePayout {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = InitiatePayoutDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = InitiatePayoutData;
   }
 
   /**
@@ -1743,7 +2088,7 @@ export namespace Api {
       type?: string;
       /** Allowed categories separated by comma : FEE,DEPOSIT,WITHDRAWAL,REVERSAL,CHARGE */
       category?: string;
-      /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS */
+      /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS,CANCELLED */
       status?: string;
       /** Order by default is ASC, select either from the the enum ['ASC', 'DESC'] */
       order?: "ASC" | "DESC";
@@ -2331,6 +2676,62 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name QuoteOrder
+   * @request POST:/api/v1/orders/quote
+   * @secure
+   * @response `201` `QuoteOrderData`
+   */
+  export namespace QuoteOrder {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = QuoteOrderRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = QuoteOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name QuoteBatchOrder
+   * @request POST:/api/v1/orders/quote-batch
+   * @response `201` `QuoteBatchOrderData`
+   */
+  export namespace QuoteBatchOrder {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = QuoteBatchOrderRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = QuoteBatchOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name QuoteBulkOrder
+   * @request POST:/api/v1/orders/quote-bulk
+   * @secure
+   * @response `201` `QuoteBulkOrderData`
+   */
+  export namespace QuoteBulkOrder {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = QuoteBulkOrderRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = QuoteBulkOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name CreateBatchOrder
    * @request POST:/api/v1/orders/batch
    * @secure
@@ -2366,6 +2767,95 @@ export namespace Api {
       "x-state-code": string;
     };
     export type ResponseBody = RequestOrderRidersData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ReDispatch
+   * @request POST:/api/v1/orders/{orderId}/re-dispatch
+   * @secure
+   * @response `201` `ReDispatchData`
+   */
+  export namespace ReDispatch {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ReDispatchRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = ReDispatchData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ReassignRider
+   * @request POST:/api/v1/orders/{orderId}/reassign
+   * @secure
+   * @response `201` `ReassignRiderData`
+   */
+  export namespace ReassignRider {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ReassignRiderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ReassignRiderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetRidersLeaderboard
+   * @request GET:/api/v1/orders/riders/leaderboard
+   * @secure
+   * @response `200` `GetRidersLeaderboardData`
+   */
+  export namespace GetRidersLeaderboard {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetRidersLeaderboardData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ListAllRiders
+   * @summary Deprecated alias — use GET /orders/riders/leaderboard
+   * @request GET:/api/v1/orders/riders/list
+   * @deprecated
+   * @secure
+   * @response `200` `ListAllRidersData`
+   */
+  export namespace ListAllRiders {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ListAllRidersData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetRiderLocations
+   * @request POST:/api/v1/orders/riders/locations
+   * @secure
+   * @response `201` `GetRiderLocationsData`
+   */
+  export namespace GetRiderLocations {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = RiderLocationsRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetRiderLocationsData;
   }
 
   /**
@@ -2448,6 +2938,93 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name CreateOrderPaymentLink
+   * @request POST:/api/v1/orders/{orderId}/payment-link
+   * @secure
+   * @response `201` `CreateOrderPaymentLinkData`
+   */
+  export namespace CreateOrderPaymentLink {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateOrderPaymentLinkData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name VerifyOrderPayment
+   * @request GET:/api/v1/orders/{orderId}/payment-status
+   * @secure
+   * @response `200` `VerifyOrderPaymentData`
+   */
+  export namespace VerifyOrderPayment {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = VerifyOrderPaymentData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetOrderPaymentInfo
+   * @request GET:/api/v1/orders/pay/{token}
+   * @response `200` `GetOrderPaymentInfoData`
+   */
+  export namespace GetOrderPaymentInfo {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOrderPaymentInfoData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ConfirmExternalPaymentByReference
+   * @request GET:/api/v1/orders/payment/confirm
+   * @response `200` `ConfirmExternalPaymentByReferenceData`
+   */
+  export namespace ConfirmExternalPaymentByReference {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      reference: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConfirmExternalPaymentByReferenceData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name InitializeExternalOrderPayment
+   * @request POST:/api/v1/orders/pay/{token}/initialize
+   * @response `201` `InitializeExternalOrderPaymentData`
+   */
+  export namespace InitializeExternalOrderPayment {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = InitializeOrderPaymentRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = InitializeExternalOrderPaymentData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name AcceptOrRejectOrderOffer
    * @request PATCH:/api/v1/orders/{orderId}/offers/{offerId}
    * @secure
@@ -2518,6 +3095,88 @@ export namespace Api {
     export type RequestBody = UpdateLocationStatusRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = UpdateOrderLocationStatusData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetOrderEta
+   * @request GET:/api/v1/orders/{orderId}/eta
+   * @secure
+   * @response `200` `GetOrderEtaData`
+   */
+  export namespace GetOrderEta {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOrderEtaData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name QuoteOrderLocation
+   * @request POST:/api/v1/orders/{orderId}/locations/{locationId}/quote
+   * @secure
+   * @response `201` `QuoteOrderLocationData`
+   */
+  export namespace QuoteOrderLocation {
+    export type RequestParams = {
+      orderId: string;
+      locationId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateOrderLocationDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = QuoteOrderLocationData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name UpdateOrderLocation
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}
+   * @secure
+   * @response `200` `UpdateOrderLocationData`
+   */
+  export namespace UpdateOrderLocation {
+    export type RequestParams = {
+      orderId: string;
+      locationId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateOrderLocationDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = UpdateOrderLocationData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RespondToLocationUpdate
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}/updates/{updateId}
+   * @secure
+   * @response `200` `RespondToLocationUpdateData`
+   */
+  export namespace RespondToLocationUpdate {
+    export type RequestParams = {
+      orderId: string;
+      locationId: string;
+      updateId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AcceptRejectLocationUpdateRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RespondToLocationUpdateData;
   }
 
   /**
@@ -2718,6 +3377,40 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name GetPendingLocationUpdate
+   * @request GET:/api/v1/orders/location-updates/pending
+   * @secure
+   * @response `200` `GetPendingLocationUpdateData`
+   */
+  export namespace GetPendingLocationUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetPendingLocationUpdateData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetLatestLocationUpdateForCustomer
+   * @request GET:/api/v1/orders/{orderId}/location-updates/latest
+   * @secure
+   * @response `200` `GetLatestLocationUpdateForCustomerData`
+   */
+  export namespace GetLatestLocationUpdateForCustomer {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetLatestLocationUpdateForCustomerData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name GetUserOrder
    * @request GET:/api/v1/orders/{orderId}
    * @secure
@@ -2848,6 +3541,47 @@ export namespace Api {
 
   /**
    * No description
+   * @tags admins/orders
+   * @name CancelOrder2
+   * @request POST:/api/v1/admins/orders/{orderId}/cancel
+   * @originalName cancelOrder
+   * @duplicate
+   * @secure
+   * @response `201` `CancelOrder2Data`
+   */
+  export namespace CancelOrder2 {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminCancelOrderRequestDto;
+    export type RequestHeaders = {
+      "x-country-code"?: string;
+      "x-state-code"?: string;
+    };
+    export type ResponseBody = CancelOrder2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
+   * @name UpdateOrderStatus
+   * @request PATCH:/api/v1/admins/orders/{orderId}/status
+   * @secure
+   * @response `200` `UpdateOrderStatusData`
+   */
+  export namespace UpdateOrderStatus {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminUpdateOrderStatusRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateOrderStatusData;
+  }
+
+  /**
+   * No description
    * @tags datalogs
    * @name GetLogs
    * @request GET:/api/v1/datalogs
@@ -2901,9 +3635,80 @@ export namespace Api {
 
   /**
    * No description
+   * @tags teams
+   * @name CreateTeam
+   * @request POST:/api/v1/teams
+   * @response `201` `CreateTeamData`
+   */
+  export namespace CreateTeam {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateTeamRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateTeamData;
+  }
+
+  /**
+   * No description
+   * @tags teams
+   * @name GetUserTeam
+   * @request GET:/api/v1/teams/{teamId}
+   * @response `200` `GetUserTeamData`
+   */
+  export namespace GetUserTeam {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {
+      teamId: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetUserTeamData;
+  }
+
+  /**
+   * No description
+   * @tags admins/teams
+   * @name CreateTeam2
+   * @request POST:/api/v1/admins/teams
+   * @originalName createTeam
+   * @duplicate
+   * @secure
+   * @response `201` `CreateTeam2Data`
+   */
+  export namespace CreateTeam2 {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateTeamRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateTeam2Data;
+  }
+
+  /**
+   * No description
+   * @tags admins/teams
+   * @name FindAll2
+   * @request GET:/api/v1/admins/teams
+   * @originalName findAll
+   * @duplicate
+   * @secure
+   * @response `200` `FindAll2Data`
+   */
+  export namespace FindAll2 {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FindAll2Data;
+  }
+
+  /**
+   * No description
    * @tags crons
    * @name Run
    * @request GET:/api/v1/crons/run
+   * @secure
    * @response `200` `RunData`
    */
   export namespace Run {

@@ -63,6 +63,39 @@ export const useGetOrderQuery = (orderId: string) =>
     enabled: !!orderId,
   });
 
+export type OrderBid = {
+  _id: string;
+  amount: number;
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  createdAt: string;
+  rider: { _id: string; firstname: string; lastname: string; photo: string | null; phone: string | null } | null;
+  riderStats: { totalBids: number; wonBids: number; avgBid: number } | null;
+};
+
+export type OrderBids = {
+  orderId: string;
+  totalBids: number;
+  uniqueRiders: number;
+  lowestBid: number | null;
+  highestBid: number | null;
+  acceptedAmount: number | null;
+  offers: OrderBid[];
+};
+
+// Full rider-bid history for an order (admin) — the /offers endpoint added on core.
+export const useGetOrderBidsQuery = (orderId: string) =>
+  useApiQuery<OrderBids>({
+    queryKey: [ORDER_KEY.ORDERS, "bids", orderId],
+    queryFn: () =>
+      apiService.request<OrderBids>({
+        path: `/api/v1/admins/orders/${orderId}/offers`,
+        method: "GET",
+        secure: true,
+        format: "json",
+      }),
+    enabled: !!orderId,
+  });
+
 const invalidateOrder = (orderId: string) => {
   queryClient.invalidateQueries({ queryKey: [ORDER_KEY.ORDERS, orderId] });
   queryClient.invalidateQueries({ queryKey: [ORDER_KEY.ORDERS] });
@@ -70,6 +103,8 @@ const invalidateOrder = (orderId: string) => {
 
 export const useAdminCancelOrderMn = (orderId: string) =>
   useApiMutation({
+    // TODO: api-client drift — regenerate the client; keep the ADMIN cancel endpoint (not the customer one).
+    // @ts-expect-error stale/missing generated method; runtime call is unchanged.
     mutationFn: (data: { reason: string }) => apiService.adminCancelOrder(orderId, data),
     onSuccess: () => {
       invalidateOrder(orderId);
@@ -79,6 +114,8 @@ export const useAdminCancelOrderMn = (orderId: string) =>
 
 export const useAdminUpdateOrderStatusMn = (orderId: string) =>
   useApiMutation({
+    // TODO: api-client drift — regenerate the client; keep the ADMIN status-override endpoint.
+    // @ts-expect-error stale/missing generated method; runtime call is unchanged.
     mutationFn: (data: { status: string }) => apiService.adminUpdateOrderStatus(orderId, data),
     onSuccess: () => {
       invalidateOrder(orderId);

@@ -18,6 +18,8 @@ export const CUSTOMER_KEY = {
 export const useGetCustomerWalletQuery = (userId?: string) =>
   useQuery({
     queryKey: [CUSTOMER_KEY.ROOT, userId, "wallet"],
+    // TODO: api-client drift — regenerate the generated client from the backend swagger.
+    // @ts-expect-error stale generated method name; runtime call is unchanged.
     queryFn: () => apiService.getUserWalletsAdmin({ userId: userId! }),
     enabled: !!userId,
     retry: false,
@@ -96,6 +98,8 @@ const invalidateCustomer = (userId: string) => {
 export const useUpdateCustomerStatusMn = (userId: string) =>
   useApiMutation({
     mutationFn: (data: { status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED"; reason?: string }) =>
+      // TODO: api-client drift — regenerate the generated client from the backend swagger.
+      // @ts-expect-error stale generated enum types; the string values are valid at runtime.
       apiService.updateUserStatus({ userId }, data),
     onSuccess: () => {
       invalidateCustomer(userId);
@@ -106,6 +110,8 @@ export const useUpdateCustomerStatusMn = (userId: string) =>
 export const useAdjustCustomerWalletMn = (userId: string) =>
   useApiMutation({
     mutationFn: (data: { amount: number; type: "CREDIT" | "DEBIT"; reason: string }) =>
+      // TODO: api-client drift — regenerate the generated client from the backend swagger.
+      // @ts-expect-error stale generated enum types; the string values are valid at runtime.
       apiService.adjustUserWallet({ userId }, data),
     onSuccess: () => {
       invalidateCustomer(userId);

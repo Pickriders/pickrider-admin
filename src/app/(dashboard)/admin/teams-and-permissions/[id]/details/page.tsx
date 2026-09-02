@@ -20,15 +20,15 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
         rootPageLink="/admin"
         currentPage="Team member"
       />
-      <section className="bg-background flex  items-start rounded-lg px-14 gap-x-6 py-12 mt-11 ">
-        <div className="flex-1">
+      <section className="bg-background flex flex-col lg:flex-row items-start rounded-lg px-5 sm:px-8 lg:px-14 gap-8 lg:gap-x-6 py-8 sm:py-12 mt-8 sm:mt-11 ">
+        <div className="flex-1 min-w-0 w-full">
           <Suspense>
             <DetailsForm userId={params.id} />
           </Suspense>
         </div>
-        <div className="flex-1 ">
+        <div className="flex-1 min-w-0 w-full ">
           <Permissions />
-          <UI.PrimaryButton className="w-[20rem] mt-5" disabled>
+          <UI.PrimaryButton className="w-full sm:w-[20rem] mt-5" disabled>
             Save
           </UI.PrimaryButton>
         </div>

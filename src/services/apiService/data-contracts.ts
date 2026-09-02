@@ -10,6 +10,21 @@
  * ---------------------------------------------------------------
  */
 
+/** Manual admin status override (audited). */
+export enum OrderStatus {
+  INITIATED = "INITIATED",
+  ACCEPTED = "ACCEPTED",
+  ON_GOING = "ON_GOING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
+
+/** @default "ACCEPTED" */
+export enum LocationUpdateStatus {
+  ACCEPTED = "ACCEPTED",
+  DECLINED = "DECLINED",
+}
+
 export enum OrderLocationStatus {
   PENDING = "PENDING",
   IN_TRANSIT = "IN_TRANSIT",
@@ -32,12 +47,6 @@ export enum NotificationCategory {
   SCHEDULED_BROADCAST = "SCHEDULED_BROADCAST",
 }
 
-/** @default "USER" */
-export enum EntityType {
-  USER = "USER",
-  BUSINESS = "BUSINESS",
-}
-
 /** @default "EMAIL" */
 export enum NotificationType {
   IN_APP = "IN_APP",
@@ -51,11 +60,6 @@ export enum CouponType {
   PERCENTAGE = "PERCENTAGE",
 }
 
-export enum EntityType {
-  USER = "USER",
-  BUSINESS = "BUSINESS",
-}
-
 /** @default "ACCEPTED" */
 export enum Status {
   PENDING = "PENDING",
@@ -63,9 +67,28 @@ export enum Status {
   ACCEPTED = "ACCEPTED",
 }
 
+/** CREDIT tops up, DEBIT deducts. */
+export enum TransactionType {
+  CREDIT = "CREDIT",
+  DEBIT = "DEBIT",
+}
+
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  BANNED = "BANNED",
+}
+
 export enum PaymentProvider {
   PAYSTACK = "PAYSTACK",
   FLUTTERWAVE = "FLUTTERWAVE",
+}
+
+export enum EntityType {
+  TEAM = "TEAM",
+  USER = "USER",
+  BUSINESS = "BUSINESS",
 }
 
 export enum Gender {
@@ -98,6 +121,8 @@ export enum Role {
 export interface CountryConfigSchemaDto {
   exchangeRate: number;
   minimumOfferPercentage: number;
+  /** @default 40 */
+  maxRiderSurgePercentage?: number;
   userWithdrawalLimits: {
     /** @default 0 */
     minimumAmount?: number;
@@ -168,6 +193,12 @@ export interface CountryConfigDto {
    * @max 100
    */
   minimumOfferPercentage?: number;
+  /**
+   * Max percentage above quote a rider counter-offer may go
+   * @min 0
+   * @max 100
+   */
+  maxRiderSurgePercentage?: number;
   /** user withdrawal limits */
   userWithdrawalLimits?: WithdrawalLimitsDto;
   /** business withdrawal limits */
@@ -194,6 +225,77 @@ export interface UpdateCountryDto {
   name: string;
   /** Configuration for the country */
   config?: CountryConfigDto;
+}
+
+export interface StateDto {
+  name: string;
+  /**
+   * @minLength 2
+   * @maxLength 3
+   */
+  code: string;
+}
+
+export interface State {
+  countryId: string;
+  name: string;
+  code: string;
+  config: {
+    basePricePerKm?: number;
+    baseFuelPrice?: number;
+    currentFuelPrice?: number;
+    /** @default 0 */
+    serviceCharge?: number;
+    /** @default 0 */
+    percentageCharge?: number;
+    /** @default 2000000 */
+    minimumOrderPrice?: number;
+    /** @default 300000 */
+    distanceTaperThreshold?: number;
+    /** @default 18000 */
+    distanceTaperBeyondRate?: number;
+    /** @default 5 */
+    maxRidersPerQuery?: number;
+    /** @default 1 */
+    maxActiveOrders?: number;
+    /** @default 20 */
+    maxDistanceRadius?: number;
+    /** @default false */
+    queueOrderByDefault?: boolean;
+    /** @default false */
+    locationUpdateEnabled?: boolean;
+    /** @default 500 */
+    locationUpdateFreeRadiusMeters?: number;
+    /** @default 1 */
+    locationUpdateMaxPerLocation?: number;
+    /** @default 2 */
+    locationUpdateMaxDeclinesPerLocation?: number;
+    /** @default 240 */
+    locationUpdateRiderAcceptTimeoutSec?: number;
+    /** @default false */
+    arrivalGateEnabled?: boolean;
+    /** @default 40 */
+    arrivalRadiusMeters?: number;
+    /** @default true */
+    etaEnabled?: boolean;
+    /** @default 25 */
+    etaAverageSpeedKmh?: number;
+  };
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface ListStateResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: State[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
 }
 
 export interface StateConfigDto {
@@ -249,150 +351,50 @@ export interface StateConfigDto {
    */
   queueOrderByDefault: boolean;
   /**
-   * Mid-order location update — master toggle (Feature A)
+   * Master toggle for mid-order location updates
    * @default false
    */
   locationUpdateEnabled?: boolean;
   /**
-   * Free grace radius for route-delta before the customer pays (metres)
+   * Free route-distance delta (metres) for a location edit
    * @default 500
    */
   locationUpdateFreeRadiusMeters?: number;
   /**
-   * Max ACCEPTED location updates per stop
+   * Max accepted location updates per stop
    * @default 1
    */
   locationUpdateMaxPerLocation?: number;
   /**
-   * Max rider-DECLINED updates per stop before blocking further requests
+   * Max rider-declined location updates before further requests are blocked for a stop
    * @default 2
    */
   locationUpdateMaxDeclinesPerLocation?: number;
   /**
-   * Rider accept window before auto-decline + refund (seconds)
+   * Seconds a rider has to accept a location change
    * @default 240
    */
   locationUpdateRiderAcceptTimeoutSec?: number;
   /**
-   * Arrival gate — geo-gate ARRIVED transitions (Feature B)
+   * Master toggle for the ARRIVED proximity gate + ETA
    * @default false
    */
   arrivalGateEnabled?: boolean;
   /**
-   * Radius the rider must be within to mark arrived (metres)
+   * Radius (metres) to mark a location ARRIVED
    * @default 40
    */
   arrivalRadiusMeters?: number;
   /**
-   * Show estimated pickup/dropoff times
+   * Whether to surface estimated pickup/dropoff times
    * @default true
    */
   etaEnabled?: boolean;
   /**
-   * Average speed used for the cheap ETA calc (km/h)
+   * Average speed (km/h) for the ETA estimate
    * @default 25
    */
   etaAverageSpeedKmh?: number;
-}
-
-export interface StateDto {
-  name: string;
-  /**
-   * @minLength 2
-   * @maxLength 3
-   */
-  code: string;
-  /** Configuration for the state */
-  config?: StateConfigDto;
-}
-
-export interface State {
-  countryId: string;
-  name: string;
-  code: string;
-  config: {
-    basePricePerKm?: number;
-    baseFuelPrice?: number;
-    currentFuelPrice?: number;
-    /** @default 0 */
-    serviceCharge?: number;
-    /** @default 0 */
-    percentageCharge?: number;
-    /** @default 2000000 */
-    minimumOrderPrice?: number;
-    /** @default 300000 */
-    distanceTaperThreshold?: number;
-    /** @default 18000 */
-    distanceTaperBeyondRate?: number;
-    /** @default 5 */
-    maxRidersPerQuery?: number;
-    /** @default 1 */
-    maxActiveOrders?: number;
-    /** @default 20 */
-    maxDistanceRadius?: number;
-    /** @default false */
-    queueOrderByDefault?: boolean;
-    /**
-     * Mid-order location update — master toggle (Feature A)
-     * @default false
-     */
-    locationUpdateEnabled?: boolean;
-    /**
-     * Free grace radius for route-delta before the customer pays (metres)
-     * @default 500
-     */
-    locationUpdateFreeRadiusMeters?: number;
-    /**
-     * Max ACCEPTED location updates per stop
-     * @default 1
-     */
-    locationUpdateMaxPerLocation?: number;
-    /**
-     * Max rider-DECLINED updates per stop before blocking further requests
-     * @default 2
-     */
-    locationUpdateMaxDeclinesPerLocation?: number;
-    /**
-     * Rider accept window before auto-decline + refund (seconds)
-     * @default 240
-     */
-    locationUpdateRiderAcceptTimeoutSec?: number;
-    /**
-     * Arrival gate — geo-gate ARRIVED transitions (Feature B)
-     * @default false
-     */
-    arrivalGateEnabled?: boolean;
-    /**
-     * Radius the rider must be within to mark arrived (metres)
-     * @default 40
-     */
-    arrivalRadiusMeters?: number;
-    /**
-     * Show estimated pickup/dropoff times
-     * @default true
-     */
-    etaEnabled?: boolean;
-    /**
-     * Average speed used for the cheap ETA calc (km/h)
-     * @default 25
-     */
-    etaAverageSpeedKmh?: number;
-  };
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
-export interface ListStateResponseDto {
-  nextPage?: number | null;
-  previousPage?: number | null;
-  currentPage: number;
-  results: State[];
-  perPageLimit: number;
-  totalRecords: number;
-  totalPages: number;
 }
 
 export interface UpdateStateDto {
@@ -710,6 +712,8 @@ export interface User {
   updatedAt: string;
   /** @format date-time */
   deletedAt?: string;
+  /** @format date-time */
+  walletTermsAcknowledgedAt?: string;
 }
 
 export interface Vehicle {
@@ -867,7 +871,7 @@ export interface ChangePasswordRequestDto {
 export interface Wallet {
   entityId: string;
   name: string;
-  entityType: "USER" | "BUSINESS";
+  entityType: EntityType;
   currency: string;
   countryCode: string;
   status: "ACTIVE" | "SUSPENDED" | "DISABLED";
@@ -927,6 +931,27 @@ export interface FundWalletResponseDto {
   reference?: string;
 }
 
+export interface CancelFundWalletRequestDto {
+  /**
+   * The reference returned when the wallet funding was initialized
+   * @example "0abcde12345"
+   */
+  reference: string;
+}
+
+export interface CancelFundWalletResponseDto {
+  /**
+   * True when the pending deposit was cancelled; false when the payment had actually gone through
+   * @example true
+   */
+  success: boolean;
+  /**
+   * Outcome of the cancel: 'cancelled' (deposit voided) or 'paid' (payment completed, left for the webhook)
+   * @example "cancelled"
+   */
+  status: string;
+}
+
 export interface UpdateSettlementAccountRequestDto {
   bankName: string;
   bankCode: string;
@@ -942,20 +967,51 @@ export interface InitiateWithdrawalRequestDto {
   amount: number;
 }
 
-export interface ListUserResponseDto {
+export interface ReferralReferredUserDto {
+  _id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  photo?: string;
+  /**
+   * When the referred user joined (registered)
+   * @format date-time
+   */
+  dateJoined: string;
+}
+
+export interface ReferralItemResponseDto {
+  referredUser: ReferralReferredUserDto;
+  /** Number of completed orders by the referred user */
+  completedOrders: number;
+  /** PENDING = not yet earned, EARNED = referee was credited */
+  status: "PENDING" | "EARNED";
+  /** Amount (in smallest currency unit) for this referral */
+  value: number;
+  /**
+   * When the referee was credited (only when status is EARNED)
+   * @format date-time
+   */
+  earnedAt?: string;
+}
+
+export interface ListReferralsResponseDto {
   nextPage?: number | null;
   previousPage?: number | null;
   currentPage: number;
-  results: User[];
+  /** Paginated list of referrals */
+  results: ReferralItemResponseDto[];
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+  /** Total amount (smallest currency unit) the user has earned from referrals */
+  totalEarnedFromReferrals: number;
 }
 
 export interface Transaction {
   entityId: string;
   walletId?: string;
-  entityType: "USER" | "BUSINESS";
+  entityType: EntityType;
   currency: string;
   amount: number;
   /** @default 0 */
@@ -973,13 +1029,14 @@ export interface Transaction {
     | "WALLET_WITHDRAWAL"
     | "REFERRAL_BONUS"
     | "ORDER_PAYMENT"
+    | "ORDER_EXTERNAL_FUNDING"
     | "ORDER_PAYMENT_REFUND"
     | "ORDER_EARNING_SPLIT"
     | "ORDER_DISCOUNT"
     | "PROVIDER_DEPOSIT_FEE"
     | "PROVIDER_WITHDRAWAL_FEE"
     | "ORDER_SERVICE_CHARGE";
-  status: "PROCESSING" | "FAILED" | "SUCCESS";
+  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
   /** @default {} */
   metadata?: object;
   _id: string;
@@ -997,6 +1054,10 @@ export interface ListTransactionResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+}
+
+export interface TransactionSummaryResponseDto {
+  total: number;
 }
 
 export interface UpdatePhoneRequestDto {
@@ -1031,6 +1092,17 @@ export interface UpdatePreferencesRequestDto {
   onboarding?: object;
 }
 
+export interface OrderRecipient {
+  name: string;
+  phone: string;
+  confirmationCode: string;
+  /** @default "PENDING" */
+  status: "PENDING" | "IN_TRANSIT" | "COMPLETED" | "CANCELLED" | "ARRIVED";
+  /** @format date-time */
+  completedAt?: string;
+  _id?: string;
+}
+
 export interface OrderLocation {
   orderId?: string;
   type: "PICKUP" | "DROPOFF";
@@ -1050,10 +1122,12 @@ export interface OrderLocation {
   receiverPhone?: string;
   senderName?: string;
   senderPhone?: string;
+  senderPhoto?: string;
   amountTo: number;
   distanceTo: number;
   currency: string;
   confirmationCode?: string;
+  recipients?: OrderRecipient[];
   /** @format date-time */
   startedAt?: string;
   /** @format date-time */
@@ -1076,6 +1150,40 @@ export interface OrderLocation {
   updatedAt: string;
 }
 
+export interface OrderLocationUpdate {
+  orderId: string;
+  locationId: string;
+  requestedBy: string;
+  /** @default "PENDING" */
+  status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+  oldAddress: string;
+  oldPosition: object;
+  oldAmountTo: number;
+  oldDistanceTo: number;
+  newAddress: string;
+  newPosition: object;
+  newAmountTo: number;
+  newDistanceTo: number;
+  /** @default 0 */
+  deltaAmount: number;
+  /** @default false */
+  detailsOnly: boolean;
+  /** @format date-time */
+  expiresAt?: string;
+  currency: string;
+  chargeTransactionId?: string;
+  refundTransactionId?: string;
+  /** @format date-time */
+  respondedAt?: string;
+  order?: Order;
+  location?: OrderLocation;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
 export interface Coupon {
   code: string;
   name?: string;
@@ -1090,6 +1198,23 @@ export interface Coupon {
   limit: number;
   isOneTime?: boolean;
   isGeneral?: boolean;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface Review {
+  userId: string;
+  riderId: string;
+  orderId: string;
+  comment: string;
+  /**
+   * @min 1
+   * @max 5
+   */
+  rating: number;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -1148,8 +1273,11 @@ export interface Order {
   autoAcceptOffer: boolean;
   /** @default 0 */
   minimumOfferPercentage: number;
+  /** @default 40 */
+  maxRiderSurgePercentage: number;
   negotiatedAmount: number;
   offers: Offer[];
+  locationUpdates?: OrderLocationUpdate[];
   currency: string;
   /** @format date-time */
   scheduledFor?: string;
@@ -1163,6 +1291,17 @@ export interface Order {
   rider?: User;
   coupon?: Coupon;
   transactions?: Transaction[];
+  review?: Review;
+  channel?: string;
+  storefrontVendorId?: string;
+  /** @default 0 */
+  foodValue?: number;
+  /** @default 0 */
+  vendorCommissionRate?: number;
+  callbackUrl?: string;
+  paymentToken?: string;
+  externalPaymentReference?: string;
+  externalPaymentUrl?: string;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -1191,6 +1330,46 @@ export interface SubmitDriversLicenseRequestDto {
   businessId?: string;
 }
 
+export interface ListUserResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: User[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface UpdateUserStatusRequestDto {
+  status: UserStatus;
+  /** Optional note explaining the status change (audited). */
+  reason?: string;
+}
+
+export interface AdjustWalletRequestDto {
+  /**
+   * Amount in sub-units (e.g. 10000 = ₦1).
+   * @min 1
+   */
+  amount: number;
+  /** CREDIT tops up, DEBIT deducts. */
+  type: TransactionType;
+  /** Reason for the manual adjustment (audited). */
+  reason: string;
+}
+
+export interface RefundOrderRequestDto {
+  /** Id of the order being refunded. */
+  orderId: string;
+  /**
+   * Amount in sub-units. Defaults to the full order value.
+   * @min 1
+   */
+  amount?: number;
+  /** Reason for the refund (audited). */
+  reason: string;
+}
+
 export interface UpdateDriverLicenseRequestDto {
   status: Status;
   comment?: string;
@@ -1205,6 +1384,42 @@ export interface WalletCreateRequestDto {
   countryCode: string;
   entityId: string;
   entityType: EntityType;
+}
+
+export interface ExternalPaymentMetricsResponseDto {
+  /** Number of orders paid via a share link. */
+  count: number;
+  /** Gross amount paid through link payments. */
+  totalFunded: number;
+  /** Paystack processing fees on those payments. */
+  totalFees: number;
+  /** Cash actually received after fees (totalFunded - totalFees). */
+  netReceived: number;
+  /** Distinct customers who used the feature. */
+  uniqueCustomers: number;
+}
+
+export interface TransactionMetricsSummaryResponseDto {
+  /** Total value of successful transactions (sub-units). */
+  totalVolume: number;
+  /** Number of successful transactions. */
+  count: number;
+  /** Total credited (money in), sub-units. */
+  inflow: number;
+  /** Total debited (money out), sub-units. */
+  outflow: number;
+  /** Total deposits, sub-units. */
+  deposits: number;
+  /** Total withdrawals, sub-units. */
+  withdrawals: number;
+  /** Total fees, sub-units. */
+  fees: number;
+  /** Total refunds/reversals, sub-units. */
+  refunds: number;
+  /** Total charges, sub-units. */
+  charges: number;
+  /** Distinct wallets/entities involved. */
+  uniqueEntities: number;
 }
 
 export interface CreateCouponRequestDto {
@@ -1285,9 +1500,41 @@ export interface CreateVirtualAccountRequestDto {
   bank?: string;
 }
 
+export interface UpdatePlatformSettlementDto {
+  /** Bank account number. */
+  accountNumber: string;
+  /** Paystack bank code. */
+  bankCode: string;
+}
+
+export interface SetWithdrawalPinDto {
+  /**
+   * 4-digit withdrawal PIN.
+   * @minLength 4
+   * @maxLength 4
+   */
+  pin: string;
+}
+
+export interface InitiatePayoutDto {
+  /**
+   * Amount in sub-units (10000 = ₦1).
+   * @min 1
+   */
+  amount: number;
+  /**
+   * 4-digit withdrawal PIN.
+   * @minLength 4
+   * @maxLength 4
+   */
+  pin: string;
+  /** Optional note for the payout. */
+  reason?: string;
+}
+
 export interface Notification {
   entityId?: string;
-  entityType?: "USER" | "BUSINESS";
+  entityType?: EntityType;
   content: string;
   subject: string;
   type: "IN_APP" | "PUSH" | "SMS" | "EMAIL";
@@ -1372,6 +1619,10 @@ export interface TriggerNotificationRequestDto {
   actions?: NotificationAction[];
   sound?: string;
   channelId?: string;
+  /** Stable Android notification tag; same-tag pushes collapse instead of stacking */
+  tag?: string;
+  /** Arbitrary key-value data forwarded in the push payload (e.g. { type }) */
+  data?: object;
   template?: TemplateRequestDto;
 }
 
@@ -1487,23 +1738,6 @@ export interface KYCDetailsDto {
   userId: string;
 }
 
-export interface Review {
-  userId: string;
-  riderId: string;
-  orderId: string;
-  comment: string;
-  /**
-   * @min 1
-   * @max 5
-   */
-  rating: number;
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
 export interface ListReviewResponseDto {
   nextPage?: number | null;
   previousPage?: number | null;
@@ -1584,6 +1818,7 @@ export interface CreateSinglePickupLocationDto {
   latitude: number;
   senderName?: string;
   senderPhone?: string;
+  senderPhoto?: string;
   description?: string;
   type: "PICKUP" | "DROPOFF";
 }
@@ -1609,6 +1844,18 @@ export interface CreateSingleOrderDto {
   title?: string;
   /** Provide a color to differentiate orders */
   color?: string;
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Storefront vendor ID */
+  vendorId?: string;
+  /** Food value in kobo for storefront orders */
+  foodValue?: number;
+  /** Vendor commission rate (e.g. 5 for 5%) */
+  vendorCommissionRate?: number;
+  /** Whether order is already paid (storefront pre-payment) */
+  isPaid?: boolean;
+  /** Minimum delivery fee floor in kobo (storefront orders override the core minimumOrderPrice) */
+  minimumDeliveryFee?: number;
   pickupLocation: CreateSinglePickupLocationDto;
   dropoffLocation: CreateSingleDropoffLocationDto;
   type: "SINGLE" | "BATCH" | "BULK";
@@ -1624,6 +1871,7 @@ export interface CreateBulkPickupLocationDto {
   description?: string;
   senderName?: string;
   senderPhone?: string;
+  senderPhoto?: string;
   type: "PICKUP" | "DROPOFF";
 }
 
@@ -1638,10 +1886,57 @@ export interface CreateBulkOrderDto {
   title?: string;
   /** Provide a color to differentiate orders */
   color?: string;
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Storefront vendor ID */
+  vendorId?: string;
+  /** Food value in kobo for storefront orders */
+  foodValue?: number;
+  /** Vendor commission rate (e.g. 5 for 5%) */
+  vendorCommissionRate?: number;
+  /** Whether order is already paid (storefront pre-payment) */
+  isPaid?: boolean;
+  /** Minimum delivery fee floor in kobo (storefront orders override the core minimumOrderPrice) */
+  minimumDeliveryFee?: number;
   pickupLocations: CreateBulkPickupLocationDto[];
   dropoffLocation: CreateSingleDropoffLocationDto;
   type: "SINGLE" | "BATCH" | "BULK";
   userId?: string;
+}
+
+export interface QuoteLocationDto {
+  longitude: number;
+  latitude: number;
+  address?: string;
+}
+
+export interface QuoteOrderRequestDto {
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Minimum delivery fee floor in kobo (storefront override) */
+  minimumDeliveryFee?: number;
+  pickupLocation: QuoteLocationDto;
+  dropoffLocation: QuoteLocationDto;
+}
+
+export interface QuoteBatchOrderRequestDto {
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Minimum delivery fee floor in kobo (storefront override) */
+  minimumDeliveryFee?: number;
+  /** Percent discount applied to the batch delivery total (storefront) */
+  batchDiscountPercent?: number;
+  pickupLocation: QuoteLocationDto;
+  dropoffLocations: QuoteLocationDto[];
+}
+
+export interface QuoteBulkOrderRequestDto {
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Minimum delivery fee floor in kobo (storefront override) */
+  minimumDeliveryFee?: number;
+  pickupLocations: QuoteLocationDto[];
+  dropoffLocation: QuoteLocationDto;
 }
 
 export interface CreateBatchPickupLocationDto {
@@ -1651,7 +1946,13 @@ export interface CreateBatchPickupLocationDto {
   description?: string;
   senderName?: string;
   senderPhone?: string;
+  senderPhoto?: string;
   type: "PICKUP" | "DROPOFF";
+}
+
+export interface CreateRecipientDto {
+  name: string;
+  phone: string;
 }
 
 export interface CreateBatchDropoffLocationDto {
@@ -1662,6 +1963,7 @@ export interface CreateBatchDropoffLocationDto {
   description?: string;
   receiverName: string;
   receiverPhone: string;
+  recipients?: CreateRecipientDto[];
   type: "PICKUP" | "DROPOFF";
 }
 
@@ -1676,6 +1978,20 @@ export interface CreateBatchOrderDto {
   title?: string;
   /** Provide a color to differentiate orders */
   color?: string;
+  /** Order channel (e.g. VENDOR_STOREFRONT) */
+  channel?: string;
+  /** Storefront vendor ID */
+  vendorId?: string;
+  /** Food value in kobo for storefront orders */
+  foodValue?: number;
+  /** Vendor commission rate (e.g. 5 for 5%) */
+  vendorCommissionRate?: number;
+  /** Whether order is already paid (storefront pre-payment) */
+  isPaid?: boolean;
+  /** Minimum delivery fee floor in kobo (storefront orders override the core minimumOrderPrice) */
+  minimumDeliveryFee?: number;
+  /** Percent discount applied to the batch delivery total (storefront) */
+  batchDiscountPercent?: number;
   pickupLocation: CreateBatchPickupLocationDto;
   dropoffLocations: CreateBatchDropoffLocationDto[];
   type: "SINGLE" | "BATCH" | "BULK";
@@ -1687,6 +2003,41 @@ export interface RidersRequestDto {
   autoAcceptOffer?: boolean;
   /** @default 0 */
   offerAmount?: number;
+  /** Specific rider IDs to target (skips geo-query) */
+  riderIds?: string[];
+  /** Enable sequential rider dispatch (ring one rider at a time with 30s timeout) */
+  sequentialDispatch?: boolean;
+  /** Callback URL for dispatch status updates (required for sequential dispatch) */
+  callbackUrl?: string;
+  /** Rider sorting strategy for sequential dispatch */
+  sortingStrategy?: "BANDS" | "SCORING";
+}
+
+export interface ReDispatchRequestDto {
+  /** Specific rider IDs to target */
+  riderIds?: string[];
+  /** Callback URL for dispatch status updates */
+  callbackUrl: string;
+  /** Rider sorting strategy */
+  sortingStrategy?: "BANDS" | "SCORING";
+}
+
+export interface ReassignRiderRequestDto {
+  /** The Pickriders user ID of the rider to ring */
+  riderId: string;
+  /** Callback URL for dispatch status updates */
+  callbackUrl: string;
+  /** Reason for reassigning the rider */
+  reason?: string;
+}
+
+export interface RiderLocationsRequestDto {
+  /** Array of rider user IDs to get locations for */
+  riderIds: string[];
+  /** Reference longitude (e.g. store location) for distance calculation */
+  longitude: number;
+  /** Reference latitude (e.g. store location) for distance calculation */
+  latitude: number;
 }
 
 export interface CancelLocationRequestDto {
@@ -1702,17 +2053,54 @@ export interface MakeOfferRequestDto {
   offerAmount: number;
 }
 
+export interface InitializeOrderPaymentRequestDto {
+  /** Email of the person paying for the order (receives the Paystack receipt). */
+  email: string;
+}
+
 export interface AcceptRejectOfferRequestDto {
   status: Status;
 }
 
 export interface UpdateLocationStatusRequestDto {
   status: OrderLocationStatus;
+  /** Rider's current longitude, sent to verify proximity when marking ARRIVED */
+  longitude?: number;
+  /** Rider's current latitude, sent to verify proximity when marking ARRIVED */
+  latitude?: number;
+}
+
+export interface UpdateOrderLocationDto {
+  senderName?: string;
+  senderPhone?: string;
+  receiverName?: string;
+  receiverPhone?: string;
+  description?: string;
+  packageName?: string;
+  address?: string;
+  longitude?: number;
+  latitude?: number;
+}
+
+export interface AcceptRejectLocationUpdateRequestDto {
+  status: LocationUpdateStatus;
 }
 
 export interface CompleteLocationRequestDto {
   /** @minLength 4 */
   confirmationCode?: string;
+  recipientId?: string;
+  recipientPhone?: string;
+}
+
+export interface AdminCancelOrderRequestDto {
+  /** Reason for cancelling the order (audited, refunds the customer). */
+  reason: string;
+}
+
+export interface AdminUpdateOrderStatusRequestDto {
+  /** Manual admin status override (audited). */
+  status: OrderStatus;
 }
 
 export type SchemaMixed = object;
@@ -1737,7 +2125,7 @@ export interface DataLogsResponseDto {
 
 export interface AuditLog {
   actionBy?: string;
-  actionType: "ADMIN" | "BUSINESS" | "DEVELOPER" | "SYSTEM" | "USER";
+  actionType: "ADMIN" | "BUSINESS" | "DEVELOPER" | "SYSTEM" | "TEAM" | "USER";
   business?: Business[];
   /** @default "UNKNOWN" */
   action?: string;
@@ -1766,7 +2154,129 @@ export interface ListAuditLogResponseDto {
 
 export type Object = object;
 
+export interface CreateTeamRequestDto {
+  /** Whether this team is tied to a Business or a Developer (User) */
+  entityType: "BUSINESS" | "DEVELOPER";
+  /** Required when entityType is BUSINESS (Business._id). For DEVELOPER, omit to use the registered user. */
+  entityId?: string;
+  /**
+   * Display name of the team / org
+   * @minLength 2
+   */
+  name: string;
+  /** User email — must be unique across users */
+  email: string;
+  /** User phone number */
+  phone: string;
+  /** Team contact email */
+  contactPersonEmail?: string;
+  /** Team contact phone number */
+  contactPersonPhone?: string;
+  /** Base64-encoded image or an existing HTTPS URL */
+  logo?: string;
+  /** URL-safe handle / slug — auto-generated from email if omitted */
+  handle?: string;
+  website?: string;
+  description?: string;
+  firstname: string;
+  lastname: string;
+  middlename?: string;
+  /** @minLength 8 */
+  password: string;
+  /** Base64-encoded profile photo or HTTPS URL */
+  photo?: string;
+  country: CountryDto;
+  state?: StateDto;
+  city?: CityDto;
+  address?: AddressDto;
+}
+
+export interface ApiKeyDto {
+  label: string;
+  keyHash: string;
+  keyPrefix: string;
+  /** @default true */
+  isActive?: boolean;
+  /** @format date-time */
+  lastUsedAt?: string;
+  /** @format date-time */
+  createdAt?: string;
+  createdBy?: string;
+}
+
+export interface Team {
+  entityType: "BUSINESS" | "DEVELOPER";
+  /** Business._id or Developer User._id; no ref (polymorphic) */
+  entityId: string;
+  name: string;
+  contactPersonEmail: string;
+  contactPersonPhone: string;
+  country: {
+    name?: string;
+    code?: string;
+    currency?: string;
+  };
+  state: {
+    name?: string;
+    code?: string;
+  };
+  city: {
+    name?: string;
+    code?: string;
+  };
+  logo: string;
+  handle: string;
+  website: string;
+  description: string;
+  userId: string;
+  apiKeys: ApiKeyDto[];
+  config: {
+    /** @default "" */
+    webhookUrl?: string;
+    /** @default "" */
+    callbackUrl?: string;
+    allowedIPs?: string[];
+    /** @default false */
+    testMode?: boolean;
+    metadata?: SchemaMixed;
+  };
+  /** @default "ACTIVE" */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  allowedRoles: ("TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER")[];
+  address: {
+    country?: string;
+    state?: string;
+    lga?: string;
+    name?: string;
+    latitude?: number;
+    longitude?: number;
+    branchName?: string;
+    landmark?: string;
+  };
+  /** @default false */
+  isDeleted: boolean;
+  /** @format date-time */
+  deletedAt: string;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface ListTeamsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: Team[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
 export type GetHeartbeatData = any;
+
+export type GetDeliveryPricingData = object;
 
 export interface GetCountriesParams {
   order?: "ASC" | "DESC";
@@ -1848,6 +2358,8 @@ export type GetUserProfileData = User;
 
 export type UpdateUserProfileData = User;
 
+export type AcknowledgeWalletTermsData = User;
+
 export type UpdateUserLocationData = User;
 
 export type UpdateProfilePhotoData = UpdatedPhotoResponseDto;
@@ -1872,6 +2384,12 @@ export interface InitializeFundWalletParams {
 
 export type InitializeFundWalletData = FundWalletResponseDto;
 
+export interface CancelFundWalletParams {
+  walletId: string;
+}
+
+export type CancelFundWalletData = CancelFundWalletResponseDto;
+
 export interface UpdateSettlementAccountParams {
   walletId: string;
 }
@@ -1893,7 +2411,7 @@ export interface GetAllReferralsParams {
   limit?: number;
 }
 
-export type GetAllReferralsData = ListUserResponseDto;
+export type GetAllReferralsData = ListReferralsResponseDto;
 
 export interface GetUserTransactionsParams {
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
@@ -1910,6 +2428,19 @@ export interface GetUserTransactionsParams {
 }
 
 export type GetUserTransactionsData = ListTransactionResponseDto;
+
+export interface GetUserTransactionsSummaryParams {
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+  /** transaction type filter. comma separated list of TransactionType */
+  type?: string;
+  /** transaction category filter. comma separated list of TransactionCategory */
+  category?: string;
+  /** transaction status filter. comma separated list of TransactionStatus */
+  status?: string;
+}
+
+export type GetUserTransactionsSummaryData = TransactionSummaryResponseDto;
 
 export interface GetUserTransactionParams {
   transactionId: string;
@@ -1939,11 +2470,22 @@ export type SubmitDriversLicenseData = object;
 
 export type GetUserVehicleData = Vehicle;
 
-export type NewFeatureLaunchNotificationData = any;
-
 export type CreateUser2Data = CreateUserRequestDto;
 
 export interface GetUsersParams {
+  /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
+  sortBy?:
+    | "createdAt"
+    | "lastLoginDate"
+    | "completedDeliveries"
+    | "totalEarned";
+  /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
+  driversLicenseVerified?:
+    | "APPROVE"
+    | "DISAPPROVE"
+    | "SUSPENDED"
+    | "SUBMITTED"
+    | "PENDING";
   /** Search by user email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
   userSearch?: string;
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
@@ -1971,6 +2513,30 @@ export interface GetUserParams {
 }
 
 export type GetUserData = User;
+
+export interface GetUserWallets2Params {
+  userId: string;
+}
+
+export type GetUserWallets2Data = WalletListResponseDto;
+
+export interface UpdateUserStatusParams {
+  userId: string;
+}
+
+export type UpdateUserStatusData = object;
+
+export interface AdjustUserWalletParams {
+  userId: string;
+}
+
+export type AdjustUserWalletData = object;
+
+export interface RefundCustomerOrderParams {
+  userId: string;
+}
+
+export type RefundCustomerOrderData = object;
 
 export interface VerifyDriversLicense2Params {
   userId: string;
@@ -2006,6 +2572,8 @@ export type UpdateUserAddresses2Data = MessageResponseDto;
 export type ChangeUserPassword2Data = MessageResponseDto;
 
 export type CreateWalletData = Wallet;
+
+export type CreditPlatformWalletData = any;
 
 export type GetPlatformWalletData = Wallet;
 
@@ -2044,6 +2612,22 @@ export interface GetTransactions2Params {
 }
 
 export type GetTransactions2Data = ListTransactionResponseDto;
+
+export interface GetExternalPaymentMetricsParams {
+  /** provide a user (entity) id to scope metrics to a single customer */
+  entityId?: string;
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+}
+
+export type GetExternalPaymentMetricsData = ExternalPaymentMetricsResponseDto;
+
+export interface GetTransactionSummaryParams {
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+}
+
+export type GetTransactionSummaryData = TransactionMetricsSummaryResponseDto;
 
 export interface GetTransactionParams {
   transactionId: string;
@@ -2088,6 +2672,16 @@ export interface GetBanksParams {
 export type GetBanksData = GetBanksResponseDto;
 
 export type CreateDedicatedVirtualAccountData = object;
+
+export type GetBanks2Data = GetBanksResponseDto;
+
+export type GetFinanceStatusData = any;
+
+export type UpdateSettlementData = any;
+
+export type SetPinData = any;
+
+export type InitiatePayoutData = any;
 
 export interface GetNotificationsParams {
   order?: "ASC" | "DESC";
@@ -2184,7 +2778,7 @@ export interface GetBusinessTransactionsParams {
   type?: string;
   /** Allowed categories separated by comma : FEE,DEPOSIT,WITHDRAWAL,REVERSAL,CHARGE */
   category?: string;
-  /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS */
+  /** Allowed statuses separated by comma : PROCESSING,FAILED,SUCCESS,CANCELLED */
   status?: string;
   /** Order by default is ASC, select either from the the enum ['ASC', 'DESC'] */
   order?: "ASC" | "DESC";
@@ -2407,6 +3001,12 @@ export type CreateSingleOrderData = Order;
 
 export type CreateBulkOrderData = Order;
 
+export type QuoteOrderData = any;
+
+export type QuoteBatchOrderData = any;
+
+export type QuoteBulkOrderData = any;
+
 export type CreateBatchOrderData = Order;
 
 export interface RequestOrderRidersParams {
@@ -2414,6 +3014,24 @@ export interface RequestOrderRidersParams {
 }
 
 export type RequestOrderRidersData = User[];
+
+export interface ReDispatchParams {
+  orderId: string;
+}
+
+export type ReDispatchData = object;
+
+export interface ReassignRiderParams {
+  orderId: string;
+}
+
+export type ReassignRiderData = Order;
+
+export type GetRidersLeaderboardData = any;
+
+export type ListAllRidersData = any;
+
+export type GetRiderLocationsData = any;
 
 export interface CancelOrderLocationParams {
   orderId: string;
@@ -2441,6 +3059,36 @@ export interface InitiateOrderPaymentParams {
 
 export type InitiateOrderPaymentData = Order;
 
+export interface CreateOrderPaymentLinkParams {
+  orderId: string;
+}
+
+export type CreateOrderPaymentLinkData = any;
+
+export interface VerifyOrderPaymentParams {
+  orderId: string;
+}
+
+export type VerifyOrderPaymentData = Order;
+
+export interface GetOrderPaymentInfoParams {
+  token: string;
+}
+
+export type GetOrderPaymentInfoData = any;
+
+export interface ConfirmExternalPaymentByReferenceParams {
+  reference: string;
+}
+
+export type ConfirmExternalPaymentByReferenceData = any;
+
+export interface InitializeExternalOrderPaymentParams {
+  token: string;
+}
+
+export type InitializeExternalOrderPaymentData = any;
+
 export interface AcceptOrRejectOrderOfferParams {
   orderId: string;
   offerId: string;
@@ -2467,6 +3115,34 @@ export interface UpdateOrderLocationStatusParams {
 }
 
 export type UpdateOrderLocationStatusData = OrderLocation;
+
+export interface GetOrderEtaParams {
+  orderId: string;
+}
+
+export type GetOrderEtaData = any;
+
+export interface QuoteOrderLocationParams {
+  orderId: string;
+  locationId: string;
+}
+
+export type QuoteOrderLocationData = any;
+
+export interface UpdateOrderLocationParams {
+  orderId: string;
+  locationId: string;
+}
+
+export type UpdateOrderLocationData = OrderLocationUpdate;
+
+export interface RespondToLocationUpdateParams {
+  orderId: string;
+  locationId: string;
+  updateId: string;
+}
+
+export type RespondToLocationUpdateData = OrderLocationUpdate;
 
 export interface ApplyOrderCouponParams {
   orderId: string;
@@ -2547,6 +3223,14 @@ export interface GetRiderOrdersParams {
 
 export type GetRiderOrdersData = ListOrderResponseDto;
 
+export type GetPendingLocationUpdateData = OrderLocationUpdate;
+
+export interface GetLatestLocationUpdateForCustomerParams {
+  orderId: string;
+}
+
+export type GetLatestLocationUpdateForCustomerData = OrderLocationUpdate;
+
 export interface GetUserOrderParams {
   orderId: string;
 }
@@ -2603,6 +3287,18 @@ export interface GetOrderParams {
 
 export type GetOrderData = Order;
 
+export interface CancelOrder2Params {
+  orderId: string;
+}
+
+export type CancelOrder2Data = Order;
+
+export interface UpdateOrderStatusParams {
+  orderId: string;
+}
+
+export type UpdateOrderStatusData = Order;
+
 export type GetLogsData = DataLogsResponseDto;
 
 export interface FindAllParams {
@@ -2619,65 +3315,16 @@ export interface HandleWebhookEventsParams {
 
 export type HandleWebhookEventsData = object;
 
+export type CreateTeamData = object;
+
+export interface GetUserTeamParams {
+  teamId: string;
+}
+
+export type GetUserTeamData = object;
+
+export type CreateTeam2Data = object;
+
+export type FindAll2Data = ListTeamsResponseDto;
+
 export type RunData = any;
-
-export interface ExternalPaymentMetricsResponseDto {
-  /** Number of orders paid via a share link */
-  count: number;
-  /** Gross amount paid through link payments (sub-units) */
-  totalFunded: number;
-  /** Paystack processing fees on those payments (sub-units) */
-  totalFees: number;
-  /** Cash received after fees (sub-units) */
-  netReceived: number;
-  /** Distinct customers who used the feature */
-  uniqueCustomers: number;
-}
-
-/** Hand-added — admin customer-console action DTOs. Re-add after any regen. */
-export interface AdminUpdateUserStatusDto {
-  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
-  reason?: string;
-}
-
-export interface AdminAdjustWalletDto {
-  /** Amount in sub-units (10000 = ₦1). */
-  amount: number;
-  type: "CREDIT" | "DEBIT";
-  reason: string;
-}
-
-export interface AdminRefundOrderDto {
-  orderId: string;
-  /** Sub-units; defaults to the full order value. */
-  amount?: number;
-  reason: string;
-}
-
-/** Hand-added — money-flow summary for the finances dashboard. Re-add after regen. */
-export interface TransactionMetricsSummaryResponseDto {
-  totalVolume: number;
-  count: number;
-  inflow: number;
-  outflow: number;
-  deposits: number;
-  withdrawals: number;
-  fees: number;
-  refunds: number;
-  charges: number;
-  uniqueEntities: number;
-}
-
-/** Hand-added — platform finance status. Re-add after regen. */
-export interface PlatformFinanceStatusDto {
-  balance: number;
-  currency?: string;
-  hasPin: boolean;
-  hasBank: boolean;
-  settlement: {
-    bankName?: string;
-    accountName?: string;
-    accountNumberMasked?: string;
-    isVerified?: boolean;
-  } | null;
-}
