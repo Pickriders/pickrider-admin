@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { UI } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,9 @@ export const Modal = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
   React.useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -27,7 +31,12 @@ export const Modal = ({
     };
   }, [open]);
 
-  return (
+  // Portal to <body> so the modal escapes any transformed/stacking-context ancestor
+  // (e.g. the framer-motion wrapper it's rendered inside). Otherwise a portaled Select
+  // dropdown renders BEHIND the modal because the modal's subtree is lifted above it.
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       <UI.Overlay open={open} openChange={onClose} />
       <div
@@ -54,6 +63,7 @@ export const Modal = ({
         </div>
         <div className="mt-5">{children}</div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 };
