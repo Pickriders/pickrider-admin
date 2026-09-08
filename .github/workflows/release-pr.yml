@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -97,8 +97,20 @@ jobs:
               echo "::notice::refreshed #${existing} — ${title}"
             elif [ "$(git rev-list --count "origin/${base}..origin/${head}")" -eq 0 ]; then
               echo "::notice::nothing to release — ${base} already contains ${head}"
+            elif output="$(gh pr create --base "$base" --head "$head" --title "$title" --body-file "$body" 2>&1)"; then
+              echo "::notice::opened ${output} — ${title}"
             else
-              url="$(gh pr create --base "$base" --head "$head" --title "$title" --body-file "$body")"
-              echo "::notice::opened ${url} — ${title}"
+              # By far the most common cause: the repo/org forbids Actions from opening PRs.
+              # Without this branch it surfaces as an opaque GraphQL error.
+              if echo "$output" | grep -qi 'not permitted to create or approve pull requests'; then
+                echo "::error::GitHub Actions is not allowed to create pull requests in this repository."
+                echo "::error::Fix: Settings → Actions → General → Workflow permissions →"
+                echo "::error::tick 'Allow GitHub Actions to create and approve pull requests'."
+                echo "::error::(Org-level settings can override the repo setting.)"
+                echo "::error::Alternative: add a PAT as the RELEASE_PR_TOKEN secret."
+              else
+                echo "::error::Could not open '${title}': ${output}"
+              fi
+              exit 1
             fi
           done
