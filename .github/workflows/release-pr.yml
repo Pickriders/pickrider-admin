@@ -1,0 +1,104 @@
+name: Release PR
+
+# Keeps the promotion chain flowing without anyone opening a PR by hand:
+#
+#   merge into dev      →  create/refresh  "release: staging ← dev"
+#   merge into staging  →  create/refresh  "release: main ← staging"
+#
+# If the release PR is already open it is not duplicated — its description is
+# regenerated from the commits now in the range (see .github/scripts/release-notes.sh).
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [dev, staging]
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: Which release PR to create or refresh
+        type: choice
+        default: both
+        options:
+          - both
+          - "staging ← dev"
+          - "main ← staging"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  # Serialise so two merges landing together can't race on the same release PR.
+  group: release-pr-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Only merged PRs promote. A closed-without-merge PR must not open a release.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all branches
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+
+      - name: Decide which release PRs to sync
+        id: plan
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ inputs.chain }}" in
+              "staging ← dev") chains="dev>staging" ;;
+              "main ← staging") chains="staging>main" ;;
+              *)                 chains="dev>staging staging>main" ;;
+            esac
+          else
+            case "${{ github.event.pull_request.base.ref }}" in
+              dev)     chains="dev>staging" ;;
+              staging) chains="staging>main" ;;
+              *)       chains="" ;;
+            esac
+          fi
+          echo "chains=$chains" >> "$GITHUB_OUTPUT"
+          echo "Will sync: ${chains:-<nothing>}"
+
+      - name: Create or refresh release PR(s)
+        if: steps.plan.outputs.chains != ''
+        env:
+          # A PAT in RELEASE_PR_TOKEN lets the created PR trigger the CI workflow.
+          # With the default GITHUB_TOKEN, GitHub suppresses those events — see
+          # the note in ci.yml about the push-trigger safety net.
+          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for chain in ${{ steps.plan.outputs.chains }}; do
+            head="${chain%>*}"
+            base="${chain#*>}"
+            title="release: ${base} ← ${head}"
+
+            if ! git rev-parse --verify --quiet "origin/${base}" >/dev/null; then
+              echo "::warning::branch '${base}' does not exist — skipping ${title}"
+              continue
+            fi
+
+            body="$(mktemp)"
+            bash .github/scripts/release-notes.sh "$head" "$base" "$REPO_URL" > "$body"
+
+            existing="$(gh pr list --base "$base" --head "$head" --state open \
+                          --json number --jq '.[0].number // empty')"
+
+            if [ -n "$existing" ]; then
+              gh pr edit "$existing" --title "$title" --body-file "$body"
+              echo "::notice::refreshed #${existing} — ${title}"
+            elif [ "$(git rev-list --count "origin/${base}..origin/${head}")" -eq 0 ]; then
+              echo "::notice::nothing to release — ${base} already contains ${head}"
+            else
+              url="$(gh pr create --base "$base" --head "$head" --title "$title" --body-file "$body")"
+              echo "::notice::opened ${url} — ${title}"
+            fi
+          done

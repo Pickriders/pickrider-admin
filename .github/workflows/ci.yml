@@ -1,0 +1,58 @@
+name: CI
+
+# Runs on EVERY branch and EVERY pull request.
+#
+#   push (all branches)     — feature work is verified as soon as it is pushed,
+#                             before a PR exists. This also covers the automated
+#                             release PRs: a PR opened with the default
+#                             GITHUB_TOKEN does not fire `pull_request` events
+#                             (GitHub suppresses them to prevent workflow
+#                             recursion), so without this the release PR would
+#                             show no checks at all.
+#   pull_request (any base) — the check that actually gates a merge.
+#
+# A branch with an open PR therefore runs both. Set a RELEASE_PR_TOKEN PAT secret
+# to also get checks displayed on the automated release PRs.
+
+on:
+  push:
+    # '**' matches every branch, including ones with slashes (feat/foo).
+    # Branches only — tag pushes do not need a second identical run.
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+concurrency:
+  # Push runs and PR runs are grouped separately so they never cancel each other
+  # — a cancelled check on a PR reads as a failure. Within a group, a new push
+  # cancels the previous in-flight run.
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Type-check and lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # No test suite in this repo yet. `yarn build` is deliberately not run:
+      # `next build` needs runtime env vars this workflow has no access to.
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Note on test coverage
+        run: echo "::notice::pickrider-admin has no test suite — type-check and lint are the only gates."
