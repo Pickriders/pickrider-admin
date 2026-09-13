@@ -1,15 +1,6 @@
-import { notFound } from "next/navigation";
-import { StateConfig } from "./StateConfig";
+import { redirect } from "next/navigation";
 
-const StateDetails = ({ params }: { params: { countryId: string; stateId: string } }) => {
-  if (!params.countryId || !params.stateId) {
-    notFound();
-  }
-
-  return (
-    <div>
-      <StateConfig countryId={params.countryId} stateId={params.stateId} />
-    </div>
-  );
-};
-export default StateDetails;
+/** Moved into the admin hub; the state opens in a drawer. */
+export default function StatePage({ params }: { params: { countryId: string; stateId: string } }) {
+  redirect(`/admin?tab=settings&country=${encodeURIComponent(params.countryId)}&state=${encodeURIComponent(params.stateId)}`);
+}

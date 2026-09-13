@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetUserQuery } from "@/api";
+import { useMe } from "@/lib/admin/hooks";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export const UserMenu = () => {
   const { setParam } = useQueryModal();
-  const { data, isLoading } = useGetUserQuery();
+  const { data, isLoading } = useMe();
 
   if (isLoading) {
     return (
@@ -31,18 +31,18 @@ export const UserMenu = () => {
       <UI.DropdownMenuTrigger asChild>
         <div
           role="button"
-          className="flex items-center gap-x-2.5 rounded-full md:rounded-xl md:border md:bg-card md:py-1.5 md:pl-1.5 md:pr-3 transition-colors hover:md:bg-muted/60"
+          className="flex items-center gap-x-2.5 rounded-full md:rounded-xl md:border md:border-line md:bg-card md:py-1.5 md:pl-1.5 md:pr-3 transition-colors hover:md:bg-muted/60"
         >
-          <div className="size-[2.3rem] shrink-0 font-clash-display rounded-full bg-primary-black text-white text-md grid place-items-center font-semibold uppercase">
+          <div className="size-[2.3rem] shrink-0 rounded-full bg-ink text-card text-md grid place-items-center font-semibold uppercase">
             {initials}
           </div>
           <div className="hidden min-w-0 text-left md:block">
-            <span className="block truncate font-clash-display font-semibold text-sm leading-tight">
+            <span className="block truncate font-semibold text-sm leading-tight">
               {fullName}
             </span>
-            <p className="truncate text-xs text-primary-gray leading-tight">{data?.email}</p>
+            <p className="truncate text-xs text-ink-muted leading-tight">{data?.email}</p>
           </div>
-          <span className="hidden text-primary-gray md:inline">
+          <span className="hidden text-ink-muted md:inline">
             <SVG.ChevronDown />
           </span>
         </div>
@@ -56,14 +56,14 @@ export const UserMenu = () => {
       >
         {/* Header */}
         <div className="flex items-center gap-3 bg-muted/50 px-4 py-4">
-          <div className="size-11 shrink-0 rounded-full bg-primary-black text-white grid place-items-center font-clash-display font-semibold uppercase">
+          <div className="size-11 shrink-0 rounded-full bg-ink text-card grid place-items-center font-semibold uppercase">
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-clash-display font-semibold text-sm text-foreground">
+            <p className="truncate font-semibold text-sm text-foreground">
               {fullName || "Admin"}
             </p>
-            <p className="truncate text-xs text-primary-gray">{data?.email}</p>
+            <p className="truncate text-xs text-ink-muted">{data?.email}</p>
           </div>
         </div>
 
@@ -72,24 +72,24 @@ export const UserMenu = () => {
           <UI.DropdownMenuItem asChild>
             <Link
               href="/dashboard/profile"
-              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-montserrat font-semibold text-primary-gray focus:bg-muted focus:text-foreground cursor-pointer"
+              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-ink-muted focus:bg-muted focus:text-foreground cursor-pointer"
             >
               <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground">
                 <UserRound size={16} />
               </span>
-              Profile
+              Profile and appearance
             </Link>
           </UI.DropdownMenuItem>
 
           <UI.DropdownMenuItem asChild>
             <Link
               href="/dashboard/change-password"
-              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-montserrat font-semibold text-primary-gray focus:bg-muted focus:text-foreground cursor-pointer"
+              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-ink-muted focus:bg-muted focus:text-foreground cursor-pointer"
             >
               <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground">
                 <KeyRound size={16} />
               </span>
-              Reset Password
+              Change password
             </Link>
           </UI.DropdownMenuItem>
 
@@ -97,9 +97,9 @@ export const UserMenu = () => {
 
           <UI.DropdownMenuItem
             onClick={() => setParam("logout", "true")}
-            className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-montserrat font-semibold text-red-500 focus:bg-red-500/10 focus:text-red-600 cursor-pointer"
+            className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-danger focus:bg-danger-soft focus:text-danger cursor-pointer"
           >
-            <span className="grid size-8 place-items-center rounded-lg bg-red-500/10 text-red-500">
+            <span className="grid size-8 place-items-center rounded-lg bg-danger-soft text-danger">
               <LogOut size={16} />
             </span>
             Logout

@@ -1,17 +1,6 @@
-import { UI } from "@/components/ui";
-import { DataTable } from "./Table";
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-const DataLog = () => {
-  return (
-    <div>
-      <UI.BreadCrumbNav pageLinks={[{ href: "/admin", label: "Admin" }]} rootPageLink="/admin" currentPage="Data Log" />
-      <section className="mt-11">
-        <Suspense>
-          <DataTable />
-        </Suspense>
-      </section>
-    </div>
-  );
-};
-export default DataLog;
+/** Moved into the admin hub. */
+export default function DataLogPage() {
+  redirect("/admin?tab=logs");
+}

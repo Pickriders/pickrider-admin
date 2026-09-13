@@ -23,6 +23,10 @@ module.exports = {
         "faktum-test": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
         urbanist: ["var(--font-urbanist)"],
       },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        pop: "var(--shadow-pop)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -69,6 +73,20 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        success: { DEFAULT: "var(--success)", soft: "var(--success-soft)" },
+        warning: { DEFAULT: "var(--warning)", soft: "var(--warning-soft)" },
+        danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
+        info: { DEFAULT: "var(--info)", soft: "var(--info-soft)" },
+        // Kit aliases (ported from the storefront admin) so the same component
+        // code reads the same tokens under different names.
+        ink: {
+          DEFAULT: "hsl(var(--foreground))",
+          muted: "hsl(var(--muted-foreground))",
+          faint: "hsl(var(--ink-faint))",
+        },
+        line: { DEFAULT: "hsl(var(--border))", strong: "hsl(var(--line-strong))" },
+        "card-raised": "hsl(var(--popover))",
+        "brand-ink": "#ffffff",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

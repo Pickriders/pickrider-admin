@@ -15,7 +15,6 @@ import {
   VerifyPhoneData,
   VerifyPhoneRequestDto,
 } from "@/services";
-import { USER_KEY } from "../queries/user";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -45,7 +44,7 @@ export const useVerifyPhoneMn = (options?: MutationOptions<VerifyPhoneData, any,
     ...options,
     mutationFn: async (varaibles) => apiService.verifyPhone(varaibles),
     onSuccess(data, variables, context) {
-      queryClient.invalidateQueries({ queryKey: [USER_KEY.USERS] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       options?.onSuccess?.(data, variables, context);
     },
   });
@@ -55,7 +54,7 @@ export const useVerifyEmailMn = (options?: MutationOptions<VerifyEmailData, any,
     ...options,
     mutationFn: async (varaibles) => apiService.verifyEmail(varaibles),
     onSuccess(data, variables, context) {
-      queryClient.invalidateQueries({ queryKey: [USER_KEY.USERS] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       options?.onSuccess?.(data, variables, context);
     },
   });

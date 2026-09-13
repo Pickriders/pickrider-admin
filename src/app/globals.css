@@ -32,6 +32,10 @@
     --chart-3: 38 92% 52%;
     --chart-4: 210 88% 56%;
     --chart-5: 345 78% 58%;
+    --chart-6: 160 60% 40%;
+    --chart-grid: 240 6% 92%;
+    --ink-faint: 240 5% 62%;
+    --line-strong: 240 6% 82%;
     --radius: 0.75rem;
 
     /* COLORS */
@@ -41,6 +45,16 @@
     --brand: #3fa49f;
     --brand-dark: #2f7b77;
     --brand-soft: #eaf6f5;
+    --success: #1f9d61;
+    --success-soft: #e6f6ee;
+    --warning: #c98a12;
+    --warning-soft: #fbf3e0;
+    --danger: #d64545;
+    --danger-soft: #fceaea;
+    --info: #3b6fd6;
+    --info-soft: #e8effc;
+    --shadow-card: 0 1px 2px rgba(17, 23, 22, 0.04), 0 1px 3px rgba(17, 23, 22, 0.06);
+    --shadow-pop: 0 12px 40px rgba(17, 23, 22, 0.14);
   }
 
   :root[class~="dark"] {
@@ -69,14 +83,30 @@
     --chart-3: 38 92% 58%;
     --chart-4: 210 90% 62%;
     --chart-5: 345 80% 64%;
+    --chart-6: 160 60% 52%;
+    --chart-grid: 240 5% 16%;
+    --ink-faint: 240 5% 48%;
+    --line-strong: 240 5% 26%;
 
     /* COLORS */
     --primary-gray: #9aa4b8;
-    --primary-black: #1e1f1f;
+    /* Was left at #1e1f1f in dark mode, which made the active nav item and
+       every initials avatar vanish against the dark background. */
+    --primary-black: #e9efee;
     --primary-purple: #fff;
     --brand: #46b3ad;
     --brand-dark: #3fa49f;
     --brand-soft: #12302e;
+    --success: #3fc27f;
+    --success-soft: #0f2a1d;
+    --warning: #e0a42e;
+    --warning-soft: #2c2210;
+    --danger: #ef6b6b;
+    --danger-soft: #331717;
+    --info: #6c94e8;
+    --info-soft: #14203a;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -148,4 +178,38 @@
   100% {
     stroke-dashoffset: 0;
   }
+}
+
+@layer components {
+  .admin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .admin-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  .admin-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+  }
+  .admin-fade-up {
+    animation: admin-fade-up 220ms ease-out both;
+  }
+  .admin-live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: currentColor;
+    animation: admin-pulse-dot 1.6s ease-in-out infinite;
+  }
+}
+@keyframes admin-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes admin-pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.35; }
 }

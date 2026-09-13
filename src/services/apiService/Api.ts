@@ -11,6 +11,8 @@
  */
 
 import {
+  AcceptOfferData,
+  AcceptOfferParams,
   AcceptOrRejectOrderOfferData,
   AcceptOrRejectOrderOfferParams,
   AcceptRejectLocationUpdateRequestDto,
@@ -31,7 +33,10 @@ import {
   AdjustUserWalletParams,
   AdjustWalletRequestDto,
   AdminCancelOrderRequestDto,
+  AdminConfigData,
   AdminUpdateOrderStatusRequestDto,
+  AnalyticsData,
+  AnalyticsParams,
   ApplyOrderCouponData,
   ApplyOrderCouponParams,
   ApproveDriversLicenseSubmissionData,
@@ -40,6 +45,7 @@ import {
   AssignUserVehicleParams,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
+  CancelData,
   CancelFundWalletData,
   CancelFundWalletParams,
   CancelFundWalletRequestDto,
@@ -51,6 +57,7 @@ import {
   CancelOrderLocationParams,
   CancelOrderParams,
   CancelOrderRequestDto,
+  CancelParams,
   ChangePasswordRequestDto,
   ChangeUserPassword2Data,
   ChangeUserPasswordData,
@@ -72,6 +79,7 @@ import {
   CreateBusinessUserRequestDto,
   CreateCouponData,
   CreateCouponRequestDto,
+  CreateData,
   CreateDedicatedVirtualAccountData,
   CreateGroupData,
   CreateGroupRequestDto,
@@ -90,6 +98,7 @@ import {
   CreateUserRequestDto,
   CreateVirtualAccountRequestDto,
   CreateWalletData,
+  CreateWebOrderDto,
   CreditPlatformWalletData,
   DeactivateCouponData,
   DeactivateCouponParams,
@@ -98,6 +107,9 @@ import {
   DeleteUserVehicleParams,
   DeleteVehicleData,
   DeleteVehicleParams,
+  EventData,
+  FeedbackData,
+  FeedbackDto,
   FindAll2Data,
   FindAllData,
   FindAllParams,
@@ -157,6 +169,8 @@ import {
   GetOrderData,
   GetOrderEtaData,
   GetOrderEtaParams,
+  GetOrderOffersData,
+  GetOrderOffersParams,
   GetOrderParams,
   GetOrderPaymentInfoData,
   GetOrderPaymentInfoParams,
@@ -169,6 +183,8 @@ import {
   GetPendingLocationUpdateData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
+  GetQuoteData,
+  GetQuoteParams,
   GetReviewsData,
   GetRiderLocationsData,
   GetRiderOrderData,
@@ -246,14 +262,21 @@ import {
   MakeOrderOfferData,
   MakeOrderOfferParams,
   Object,
+  OffersData,
+  OffersParams,
   PasswordResetData,
   PasswordResetRequestData,
+  PayData,
+  PayParams,
+  PublicConfigData,
   QueueOrderData,
   QueueOrderParams,
   QuoteBatchOrderData,
   QuoteBatchOrderRequestDto,
   QuoteBulkOrderData,
   QuoteBulkOrderRequestDto,
+  QuoteData,
+  QuoteDto,
   QuoteOrderData,
   QuoteOrderLocationData,
   QuoteOrderLocationParams,
@@ -286,6 +309,8 @@ import {
   RiderLocationsRequestDto,
   RidersRequestDto,
   RunData,
+  SearchData,
+  SearchParams,
   SetPinData,
   SetWithdrawalPinDto,
   StartOrderData,
@@ -300,6 +325,8 @@ import {
   SuspendVehicleParams,
   ToggleOnlinePresenceData,
   TokenRequestDto,
+  TrackData,
+  TrackParams,
   TriggerNotificationData,
   TriggerNotificationRequestDto,
   UnsuspendBusinessUserData,
@@ -311,6 +338,7 @@ import {
   UpdateBusinessUserParams,
   UpdateBusinessVehicleData,
   UpdateBusinessVehicleParams,
+  UpdateConfigData,
   UpdateCountryData,
   UpdateCountryDto,
   UpdateCountryParams,
@@ -3869,6 +3897,25 @@ export class Api<
    * No description
    *
    * @tags admins/orders
+   * @name GetOrderOffers
+   * @request GET:/api/v1/admins/orders/{orderId}/offers
+   * @secure
+   * @response `200` `GetOrderOffersData`
+   */
+  getOrderOffers = (
+    { orderId }: GetOrderOffersParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetOrderOffersData, any>({
+      path: `/api/v1/admins/orders/${orderId}/offers`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
    * @name CancelOrder2
    * @request POST:/api/v1/admins/orders/{orderId}/cancel
    * @originalName cancelOrder
@@ -4059,6 +4106,233 @@ export class Api<
       path: `/api/v1/crons/run`,
       method: "GET",
       secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name Quote
+   * @request POST:/api/v1/delivery-price/quote
+   * @response `201` `QuoteData`
+   */
+  quote = (data: QuoteDto, params: RequestParams = {}) =>
+    this.request<QuoteData, any>({
+      path: `/api/v1/delivery-price/quote`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name PublicConfig
+   * @request GET:/api/v1/delivery-price/config
+   * @response `200` `PublicConfigData`
+   */
+  publicConfig = (params: RequestParams = {}) =>
+    this.request<PublicConfigData, any>({
+      path: `/api/v1/delivery-price/config`,
+      method: "GET",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name GetQuote
+   * @request GET:/api/v1/delivery-price/quote/{shortId}
+   * @response `200` `GetQuoteData`
+   */
+  getQuote = ({ shortId }: GetQuoteParams, params: RequestParams = {}) =>
+    this.request<GetQuoteData, any>({
+      path: `/api/v1/delivery-price/quote/${shortId}`,
+      method: "GET",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name Feedback
+   * @request POST:/api/v1/delivery-price/feedback
+   * @response `201` `FeedbackData`
+   */
+  feedback = (data: FeedbackDto, params: RequestParams = {}) =>
+    this.request<FeedbackData, any>({
+      path: `/api/v1/delivery-price/feedback`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name Event
+   * @request POST:/api/v1/delivery-price/event
+   * @response `201` `EventData`
+   */
+  event = (params: RequestParams = {}) =>
+    this.request<EventData, any>({
+      path: `/api/v1/delivery-price/event`,
+      method: "POST",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name Analytics
+   * @request GET:/api/v1/delivery-price/admin/analytics
+   * @secure
+   * @response `200` `AnalyticsData`
+   */
+  analytics = (query: AnalyticsParams, params: RequestParams = {}) =>
+    this.request<AnalyticsData, any>({
+      path: `/api/v1/delivery-price/admin/analytics`,
+      method: "GET",
+      query: query,
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name AdminConfig
+   * @request GET:/api/v1/delivery-price/admin/config
+   * @secure
+   * @response `200` `AdminConfigData`
+   */
+  adminConfig = (params: RequestParams = {}) =>
+    this.request<AdminConfigData, any>({
+      path: `/api/v1/delivery-price/admin/config`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags delivery-price
+   * @name UpdateConfig
+   * @request PATCH:/api/v1/delivery-price/admin/config
+   * @secure
+   * @response `200` `UpdateConfigData`
+   */
+  updateConfig = (params: RequestParams = {}) =>
+    this.request<UpdateConfigData, any>({
+      path: `/api/v1/delivery-price/admin/config`,
+      method: "PATCH",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Create
+   * @request POST:/api/v1/web-orders/create
+   * @response `201` `CreateData`
+   */
+  create = (data: CreateWebOrderDto, params: RequestParams = {}) =>
+    this.request<CreateData, any>({
+      path: `/api/v1/web-orders/create`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Track
+   * @request GET:/api/v1/web-orders/{token}
+   * @response `200` `TrackData`
+   */
+  track = ({ token }: TrackParams, params: RequestParams = {}) =>
+    this.request<TrackData, any>({
+      path: `/api/v1/web-orders/${token}`,
+      method: "GET",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Search
+   * @request POST:/api/v1/web-orders/{token}/search
+   * @response `201` `SearchData`
+   */
+  search = ({ token }: SearchParams, params: RequestParams = {}) =>
+    this.request<SearchData, any>({
+      path: `/api/v1/web-orders/${token}/search`,
+      method: "POST",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Offers
+   * @request GET:/api/v1/web-orders/{token}/offers
+   * @response `200` `OffersData`
+   */
+  offers = ({ token }: OffersParams, params: RequestParams = {}) =>
+    this.request<OffersData, any>({
+      path: `/api/v1/web-orders/${token}/offers`,
+      method: "GET",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name AcceptOffer
+   * @request PATCH:/api/v1/web-orders/{token}/offers/{offerId}
+   * @response `200` `AcceptOfferData`
+   */
+  acceptOffer = (
+    { token, offerId }: AcceptOfferParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AcceptOfferData, any>({
+      path: `/api/v1/web-orders/${token}/offers/${offerId}`,
+      method: "PATCH",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Pay
+   * @request POST:/api/v1/web-orders/{token}/pay
+   * @response `201` `PayData`
+   */
+  pay = ({ token }: PayParams, params: RequestParams = {}) =>
+    this.request<PayData, any>({
+      path: `/api/v1/web-orders/${token}/pay`,
+      method: "POST",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags web-orders
+   * @name Cancel
+   * @request PATCH:/api/v1/web-orders/{token}/cancel
+   * @response `200` `CancelData`
+   */
+  cancel = ({ token }: CancelParams, params: RequestParams = {}) =>
+    this.request<CancelData, any>({
+      path: `/api/v1/web-orders/${token}/cancel`,
+      method: "PATCH",
       ...params,
     });
 }

@@ -1,31 +1,6 @@
-import { UI } from "@/components/ui";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import { Suspense } from "react";
-import { BusinessVehiclesTable } from "./BusinessVehiclesTable";
-
-const VehiclesPage = ({ params }: { params: { id: string } }) => {
-  if (!params.id) {
-    notFound();
-  }
-  return (
-    <div>
-      <UI.BreadCrumbNav
-        pageLinks={[
-          { href: "/business", label: "Business" },
-          { href: "business-details", label: "Business details" },
-        ]}
-        currentPage="Vehicles"
-        rootPageLink="/business"
-      />
-
-      <div className="mt-10">
-        <Suspense>
-          <BusinessVehiclesTable businessId={params.id} />
-        </Suspense>
-      </div>
-    </div>
-  );
-};
-
-export default VehiclesPage;
+/** Old route; the business detail page carries this as a tab now. */
+export default function BusinessVehiclesPage({ params }: { params: { id: string } }) {
+  redirect(`/business/${params.id}/business-details?tab=vehicles`);
+}
