@@ -1,36 +1,36 @@
 import type { Metadata } from "next";
-import { Layout } from "@/components/layouts";
 import { Suspense } from "react";
-import { LogoutModal } from "./LogoutModal";
+
+import { AdminPrefsProvider } from "@/components/kit/prefs";
+import { Layout } from "@/components/layouts";
 import { AccessGuard } from "@/components/layouts/AccessGuard";
+
+import { LogoutModal } from "./LogoutModal";
 
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Pickriders platform administration",
 };
 
-export default function Dashboard({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Dashboard({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="bg-surface min-h-screen">
-      <Layout.Header />
-      <div className="grid xl:grid-cols-[auto_1fr] grid-cols-1">
-        <div className="xl:block hidden">
-          <Layout.Sidebar />
-        </div>
-        <main className="pt-6 sm:px-7 px-4 pb-10 relative min-w-0">
-          <div className="2xl:max-w-[73rem] xl:max-w-[70rem] w-full mx-auto min-w-0">
-            <AccessGuard>{children}</AccessGuard>
+    <AdminPrefsProvider>
+      <div className="min-h-screen bg-surface">
+        <Layout.Header />
+        <div className="grid grid-cols-1 xl:grid-cols-[auto_1fr]">
+          <div className="hidden xl:block">
+            <Layout.Sidebar />
           </div>
-        </main>
+          <main className="relative min-w-0 px-4 pb-12 pt-5 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full min-w-0 max-w-[88rem]">
+              <AccessGuard>{children}</AccessGuard>
+            </div>
+          </main>
+        </div>
+        <Suspense>
+          <LogoutModal />
+        </Suspense>
       </div>
-      {/* Modals */}
-      <Suspense>
-        <LogoutModal />
-      </Suspense>
-    </div>
+    </AdminPrefsProvider>
   );
 }

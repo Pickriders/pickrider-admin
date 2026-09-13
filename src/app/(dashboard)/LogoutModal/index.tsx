@@ -28,14 +28,14 @@ export const LogoutModal = () => {
           >
             <SVG.WarningIcon />
           </motion.span>
-          <UI.AlertDialogTitle className="text-[#FF5244] mt-1 font-semibold font-clash-display">
+          <UI.AlertDialogTitle className="text-danger mt-1 font-semibold">
             Log out!
           </UI.AlertDialogTitle>
         </div>
 
         <div>
-          <p className="text-xs font-bold font-montserrat">Are you sure you want to log out?</p>
-          <p className="text-xs text-primary-gray font-semibold font-montserrat">
+          <p className="text-xs font-bold text-ink">Are you sure you want to log out?</p>
+          <p className="text-xs text-ink-muted font-semibold">
             Login details would be required when you want to log back in.{" "}
           </p>
         </div>

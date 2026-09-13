@@ -11,6 +11,7 @@
  */
 
 import {
+  AcceptOfferData,
   AcceptOrRejectOrderOfferData,
   AcceptRejectLocationUpdateRequestDto,
   AcceptRejectOfferRequestDto,
@@ -26,12 +27,15 @@ import {
   AdjustUserWalletData,
   AdjustWalletRequestDto,
   AdminCancelOrderRequestDto,
+  AdminConfigData,
   AdminUpdateOrderStatusRequestDto,
+  AnalyticsData,
   ApplyOrderCouponData,
   ApproveDriversLicenseSubmissionData,
   AssignUserVehicleData,
   AssignVehicleDto,
   BulkMarkNotificationsAsReadData,
+  CancelData,
   CancelFundWalletData,
   CancelFundWalletRequestDto,
   CancelLocationRequestDto,
@@ -57,6 +61,7 @@ import {
   CreateBusinessUserRequestDto,
   CreateCouponData,
   CreateCouponRequestDto,
+  CreateData,
   CreateDedicatedVirtualAccountData,
   CreateGroupData,
   CreateGroupRequestDto,
@@ -73,11 +78,15 @@ import {
   CreateUserRequestDto,
   CreateVirtualAccountRequestDto,
   CreateWalletData,
+  CreateWebOrderDto,
   CreditPlatformWalletData,
   DeactivateCouponData,
   DeleteUserAccountData,
   DeleteUserVehicleData,
   DeleteVehicleData,
+  EventData,
+  FeedbackData,
+  FeedbackDto,
   FindAll2Data,
   FindAllData,
   FundWalletRequestDto,
@@ -112,6 +121,7 @@ import {
   GetNotificationsData,
   GetOrderData,
   GetOrderEtaData,
+  GetOrderOffersData,
   GetOrderPaymentInfoData,
   GetOrderStatusChartData,
   GetOrderTypeChartData,
@@ -119,6 +129,7 @@ import {
   GetPendingLocationUpdateData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
+  GetQuoteData,
   GetReviewsData,
   GetRiderLocationsData,
   GetRiderOrderData,
@@ -168,13 +179,18 @@ import {
   MakeOfferRequestDto,
   MakeOrderOfferData,
   Object,
+  OffersData,
   PasswordResetData,
   PasswordResetRequestData,
+  PayData,
+  PublicConfigData,
   QueueOrderData,
   QuoteBatchOrderData,
   QuoteBatchOrderRequestDto,
   QuoteBulkOrderData,
   QuoteBulkOrderRequestDto,
+  QuoteData,
+  QuoteDto,
   QuoteOrderData,
   QuoteOrderLocationData,
   QuoteOrderRequestDto,
@@ -197,6 +213,7 @@ import {
   RiderLocationsRequestDto,
   RidersRequestDto,
   RunData,
+  SearchData,
   SetPinData,
   SetWithdrawalPinDto,
   StartOrderData,
@@ -207,6 +224,7 @@ import {
   SuspendVehicleData,
   ToggleOnlinePresenceData,
   TokenRequestDto,
+  TrackData,
   TriggerNotificationData,
   TriggerNotificationRequestDto,
   UnsuspendBusinessUserData,
@@ -214,6 +232,7 @@ import {
   UpdateBusinessPreferencesData,
   UpdateBusinessUserData,
   UpdateBusinessVehicleData,
+  UpdateConfigData,
   UpdateCountryData,
   UpdateCountryDto,
   UpdateCountryStateData,
@@ -3542,6 +3561,24 @@ export namespace Api {
   /**
    * No description
    * @tags admins/orders
+   * @name GetOrderOffers
+   * @request GET:/api/v1/admins/orders/{orderId}/offers
+   * @secure
+   * @response `200` `GetOrderOffersData`
+   */
+  export namespace GetOrderOffers {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOrderOffersData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
    * @name CancelOrder2
    * @request POST:/api/v1/admins/orders/{orderId}/cancel
    * @originalName cancelOrder
@@ -3717,5 +3754,251 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = RunData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name Quote
+   * @request POST:/api/v1/delivery-price/quote
+   * @response `201` `QuoteData`
+   */
+  export namespace Quote {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = QuoteDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuoteData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name PublicConfig
+   * @request GET:/api/v1/delivery-price/config
+   * @response `200` `PublicConfigData`
+   */
+  export namespace PublicConfig {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PublicConfigData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name GetQuote
+   * @request GET:/api/v1/delivery-price/quote/{shortId}
+   * @response `200` `GetQuoteData`
+   */
+  export namespace GetQuote {
+    export type RequestParams = {
+      shortId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetQuoteData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name Feedback
+   * @request POST:/api/v1/delivery-price/feedback
+   * @response `201` `FeedbackData`
+   */
+  export namespace Feedback {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = FeedbackDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = FeedbackData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name Event
+   * @request POST:/api/v1/delivery-price/event
+   * @response `201` `EventData`
+   */
+  export namespace Event {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EventData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name Analytics
+   * @request GET:/api/v1/delivery-price/admin/analytics
+   * @secure
+   * @response `200` `AnalyticsData`
+   */
+  export namespace Analytics {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      from: string;
+      to: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AnalyticsData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name AdminConfig
+   * @request GET:/api/v1/delivery-price/admin/config
+   * @secure
+   * @response `200` `AdminConfigData`
+   */
+  export namespace AdminConfig {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminConfigData;
+  }
+
+  /**
+   * No description
+   * @tags delivery-price
+   * @name UpdateConfig
+   * @request PATCH:/api/v1/delivery-price/admin/config
+   * @secure
+   * @response `200` `UpdateConfigData`
+   */
+  export namespace UpdateConfig {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateConfigData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Create
+   * @request POST:/api/v1/web-orders/create
+   * @response `201` `CreateData`
+   */
+  export namespace Create {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateWebOrderDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Track
+   * @request GET:/api/v1/web-orders/{token}
+   * @response `200` `TrackData`
+   */
+  export namespace Track {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TrackData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Search
+   * @request POST:/api/v1/web-orders/{token}/search
+   * @response `201` `SearchData`
+   */
+  export namespace Search {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SearchData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Offers
+   * @request GET:/api/v1/web-orders/{token}/offers
+   * @response `200` `OffersData`
+   */
+  export namespace Offers {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = OffersData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name AcceptOffer
+   * @request PATCH:/api/v1/web-orders/{token}/offers/{offerId}
+   * @response `200` `AcceptOfferData`
+   */
+  export namespace AcceptOffer {
+    export type RequestParams = {
+      token: string;
+      offerId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AcceptOfferData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Pay
+   * @request POST:/api/v1/web-orders/{token}/pay
+   * @response `201` `PayData`
+   */
+  export namespace Pay {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PayData;
+  }
+
+  /**
+   * No description
+   * @tags web-orders
+   * @name Cancel
+   * @request PATCH:/api/v1/web-orders/{token}/cancel
+   * @response `200` `CancelData`
+   */
+  export namespace Cancel {
+    export type RequestParams = {
+      token: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CancelData;
   }
 }

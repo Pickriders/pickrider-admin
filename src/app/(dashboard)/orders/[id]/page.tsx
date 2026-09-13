@@ -1,19 +1,13 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import OrderDetailsPage from "./OrderDetailsPage";
 
-const OrderPage = ({ params }: { params: { id: string } }) => {
-  if (!params.id) {
-    notFound();
-  }
+import { OrderDetail } from "./_components/order-detail";
 
+export default function OrderPage({ params }: { params: { id: string } }) {
+  if (!params.id) notFound();
   return (
-    <div>
-      <Suspense>
-        <OrderDetailsPage orderId={params.id} />
-      </Suspense>
-    </div>
+    <Suspense>
+      <OrderDetail orderId={params.id} />
+    </Suspense>
   );
-};
-
-export default OrderPage;
+}
