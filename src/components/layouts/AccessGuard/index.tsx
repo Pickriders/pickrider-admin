@@ -6,7 +6,7 @@ import { canAccessPath, getAdminRoles } from "@/lib/admin-access";
 
 /**
  * Redirects restricted roles away from sections they can't open. UI-level only
- * — the backend guards remain the real enforcement.
+ * The backend guards remain the real enforcement.
  */
 export const AccessGuard = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();

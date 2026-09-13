@@ -1,49 +1,25 @@
-import { FinanceOverview } from "./FinanceOverview";
-import { FinanceOps } from "./FinanceOps";
-import { FinanceCharts } from "./FinanceCharts";
-import { ExternalPayments } from "./ExternalPayments";
-import { TransactionTabs } from "./TransactionTabs";
 import { Suspense } from "react";
 
-const FinancesPage = () => {
+import { Skeleton } from "@/components/kit";
+import { FinancesClient } from "./finances-client";
+
+/**
+ * Finances: platform wallet, payouts, transfers and the transactions ledger.
+ * The tab and every table filter live in the URL, so the client half sits
+ * under Suspense for Next's static build of `useSearchParams`.
+ */
+export default function FinancesPage() {
   return (
-    <div>
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Finances</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Total volume, cash flow, payouts and every transaction across the platform.
-        </p>
-      </div>
-
-      <section className="mt-6">
-        <Suspense>
-          <FinanceOverview />
-        </Suspense>
-      </section>
-
-      <section className="mt-6">
-        <Suspense>
-          <FinanceOps />
-        </Suspense>
-      </section>
-
-      <Suspense>
-        <FinanceCharts />
-      </Suspense>
-
-      <section className="mt-6">
-        <Suspense>
-          <ExternalPayments />
-        </Suspense>
-      </section>
-
-      <section className="mt-6 w-full rounded-2xl border bg-card p-6">
-        <Suspense>
-          <TransactionTabs />
-        </Suspense>
-      </section>
-    </div>
+    <Suspense
+      fallback={
+        <div className="space-y-4">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-10 w-full max-w-xl" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      }
+    >
+      <FinancesClient />
+    </Suspense>
   );
-};
-
-export default FinancesPage;
+}
