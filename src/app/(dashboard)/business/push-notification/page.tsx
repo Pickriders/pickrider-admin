@@ -1,39 +1,6 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { UI } from "@/components/ui";
-import { NotificationUnsupportedNote } from "@/components/NotificationUnsupportedNote";
-import { SelectedTags } from "@/components/SelectedTags";
-import React from "react";
-import { FormMessage } from "@/components/FormMessage";
-
-const PushNotification = () => {
-  const [title, setTitle] = React.useState("");
-  const [message, setMessage] = React.useState("");
-
-  return (
-    <div>
-      <UI.BreadCrumbNav
-        pageLinks={[{ href: "/business", label: "Business" }]}
-        rootPageLink="/business"
-        currentPage="Push Notification"
-      />
-
-      <section className="bg-background mt-10 px-7 py-6 rounded-lg">
-        <NotificationUnsupportedNote />
-        <h2 className="font-montserrat text-xs font-semibold text-foreground">
-          Push Notification
-        </h2>
-        <div className="mt-9 ">
-          <SelectedTags />
-        </div>
-        <FormMessage
-          message={message}
-          onMessageChange={setMessage}
-          title={title}
-          onTitleChange={setTitle}
-        />
-      </section>
-    </div>
-  );
-};
-export default PushNotification;
+/** Push to businesses happens on the messaging page with the audience preselected. */
+export default function BusinessPushNotificationPage() {
+  redirect("/messaging?audience=BUSINESSES");
+}

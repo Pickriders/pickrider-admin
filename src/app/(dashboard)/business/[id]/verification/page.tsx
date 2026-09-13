@@ -1,31 +1,6 @@
-import { UI } from "@/components/ui";
-import { notFound } from "next/navigation";
-import { VerificationPanel } from "./VerificationPanels";
-import { Suspense } from "react";
-import { RejectVerificationModal } from "@/components/RejectVerificationModal";
+import { redirect } from "next/navigation";
 
-const BusinessVerificationPage = ({ params }: { params: { id: string } }) => {
-  if (!params.id) {
-    notFound();
-  }
-
-  return (
-    <div>
-      <UI.BreadCrumbNav
-        currentPage="Verification"
-        rootPageLink="/business"
-        pageLinks={[{ href: "/business", label: "Business" }]}
-      />
-
-      <div className="mt-14">
-        <VerificationPanel />
-      </div>
-
-      {/* Modal */}
-      <Suspense>
-        <RejectVerificationModal />
-      </Suspense>
-    </div>
-  );
-};
-export default BusinessVerificationPage;
+/** Business KYB review is not part of this admin; send people to the business itself. */
+export default function BusinessVerificationPage({ params }: { params: { id: string } }) {
+  redirect(`/business/${params.id}/business-details`);
+}

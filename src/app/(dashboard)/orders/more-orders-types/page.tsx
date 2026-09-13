@@ -1,35 +1,14 @@
-import { UI } from "@/components/ui";
-import { ChevronLeft } from "lucide-react";
-import { Tables } from "./Tables";
-import Link from "next/link";
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-const MoreOrderTypesPage = () => {
-  return (
-    <div>
-      <UI.BreadCrumbNav
-        currentPage={"More Orders"}
-        pageLinks={[{ href: "/orders", label: "Orders" }]}
-        rootPageLink="orders"
-      />
-
-      <section className="mt-11 bg-background rounded-2xl px-4 py-4">
-        <div className="flex items-center gap-x-3">
-          <UI.Button size={"icon"} variant={"ghost"} asChild>
-            <Link href={"/orders/analysis"}>
-              <ChevronLeft size={17} />
-            </Link>
-          </UI.Button>
-          <h1 className="font-semibold  font-clash-display">More Orders</h1>
-        </div>
-
-        <div className="mt-4">
-          <Suspense>
-            <Tables />
-          </Suspense>
-        </div>
-      </section>
-    </div>
-  );
+/** Old type tabs (?order-type=batch delivery) map onto the list's type filter. */
+const TYPE_BY_SLUG: Record<string, string> = {
+  single: "SINGLE",
+  "batch delivery": "BATCH",
+  "bulk pickup": "BULK",
 };
-export default MoreOrderTypesPage;
+
+export default function MoreOrderTypesRedirect({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
+  const slug = searchParams?.["order-type"];
+  const type = TYPE_BY_SLUG[String(Array.isArray(slug) ? slug[0] : (slug ?? "")).toLowerCase()];
+  redirect(type ? `/orders?tab=all&type=${type}` : "/orders?tab=all");
+}

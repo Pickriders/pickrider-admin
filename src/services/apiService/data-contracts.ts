@@ -2047,6 +2047,7 @@ export interface CancelLocationRequestDto {
 export interface CancelOrderRequestDto {
   reason: string;
   cancelledBy?: CancelledBy;
+  customerRefundMode?: "wallet" | "card";
 }
 
 export interface MakeOfferRequestDto {
@@ -2272,6 +2273,50 @@ export interface ListTeamsResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+}
+
+export interface PointDto {
+  lat: number;
+  lng: number;
+  label?: string;
+}
+
+export interface QuoteDto {
+  pickup: PointDto;
+  dropoff: PointDto;
+  stops?: PointDto[];
+  countryCode?: string;
+  stateCode?: string;
+  batchDiscountPercent?: number;
+}
+
+export interface FeedbackDto {
+  quoteShortId: string;
+  verdict: "too_low" | "fair" | "too_high";
+  suggestedPrice?: number;
+  segment?: "rider" | "customer" | "business";
+}
+
+export interface WebPointDto {
+  lat: number;
+  lng: number;
+  label?: string;
+}
+
+export interface WebContactDto {
+  name: string;
+  phone: string;
+}
+
+export interface CreateWebOrderDto {
+  category: string;
+  pickup: WebPointDto;
+  dropoff: WebPointDto;
+  sender: WebContactDto;
+  receiver: WebContactDto;
+  note?: string;
+  countryCode?: string;
+  stateCode?: string;
 }
 
 export type GetHeartbeatData = any;
@@ -3287,6 +3332,12 @@ export interface GetOrderParams {
 
 export type GetOrderData = Order;
 
+export interface GetOrderOffersParams {
+  orderId: string;
+}
+
+export type GetOrderOffersData = any;
+
 export interface CancelOrder2Params {
   orderId: string;
 }
@@ -3328,3 +3379,67 @@ export type CreateTeam2Data = object;
 export type FindAll2Data = ListTeamsResponseDto;
 
 export type RunData = any;
+
+export type QuoteData = any;
+
+export type PublicConfigData = any;
+
+export interface GetQuoteParams {
+  shortId: string;
+}
+
+export type GetQuoteData = any;
+
+export type FeedbackData = any;
+
+export type EventData = any;
+
+export interface AnalyticsParams {
+  from: string;
+  to: string;
+}
+
+export type AnalyticsData = any;
+
+export type AdminConfigData = any;
+
+export type UpdateConfigData = object;
+
+export type CreateData = any;
+
+export interface TrackParams {
+  token: string;
+}
+
+export type TrackData = any;
+
+export interface SearchParams {
+  token: string;
+}
+
+export type SearchData = any;
+
+export interface OffersParams {
+  token: string;
+}
+
+export type OffersData = any;
+
+export interface AcceptOfferParams {
+  token: string;
+  offerId: string;
+}
+
+export type AcceptOfferData = any;
+
+export interface PayParams {
+  token: string;
+}
+
+export type PayData = any;
+
+export interface CancelParams {
+  token: string;
+}
+
+export type CancelData = any;
