@@ -11,8 +11,8 @@ import { useOrders } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
-import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, paymentLabel, totalDistanceKm, typeLabel } from "../lib";
-import { PartyCell, PaymentBadge, StatusWithTime, TypeBadge } from "./order-cells";
+import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, paymentLabel, statusAt, totalDistanceKm, typeLabel } from "../lib";
+import { OrderStatusBadge, PartyCell, PaymentBadge, StatusWithTime, TypeBadge } from "./order-cells";
 
 /**
  * Every order the platform has seen, server paginated. Search is by order
@@ -153,10 +153,12 @@ export function AllOrdersTab() {
             </div>
             <span className="text-sm font-bold text-ink">{naira(row.totalAmountPayable)}</span>
           </div>
+          {/* Both badges on one line; the timestamp goes underneath so they stay aligned. */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <StatusWithTime order={row} />
+            <OrderStatusBadge status={row.status} />
             <PaymentBadge status={row.paymentStatus} />
           </div>
+          {statusAt(row) ? <p className="text-[11px] text-ink-faint">{when(statusAt(row))}</p> : null}
           <div className="grid grid-cols-2 gap-2">
             <PartyCell party={row.user} fallback="Unknown customer" size={24} />
             <PartyCell party={row.rider} fallback="No rider" size={24} />
