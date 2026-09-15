@@ -140,11 +140,9 @@ function CustomerDetail({ id }: { id: string }) {
 
       {tab === "orders" ? <UserOrdersTable userId={id} csvName={`customer-${id}-orders`} /> : null}
       {tab === "transactions" ? (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-          <div className="xl:col-span-2">
-            <UserTransactionsTable userId={id} csvName={`customer-${id}-transactions`} />
-          </div>
+        <div className="space-y-4">
           <MoneyByPurpose data={data?.transactions} loading={loading} />
+          <UserTransactionsTable userId={id} csvName={`customer-${id}-transactions`} />
         </div>
       ) : null}
       {tab === "activity" ? <ActivityFeed user={user} includeOrders enabled={tab === "activity"} /> : null}

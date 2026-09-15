@@ -526,37 +526,49 @@ export function ActivityFeed({ user, includeOrders, enabled }: { user: User | un
 
 // ── Money by purpose ──────────────────────────────────────────────────────────
 
-/** Lifetime successful transactions grouped by purpose, from the user overview. */
+/**
+ * Lifetime successful transactions grouped by purpose, from the user overview.
+ * A strip of tiles above the wallet table: each tile is one purpose with its
+ * total, count and share of everything that moved, so two purposes read as
+ * two tiles and eight purposes wrap, instead of a tall sidebar beside the table.
+ */
 export function MoneyByPurpose({ data, loading }: { data: Record<string, { amount: number; count: number }> | undefined; loading?: boolean }) {
   const rows = useMemo(() => Object.entries(data ?? {}).sort((a, b) => b[1].amount - a[1].amount), [data]);
-  const max = Math.max(1, ...rows.map(([, v]) => v.amount));
+  const total = rows.reduce((sum, [, v]) => sum + v.amount, 0) || 1;
+  const columns = rows.length <= 2 ? "sm:grid-cols-2" : rows.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2 xl:grid-cols-4";
   return (
     <Panel>
       <PanelHeader title="Money by purpose" subtitle="Lifetime, successful transactions only" />
       <div className="px-5 pb-5 pt-4">
         {loading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-6 w-full" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full" />
             ))}
           </div>
         ) : !rows.length ? (
           <EmptyState compact icon={Receipt} title="No money moved yet" description="Totals appear after the first successful transaction." />
         ) : (
-          <ul className="space-y-3">
-            {rows.map(([purpose, value]) => (
-              <li key={purpose}>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="min-w-0 truncate font-medium text-ink">{statusLabel(purpose)}</span>
-                  <span className="shrink-0 tabular-nums text-ink-muted">
-                    {naira(value.amount)} <span className="text-ink-faint">· {value.count}</span>
-                  </span>
-                </div>
-                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface">
-                  <div className="h-full rounded-full bg-brand" style={{ width: `${Math.max(3, Math.round((value.amount / max) * 100))}%` }} />
-                </div>
-              </li>
-            ))}
+          <ul className={`grid grid-cols-1 gap-3 ${columns}`}>
+            {rows.map(([purpose, value], index) => {
+              const share = Math.round((value.amount / total) * 100);
+              return (
+                <li key={purpose} className={`rounded-2xl border p-4 ${index === 0 ? "border-brand/30 bg-brand-soft/40" : "border-line bg-surface"}`}>
+                  <p className="truncate text-[11px] font-bold uppercase tracking-wide text-ink-muted">{statusLabel(purpose)}</p>
+                  <p className="mt-1.5 text-xl font-black leading-none tracking-tight tabular-nums text-ink" title={naira(value.amount)}>
+                    {naira(value.amount)}
+                  </p>
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
+                      <div className="h-full rounded-full bg-brand" style={{ width: `${Math.max(3, share)}%` }} />
+                    </div>
+                    <span className="shrink-0 text-[11px] tabular-nums text-ink-faint">
+                      {value.count} {value.count === 1 ? "transaction" : "transactions"} · {share}%
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
