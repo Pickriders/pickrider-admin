@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
 import { Badge, ChartCard, ErrorState, PageHeader, RangeTabs, Skeleton, StatCard, StatGrid, Tabs, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
+import { CustomerBadges } from "@/components/users/customer-badges";
+import { CustomerReports } from "@/components/users/customer-reports";
 import { UserActions } from "@/components/users/user-actions";
 import { ActivityFeed, MoneyByPurpose, UserHeader, UserOrdersTable, UserTransactionsTable, bucketLabel } from "@/components/users/user-panels";
 import { fullName, naira, count, percent, trend } from "@/lib/admin/format";
@@ -15,7 +17,7 @@ import { useTabParam } from "@/lib/admin/url-state";
  * One customer: identity, wallet, how they order over the picked window,
  * their orders and wallet history, and the account actions.
  */
-const TABS = ["orders", "transactions", "activity"] as const;
+const TABS = ["orders", "transactions", "badges", "reports", "activity"] as const;
 type Tab = (typeof TABS)[number];
 
 function CustomerDetail({ id }: { id: string }) {
@@ -134,6 +136,8 @@ function CustomerDetail({ id }: { id: string }) {
         items={[
           { id: "orders", label: "Orders", count: lifetime?.orders },
           { id: "transactions", label: "Wallet history" },
+          { id: "badges", label: "Badges" },
+          { id: "reports", label: "Reports" },
           { id: "activity", label: "Activity" },
         ]}
       />
@@ -145,6 +149,8 @@ function CustomerDetail({ id }: { id: string }) {
           <UserTransactionsTable userId={id} csvName={`customer-${id}-transactions`} />
         </div>
       ) : null}
+      {tab === "badges" ? <CustomerBadges userId={id} enabled={tab === "badges"} /> : null}
+      {tab === "reports" ? <CustomerReports userId={id} enabled={tab === "reports"} /> : null}
       {tab === "activity" ? <ActivityFeed user={user} includeOrders enabled={tab === "activity"} /> : null}
     </div>
   );
