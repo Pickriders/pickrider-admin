@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tansta
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { admin, adminLogs, businesses, deliveryPrice, finance, me, messaging, orders, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { admin, adminLogs, businesses, deliveryPrice, finance, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -40,6 +40,22 @@ export const useOrders = (query: Query, options?: { poll?: boolean; enabled?: bo
   useQuery({ queryKey: ["orders", query], queryFn: () => orders.list(query), ...keep, refetchInterval: options?.poll ? POLL_MS : false, enabled: options?.enabled ?? true });
 export const useOrder = (orderId: string) => useQuery({ queryKey: ["order", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), refetchInterval: POLL_MS });
 export const useOrderOffers = (orderId: string) => useQuery({ queryKey: ["order-offers", orderId], queryFn: () => orders.offers(orderId), enabled: Boolean(orderId) });
+/** One order for a summary chip; no polling, unlike useOrder on the detail page. */
+export const useOrderSummary = (orderId: string) =>
+  useQuery({ queryKey: ["order-summary", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), staleTime: 5 * 60_000 });
+/**
+ * A rider's reviews, newest first, with the customer and order expanded so no
+ * lookup is needed per row. One request for the latest 200 so rating filters
+ * and sorting are instant; riders rarely have more than that.
+ */
+export const REVIEWS_FETCH_LIMIT = 200;
+export const useRiderReviews = (riderId: string, enabled = true) =>
+  useQuery({
+    queryKey: ["reviews", "rider", riderId],
+    queryFn: () => reviews.list({ riderId, limit: REVIEWS_FETCH_LIMIT, order: "DESC", expand: 1 }),
+    enabled: enabled && Boolean(riderId),
+    staleTime: 60_000,
+  });
 export const useTransactions = (query: Query, enabled = true) => useQuery({ queryKey: ["transactions", query], queryFn: () => transactions.list(query), ...keep, enabled });
 export const useTransaction = (id: string) => useQuery({ queryKey: ["transaction", id], queryFn: () => transactions.get(id), enabled: Boolean(id) });
 export const useTransactionSummary = (query?: Query) => useQuery({ queryKey: ["transactions", "summary", query], queryFn: () => transactions.summary(query), placeholderData: keepPreviousData });
