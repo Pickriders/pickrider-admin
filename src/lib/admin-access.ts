@@ -45,8 +45,22 @@ const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/finances": [...FULL_ACCESS, "PLATFORM_FINANCE"],
   "/messaging": [...FULL_ACCESS, "PLATFORM_OPERATION"],
   "/orders": [...FULL_ACCESS, "PLATFORM_OPERATION", "PLATFORM_FINANCE"],
+  "/coupons": [...FULL_ACCESS, "PLATFORM_FINANCE", "PLATFORM_OPERATION"],
+  "/achievements": [...FULL_ACCESS, "PLATFORM_FINANCE", "PLATFORM_OPERATION"],
+  "/support": [...FULL_ACCESS, "PLATFORM_OPERATION"],
   "/admin": ["SUPER_ADMIN", "ADMIN", "PLATFORM_ADMIN"],
 };
+
+/** Roles that may create/edit coupons and groups, or grant/revoke badges (the backend enforces the same set). */
+const PROGRAMME_MANAGERS: AdminRole[] = ["SUPER_ADMIN", "ADMIN", "PLATFORM_ADMIN"];
+
+export function canManageCoupons(roles: AdminRole[]): boolean {
+  return roles.some((role) => PROGRAMME_MANAGERS.includes(role));
+}
+
+export function canManageAchievements(roles: AdminRole[]): boolean {
+  return roles.some((role) => PROGRAMME_MANAGERS.includes(role));
+}
 
 /** Decodes the JWT payload (base64) — no verification needed client-side. */
 export function getAdminRoles(): AdminRole[] {

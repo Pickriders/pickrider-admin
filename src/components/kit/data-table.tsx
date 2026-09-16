@@ -45,6 +45,8 @@ export type DataTableProps<T> = {
   onRetry?: () => void;
   filters?: FilterSpec[];
   searchPlaceholder?: string;
+  /** Hide the search box when the endpoint has nothing to search. */
+  searchable?: boolean;
   dateFilter?: boolean;
   csvName?: string;
   emptyTitle?: ReactNode;
@@ -75,6 +77,7 @@ export function DataTable<T extends Record<string, unknown>>({
   onRetry,
   filters = [],
   searchPlaceholder = "Search",
+  searchable = true,
   dateFilter = true,
   csvName,
   emptyTitle = "Nothing here yet",
@@ -138,15 +141,17 @@ export function DataTable<T extends Record<string, unknown>>({
   const toolbar = (
     <div className="flex flex-col gap-3 px-4 pt-4 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-1 flex-wrap items-center gap-2">
-        <div className="w-full sm:w-64">
-          <Input
-            left={<Search size={15} />}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={searchPlaceholder}
-            aria-label={searchPlaceholder}
-          />
-        </div>
+        {searchable ? (
+          <div className="w-full sm:w-64">
+            <Input
+              left={<Search size={15} />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={searchPlaceholder}
+              aria-label={searchPlaceholder}
+            />
+          </div>
+        ) : null}
         {filters.length ? (
           <Button
             variant={activeFilterEntries.length ? "secondary" : "outline"}

@@ -342,6 +342,8 @@ export type Attention = {
   failedNotifications24h: number;
   suspendedRiders: number;
   ridersPausedFromDispatch: number;
+  issuesOpen?: number;
+  issuesUnassigned?: number;
 };
 
 export type UserOverview = {
@@ -886,3 +888,297 @@ export type DeliveryCalcConfig = {
 
 /** What POST /admins/notifications/broadcasts/estimate actually returns (`total`, not `recipients`). */
 export type BroadcastEstimate = { total?: number; recipients?: number; withPush: number; withEmail: number };
+
+// ── Coupons ───────────────────────────────────────────────────────────────────
+
+export type CouponType = "FIXED" | "PERCENTAGE";
+export type CouponLifecycle = "ACTIVE" | "EXPIRED" | "EXHAUSTED" | "INACTIVE";
+
+export type Person = {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  photo?: string;
+};
+
+export type Coupon = {
+  _id: string;
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: CouponType;
+  /** Percentage (0–100) or a FIXED amount in kobo. */
+  value: number;
+  maxDiscount?: number;
+  expirationDate: string;
+  isActive: boolean;
+  usageCount: number;
+  limit: number;
+  isOneTime: boolean;
+  isGeneral: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  // Admin rollups
+  lifecycle: CouponLifecycle;
+  discountTotal: number;
+  uniqueUsers: number;
+  lastUsedAt?: string;
+  groupNames: string[];
+  isReward: boolean;
+  [key: string]: unknown;
+};
+
+export type CouponInput = {
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: CouponType;
+  value: number;
+  maxDiscount?: number;
+  expirationDate: string;
+  limit: number;
+  isActive?: boolean;
+  isOneTime?: boolean;
+  isGeneral?: boolean;
+};
+
+export type CouponUpdate = Partial<
+  Pick<
+    CouponInput,
+    "name" | "description" | "expirationDate" | "limit" | "maxDiscount" | "isActive" | "isGeneral" | "isOneTime"
+  >
+>;
+
+export type CouponUsage = {
+  _id: string;
+  couponId: string;
+  userId: string;
+  orderId: string;
+  createdAt: string;
+  discountAmount?: number;
+  user?: Person;
+  order?: {
+    _id: string;
+    orderNumber?: string;
+    status?: string;
+    type?: string;
+    discountAmount?: number;
+    totalAmountPayable?: number;
+    currency?: string;
+    createdAt?: string;
+  };
+  [key: string]: unknown;
+};
+
+export type CouponsSummary = {
+  total: number;
+  active: number;
+  expiring7d: number;
+  redemptions30d: number;
+  redemptionsTotal: number;
+  discount30d: number;
+  discountTotal: number;
+  rewardCoupons: number;
+  rewardCouponsRedeemed: number;
+  daily: { date: string; count: number; discount: number }[];
+  topCoupons: { code: string; name?: string; count: number; discount: number }[];
+};
+
+export type CouponGroup = {
+  _id: string;
+  name: string;
+  userCount: number;
+  couponCount: number;
+  coupons?: Pick<Coupon, "_id" | "code" | "name" | "isActive" | "expirationDate">[];
+  users?: Person[];
+  createdAt?: string;
+  [key: string]: unknown;
+};
+
+export const coupons = {
+  list: (query: Query) => list<Coupon>("/admins/coupons", query),
+  summary: () => get<CouponsSummary>("/admins/coupons/summary"),
+  get: (couponId: string) => get<Coupon>(`/admins/coupons/${couponId}`),
+  usages: (couponId: string, query: Query) => list<CouponUsage>(`/admins/coupons/${couponId}/usages`, query),
+  create: (body: CouponInput) => post<Coupon>("/admins/coupons", body),
+  update: (couponId: string, body: CouponUpdate) => patch<Coupon>(`/admins/coupons/${couponId}`, body),
+  deactivate: (code: string) => patch<unknown>(`/admins/coupons/${code}/deactivate`),
+  groups: (query: Query) => list<CouponGroup>("/admins/coupons/groups", query),
+  group: (groupId: string) => get<CouponGroup>(`/admins/coupons/groups/${groupId}`),
+  createGroup: (body: { name: string; couponCodes: string[]; userIds?: string[] }) =>
+    post<CouponGroup>("/admins/coupons/groups", body),
+  updateGroup: (groupId: string, body: { name?: string; couponCodes?: string[] }) =>
+    patch<CouponGroup>(`/admins/coupons/groups/${groupId}`, body),
+  addGroupUsers: (groupId: string, userIds: string[]) =>
+    patch<CouponGroup>(`/admins/coupons/groups/${groupId}/add`, { userIds }),
+  removeGroupUsers: (groupId: string, userIds: string[]) =>
+    patch<CouponGroup>(`/admins/coupons/groups/${groupId}/remove`, { userIds }),
+};
+
+// ── Achievements (customer badges) ────────────────────────────────────────────
+
+export type AchievementCategory = "SINGLE" | "BATCH" | "BULK" | "WALLET" | "REFERRAL" | "SPECIAL";
+
+export type AchievementDefinition = {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  unit: string;
+  tier: number;
+  rewardPercent: number;
+  unlockedCount: number;
+  unlocked30d: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  discountTotal: number;
+  [key: string]: unknown;
+};
+
+export type AchievementsSummary = {
+  badges: number;
+  customersWithBadges: number;
+  unlocksTotal: number;
+  unlocks30d: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  rewardsOutstanding: number;
+  discountTotal: number;
+  rewardPercentByTier: Record<string, number>;
+  rewardMaxDiscount: number;
+  rewardValidityDays: number;
+  daily: { date: string; count: number }[];
+};
+
+export type AchievementUnlock = {
+  userId: string;
+  key: string;
+  title: string;
+  category: AchievementCategory;
+  unlockedAt: string;
+  acknowledgedAt?: string;
+  couponCode?: string;
+  couponExpiresAt?: string;
+  rewardState?: "REDEEMED" | "ACTIVE" | "EXPIRED" | "NONE";
+  discountAmount?: number;
+  user?: Person;
+  [key: string]: unknown;
+};
+
+export type CustomerAchievement = {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  progress: number;
+  unit: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "PENDING";
+  unlockedAt?: string;
+  isNew: boolean;
+  reward: { percent: number; maxDiscount: number; validityDays: number; couponCode?: string; expiresAt?: string };
+};
+
+export type CustomerAchievements = {
+  results: CustomerAchievement[];
+  unlockedCount: number;
+  stats: Record<string, number>;
+};
+
+export const achievements = {
+  catalogue: () => get<AchievementDefinition[]>("/admins/achievements"),
+  summary: () => get<AchievementsSummary>("/admins/achievements/summary"),
+  unlocks: (query: Query) => list<AchievementUnlock>("/admins/achievements/unlocks", query),
+  forUser: (userId: string) => get<CustomerAchievements>(`/admins/achievements/users/${userId}`),
+  grant: (userId: string, body: { key: string; reason?: string }) =>
+    post<CustomerAchievements>(`/admins/achievements/users/${userId}/grant`, body),
+  revoke: (userId: string, key: string) => del<CustomerAchievements>(`/admins/achievements/users/${userId}/${key}`),
+};
+
+// ── Support: issue reports ────────────────────────────────────────────────────
+
+export type IssueStatus = "OPEN" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
+export type IssuePriority = "HIGH" | "MEDIUM" | "LOW";
+export type IssueCategory =
+  "ORDER" | "DELIVERY" | "RIDER_BEHAVIOUR" | "APP_TECHNICAL" | "PAYMENT_REFUND" | "SAFETY_SECURITY" | "OTHER";
+export type IssueSubjectType = "ORDER" | "TRANSACTION" | "GENERAL";
+
+export type IssueNote = { _id?: string; adminId: string | Person; note: string; createdAt: string };
+
+export type Issue = {
+  _id: string;
+  reference: string;
+  userId: string;
+  subjectType: IssueSubjectType;
+  orderId?: string;
+  transactionId?: string;
+  category: IssueCategory;
+  priority: IssuePriority;
+  description: string;
+  attachments: string[];
+  status: IssueStatus;
+  resolution?: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  assignedTo?: string;
+  firstResponseAt?: string;
+  notes?: IssueNote[];
+  noteCount?: number;
+  createdAt: string;
+  updatedAt?: string;
+  user?: Person;
+  assignee?: Person;
+  order?: {
+    _id: string;
+    orderNumber?: string;
+    status?: string;
+    type?: string;
+    totalAmountPayable?: number;
+    currency?: string;
+    createdAt?: string;
+  };
+  transaction?: {
+    _id: string;
+    reference?: string;
+    amount?: number;
+    currency?: string;
+    status?: string;
+    purpose?: string;
+    createdAt?: string;
+  };
+  [key: string]: unknown;
+};
+
+export type IssuesSummary = {
+  open: number;
+  inReview: number;
+  unassigned: number;
+  highPriorityOpen: number;
+  resolved7d: number;
+  new7d: number;
+  avgResolutionHours: number | null;
+  avgFirstResponseHours: number | null;
+  overdue: number;
+  byCategory: { key: string; count: number }[];
+  byPriority: { key: string; count: number }[];
+};
+
+export const issues = {
+  list: (query: Query) => list<Issue>("/admins/issues", query),
+  summary: () => get<IssuesSummary>("/admins/issues/summary"),
+  get: (issueId: string) => get<Issue>(`/admins/issues/${issueId}`),
+  forUser: (userId: string, query: Query) => list<Issue>(`/admins/issues/users/${userId}`, query),
+  updateStatus: (issueId: string, body: { status: IssueStatus; resolution?: string }) =>
+    patch<Issue>(`/admins/issues/${issueId}/status`, body),
+  assign: (issueId: string, adminId: string | null) => patch<Issue>(`/admins/issues/${issueId}/assign`, { adminId }),
+  updatePriority: (issueId: string, priority: IssuePriority) =>
+    patch<Issue>(`/admins/issues/${issueId}/priority`, { priority }),
+  addNote: (issueId: string, note: string) => post<Issue>(`/admins/issues/${issueId}/notes`, { note }),
+};
