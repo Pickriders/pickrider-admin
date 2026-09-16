@@ -213,7 +213,7 @@ export function RiderReviews({
   return (
     <Panel className="overflow-hidden">
       {/* Same px-4 rhythm as the wallet history and earnings tables. */}
-      <div className="flex flex-col gap-3 px-4 pt-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex items-start justify-between gap-3 px-4 pt-4">
         <div className="min-w-0">
           <h3 className="text-sm font-bold tracking-tight text-ink">Customer reviews</h3>
           <p className="mt-0.5 text-xs text-ink-muted">
@@ -224,17 +224,21 @@ export function RiderReviews({
               : "Customers rate the rider after each delivery"}
           </p>
         </div>
-        <Select value={sort} onChange={(e) => setSort(e.target.value as SortId)} className="h-9 w-full sm:w-auto sm:min-w-[9.5rem] text-xs" aria-label="Sort reviews">
+        {/* Fixed-width wrapper: the kit Select is w-full, so it fills this and no more. */}
+        <span className="block w-36 shrink-0 sm:w-40">
+          <Select value={sort} onChange={(e) => setSort(e.target.value as SortId)} className="h-9 text-xs" aria-label="Sort reviews">
           {(Object.keys(SORTS) as SortId[]).map((id) => (
             <option key={id} value={id}>
               {SORTS[id].label}
             </option>
           ))}
-        </Select>
+          </Select>
+        </span>
       </div>
 
-      {/* Chips wrap instead of scrolling, so nothing runs past the card on a phone. */}
-      <div className="mt-3 flex flex-wrap gap-1.5 px-4">
+      {/* The scroll area sits inside the padding, so chips clip at the padding edge, not the card edge. */}
+      <div className="mt-3 px-4">
+        <div className="admin-scroll flex gap-1.5 overflow-x-auto pb-1">
         <button
           type="button"
           onClick={() => onRatingChange(undefined)}
@@ -264,6 +268,7 @@ export function RiderReviews({
             </button>
           );
         })}
+        </div>
       </div>
 
       <div className="px-4 pb-4 pt-3">
