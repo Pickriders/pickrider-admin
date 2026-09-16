@@ -135,38 +135,37 @@ export function DataTable<T extends Record<string, unknown>>({
   const pageStart = total ? (state.page - 1) * state.limit + 1 : 0;
   const pageEnd = Math.min(total, state.page * state.limit);
 
+  // One wrapping row: on a phone the search takes the first line and every
+  // button shares the second, with export pushed to the right; on a desktop
+  // it all sits on one line.
   const toolbar = (
-    <div className="flex flex-col gap-3 px-4 pt-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-1 flex-wrap items-center gap-2">
-        <div className="w-full sm:w-64">
-          <Input
-            left={<Search size={15} />}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={searchPlaceholder}
-            aria-label={searchPlaceholder}
-          />
-        </div>
-        {filters.length ? (
-          <Button
-            variant={activeFilterEntries.length ? "secondary" : "outline"}
-            size="md"
-            icon={SlidersHorizontal}
-            onClick={() => setFiltersOpen((v) => !v)}
-          >
-            Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
-          </Button>
-        ) : null}
-        {dateFilter ? (
-          <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} />
-        ) : null}
-        {table.activeFilterCount ? (
-          <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
-            Clear
-          </Button>
-        ) : null}
+    <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
+      <div className="w-full sm:w-64">
+        <Input
+          left={<Search size={15} />}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={searchPlaceholder}
+          aria-label={searchPlaceholder}
+        />
       </div>
-      <div className="flex items-center gap-2">
+      {filters.length ? (
+        <Button
+          variant={activeFilterEntries.length ? "secondary" : "outline"}
+          size="md"
+          icon={SlidersHorizontal}
+          onClick={() => setFiltersOpen((v) => !v)}
+        >
+          Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
+        </Button>
+      ) : null}
+      {dateFilter ? <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} /> : null}
+      {table.activeFilterCount ? (
+        <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
+          Clear
+        </Button>
+      ) : null}
+      <div className="ml-auto flex items-center gap-2">
         {liveHint}
         {toolbarExtra}
         {csvName ? (
