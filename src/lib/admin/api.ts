@@ -467,6 +467,32 @@ export const transactions = {
   externalPayments: (query?: Query) => get<Record<string, unknown>>("/admins/transactions/metrics/external-payments", query),
 };
 
+// ── Reviews ───────────────────────────────────────────────────────────────────
+
+/**
+ * A customer's rating of a rider for one order. The list endpoint returns ids
+ * only; the customer and the order are resolved per row on the client.
+ */
+export type ReviewCustomer = Pick<User, "_id" | "firstname" | "lastname" | "phone" | "photo">;
+export type ReviewOrder = Pick<Order, "_id" | "orderNumber" | "status" | "type" | "totalAmountPayable" | "completedAt" | "createdAt">;
+
+/** With `expand=1` the customer and order come populated; otherwise they are ids. */
+export type Review = {
+  _id: string;
+  userId: string | ReviewCustomer;
+  riderId: string;
+  orderId: string | ReviewOrder;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+export const reviews = {
+  /** GET /reviews accepts riderId, page, limit and order (platform admin only). */
+  list: (query: Query) => list<Review>("/reviews", query),
+};
+
 // ── Vehicles ──────────────────────────────────────────────────────────────────
 
 export const vehicles = {
