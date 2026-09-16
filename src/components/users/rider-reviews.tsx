@@ -8,7 +8,7 @@ import type { Review, ReviewCustomer, ReviewOrder } from "@/lib/admin/api";
 import { ago, count, fullName, naira, statusLabel, when } from "@/lib/admin/format";
 import { REVIEWS_FETCH_LIMIT, useOrderSummary, useRiderReviews, useUser } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
-import { Avatar, Badge, Button, EmptyState, ErrorState, Panel, PanelHeader, Select, Skeleton, cx, statusTone } from "@/components/kit/primitives";
+import { Avatar, Badge, Button, EmptyState, ErrorState, Panel, Select, Skeleton, cx, statusTone } from "@/components/kit/primitives";
 
 /**
  * Every review a rider has received: who left it, the stars, what they said
@@ -211,28 +211,30 @@ export function RiderReviews({
   const loading = reviews.isLoading && !reviews.data;
 
   return (
-    <Panel>
-      <PanelHeader
-        title="Customer reviews"
-        subtitle={
-          loading
+    <Panel className="overflow-hidden">
+      {/* Same px-4 rhythm as the wallet history and earnings tables. */}
+      <div className="flex flex-col gap-3 px-4 pt-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h3 className="text-sm font-bold tracking-tight text-ink">Customer reviews</h3>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            {loading
             ? "Loading reviews…"
             : total
               ? `${count(total)} review${total === 1 ? "" : "s"}${average != null ? ` · ${average.toFixed(1)} average` : ""}${truncated ? ` · showing the latest ${count(all.length)}` : ""}`
-              : "Customers rate the rider after each delivery"
-        }
-        action={
-          <Select value={sort} onChange={(e) => setSort(e.target.value as SortId)} className="h-9 w-auto min-w-[9.5rem] text-xs" aria-label="Sort reviews">
-            {(Object.keys(SORTS) as SortId[]).map((id) => (
-              <option key={id} value={id}>
-                {SORTS[id].label}
-              </option>
-            ))}
-          </Select>
-        }
-      />
+              : "Customers rate the rider after each delivery"}
+          </p>
+        </div>
+        <Select value={sort} onChange={(e) => setSort(e.target.value as SortId)} className="h-9 w-full sm:w-auto sm:min-w-[9.5rem] text-xs" aria-label="Sort reviews">
+          {(Object.keys(SORTS) as SortId[]).map((id) => (
+            <option key={id} value={id}>
+              {SORTS[id].label}
+            </option>
+          ))}
+        </Select>
+      </div>
 
-      <div className="admin-scroll -mx-1 mt-4 flex gap-1.5 overflow-x-auto px-6 pb-1">
+      {/* Chips wrap instead of scrolling, so nothing runs past the card on a phone. */}
+      <div className="mt-3 flex flex-wrap gap-1.5 px-4">
         <button
           type="button"
           onClick={() => onRatingChange(undefined)}
@@ -264,7 +266,7 @@ export function RiderReviews({
         })}
       </div>
 
-      <div className="px-6 pb-5 pt-3">
+      <div className="px-4 pb-4 pt-3">
         {reviews.isError ? (
           <ErrorState message={errorMessage(reviews.error, "Could not load this rider's reviews.")} onRetry={() => void reviews.refetch()} />
         ) : loading ? (
