@@ -27,10 +27,11 @@ import {
 } from "@/components/kit";
 import { DispatchDialog, UserActions } from "@/components/users/user-actions";
 import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
+import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
 import type { Vehicle } from "@/lib/admin/api";
 import { count, fullName, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
-import { useTabParam } from "@/lib/admin/url-state";
+import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
 /**
  * One rider: how they deliver over the picked window, lifetime totals,
@@ -41,15 +42,25 @@ import { useTabParam } from "@/lib/admin/url-state";
  * not shown; the earnings tab (ORDER_EARNING transactions) is the closest
  * per-delivery record and lifetime totals come from the overview.
  */
-const TABS = ["earnings", "transactions", "activity"] as const;
+const TABS = ["earnings", "reviews", "transactions", "activity"] as const;
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
-function RatingPanel({ reviews, loading }: { reviews: { average: number | null; count: number; distribution: number[] } | undefined; loading: boolean }) {
+function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | undefined; loading: boolean; onPick: (star?: number) => void }) {
   const total = reviews?.count ?? 0;
   return (
     <Panel>
-      <PanelHeader title="Rating" subtitle={total ? `${count(total)} review${total === 1 ? "" : "s"} from customers` : "No reviews yet"} />
+      <PanelHeader
+        title="Rating"
+        subtitle={total ? `${count(total)} review${total === 1 ? "" : "s"} from customers` : "No reviews yet"}
+        action={
+          total ? (
+            <button type="button" onClick={() => onPick(undefined)} className="text-xs font-bold text-brand-dark hover:underline">
+              Read reviews
+            </button>
+          ) : null
+        }
+      />
       <div className="px-5 pb-5 pt-4">
         {loading ? (
           <Skeleton className="h-28 w-full" />
@@ -57,21 +68,28 @@ function RatingPanel({ reviews, loading }: { reviews: { average: number | null; 
           <div className="flex items-start gap-5">
             <div className="shrink-0 text-center">
               <p className="text-4xl font-black tracking-tight text-ink">{reviews?.average != null ? reviews.average.toFixed(1) : "–"}</p>
-              <p className="mt-1 inline-flex items-center gap-1 text-xs text-ink-faint">
-                <Star size={12} className="text-warning" /> out of 5
-              </p>
+              <Stars value={reviews?.average ?? 0} size={12} className="mt-1" />
+              <p className="mt-1 text-[11px] text-ink-faint">out of 5</p>
             </div>
             <ul className="min-w-0 flex-1 space-y-1.5">
               {[5, 4, 3, 2, 1].map((star) => {
                 const n = reviews?.distribution?.[star - 1] ?? 0;
                 const width = total ? Math.round((n / total) * 100) : 0;
                 return (
-                  <li key={star} className="flex items-center gap-2 text-xs">
-                    <span className="w-3 text-right font-semibold text-ink-muted">{star}</span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface">
-                      <div className="h-full rounded-full bg-warning" style={{ width: `${width}%` }} />
-                    </div>
-                    <span className="w-6 text-right tabular-nums text-ink-faint">{n}</span>
+                  <li key={star}>
+                    <button
+                      type="button"
+                      onClick={() => onPick(star)}
+                      disabled={!n}
+                      title={n ? `See ${count(n)} ${star}-star review${n === 1 ? "" : "s"}` : `No ${star}-star reviews`}
+                      className="group flex w-full items-center gap-2 rounded-md text-xs transition-colors enabled:hover:bg-surface disabled:cursor-default"
+                    >
+                      <span className="w-3 text-right font-semibold text-ink-muted">{star}</span>
+                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface">
+                        <span className="block h-full rounded-full bg-warning transition-[filter] group-enabled:group-hover:brightness-95" style={{ width: `${width}%` }} />
+                      </span>
+                      <span className="w-6 text-right tabular-nums text-ink-faint">{n}</span>
+                    </button>
                   </li>
                 );
               })}
@@ -125,6 +143,11 @@ function CourierDetail({ id }: { id: string }) {
   const series = useSeries({ ...rangeQuery, riderId: id });
   const [tab, setTab] = useTabParam<Tab>("earnings", TABS);
   const [dispatchOpen, setDispatchOpen] = useState(false);
+  const table = useTableState();
+  const ratingFilter = Number(table.state.filters.rating) || undefined;
+  const setRatingFilter = (star?: number) => table.update({ rating: star ?? undefined }, { resetPage: false });
+  /** Jump to the Reviews tab, optionally already filtered to one star rating. */
+  const openReviews = (star?: number) => table.update({ tab: "reviews", rating: star ?? undefined }, { resetPage: false });
 
   const data = overview.data;
   const user = data?.user;
@@ -272,7 +295,7 @@ function CourierDetail({ id }: { id: string }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <RatingPanel reviews={data?.reviews} loading={loading} />
+        <RatingPanel reviews={data?.reviews} loading={loading} onPick={openReviews} />
         <VehiclesPanel vehicles={data?.vehicles} loading={loading} />
         <Panel>
           <PanelHeader title="Wallet and settlement" subtitle="Where withdrawals go" />
@@ -317,6 +340,7 @@ function CourierDetail({ id }: { id: string }) {
         onChange={setTab}
         items={[
           { id: "earnings", label: "Earnings", count: lifetime?.completed },
+          { id: "reviews", label: "Reviews", count: data?.reviews.count },
           { id: "transactions", label: "Wallet history" },
           { id: "activity", label: "Activity" },
         ]}
@@ -331,6 +355,7 @@ function CourierDetail({ id }: { id: string }) {
           emptyDescription="Each completed delivery credits the rider's wallet and shows up here."
         />
       ) : null}
+      {tab === "reviews" ? <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} /> : null}
       {tab === "transactions" ? (
         <div className="space-y-4">
           <MoneyByPurpose data={data?.transactions} loading={loading} />
