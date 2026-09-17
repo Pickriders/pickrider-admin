@@ -10,10 +10,10 @@ import {
   ConfirmDialog,
   DataTable,
   Drawer,
-  Field,
-  Input,
   KeyValue,
+  UsersPicker,
   type ColumnMeta,
+  type PickedUser,
 } from "@/components/kit";
 import { coupons, type CouponGroup, type Paged } from "@/lib/admin/api";
 import { count, fullName, when } from "@/lib/admin/format";
@@ -124,25 +124,20 @@ export function GroupsTab({ canManage }: { canManage: boolean }) {
 function GroupDrawer({ id, canManage, onClose }: { id: string; canManage: boolean; onClose: () => void }) {
   const { data: group, isPending, error } = useCouponGroup(id);
   const [editing, setEditing] = useState(false);
-  const [newIds, setNewIds] = useState("");
+  const [newMembers, setNewMembers] = useState<PickedUser[]>([]);
   const [removing, setRemoving] = useState<{ _id: string; name: string } | null>(null);
   const invalidate = [["coupon-group", id], "coupon-groups"];
 
   const add = useAction((ids: string[]) => coupons.addGroupUsers(id, ids), {
     success: "Members added.",
     invalidate,
-    onSuccess: () => setNewIds(""),
+    onSuccess: () => setNewMembers([]),
   });
   const remove = useAction((ids: string[]) => coupons.removeGroupUsers(id, ids), {
     success: "Member removed.",
     invalidate,
     onSuccess: () => setRemoving(null),
   });
-
-  const ids = newIds
-    .split(/[\s,]+/)
-    .map((v) => v.trim())
-    .filter(Boolean);
 
   return (
     <>
@@ -191,19 +186,22 @@ function GroupDrawer({ id, canManage, onClose }: { id: string; canManage: boolea
             </div>
 
             {canManage ? (
-              <Field label="Add members" hint="Customer user ids, comma or newline separated.">
-                <div className="flex gap-2">
-                  <Input
-                    value={newIds}
-                    onChange={(event) => setNewIds(event.target.value)}
-                    placeholder="64f1c2…, 64f1c3…"
-                    className="font-mono"
-                  />
-                  <Button onClick={() => ids.length && add.mutate(ids)} disabled={!ids.length} loading={add.isPending}>
-                    Add
-                  </Button>
-                </div>
-              </Field>
+              <div className="space-y-2">
+                <UsersPicker
+                  picked={newMembers}
+                  onChange={setNewMembers}
+                  only="customers"
+                  label="Add members"
+                  emptyHint="Search for customers to add."
+                />
+                {newMembers.length ? (
+                  <div className="flex justify-end">
+                    <Button onClick={() => add.mutate(newMembers.map((m) => m._id))} loading={add.isPending}>
+                      Add {newMembers.length} member{newMembers.length === 1 ? "" : "s"}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
 
             <div>

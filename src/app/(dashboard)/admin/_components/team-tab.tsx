@@ -9,11 +9,12 @@ import { StatusDrawer, normalizePhone, phoneLabel } from "@/components/users/use
 import { asArray, users, type Team, type User } from "@/lib/admin/api";
 import { PLATFORM_STAFF_ROLES } from "@/lib/admin-access";
 import { ago, fullName, when } from "@/lib/admin/format";
-import { useAction, useCountries, useTeams, useUser, useUsers } from "@/lib/admin/hooks";
+import { useAction, useCountries, useMe, useTeams, useUser, useUsers } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { pageFilter } from "./fields";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * Team: the platform staff (users holding a staff role), plus the business and
@@ -35,8 +36,10 @@ const ROLE_LABEL: Record<string, string> = {
   DEVELOPER: "Developer",
 };
 
-/** POST /admins/users only accepts these; staff roles are assigned on the backend. */
+/** Non-staff accounts the console can create; staff roles come from PLATFORM_STAFF_ROLES. */
 const CREATABLE_ROLES = ["USER", "PLATFORM_RIDER", "DEVELOPER"] as const;
+/** Staff accounts must use a company mailbox (enforced by the API). */
+const STAFF_EMAIL_DOMAIN = "pickriders.com";
 
 const FILTERS: FilterSpec[] = [
   {
@@ -165,6 +168,7 @@ const TEAM_COLUMNS: ColumnDef<Team, unknown>[] = [
 
 export function TeamTab() {
   const table = useTableState({ limit: 20 });
+  const { can } = useCan();
   const view = table.state.filters.view === "teams" ? "teams" : "staff";
   const memberId = table.state.filters.member;
   const adding = table.state.filters.add === "1";
@@ -194,7 +198,7 @@ export function TeamTab() {
             </button>
           ))}
         </div>
-        {view === "staff" ? (
+        {view === "staff" && can("user.create") ? (
           <Button icon={UserPlus} onClick={() => table.update({ add: "1" }, { resetPage: false })}>
             Add member
           </Button>
@@ -305,8 +309,15 @@ function TeamsTable() {
 
 function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => void }) {
   const user = useUser(userId ?? "");
+  const me = useMe();
+  const { can } = useCan();
   const [statusOpen, setStatusOpen] = useState(false);
   const member = user.data;
+  const isSelf = Boolean(member && me.data && member._id === me.data._id);
+  const targetIsOwner = (member?.roles ?? []).includes("SUPER_ADMIN");
+  const iAmOwner = (me.data?.roles ?? []).includes("SUPER_ADMIN");
+  // The API refuses these too; hide the button rather than let it fail.
+  const canChangeStatus = can("user.status") && !isSelf && (!targetIsOwner || iAmOwner);
 
   return (
     <Drawer open={Boolean(userId)} onClose={onClose} title={member ? fullName(member) || "Team member" : "Team member"} subtitle={member?.email}>
@@ -350,11 +361,17 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
             ]}
           />
           <p className="text-xs text-ink-faint">Profile fields are read only: the core API has no admin endpoint to edit another user&apos;s details or roles.</p>
-          <div className="flex flex-wrap gap-2">
-            <Button variant={member.status === "ACTIVE" ? "danger" : "primary"} onClick={() => setStatusOpen(true)}>
-              {member.status === "ACTIVE" ? "Suspend or remove access" : "Change status"}
-            </Button>
-          </div>
+          {canChangeStatus ? (
+            <div className="flex flex-wrap gap-2">
+              <Button variant={member.status === "ACTIVE" ? "danger" : "primary"} onClick={() => setStatusOpen(true)}>
+                {member.status === "ACTIVE" ? "Suspend or remove access" : "Change status"}
+              </Button>
+            </div>
+          ) : isSelf ? (
+            <p className="text-xs text-ink-faint">This is your own account — another admin has to change its status.</p>
+          ) : targetIsOwner ? (
+            <p className="text-xs text-ink-faint">Only a super admin can change a super admin&apos;s status.</p>
+          ) : null}
           <StatusDrawer user={member} open={statusOpen} onClose={() => setStatusOpen(false)} />
         </div>
       )}
@@ -385,6 +402,9 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
     const phone = normalizePhone(form.phone);
     if (form.firstname.trim().length < 3 || form.lastname.trim().length < 3) return setError("First and last name need at least 3 characters.");
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return setError("Enter a valid email.");
+    if (STAFF.includes(form.role) && !form.email.trim().toLowerCase().endsWith(`@${STAFF_EMAIL_DOMAIN}`)) {
+      return setError(`Staff accounts need an @${STAFF_EMAIL_DOMAIN} email.`);
+    }
     if (!phone) return setError("Enter a valid phone number.");
     if (form.password.length < 8) return setError("Password needs at least 8 characters.");
     setError(null);
@@ -405,7 +425,7 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
       open={open}
       onClose={onClose}
       title="Add team member"
-      subtitle="Creates an account on the platform. Super admin only."
+      subtitle="Creates a customer, rider, developer or staff account. Staff sign in to this console with any staff role."
       footer={
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onClose}>
@@ -436,18 +456,22 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
           <Input type="password" value={form.password} onChange={(e) => set("password")(e.target.value)} autoComplete="new-password" />
         </Field>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Role" hint="Staff roles are assigned directly on the backend for now.">
+          <Field label="Role" hint={STAFF.includes(form.role) ? `Staff accounts need an @${STAFF_EMAIL_DOMAIN} email.` : undefined}>
             <Select value={form.role} onChange={(e) => set("role")(e.target.value)}>
-              {CREATABLE_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {ROLE_LABEL[role]}
-                </option>
-              ))}
-              {STAFF.map((role) => (
-                <option key={role} value={role} disabled>
-                  {ROLE_LABEL[role] ?? role} (backend only)
-                </option>
-              ))}
+              <optgroup label="Platform staff">
+                {STAFF.map((role) => (
+                  <option key={role} value={role}>
+                    {ROLE_LABEL[role] ?? role}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Other accounts">
+                {CREATABLE_ROLES.map((role) => (
+                  <option key={role} value={role}>
+                    {ROLE_LABEL[role]}
+                  </option>
+                ))}
+              </optgroup>
             </Select>
           </Field>
           <Field label="Country">

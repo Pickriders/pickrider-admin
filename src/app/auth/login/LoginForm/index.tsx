@@ -3,12 +3,12 @@
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 import { motion } from "framer-motion";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useLoginMn } from "@/api";
-import { Role } from "@/services";
 import { LoaderCircle, ShieldCheck } from "lucide-react";
 
 const validationSchema = Yup.object({
@@ -20,6 +20,8 @@ const FIELD_CLASS =
   "h-12 rounded-xl px-4 pl-11 text-[15px] font-semibold text-foreground bg-background placeholder:font-medium placeholder:text-muted-foreground";
 
 export const LoginForm = () => {
+  // Set by the API client when a request came back 401: the session ended, not a typo.
+  const expired = useSearchParams().get("reason") === "expired";
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -30,8 +32,7 @@ export const LoginForm = () => {
     onSubmit: (values) => {
       loginMutation.mutate({
         password: values.password,
-        identifier: values.email,
-        role: Role.PLATFORM_ADMIN,
+        identifier: values.email.trim(),
       });
     },
   });
@@ -52,75 +53,80 @@ export const LoginForm = () => {
         className="rounded-3xl border bg-card p-6 shadow-sm sm:p-9"
       >
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
-        <ShieldCheck size={13} />
-        Pickriders Admin
-      </span>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-[2rem]">Welcome back</h1>
-      <p className="mt-2 text-[15px] font-medium text-muted-foreground">
-        Sign in to manage orders, couriers, businesses and finances.
-      </p>
+          <ShieldCheck size={13} />
+          Pickriders Admin
+        </span>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-[2rem]">Welcome back</h1>
+        <p className="mt-2 text-[15px] font-medium text-muted-foreground">
+          Sign in to manage orders, couriers, businesses and finances.
+        </p>
+        {expired ? (
+          <p className="mt-3 rounded-xl bg-warning-soft px-3 py-2 text-sm font-semibold text-warning">
+            Your session ended. Sign in again to pick up where you left off.
+          </p>
+        ) : null}
 
-      <form onSubmit={formik.handleSubmit} className="mt-8" autoComplete="off">
-        <div className="space-y-5">
-          <UI.Input
-            labelValue="Email address"
-            labelClassName="text-sm font-bold text-foreground"
-            id="email"
-            type="email"
-            placeholder="you@pickriders.com"
-            leftIcon={<SVG.Mail />}
-            className={FIELD_CLASS}
-            {...formik.getFieldProps("email")}
-            errorMessage={formik.touched.email && formik.errors.email}
-          />
-          <UI.Input
-            labelValue="Password"
-            labelClassName="text-sm font-bold text-foreground"
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            autoComplete="off"
-            leftIcon={<SVG.LockIcon />}
-            showToggle
-            className={`${FIELD_CLASS} pr-12`}
-            errorMessage={formik.touched.password && formik.errors.password}
-            {...formik.getFieldProps("password")}
-          />
+        <form onSubmit={formik.handleSubmit} className="mt-8" autoComplete="off">
+          <div className="space-y-5">
+            <UI.Input
+              labelValue="Email address"
+              labelClassName="text-sm font-bold text-foreground"
+              id="email"
+              type="email"
+              placeholder="you@pickriders.com"
+              leftIcon={<SVG.Mail />}
+              className={FIELD_CLASS}
+              {...formik.getFieldProps("email")}
+              errorMessage={formik.touched.email && formik.errors.email}
+            />
+            <UI.Input
+              labelValue="Password"
+              labelClassName="text-sm font-bold text-foreground"
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              autoComplete="off"
+              leftIcon={<SVG.LockIcon />}
+              showToggle
+              className={`${FIELD_CLASS} pr-12`}
+              errorMessage={formik.touched.password && formik.errors.password}
+              {...formik.getFieldProps("password")}
+            />
 
-          <div className="flex items-center justify-between pt-1">
-            <label className="flex cursor-pointer items-center gap-2">
-              <UI.Checkbox
-                checked={formik.values.rememberMe}
-                onCheckedChange={(val) => formik.setFieldValue("rememberMe", val)}
-              />
-              <span className="text-sm font-semibold text-foreground">Remember me</span>
-            </label>
-            <Link href={"/auth/reset-password"} className="text-sm font-bold text-primary hover:underline">
-              Forgot password?
-            </Link>
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex cursor-pointer items-center gap-2">
+                <UI.Checkbox
+                  checked={formik.values.rememberMe}
+                  onCheckedChange={(val) => formik.setFieldValue("rememberMe", val)}
+                />
+                <span className="text-sm font-semibold text-foreground">Remember me</span>
+              </label>
+              <Link href={"/auth/reset-password"} className="text-sm font-bold text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <UI.PrimaryButton
-          type="submit"
-          disabled={loginMutation.isPending}
-          className="mt-8 h-12 rounded-xl text-[15px] font-bold"
-        >
-          {loginMutation.isPending ? (
-            <>
-              <LoaderCircle size={20} className="animate-spin" />
-              <span className="ml-2">Signing in...</span>
-            </>
-          ) : (
-            "Sign in"
-          )}
-        </UI.PrimaryButton>
-      </form>
+          <UI.PrimaryButton
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="mt-8 h-12 rounded-xl text-[15px] font-bold"
+          >
+            {loginMutation.isPending ? (
+              <>
+                <LoaderCircle size={20} className="animate-spin" />
+                <span className="ml-2">Signing in...</span>
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </UI.PrimaryButton>
+        </form>
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <ShieldCheck size={13} />
-        Protected area — authorized staff only.
-      </p>
+        <p className="mt-6 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <ShieldCheck size={13} />
+          Protected area — authorized staff only.
+        </p>
       </motion.div>
     </>
   );

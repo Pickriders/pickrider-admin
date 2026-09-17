@@ -5,7 +5,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 
 import { vehicles, type VehicleInput, type VehicleRecord } from "@/lib/admin/api";
 import { useAction } from "@/lib/admin/hooks";
-import { Button, Drawer, Field, Input } from "@/components/kit";
+import { Button, Drawer, Field, Input, UserPicker, type PickedUser } from "@/components/kit";
 
 /**
  * Add or replace a courier's vehicle through POST admins/vehicles/:userId/create.
@@ -46,6 +46,8 @@ export function VehicleFormDrawer({
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [photos, setPhotos] = useState<string[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
+  // Who the vehicle belongs to. Locked when opened from a courier/vehicle page; searched for otherwise.
+  const [courier, setCourier] = useState<PickedUser | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -61,6 +63,8 @@ export function VehicleFormDrawer({
       engineNumber: vehicle?.engineNumber ?? "",
     });
     setPhotos(vehicle?.photos ?? []);
+    const owner = typeof vehicle?.userId === "object" && vehicle?.userId ? (vehicle.userId as PickedUser) : null;
+    setCourier(owner);
   }, [open, vehicle, userId]);
 
   const save = useAction(
@@ -95,8 +99,9 @@ export function VehicleFormDrawer({
   };
 
   const chassisOk = draft.chasisNumber.trim().length >= 15 && draft.chasisNumber.trim().length <= 20;
+  const courierId = userId ?? courier?._id ?? draft.userId.trim();
   const valid =
-    draft.userId.trim() &&
+    courierId &&
     draft.name.trim() &&
     draft.plateNumber.trim().length >= 4 &&
     draft.make.trim().length >= 4 &&
@@ -108,7 +113,8 @@ export function VehicleFormDrawer({
 
   const submit = () => {
     if (!valid) return;
-    const { userId: courier, color, ...rest } = draft;
+    const { userId: _typedId, color, ...rest } = draft;
+    void _typedId;
     const body: VehicleInput = {
       ...rest,
       name: rest.name.trim(),
@@ -120,7 +126,7 @@ export function VehicleFormDrawer({
       photos,
       ...(color?.trim() ? { color: color.trim() } : {}),
     };
-    save.mutate({ userId: courier.trim(), body });
+    save.mutate({ userId: courierId, body });
   };
 
   return (
@@ -141,9 +147,9 @@ export function VehicleFormDrawer({
       }
     >
       <div className="space-y-4">
-        <Field label="Courier user id" hint={userId ? undefined : "Paste the courier's id from their profile page."}>
-          <Input value={draft.userId} onChange={set("userId")} disabled={Boolean(userId)} placeholder="64f1c2…" />
-        </Field>
+        {userId ? null : (
+          <UserPicker value={courier} onChange={setCourier} only="couriers" label="Courier" hint="Search by name, phone or email." />
+        )}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Name">
             <Input value={draft.name} onChange={set("name")} placeholder="Red Bajaj" />

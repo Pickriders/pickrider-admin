@@ -156,6 +156,10 @@ export type Order = {
   paymentMethod?: string;
   isScheduled?: boolean;
   scheduledFor?: string;
+  /** Set once the dispatcher has rung riders for a scheduled order; unset = still waiting for its time. */
+  scheduleDispatchedAt?: string;
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
   pickup?: OrderLocation;
   locations?: OrderLocation[];
   acceptedAt?: string;
@@ -418,6 +422,15 @@ export const stats = {
   userOverview: (userId: string, range: RangeQuery) => get<UserOverview>(`/admins/stats/users/${userId}/overview`, range),
 };
 
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+export type LoginResult = { accessToken: string; expiryDurationSeconds: number; refreshToken: string };
+
+export const auth = {
+  /** Any platform staff role signs in; the backend decides what the role can do. */
+  login: (body: { identifier: string; password: string }) => post<LoginResult>("/auth/admins/login", body),
+};
+
 // ── Me ────────────────────────────────────────────────────────────────────────
 
 export const me = {
@@ -439,6 +452,9 @@ export const users = {
   adjustWallet: (userId: string, body: { amount: number; type: TransactionType; reason: string }) =>
     post<unknown>(`/admins/users/${userId}/wallets/adjust`, body),
   refund: (userId: string, body: { orderId: string; amount?: number; reason: string }) => post<unknown>(`/admins/users/${userId}/refund`, body),
+  /** Paid, non-storefront orders with what has already gone back and what an admin may still refund. */
+  refundableOrders: (userId: string, search?: string) =>
+    get<RefundableOrder[]>(`/admins/users/${userId}/refundable-orders`, { limit: 50, search }),
   updatePhone: (userId: string, body: { phone: string; reason?: string }) => patch<User>(`/admins/users/${userId}/phone`, body),
   setDispatch: (userId: string, body: { paused: boolean; reason?: string }) => patch<User>(`/admins/users/${userId}/dispatch`, body),
   licenceVerify: (userId: string, body: Record<string, unknown>) => patch<User>(`/admins/users/${userId}/drivers-license/verify`, body),
@@ -448,6 +464,19 @@ export const users = {
     patch<Wallet>(`/admins/users/${userId}/wallets/${walletId}/settlement-account`, body),
 };
 
+export type RefundableOrder = {
+  _id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  type: OrderType;
+  totalAmountPayable?: number;
+  currency: string;
+  createdAt: string;
+  paidDate?: string;
+  refunded: number;
+  refundable: number;
+};
+
 // ── Orders ────────────────────────────────────────────────────────────────────
 
 export const orders = {
@@ -455,6 +484,8 @@ export const orders = {
   get: (orderId: string) => get<Order>(`/admins/orders/${orderId}`),
   offers: (orderId: string) => get<Record<string, unknown>>(`/admins/orders/${orderId}/offers`),
   cancel: (orderId: string, body: { reason: string }) => post<Order>(`/admins/orders/${orderId}/cancel`, body),
+  /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
+  ringRiders: (orderId: string) => post<{ riders: number; order: Order }>(`/admins/orders/${orderId}/ring-riders`),
   updateStatus: (orderId: string, body: { status: OrderStatus }) => patch<Order>(`/admins/orders/${orderId}/status`, body),
 };
 

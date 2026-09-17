@@ -1,9 +1,8 @@
 import { MutationOptions } from "@tanstack/react-query";
+import { auth, type LoginResult } from "@/lib/admin/api";
 import {
   apiService,
   CheckTokenValidityData,
-  LoginAdminsData,
-  LoginRequestDto,
   PasswordResetData,
   PasswordResetRequestData,
   queryClient,
@@ -18,18 +17,20 @@ import {
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { useAuth } from "@/hooks/useAuth";
 
-export const useLoginMn = (rememberMe?: boolean, options?: MutationOptions<LoginAdminsData, any, LoginRequestDto>) => {
+/**
+ * Admin sign-in. Any platform staff role gets in — the console no longer names a role, the
+ * backend checks the account holds one and the guards decide what it can do afterwards.
+ */
+export const useLoginMn = (
+  rememberMe?: boolean,
+  options?: MutationOptions<LoginResult, any, { identifier: string; password: string }>,
+) => {
   const { login } = useAuth();
 
   return useApiMutation({
     ...options,
-    mutationFn: (varaibles) => apiService.loginAdmins(varaibles),
+    mutationFn: (variables) => auth.login(variables),
     onError(error, variables, context) {
-      if (error?.code === "UNVERIFIED") {
-        // TODO: Redirect the user to verification screen
-      }
-      console.log(error);
-
       options?.onError?.(error, variables, context);
     },
     onSuccess(data, variables, context) {

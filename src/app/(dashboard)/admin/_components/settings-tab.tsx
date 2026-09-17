@@ -11,6 +11,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { MoneyInput, NumberInput, SectionTitle } from "./fields";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * App settings: countries and their states, each with the pricing, dispatch
@@ -164,6 +165,7 @@ function draftFromCountry(country: Country | undefined): CountryDraft {
 }
 
 function CountryForm({ countryId }: { countryId: string }) {
+  const canWrite = useCan().can("settings.write");
   const country = useCountry(countryId);
   const [draft, setDraft] = useState<CountryDraft>(() => draftFromCountry(undefined));
   const [dirty, setDirty] = useState(false);
@@ -218,7 +220,7 @@ function CountryForm({ countryId }: { countryId: string }) {
         title={data?.name ?? "Country"}
         subtitle="Currency, bidding band, withdrawal limits and referral rewards"
         action={
-          <Button type="submit" form="country-form" loading={save.isPending} disabled={!dirty || errors.length > 0}>
+          <Button type="submit" form="country-form" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite}>
             Save country
           </Button>
         }
@@ -295,6 +297,7 @@ function CountryForm({ countryId }: { countryId: string }) {
 }
 
 function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
+  const canWrite = useCan().can("settings.write");
   const [form, setForm] = useState({ name: "", code: "", currencyName: "", currencyCode: "" });
   const create = useAction((body: Record<string, unknown>) => settings.createCountry(body), {
     success: "Country added",
@@ -322,7 +325,7 @@ function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" form="add-country" loading={create.isPending} disabled={!valid}>
+          <Button type="submit" form="add-country" loading={create.isPending} disabled={!valid || !canWrite}>
             Add country
           </Button>
         </div>
@@ -409,6 +412,7 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
 }
 
 function AddStateDrawer({ countryId, open, onClose, onCreated }: { countryId: string; open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
+  const canWrite = useCan().can("settings.write");
   const [form, setForm] = useState({ name: "", code: "" });
   const [pendingCode, setPendingCode] = useState<string | null>(null);
   const states = useStates(countryId);
@@ -450,7 +454,7 @@ function AddStateDrawer({ countryId, open, onClose, onCreated }: { countryId: st
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" form="add-state" loading={create.isPending || Boolean(pendingCode)} disabled={!valid}>
+          <Button type="submit" form="add-state" loading={create.isPending || Boolean(pendingCode)} disabled={!valid || !canWrite}>
             Add state
           </Button>
         </div>
@@ -501,6 +505,7 @@ function draftFromState(state: CountryState | undefined): StateDraft {
 }
 
 function StateDrawer({ countryId, stateId, onClose }: { countryId: string; stateId?: string; onClose: () => void }) {
+  const canWrite = useCan().can("settings.write");
   const states = useStates(countryId);
   const state = useMemo(() => asArray(states.data).find((s) => s._id === stateId), [states.data, stateId]);
   const [draft, setDraft] = useState<StateDraft>(() => draftFromState(undefined));
@@ -561,7 +566,7 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             <Button variant="ghost" onClick={onClose}>
               Close
             </Button>
-            <Button type="submit" form="state-form" loading={save.isPending} disabled={!dirty || errors.length > 0}>
+            <Button type="submit" form="state-form" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite}>
               Save state
             </Button>
           </div>
