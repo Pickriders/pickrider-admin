@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Button, Drawer, Field, Input } from "@/components/kit";
+import { Button, Drawer, Field, Input, UsersPicker, type PickedUser } from "@/components/kit";
 import { coupons, type CouponGroup } from "@/lib/admin/api";
 import { useAction } from "@/lib/admin/hooks";
 
@@ -26,14 +26,14 @@ export function GroupFormDrawer({
   const [name, setName] = useState("");
   const [codes, setCodes] = useState<string[]>([]);
   const [codeInput, setCodeInput] = useState("");
-  const [userIds, setUserIds] = useState("");
+  const [members, setMembers] = useState<PickedUser[]>([]);
 
   useEffect(() => {
     if (!open) return;
     setName(group?.name ?? "");
     setCodes((group?.coupons ?? []).map((c) => c.code));
     setCodeInput("");
-    setUserIds("");
+    setMembers([]);
   }, [open, group]);
 
   const save = useAction(
@@ -65,10 +65,7 @@ export function GroupFormDrawer({
 
   const submit = () => {
     if (!valid) return;
-    const ids = userIds
-      .split(/[\s,]+/)
-      .map((v) => v.trim())
-      .filter(Boolean);
+    const ids = members.map((m) => m._id);
     save.mutate({ name: name.trim(), couponCodes: codes, ...(!editing && ids.length ? { userIds: ids } : {}) });
   };
 
@@ -137,17 +134,13 @@ export function GroupFormDrawer({
           ) : null}
         </Field>
         {!editing ? (
-          <Field
-            label="Initial members (optional)"
-            hint="Customer user ids, comma or newline separated. You can add more from the group page."
-          >
-            <Input
-              value={userIds}
-              onChange={(event) => setUserIds(event.target.value)}
-              placeholder="64f1c2…, 64f1c3…"
-              className="font-mono"
-            />
-          </Field>
+          <UsersPicker
+            picked={members}
+            onChange={setMembers}
+            only="customers"
+            label="Members (optional)"
+            emptyHint="No members yet — you can add more from the group page."
+          />
         ) : null}
       </div>
     </Drawer>

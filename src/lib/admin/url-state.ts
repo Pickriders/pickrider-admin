@@ -20,6 +20,8 @@ export type TableState = {
 };
 
 const RESERVED = new Set(["page", "limit", "sortBy", "order", "search", "from", "to", "tab"]);
+/** Earlier than any record on the platform; anchors "everything up to <date>" ranges. */
+const EARLIEST_DAY = "2023-01-01";
 
 export function useTableState(defaults: { limit?: number; sortBy?: string; order?: "ASC" | "DESC" } = {}) {
   const router = useRouter();
@@ -78,7 +80,9 @@ export function useTableState(defaults: { limit?: number; sortBy?: string; order
       limit: state.limit,
       sortBy: state.sortBy,
       order: state.order,
-      dateRange: state.from || state.to ? [state.from ?? "", state.to ?? ""].filter(Boolean).join(",") : undefined,
+      // The core reads `dateRange` as "start[,end]": a lone end date would be taken as the start,
+      // so an open-ended "up to" range is anchored at the platform's first day.
+      dateRange: state.from || state.to ? [state.from ?? EARLIEST_DAY, state.to].filter(Boolean).join(",") : undefined,
       ...state.filters,
     }),
     [state],

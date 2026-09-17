@@ -30,6 +30,7 @@ import {
 
 import { VehicleFormDrawer } from "@/app/(dashboard)/vehicles/VehicleFormDrawer";
 import { VEHICLE_TYPE_LABEL, VehicleStatusBadge } from "@/app/(dashboard)/vehicles/vehicle-shared";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * One vehicle: photos, the registration fields, the courier who rides it, and
@@ -192,6 +193,7 @@ function Lightbox({ photos, index, onClose, onIndex }: { photos: string[]; index
 }
 
 function VehicleVerification({ vehicleId }: { vehicleId: string }) {
+  const { can } = useCan();
   const router = useRouter();
   const query = useVehicle(vehicleId);
   const vehicle = query.data as VehicleRecord | undefined;
@@ -226,7 +228,7 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
   const photos = vehicle?.photos ?? [];
   const status = vehicle?.status;
   const courierName = fullName(courier.data) || (courier.isPending && courierId ? "" : "Unknown courier");
-  const canAct = Boolean(courierId) && !vehicle?.isDeleted;
+  const canAct = Boolean(courierId) && !vehicle?.isDeleted && can("vehicle.review");
 
   return (
     <div>
@@ -270,12 +272,16 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                   Suspend
                 </Button>
               ) : null}
-              <Button icon={Pencil} variant="outline" onClick={() => setDialog("edit")} disabled={!canAct}>
-                Edit
-              </Button>
-              <Button icon={Trash2} variant="danger" onClick={() => setDialog("delete")} disabled={Boolean(vehicle.isDeleted)}>
-                Delete
-              </Button>
+              {can("vehicle.create") ? (
+                <Button icon={Pencil} variant="outline" onClick={() => setDialog("edit")} disabled={!canAct}>
+                  Edit
+                </Button>
+              ) : null}
+              {can("vehicle.delete") ? (
+                <Button icon={Trash2} variant="danger" onClick={() => setDialog("delete")} disabled={Boolean(vehicle.isDeleted)}>
+                  Delete
+                </Button>
+              ) : null}
             </>
           ) : null
         }

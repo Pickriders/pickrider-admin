@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Car, CheckCircle2, Clock, FileBadge, MessageSquareWarning, PauseCircle, Receipt, UserX, type LucideIcon } from "lucide-react";
+import { Car, CheckCircle2, Clock, FileBadge, LifeBuoy, MessageSquareWarning, PauseCircle, Receipt, UserX, type LucideIcon } from "lucide-react";
 
 import { useAttention } from "@/lib/admin/hooks";
 import { count } from "@/lib/admin/format";
@@ -37,6 +37,7 @@ export function AttentionStrip() {
         { key: "failed-notif", n: data.failedNotifications24h, label: "failed messages, 24h", href: "/messaging?tab=log&status=FAILED", tone: "warning", icon: MessageSquareWarning },
         { key: "suspended", n: data.suspendedRiders, label: "riders suspended", href: "/couriers?status=SUSPENDED", tone: "neutral", icon: UserX },
         { key: "paused", n: data.ridersPausedFromDispatch, label: "riders paused", href: "/couriers?dispatchPaused=true", tone: "neutral", icon: PauseCircle },
+        { key: "issues", n: data.issuesUnassigned ?? 0, label: "reports nobody has picked up", href: "/support?view=unassigned", tone: "warning", icon: LifeBuoy },
       ] satisfies Item[]).filter((item) => item.n > 0)
     : [];
 

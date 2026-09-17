@@ -10,6 +10,7 @@ import type { CustomerRow } from "@/lib/admin/api";
 import { ago, count, day, fullName, naira, statusLabel } from "@/lib/admin/format";
 import { useCustomers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
+import { errorMessage } from "@/lib/admin/http";
 
 /**
  * Every customer with wallet balance and order rollups in one request
@@ -156,7 +157,7 @@ function CustomersList() {
       columns={columns}
       data={customers.data}
       loading={customers.isLoading}
-      error={customers.error ? "Could not load customers." : null}
+      error={customers.error ? errorMessage(customers.error, "Could not load customers.") : null}
       onRetry={() => customers.refetch()}
       filters={FILTERS}
       dateFilter={false}

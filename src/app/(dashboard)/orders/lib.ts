@@ -55,8 +55,16 @@ export function minutesSince(value: string | Date | null | undefined) {
   return Math.max(0, (Date.now() - then) / 60_000);
 }
 
-export function isStale(order: Pick<OrderRow, "status" | "createdAt">) {
-  return order.status === "INITIATED" && minutesSince(order.createdAt) > STALE_AFTER_MINUTES;
+/** A scheduled order sits INITIATED (prepaid) until 30 min before its time; it is not waiting for a rider yet. */
+export function isWaitingOnSchedule(order: Pick<OrderRow, "status" | "isScheduled" | "scheduleDispatchedAt">) {
+  return order.status === "INITIATED" && Boolean(order.isScheduled) && !order.scheduleDispatchedAt;
+}
+
+export function isStale(order: Pick<OrderRow, "status" | "createdAt" | "isScheduled" | "scheduleDispatchedAt">) {
+  if (isWaitingOnSchedule(order)) return false;
+  // Once a scheduled order is dispatched the wait starts then, not when it was booked.
+  const since = order.isScheduled && order.scheduleDispatchedAt ? order.scheduleDispatchedAt : order.createdAt;
+  return order.status === "INITIATED" && minutesSince(since) > STALE_AFTER_MINUTES;
 }
 
 /** Pickups first, then drop-offs, so the list and the map read the same way. */
@@ -114,17 +122,26 @@ export function statusAt(order: OrderRow): string | undefined {
 }
 
 /**
- * Status overrides the admin may pick from each state. Cancelling is not here
- * on purpose: it goes through the cancel action, which refunds and settles.
- * The override is a raw record correction with no side effects, so it only
- * offers steps the delivery could have taken on its own.
+ * Status overrides the admin may pick from each state. Each one runs the real side effects on the
+ * API (starting stamps startedAt, completing settles the rider, un-assigning releases them), so
+ * only steps the delivery could have taken are offered. Cancelling goes through the cancel action
+ * (refunds), a completed order's money has already moved, and an order with no rider can't be
+ * "accepted" by hand.
  */
 export const STATUS_OVERRIDES: Record<OrderStatus, OrderStatus[]> = {
-  INITIATED: ["ACCEPTED"],
+  INITIATED: [],
   ACCEPTED: ["ON_GOING", "INITIATED"],
   ON_GOING: ["COMPLETED", "ACCEPTED"],
-  COMPLETED: ["ON_GOING"],
+  COMPLETED: [],
   CANCELLED: [],
+};
+
+export const STATUS_OVERRIDE_HINT: Record<OrderStatus, string> = {
+  INITIATED: "Send the order back to the queue: the rider is released and their offer withdrawn.",
+  ACCEPTED: "Move back to accepted: the trip start time is cleared.",
+  ON_GOING: "Mark in transit: needs a rider and a paid order; stamps the start time.",
+  COMPLETED: "Mark completed: closes every open stop and pays the rider exactly as a normal completion.",
+  CANCELLED: "",
 };
 
 export function phoneHref(phone: string | null | undefined) {

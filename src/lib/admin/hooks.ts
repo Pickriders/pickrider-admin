@@ -35,6 +35,8 @@ export const useCustomers = (query: Query) => useQuery({ queryKey: ["customers",
 export const useBusinesses = (query: Query) => useQuery({ queryKey: ["businesses", query], queryFn: () => stats.businesses(query), ...keep });
 export const useUsers = (query: Query, enabled = true) => useQuery({ queryKey: ["users", query], queryFn: () => users.list(query), ...keep, enabled });
 export const useUser = (userId: string) => useQuery({ queryKey: ["user", userId], queryFn: () => users.get(userId), enabled: Boolean(userId) });
+export const useRefundableOrders = (userId: string, enabled = true, search = "") =>
+  useQuery({ queryKey: ["user", userId, "refundable-orders", search], queryFn: () => users.refundableOrders(userId, search || undefined), enabled: Boolean(userId) && enabled, ...keep });
 export const useUserWallets = (userId: string) => useQuery({ queryKey: ["user-wallets", userId], queryFn: () => users.wallets(userId), enabled: Boolean(userId) });
 export const useOrders = (query: Query, options?: { poll?: boolean; enabled?: boolean }) =>
   useQuery({ queryKey: ["orders", query], queryFn: () => orders.list(query), ...keep, refetchInterval: options?.poll ? POLL_MS : false, enabled: options?.enabled ?? true });

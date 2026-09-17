@@ -4,7 +4,7 @@ import { Mail, Search, Send, Smartphone, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { Avatar, Badge, Button, ConfirmDialog, Field, Input, Panel, PanelHeader, Select, Skeleton, Switch, Textarea, cx } from "@/components/kit";
+import { Button, ConfirmDialog, Field, Input, Panel, PanelHeader, Select, Skeleton, Switch, Textarea, UsersPicker, cx, useDebounced } from "@/components/kit";
 import { asArray, messaging, type BroadcastEstimate, type BroadcastInput, type User, type UserStatus } from "@/lib/admin/api";
 import { count, fullName } from "@/lib/admin/format";
 import { useAction, useBroadcastEstimate, useCountries, useUsers } from "@/lib/admin/hooks";
@@ -12,6 +12,7 @@ import { errorMessage } from "@/lib/admin/http";
 
 import { EmailPreview, PushPreview } from "./previews";
 import { AUDIENCES, AUDIENCE_LABEL, type Audience, type Channel } from "./shared";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * Compose a broadcast. The audience can be prefilled with `?audience=RIDERS`
@@ -27,16 +28,9 @@ const STATUSES: { value: UserStatus; label: string }[] = [
 const SUBJECT_MAX = 120;
 const MESSAGE_MAX = 2000;
 
-function useDebounced<T>(value: T, delay: number) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = window.setTimeout(() => setDebounced(value), delay);
-    return () => window.clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
 
 export function ComposeTab() {
+  const { can } = useCan();
   const router = useRouter();
   const params = useSearchParams();
   const prefill = params.get("audience");
@@ -123,7 +117,7 @@ export function ComposeTab() {
             </div>
 
             {isUsers ? (
-              <PeoplePicker picked={picked} onChange={setPicked} />
+              <UsersPicker picked={picked} onChange={(next) => setPicked(next as User[])} />
             ) : (
               <div className="mt-4 space-y-4">
                 <div>
@@ -262,7 +256,7 @@ export function ComposeTab() {
               </p>
             ))}
           </div>
-          <Button fullWidth className="mt-4" icon={Send} disabled={!ready} onClick={() => setConfirm(true)}>
+          <Button fullWidth className="mt-4" icon={Send} disabled={!ready || !can("broadcast.send")} onClick={() => setConfirm(true)}>
             Send broadcast
           </Button>
         </Panel>
@@ -292,74 +286,6 @@ export function ComposeTab() {
           <p className="mt-1 line-clamp-4 whitespace-pre-wrap text-xs text-ink-muted">{message}</p>
         </div>
       </ConfirmDialog>
-    </div>
-  );
-}
-
-function PeoplePicker({ picked, onChange }: { picked: User[]; onChange: (next: User[]) => void }) {
-  const [term, setTerm] = useState("");
-  const debounced = useDebounced(term.trim(), 350);
-  const results = useUsers({ userSearch: debounced, limit: 8 }, debounced.length >= 2);
-  const pickedIds = new Set(picked.map((u) => u._id));
-  const add = (user: User) => {
-    if (!pickedIds.has(user._id)) onChange([...picked, user]);
-    setTerm("");
-  };
-
-  return (
-    <div className="mt-4 space-y-3">
-      <Field label="Find people" hint="Name, email or phone. Results appear as you type.">
-        <Input left={<Search size={15} />} value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Search accounts" />
-      </Field>
-      {debounced.length >= 2 ? (
-        <div className="rounded-xl border border-line bg-surface">
-          {results.isLoading ? (
-            <div className="space-y-2 p-3">
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-2/3" />
-            </div>
-          ) : !results.data?.items.length ? (
-            <p className="p-3 text-xs text-ink-muted">Nobody matches.</p>
-          ) : (
-            <ul className="divide-y divide-line">
-              {results.data.items.map((user) => (
-                <li key={user._id}>
-                  <button
-                    type="button"
-                    disabled={pickedIds.has(user._id)}
-                    onClick={() => add(user)}
-                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-card disabled:opacity-50"
-                  >
-                    <Avatar src={user.photo} name={fullName(user)} size={28} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-ink">{fullName(user) || user.email || user.phone}</span>
-                      <span className="block truncate text-[11px] text-ink-muted">
-                        {user.email ?? ""} {user.phone ? `· ${user.phone}` : ""}
-                      </span>
-                    </span>
-                    {user.isRider ? <Badge tone="brand">Courier</Badge> : null}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : null}
-      {picked.length ? (
-        <div className="flex flex-wrap gap-1.5">
-          {picked.map((user) => (
-            <span key={user._id} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card py-1 pl-1 pr-2 text-xs font-semibold text-ink">
-              <Avatar src={user.photo} name={fullName(user)} size={20} />
-              {fullName(user) || user.email || user.phone}
-              <button type="button" aria-label="Remove" onClick={() => onChange(picked.filter((u) => u._id !== user._id))} className="text-ink-faint hover:text-danger">
-                <X size={12} />
-              </button>
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="text-xs text-ink-faint">Nobody picked yet.</p>
-      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import type { KycStatus, User } from "@/lib/admin/api";
 import { ago, count, day, fullName, naira, statusLabel } from "@/lib/admin/format";
 import { useAttention, useUsers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
+import { errorMessage } from "@/lib/admin/http";
 
 /**
  * The rider leaderboard: GET admins/users?isRider=true with lifetime
@@ -257,7 +258,7 @@ function CouriersList() {
         columns={columns}
         data={riders.data}
         loading={riders.isLoading}
-        error={riders.error ? "Could not load riders." : null}
+        error={riders.error ? errorMessage(riders.error, "Could not load riders.") : null}
         onRetry={() => riders.refetch()}
         filters={FILTERS}
         searchPlaceholder="Name, phone, email or NIN"

@@ -122,7 +122,7 @@ export function AllOrdersTab() {
     // The API sorts by createdAt only; `order` is the one sort knob it reads.
     const { sortBy: _ignored, ...rest } = table.query;
     void _ignored;
-    return { ...rest, orderNumber: table.state.search };
+    return { ...rest, search: table.state.search };
   }, [table.query, table.state.search]);
   const orders = useOrders(query);
   const data = orders.data as Paged<OrderRow> | undefined;
@@ -135,7 +135,7 @@ export function AllOrdersTab() {
       error={orders.isError ? errorMessage(orders.error) : null}
       onRetry={() => void orders.refetch()}
       filters={FILTERS}
-      searchPlaceholder="Search by order number"
+      searchPlaceholder="Order number, customer or rider name, phone or email"
       csvName="orders"
       defaultSort={{ sortBy: "createdAt", order: "DESC" }}
       emptyIcon={PackageSearch}
