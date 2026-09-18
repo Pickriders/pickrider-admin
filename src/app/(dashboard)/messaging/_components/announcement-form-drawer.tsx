@@ -3,7 +3,7 @@
 import { Save, Send } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { Button, Drawer, Field, Input, Select, Textarea, cx } from "@/components/kit";
+import { Button, ConfirmDialog, Drawer, Field, Input, Select, Textarea, cx } from "@/components/kit";
 import {
   AnnouncementActionType,
   AnnouncementAudience,
@@ -14,6 +14,7 @@ import {
   type AnnouncementUpdate,
 } from "@/lib/admin/api";
 import { useAction, useAnnouncementScreens } from "@/lib/admin/hooks";
+import { count } from "@/lib/admin/format";
 
 import { AnnouncementPreview } from "./announcement-preview";
 
@@ -69,6 +70,8 @@ export function AnnouncementFormDrawer({
   const [label, setLabel] = useState("");
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
+  // Saving an edit resets who-saw-it and re-shows the popup to everyone; the admin confirms first.
+  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -84,6 +87,7 @@ export function AnnouncementFormDrawer({
     setLabel(action?.label ?? "");
     setStartsAt(toLocalInput(editing?.startsAt));
     setEndsAt(toLocalInput(editing?.endsAt));
+    setConfirmReset(false);
   }, [open, editing]);
 
   const screens = useAnnouncementScreens();
@@ -124,9 +128,10 @@ export function AnnouncementFormDrawer({
     },
   });
   const update = useAction((input: AnnouncementUpdate) => announcements.update(editing!._id!, input), {
-    success: "Announcement updated",
+    success: "Saved — it will pop again for everyone",
     invalidate,
     onSuccess: (saved) => {
+      setConfirmReset(false);
       onSaved?.(saved);
       onClose();
     },
@@ -182,7 +187,7 @@ export function AnnouncementFormDrawer({
               Cancel
             </Button>
             {editing ? (
-              <Button icon={Save} onClick={() => submit(AnnouncementStatus.DRAFT)} disabled={!ready} loading={busy}>
+              <Button icon={Save} onClick={() => setConfirmReset(true)} disabled={!ready} loading={busy}>
                 Save changes
               </Button>
             ) : (
@@ -350,6 +355,21 @@ export function AnnouncementFormDrawer({
           <AnnouncementPreview emoji={emoji} title={title} body={body} imageUrl={imageUrl.trim() || null} audience={audience} action={action} />
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmReset}
+        onClose={() => setConfirmReset(false)}
+        onConfirm={() => submit(AnnouncementStatus.DRAFT)}
+        loading={update.isPending}
+        title="Save and show it to everyone again?"
+        description={
+          editing
+            ? `Saving resets this announcement: the ${count(editing.stats?.reached)} people it reached (${count(editing.stats?.acted)} took the action, ${count(editing.stats?.confirmed)} closed it) are forgotten and the corrected popup shows again to everyone in the audience${editing.status === AnnouncementStatus.ACTIVE ? " on their next app open" : " once it is live"}. The counters start from zero.`
+            : undefined
+        }
+        confirmLabel="Save and re-show"
+        tone="danger"
+      />
     </Drawer>
   );
 }

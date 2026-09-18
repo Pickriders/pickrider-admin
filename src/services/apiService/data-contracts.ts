@@ -3393,9 +3393,18 @@ export interface Announcement {
   updatedAt?: string;
 }
 
+/** Set when results is empty: why nothing came back (the apps log it in development) */
+export enum PendingAnnouncementsReason {
+  NOT_A_RIDER = "NOT_A_RIDER",
+  NONE_LIVE = "NONE_LIVE",
+  ALL_ACKNOWLEDGED = "ALL_ACKNOWLEDGED",
+}
+
 export interface PendingAnnouncementsResponseDto {
   /** Oldest published first, so a backlog reads in order */
   results: Announcement[];
+  /** Set when results is empty: why nothing came back (the apps log it in development) */
+  reason?: PendingAnnouncementsReason;
 }
 
 export enum AnnouncementOutcome {
@@ -4854,7 +4863,10 @@ export interface ListMyIssuesParams {
   subjectType?: IssueSubjectType;
   /** Admin user id; "unassigned" for reports nobody has picked up */
   assignedTo?: string;
-  /** Reference (ISS-…), customer name, email or phone */
+  /**
+   * Reference (ISS-…), customer name, email or phone
+   * @maxLength 100
+   */
   search?: string;
   /** @format date-time */
   from?: string;
@@ -4880,7 +4892,10 @@ export interface ListIssuesParams {
   subjectType?: IssueSubjectType;
   /** Admin user id; "unassigned" for reports nobody has picked up */
   assignedTo?: string;
-  /** Reference (ISS-…), customer name, email or phone */
+  /**
+   * Reference (ISS-…), customer name, email or phone
+   * @maxLength 100
+   */
   search?: string;
   /** @format date-time */
   from?: string;
@@ -4906,7 +4921,10 @@ export interface ListUserIssuesParams {
   subjectType?: IssueSubjectType;
   /** Admin user id; "unassigned" for reports nobody has picked up */
   assignedTo?: string;
-  /** Reference (ISS-…), customer name, email or phone */
+  /**
+   * Reference (ISS-…), customer name, email or phone
+   * @maxLength 100
+   */
   search?: string;
   /** @format date-time */
   from?: string;

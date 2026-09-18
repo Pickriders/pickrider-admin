@@ -58,7 +58,7 @@ function decidedShare(a: Announcement) {
   return a.stats?.reached ? Math.round((decided / a.stats.reached) * 100) : 0;
 }
 
-const COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
+const BASE_COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
   {
     id: "title",
     header: "Announcement",
@@ -123,6 +123,33 @@ const COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
   },
 ];
 
+/** Row-level edit so a slip in the copy is one click away, whatever the status. */
+function withEditColumn(columns: ColumnDef<AnnouncementRow, unknown>[], onEdit: (a: Announcement) => void, canManage: boolean) {
+  if (!canManage) return columns;
+  return [
+    ...columns,
+    {
+      id: "edit",
+      header: "",
+      meta: meta({ align: "right", width: "3rem" }),
+      cell: ({ row }) => (
+        <button
+          type="button"
+          aria-label={`Edit ${row.original.title}`}
+          title="Edit"
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit(row.original);
+          }}
+          className="grid h-8 w-8 place-items-center rounded-lg text-ink-muted hover:bg-surface hover:text-ink"
+        >
+          <Pencil size={14} />
+        </button>
+      ),
+    } satisfies ColumnDef<AnnouncementRow, unknown>,
+  ];
+}
+
 const STATUS_CHIPS: { value: string; label: string }[] = [
   { value: "", label: "All" },
   { value: AnnouncementStatus.ACTIVE, label: "Live" },
@@ -137,6 +164,8 @@ export function AnnouncementsTab() {
   const selectedId = table.state.filters.id ?? "";
   const status = table.state.filters.status ?? "";
   const [composer, setComposer] = useState<{ open: boolean; editing: Announcement | null }>({ open: false, editing: null });
+  const openEditor = (editing: Announcement | null) => setComposer({ open: true, editing });
+  const columns = useMemo(() => withEditColumn(BASE_COLUMNS, openEditor, canManage), [canManage]);
 
   const query = useMemo(() => {
     const { page, limit } = table.query;
@@ -158,7 +187,7 @@ export function AnnouncementsTab() {
       </div>
 
       <DataTable<AnnouncementRow>
-        columns={COLUMNS}
+        columns={columns}
         data={list.data as import("@/lib/admin/api").Paged<AnnouncementRow> | undefined}
         loading={list.isLoading || list.isFetching}
         error={list.isError ? errorMessage(list.error) : null}
@@ -197,7 +226,7 @@ export function AnnouncementsTab() {
                 </button>
               ))}
             </div>
-            <Button icon={Plus} size="sm" disabled={!canManage} onClick={() => setComposer({ open: true, editing: null })}>
+            <Button icon={Plus} size="sm" disabled={!canManage} onClick={() => openEditor(null)}>
               New announcement
             </Button>
           </div>
@@ -219,7 +248,7 @@ export function AnnouncementsTab() {
         )}
       />
 
-      <AnnouncementDetailDrawer id={selectedId} onClose={closeDetail} canManage={canManage} onEdit={(a) => setComposer({ open: true, editing: a })} />
+      <AnnouncementDetailDrawer id={selectedId} onClose={closeDetail} canManage={canManage} onEdit={openEditor} />
       <AnnouncementFormDrawer
         open={composer.open}
         editing={composer.editing}
@@ -249,7 +278,8 @@ function AnnouncementDetailDrawer({
   const invalidate = ["announcements", ["announcement", id]];
 
   const setStatus = useAction((status: AnnouncementStatus) => announcements.setStatus(id, status), {
-    success: (saved) => (saved.status === AnnouncementStatus.ACTIVE ? "Announcement is live" : saved.status === AnnouncementStatus.ARCHIVED ? "Archived" : "Paused — it no longer pops"),
+    success: (saved, status) =>
+      saved.status === AnnouncementStatus.ACTIVE ? "Announcement is live" : saved.status === AnnouncementStatus.ARCHIVED ? "Archived" : status === AnnouncementStatus.DRAFT && isArchived ? "Restored as a draft" : "Paused — it no longer pops",
     invalidate,
     onSuccess: () => setConfirm(null),
   });
@@ -274,7 +304,7 @@ function AnnouncementDetailDrawer({
       title={a ? a.title : "Announcement"}
       subtitle={a ? `${AUDIENCE_LABEL[a.audience]} · ${STATUS_LABEL[a.status]}${a.publishedAt ? ` · live since ${when(a.publishedAt)}` : ""}` : undefined}
       footer={
-        a && canManage && !isArchived ? (
+        a && canManage ? (
           <div className="flex flex-wrap justify-end gap-2">
             <Button variant="ghost" icon={Pencil} onClick={() => onEdit(a)}>
               Edit
@@ -284,9 +314,15 @@ function AnnouncementDetailDrawer({
                 Delete draft
               </Button>
             ) : null}
-            <Button variant="outline" icon={Archive} onClick={() => setConfirm("archive")}>
-              Archive
-            </Button>
+            {isArchived ? (
+              <Button variant="outline" icon={Pause} loading={setStatus.isPending} onClick={() => setStatus.mutate(AnnouncementStatus.DRAFT)}>
+                Restore as draft
+              </Button>
+            ) : (
+              <Button variant="outline" icon={Archive} onClick={() => setConfirm("archive")}>
+                Archive
+              </Button>
+            )}
             {isLive ? (
               <Button variant="outline" icon={Pause} loading={setStatus.isPending} onClick={() => setStatus.mutate(AnnouncementStatus.DRAFT)}>
                 Pause
@@ -374,7 +410,7 @@ function AnnouncementDetailDrawer({
         onConfirm={() => setStatus.mutate(AnnouncementStatus.ARCHIVED)}
         loading={setStatus.isPending}
         title="Archive this announcement?"
-        description="It stops popping right away and cannot be reopened or edited — a follow-up goes out as a new announcement. The numbers stay."
+        description="It stops popping right away and leaves the live list. You can restore or republish it later; the numbers stay."
         confirmLabel="Archive"
         tone="danger"
       />

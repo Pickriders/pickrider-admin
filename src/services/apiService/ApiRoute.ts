@@ -4914,7 +4914,10 @@ export namespace Api {
       subjectType?: IssueSubjectType;
       /** Admin user id; "unassigned" for reports nobody has picked up */
       assignedTo?: string;
-      /** Reference (ISS-…), customer name, email or phone */
+      /**
+       * Reference (ISS-…), customer name, email or phone
+       * @maxLength 100
+       */
       search?: string;
       /** @format date-time */
       from?: string;
@@ -4970,7 +4973,10 @@ export namespace Api {
       subjectType?: IssueSubjectType;
       /** Admin user id; "unassigned" for reports nobody has picked up */
       assignedTo?: string;
-      /** Reference (ISS-…), customer name, email or phone */
+      /**
+       * Reference (ISS-…), customer name, email or phone
+       * @maxLength 100
+       */
       search?: string;
       /** @format date-time */
       from?: string;
@@ -5026,7 +5032,10 @@ export namespace Api {
       subjectType?: IssueSubjectType;
       /** Admin user id; "unassigned" for reports nobody has picked up */
       assignedTo?: string;
-      /** Reference (ISS-…), customer name, email or phone */
+      /**
+       * Reference (ISS-…), customer name, email or phone
+       * @maxLength 100
+       */
       search?: string;
       /** @format date-time */
       from?: string;
