@@ -45,6 +45,8 @@ export type DataTableProps<T> = {
   onRetry?: () => void;
   filters?: FilterSpec[];
   searchPlaceholder?: string;
+  /** Hide the search box when the endpoint has nothing to search. */
+  searchable?: boolean;
   dateFilter?: boolean;
   csvName?: string;
   emptyTitle?: ReactNode;
@@ -75,6 +77,7 @@ export function DataTable<T extends Record<string, unknown>>({
   onRetry,
   filters = [],
   searchPlaceholder = "Search",
+  searchable = true,
   dateFilter = true,
   csvName,
   emptyTitle = "Nothing here yet",
@@ -139,15 +142,37 @@ export function DataTable<T extends Record<string, unknown>>({
   // button shares the second, with export pushed to the right; on a desktop
   // it all sits on one line.
   const toolbar = (
-    <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
-      <div className="w-full sm:w-64">
-        <Input
-          left={<Search size={15} />}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={searchPlaceholder}
-          aria-label={searchPlaceholder}
-        />
+    <div className="flex flex-col gap-3 px-4 pt-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
+        {searchable ? (
+          <div className="w-full sm:w-64">
+            <Input
+              left={<Search size={15} />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={searchPlaceholder}
+              aria-label={searchPlaceholder}
+            />
+          </div>
+        ) : null}
+        {filters.length ? (
+          <Button
+            variant={activeFilterEntries.length ? "secondary" : "outline"}
+            size="md"
+            icon={SlidersHorizontal}
+            onClick={() => setFiltersOpen((v) => !v)}
+          >
+            Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
+          </Button>
+        ) : null}
+        {dateFilter ? (
+          <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} />
+        ) : null}
+        {table.activeFilterCount ? (
+          <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
+            Clear
+          </Button>
+        ) : null}
       </div>
       {filters.length ? (
         <Button

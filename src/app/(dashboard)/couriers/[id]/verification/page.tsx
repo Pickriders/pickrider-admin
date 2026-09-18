@@ -10,6 +10,7 @@ import { LICENCE_LABEL, licenceOf, licenceTone } from "@/components/users/user-p
 import { users, type KycStatus, type User } from "@/lib/admin/api";
 import { day, fullName, when } from "@/lib/admin/format";
 import { useAction, useUser } from "@/lib/admin/hooks";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * Driver's licence review. Approve (PATCH drivers-license/approve when the
@@ -213,6 +214,8 @@ function VerifyDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
 }
 
 function Verification({ id }: { id: string }) {
+  const { can } = useCan();
+  const canReview = can("licence.review");
   const user = useUser(id);
   const u = user.data;
   const licence = licenceOf(u);
@@ -222,7 +225,7 @@ function Verification({ id }: { id: string }) {
   const close = () => setDialog(null);
 
   const approve = useAction(
-    async () => (licence.status === "SUBMITTED" ? users.licenceApprove(id, {}) : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" })),
+    async () => (licence.status === "SUBMITTED" ? users.licenceApprove(id) : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" })),
     { success: "Licence approved", invalidate: licenceInvalidations(id), onSuccess: close },
   );
   const suspend = useAction((body: { status: KycStatus; comment?: string }) => users.licenceUpdate(id, body), {
@@ -291,9 +294,11 @@ function Verification({ id }: { id: string }) {
                 {licence.status === "APPROVE" ? (
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex-1 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-success">This rider&apos;s licence is verified.</div>
-                    <Button variant="outline" icon={PauseCircle} className="text-danger" onClick={() => setDialog("suspend")}>
-                      Suspend licence
-                    </Button>
+                    {canReview ? (
+                      <Button variant="outline" icon={PauseCircle} className="text-danger" onClick={() => setDialog("suspend")}>
+                        Suspend licence
+                      </Button>
+                    ) : null}
                   </div>
                 ) : licence.number ? (
                   <div className="space-y-3">
@@ -302,24 +307,30 @@ function Verification({ id }: { id: string }) {
                         This licence is marked <span className="font-semibold text-ink">{LICENCE_LABEL[licence.status].replace("Licence ", "")}</span>. You can still approve or reject it.
                       </p>
                     ) : null}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button icon={Check} disabled={!canApprove} onClick={() => setDialog("approve")}>
-                        Approve licence
-                      </Button>
-                      <Button variant="outline" icon={X} className="text-danger" onClick={() => setDialog("reject")}>
-                        Reject
-                      </Button>
-                    </div>
+                    {canReview ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button icon={Check} disabled={!canApprove} onClick={() => setDialog("approve")}>
+                          Approve licence
+                        </Button>
+                        <Button variant="outline" icon={X} className="text-danger" onClick={() => setDialog("reject")}>
+                          Reject
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-ink-faint">Your role can view licences but not review them.</p>
+                    )}
                   </div>
                 ) : (
                   <div className="rounded-xl bg-surface px-4 py-3 text-sm text-ink-muted">This rider has not added a driver&apos;s licence yet.</div>
                 )}
 
-                <div className="border-t border-line pt-4">
-                  <Button variant="ghost" size="sm" icon={RefreshCw} onClick={() => setDialog("verify")}>
-                    {licence.number ? "Fix number or re-run the check" : "Enter licence number"}
-                  </Button>
-                </div>
+                {canReview ? (
+                  <div className="border-t border-line pt-4">
+                    <Button variant="ghost" size="sm" icon={RefreshCw} onClick={() => setDialog("verify")}>
+                      {licence.number ? "Fix number or re-run the check" : "Enter licence number"}
+                    </Button>
+                  </div>
+                ) : null}
               </div>
             )}
           </div>

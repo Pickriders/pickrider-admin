@@ -10,11 +10,14 @@ description: Run this app's gate — type-check and lint — plus secret, genera
 ```bash
 npx tsc --noEmit
 yarn lint
+yarn test
 ```
 
-Both clean. **There is no test suite in this repo** — don't run or claim `yarn test`. There is
-also no Husky hook here, so nothing will catch a mistake at commit time. These two commands are
-the entire safety net; run them.
+All three clean. `yarn test` runs the jest suite (`src/**/*.test.ts(x)`); the route-contract
+test in `src/lib/admin/api.test.ts` fails when an `api.ts` function has no case or its generated
+method drifted. The Husky pre-commit hook runs `tsc` + lint-staged (`eslint --fix`,
+`jest --findRelatedTests`) on staged files, and CI runs all three — but run them yourself before
+saying the work is done.
 
 ## 2. Admin-safety review (this tool acts on production data)
 
@@ -57,5 +60,5 @@ description.
 
 ## Report
 
-Commands run and their actual results, explicitly noting that no test suite exists here rather
-than implying tests passed. Call out anything from the admin-safety review.
+Commands run and their actual results (including the test count). Call out anything from the
+admin-safety review.

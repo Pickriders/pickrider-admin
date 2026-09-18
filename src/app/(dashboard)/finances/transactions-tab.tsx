@@ -11,7 +11,7 @@ import { naira, when } from "@/lib/admin/format";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 import { Badge, DataTable, Drawer, ErrorState, KeyValue, LinkButton, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
-import { TX_CATEGORIES, TX_PURPOSES, TX_STATUSES, TX_TYPES, destinationOf, entityHref, entityLabel, isObjectId, purposeLabel, titleCase } from "./lib";
+import { TX_CATEGORIES, TX_PURPOSES, TX_STATUSES, TX_TYPES, destinationOf, entityHref, entityLabel, purposeLabel, titleCase } from "./lib";
 
 /**
  * The transactions ledger. Every filter lives in the URL so the dashboard can
@@ -62,16 +62,17 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
   const [selected, setSelected] = useState<string | null>(null);
 
   const search = table.state.search;
-  const searchIsId = isObjectId(search);
   const entityFilter = table.state.filters.entityId;
 
+  // `search` covers a reference, a description, or the wallet owner's name/phone/email/id.
   const query = useMemo(
     () => ({
       ...table.query,
       ...(preset === "withdrawals" ? { category: "WITHDRAWAL" } : {}),
-      entityId: entityFilter ?? (searchIsId ? search : undefined),
+      entityId: entityFilter,
+      search,
     }),
-    [table.query, preset, entityFilter, searchIsId, search],
+    [table.query, preset, entityFilter, search],
   );
   const data = useTransactions(query);
 
@@ -204,11 +205,6 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
           <X size={12} />
         </button>
       ) : null}
-      {search && !searchIsId ? (
-        <Badge tone="warning" className="h-10 rounded-xl px-3">
-          Search takes a user or wallet id
-        </Badge>
-      ) : null}
     </>
   );
 
@@ -221,7 +217,7 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
         error={data.isError ? errorMessage(data.error) : null}
         onRetry={() => void data.refetch()}
         filters={filters}
-        searchPlaceholder="Paste a user id"
+        searchPlaceholder="Reference, name, phone or email"
         csvName={preset === "withdrawals" ? "withdrawals" : "transactions"}
         emptyIcon={Receipt}
         emptyTitle={preset === "withdrawals" ? "No withdrawals match" : "No transactions match"}

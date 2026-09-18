@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tansta
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { admin, adminLogs, businesses, deliveryPrice, finance, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -35,6 +35,8 @@ export const useCustomers = (query: Query) => useQuery({ queryKey: ["customers",
 export const useBusinesses = (query: Query) => useQuery({ queryKey: ["businesses", query], queryFn: () => stats.businesses(query), ...keep });
 export const useUsers = (query: Query, enabled = true) => useQuery({ queryKey: ["users", query], queryFn: () => users.list(query), ...keep, enabled });
 export const useUser = (userId: string) => useQuery({ queryKey: ["user", userId], queryFn: () => users.get(userId), enabled: Boolean(userId) });
+export const useRefundableOrders = (userId: string, enabled = true, search = "") =>
+  useQuery({ queryKey: ["user", userId, "refundable-orders", search], queryFn: () => users.refundableOrders(userId, search || undefined), enabled: Boolean(userId) && enabled, ...keep });
 export const useUserWallets = (userId: string) => useQuery({ queryKey: ["user-wallets", userId], queryFn: () => users.wallets(userId), enabled: Boolean(userId) });
 export const useOrders = (query: Query, options?: { poll?: boolean; enabled?: boolean }) =>
   useQuery({ queryKey: ["orders", query], queryFn: () => orders.list(query), ...keep, refetchInterval: options?.poll ? POLL_MS : false, enabled: options?.enabled ?? true });
@@ -131,3 +133,34 @@ export const useBroadcastEstimate = (body: Parameters<typeof messaging.estimate>
   useQuery({ queryKey: ["broadcast-estimate", body], queryFn: () => messaging.estimate(body), enabled, placeholderData: keepPreviousData, retry: false });
 export const useBroadcastLive = (id: string, running: boolean) =>
   useQuery({ queryKey: ["broadcast", id], queryFn: () => messaging.broadcast(id), enabled: Boolean(id), refetchInterval: running ? 3_000 : false });
+
+// Coupons
+export const useCoupons = (query: Query) => useQuery({ queryKey: ["coupons", query], queryFn: () => coupons.list(query), ...keep });
+export const useCouponsSummary = () => useQuery({ queryKey: ["coupons", "summary"], queryFn: coupons.summary, refetchInterval: POLL_MS });
+export const useCoupon = (id: string) => useQuery({ queryKey: ["coupon", id], queryFn: () => coupons.get(id), enabled: Boolean(id) });
+export const useCouponUsages = (id: string, query: Query) => useQuery({ queryKey: ["coupon", id, "usages", query], queryFn: () => coupons.usages(id, query), ...keep, enabled: Boolean(id) });
+export const useCouponGroups = (query: Query) => useQuery({ queryKey: ["coupon-groups", query], queryFn: () => coupons.groups(query), ...keep });
+export const useCouponGroup = (id: string) => useQuery({ queryKey: ["coupon-group", id], queryFn: () => coupons.group(id), enabled: Boolean(id) });
+
+// Achievements
+export const useAchievementCatalogue = () => useQuery({ queryKey: ["achievements", "catalogue"], queryFn: achievements.catalogue, refetchInterval: POLL_MS });
+export const useAchievementsSummary = () => useQuery({ queryKey: ["achievements", "summary"], queryFn: achievements.summary, refetchInterval: POLL_MS });
+export const useAchievementUnlocks = (query: Query) => useQuery({ queryKey: ["achievements", "unlocks", query], queryFn: () => achievements.unlocks(query), ...keep });
+export const useCustomerAchievements = (userId: string, enabled = true) =>
+  useQuery({ queryKey: ["achievements", "user", userId], queryFn: () => achievements.forUser(userId), enabled: Boolean(userId) && enabled });
+
+// Support (issue reports)
+export const useIssues = (query: Query) => useQuery({ queryKey: ["issues", query], queryFn: () => issues.list(query), ...keep, refetchInterval: POLL_MS });
+export const useIssuesSummary = () => useQuery({ queryKey: ["issues", "summary"], queryFn: issues.summary, refetchInterval: POLL_MS });
+export const useIssue = (id: string) => useQuery({ queryKey: ["issue", id], queryFn: () => issues.get(id), enabled: Boolean(id) });
+export const useUserIssues = (userId: string, query: Query, enabled = true) =>
+  useQuery({ queryKey: ["issues", "user", userId, query], queryFn: () => issues.forUser(userId, query), ...keep, enabled: Boolean(userId) && enabled });
+
+// In-app announcements
+export const useAnnouncements = (query: Query) => useQuery({ queryKey: ["announcements", query], queryFn: () => announcements.list(query), ...keep });
+export const useAnnouncement = (announcementId: string) =>
+  useQuery({ queryKey: ["announcement", announcementId], queryFn: () => announcements.get(announcementId), enabled: Boolean(announcementId), refetchInterval: POLL_MS });
+export const useAnnouncementsSummary = () => useQuery({ queryKey: ["announcements", "summary"], queryFn: announcements.summary, refetchInterval: POLL_MS });
+export const useAnnouncementScreens = () => useQuery({ queryKey: ["announcements", "screens"], queryFn: announcements.screens, staleTime: 60 * 60_000 });
+export const useAnnouncementReceipts = (announcementId: string, query: Query) =>
+  useQuery({ queryKey: ["announcement", announcementId, "receipts", query], queryFn: () => announcements.receipts(announcementId, query), enabled: Boolean(announcementId), ...keep });

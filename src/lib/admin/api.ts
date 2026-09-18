@@ -1,9 +1,10 @@
-import { http } from "./http";
+import { apiService } from "@/services";
 
 /**
- * Hand-typed client for the core admin API (routes under /api/v1). Shapes
- * mirror the NestJS DTOs; every amount is in kobo. This replaces the generated
- * swagger client for the admin pages, which had drifted from the server.
+ * Typed namespaces over the generated swagger client (`apiService`, regenerated with
+ * `yarn generate-types`). Every call here goes through a generated method, so a route the
+ * backend renames or removes fails the type-check instead of 404ing in production. The
+ * shapes below mirror the NestJS DTOs the pages read; every amount is in kobo.
  */
 
 // ── Envelopes ─────────────────────────────────────────────────────────────────
@@ -34,33 +35,26 @@ export function toPaged<T>(page: CorePage<T> | undefined | null): Paged<T> {
 
 export type Query = Record<string, string | number | boolean | undefined | null>;
 
-function clean(query?: Query) {
+/**
+ * Query params as the generated client wants them: empty values dropped, everything a string.
+ * The generated param types are narrower than `Query` (and a few list endpoints do not declare
+ * page/limit in Swagger yet), so the result is cast to whatever the method expects.
+ */
+export function params<T>(query?: Query): T {
   const out: Record<string, string> = {};
   for (const [key, value] of Object.entries(query ?? {})) {
     if (value === undefined || value === null || value === "") continue;
     out[key] = String(value);
   }
-  return out;
+  return out as unknown as T;
 }
 
-async function get<T>(url: string, query?: Query) {
-  const { data } = await http.get<T>(url, { params: clean(query) });
-  return data;
+/** Narrow a generated response to the shape the pages read. */
+function as<T>(promise: Promise<unknown>): Promise<T> {
+  return promise as Promise<T>;
 }
-async function list<T>(url: string, query?: Query) {
-  return toPaged(await get<CorePage<T>>(url, query));
-}
-async function post<T>(url: string, body?: unknown) {
-  const { data } = await http.post<T>(url, body);
-  return data;
-}
-async function patch<T>(url: string, body?: unknown) {
-  const { data } = await http.patch<T>(url, body);
-  return data;
-}
-async function del<T>(url: string) {
-  const { data } = await http.delete<T>(url);
-  return data;
+async function page<T>(promise: Promise<unknown>): Promise<Paged<T>> {
+  return toPaged((await promise) as CorePage<T>);
 }
 
 // ── Entities ──────────────────────────────────────────────────────────────────
@@ -156,6 +150,10 @@ export type Order = {
   paymentMethod?: string;
   isScheduled?: boolean;
   scheduledFor?: string;
+  /** Set once the dispatcher has rung riders for a scheduled order; unset = still waiting for its time. */
+  scheduleDispatchedAt?: string;
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
   pickup?: OrderLocation;
   locations?: OrderLocation[];
   acceptedAt?: string;
@@ -342,6 +340,8 @@ export type Attention = {
   failedNotifications24h: number;
   suspendedRiders: number;
   ridersPausedFromDispatch: number;
+  issuesOpen?: number;
+  issuesUnassigned?: number;
 };
 
 export type UserOverview = {
@@ -404,65 +404,96 @@ export type RiderChargeRow = {
 };
 
 export const stats = {
-  overview: (range: RangeQuery) => get<Overview>("/admins/stats/overview", range),
-  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) => get<Series>("/admins/stats/series", range),
-  topRiders: (range: RangeQuery & { limit?: number }) => get<TopRider[]>("/admins/stats/top-riders", range),
-  peakHours: (range: RangeQuery) => get<PeakHours>("/admins/stats/peak-hours", range),
-  attention: () => get<Attention>("/admins/stats/attention"),
-  charges: (range: RangeQuery) => get<Charges>("/admins/stats/charges", range),
-  chargesByRider: (query: Query) => list<RiderChargeRow>("/admins/stats/charges/riders", query),
-  customers: (query: Query) => list<CustomerRow>("/admins/stats/customers", query),
-  businesses: (query: Query) => list<BusinessRow>("/admins/stats/businesses", query),
-  userOverview: (userId: string, range: RangeQuery) => get<UserOverview>(`/admins/stats/users/${userId}/overview`, range),
+  overview: (range: RangeQuery) => as<Overview>(apiService.overview(params(range))),
+  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) => as<Series>(apiService.series(params(range))),
+  topRiders: (range: RangeQuery & { limit?: number }) => as<TopRider[]>(apiService.topRiders(params(range))),
+  peakHours: (range: RangeQuery) => as<PeakHours>(apiService.peakHours(params(range))),
+  attention: () => as<Attention>(apiService.attention()),
+  charges: (range: RangeQuery) => as<Charges>(apiService.charges(params(range))),
+  chargesByRider: (query: Query) => page<RiderChargeRow>(apiService.chargesByRider(params(query))),
+  customers: (query: Query) => page<CustomerRow>(apiService.customers(params(query))),
+  businesses: (query: Query) => page<BusinessRow>(apiService.businesses(params(query))),
+  userOverview: (userId: string, range: RangeQuery) => as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
+};
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+export type LoginResult = { accessToken: string; expiryDurationSeconds: number; refreshToken: string };
+
+export const auth = {
+  /** Any platform staff role signs in; the backend decides what the role can do. */
+  login: (body: { identifier: string; password: string }) => as<LoginResult>(apiService.loginAdmins(body)),
 };
 
 // ── Me ────────────────────────────────────────────────────────────────────────
 
 export const me = {
-  get: () => get<User>("/admins/users/me"),
-  changePassword: (body: { oldPassword: string; newPassword: string; confirmPassword: string }) => patch<unknown>("/admins/users/me/password-change", body),
-  updatePhoto: (body: { photo: string }) => patch<User>("/admins/users/me/update-profile-photo", body),
-  preferences: () => get<AdminPreferences>("/admins/users/me/preferences"),
-  updatePreferences: (body: AdminPreferences) => patch<AdminPreferences>("/admins/users/me/preferences", body),
+  get: () => as<User>(apiService.adminGetMyProfile()),
+  changePassword: (body: { oldPassword: string; newPassword: string; confirmPassword: string }) =>
+    as<unknown>(apiService.adminChangeMyPassword(body)),
+  updatePhoto: (body: { photo: string }) => as<User>(apiService.adminUpdateMyPhoto(body)),
+  preferences: () => as<AdminPreferences>(apiService.getAdminPreferences()),
+  updatePreferences: (body: AdminPreferences) => as<AdminPreferences>(apiService.updateAdminPreferences(body)),
 };
 
 // ── Users (customers, couriers, staff) ────────────────────────────────────────
 
 export const users = {
-  list: (query: Query) => list<User>("/admins/users", query),
-  get: (userId: string) => get<User>(`/admins/users/${userId}`),
-  wallets: (userId: string) => get<Wallet[] | CorePage<Wallet>>(`/admins/users/${userId}/wallets`),
-  create: (body: Record<string, unknown>) => post<User>("/admins/users", body),
-  updateStatus: (userId: string, body: { status: UserStatus; reason?: string }) => patch<User>(`/admins/users/${userId}/status`, body),
+  list: (query: Query) => page<User>(apiService.getUsers(params(query))),
+  get: (userId: string) => as<User>(apiService.getUser(userId)),
+  wallets: (userId: string) => as<Wallet[] | CorePage<Wallet>>(apiService.adminGetUserWallets(userId)),
+  create: (body: Record<string, unknown>) => as<User>(apiService.adminCreateUser(body as never)),
+  updateStatus: (userId: string, body: { status: UserStatus; reason?: string }) =>
+    as<User>(apiService.updateUserStatus(userId, body as never)),
   adjustWallet: (userId: string, body: { amount: number; type: TransactionType; reason: string }) =>
-    post<unknown>(`/admins/users/${userId}/wallets/adjust`, body),
-  refund: (userId: string, body: { orderId: string; amount?: number; reason: string }) => post<unknown>(`/admins/users/${userId}/refund`, body),
-  updatePhone: (userId: string, body: { phone: string; reason?: string }) => patch<User>(`/admins/users/${userId}/phone`, body),
-  setDispatch: (userId: string, body: { paused: boolean; reason?: string }) => patch<User>(`/admins/users/${userId}/dispatch`, body),
-  licenceVerify: (userId: string, body: Record<string, unknown>) => patch<User>(`/admins/users/${userId}/drivers-license/verify`, body),
-  licenceApprove: (userId: string, body: Record<string, unknown>) => patch<User>(`/admins/users/${userId}/drivers-license/approve`, body),
-  licenceUpdate: (userId: string, body: Record<string, unknown>) => patch<User>(`/admins/users/${userId}/drivers-license/update`, body),
+    as<unknown>(apiService.adjustUserWallet(userId, body as never)),
+  refund: (userId: string, body: { orderId: string; amount?: number; reason: string }) =>
+    as<unknown>(apiService.refundCustomerOrder(userId, body)),
+  /** Paid, non-storefront orders with what has already gone back and what an admin may still refund. */
+  refundableOrders: (userId: string, search?: string) =>
+    as<RefundableOrder[]>(apiService.refundableOrders(params({ userId, limit: 50, search }))),
+  updatePhone: (userId: string, body: { phone: string; reason?: string }) => as<User>(apiService.updateUserPhone(userId, body)),
+  setDispatch: (userId: string, body: { paused: boolean; reason?: string }) => as<User>(apiService.setDispatchPaused(userId, body)),
+  licenceVerify: (userId: string, body: Record<string, unknown>) => as<User>(apiService.adminVerifyDriversLicense(userId, body as never)),
+  /** The approve route takes no body; the licence on file is what gets approved. */
+  licenceApprove: (userId: string) => as<User>(apiService.approveDriversLicenseSubmission(userId)),
+  licenceUpdate: (userId: string, body: Record<string, unknown>) => as<User>(apiService.updateDriversLicense(userId, body as never)),
   settlementAccount: (userId: string, walletId: string, body: Record<string, unknown>) =>
-    patch<Wallet>(`/admins/users/${userId}/wallets/${walletId}/settlement-account`, body),
+    as<Wallet>(apiService.adminUpdateSettlementAccount(userId, walletId, body as never)),
+};
+
+export type RefundableOrder = {
+  _id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  type: OrderType;
+  totalAmountPayable?: number;
+  currency: string;
+  createdAt: string;
+  paidDate?: string;
+  refunded: number;
+  refundable: number;
 };
 
 // ── Orders ────────────────────────────────────────────────────────────────────
 
 export const orders = {
-  list: (query: Query) => list<Order>("/admins/orders", query),
-  get: (orderId: string) => get<Order>(`/admins/orders/${orderId}`),
-  offers: (orderId: string) => get<Record<string, unknown>>(`/admins/orders/${orderId}/offers`),
-  cancel: (orderId: string, body: { reason: string }) => post<Order>(`/admins/orders/${orderId}/cancel`, body),
-  updateStatus: (orderId: string, body: { status: OrderStatus }) => patch<Order>(`/admins/orders/${orderId}/status`, body),
+  list: (query: Query) => page<Order>(apiService.getOrders(params(query))),
+  get: (orderId: string) => as<Order>(apiService.getOrder(orderId)),
+  offers: (orderId: string) => as<Record<string, unknown>>(apiService.getOrderOffers(orderId)),
+  cancel: (orderId: string, body: { reason: string }) => as<Order>(apiService.adminCancelOrder(orderId, body)),
+  /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
+  ringRiders: (orderId: string) => as<{ riders: number; order: Order }>(apiService.ringRiders(orderId)),
+  updateStatus: (orderId: string, body: { status: OrderStatus }) => as<Order>(apiService.updateOrderStatus(orderId, body as never)),
 };
 
 // ── Transactions ──────────────────────────────────────────────────────────────
 
 export const transactions = {
-  list: (query: Query) => list<Transaction>("/admins/transactions", query),
-  get: (transactionId: string) => get<Transaction>(`/admins/transactions/${transactionId}`),
-  summary: (query?: Query) => get<Record<string, unknown>>("/admins/transactions/metrics/summary", query),
-  externalPayments: (query?: Query) => get<Record<string, unknown>>("/admins/transactions/metrics/external-payments", query),
+  list: (query: Query) => page<Transaction>(apiService.adminGetTransactions(params(query))),
+  get: (transactionId: string) => as<Transaction>(apiService.getTransaction(transactionId)),
+  summary: (query?: Query) => as<Record<string, unknown>>(apiService.getTransactionSummary(params(query))),
+  externalPayments: (query?: Query) => as<Record<string, unknown>>(apiService.getExternalPaymentMetrics(params(query))),
 };
 
 // ── Reviews ───────────────────────────────────────────────────────────────────
@@ -488,39 +519,40 @@ export type Review = {
 
 export const reviews = {
   /** GET /reviews accepts riderId, page, limit and order (platform admin only). */
-  list: (query: Query) => list<Review>("/reviews", query),
+  list: (query: Query) => page<Review>(apiService.getReviews(params(query))),
 };
 
 // ── Vehicles ──────────────────────────────────────────────────────────────────
 
 export const vehicles = {
-  list: (query: Query) => list<Vehicle>("/admins/vehicles", query),
-  get: (vehicleId: string) => get<Vehicle>(`/admins/vehicles/${vehicleId}`),
-  create: (userId: string, body: Record<string, unknown>) => post<Vehicle>(`/admins/vehicles/${userId}/create`, body),
-  verify: (vehicleId: string, userId: string, body?: Record<string, unknown>) =>
-    patch<Vehicle>(`/admins/vehicles/${vehicleId}/users/${userId}/verify`, body ?? {}),
-  reject: (vehicleId: string, userId: string, body: { reason?: string }) =>
-    patch<Vehicle>(`/admins/vehicles/${vehicleId}/users/${userId}/reject`, body),
-  suspend: (vehicleId: string, userId: string, body: { reason?: string }) =>
-    patch<Vehicle>(`/admins/vehicles/${vehicleId}/users/${userId}/suspend`, body),
-  remove: (vehicleId: string) => del<unknown>(`/admins/vehicles/${vehicleId}`),
+  list: (query: Query) => page<Vehicle>(apiService.getVehicles(params(query))),
+  get: (vehicleId: string) => as<Vehicle>(apiService.adminGetVehicle(vehicleId)),
+  create: (userId: string, body: Record<string, unknown>) => as<Vehicle>(apiService.adminUpdateUserVehicle(userId, body as never)),
+  verify: (vehicleId: string, userId: string) => as<Vehicle>(apiService.verifyVehicle(vehicleId, userId)),
+  reject: (vehicleId: string, userId: string, body: { reason: string }) =>
+    as<Vehicle>(apiService.rejectVehicle(vehicleId, userId, body)),
+  suspend: (vehicleId: string, userId: string, body: { reason: string }) =>
+    as<Vehicle>(apiService.suspendVehicle(vehicleId, userId, body)),
+  remove: (vehicleId: string) => as<unknown>(apiService.deleteVehicle(vehicleId)),
 };
 
 // ── Businesses ────────────────────────────────────────────────────────────────
 
 export const businesses = {
-  get: (businessId: string) => get<Business>(`/businesses/${businessId}`),
-  orders: (businessId: string, query: Query) => list<Order>(`/businesses/${businessId}/orders`, query),
-  users: (businessId: string, query: Query) => list<User>(`/businesses/${businessId}/users`, query),
-  vehicles: (businessId: string, query: Query) => list<Vehicle>(`/businesses/${businessId}/vehicles`, query),
-  transactions: (businessId: string, query: Query) => list<Transaction>(`/businesses/${businessId}/transactions`, query),
-  wallets: (businessId: string) => get<Wallet[] | CorePage<Wallet>>(`/businesses/${businessId}/wallets`),
-  orderStatistics: (businessId: string, query?: Query) => get<Record<string, unknown>>(`/businesses/${businessId}/order-statistics`, query),
-  suspendUser: (businessId: string, userId: string, body?: { reason?: string }) =>
-    patch<User>(`/businesses/${businessId}/users/${userId}/suspend`, body ?? {}),
-  unsuspendUser: (businessId: string, userId: string) => patch<User>(`/businesses/${businessId}/users/${userId}/unsuspend`, {}),
-  removeUser: (businessId: string, userId: string) => del<unknown>(`/businesses/${businessId}/users/${userId}`),
-  updatePreferences: (businessId: string, body: Record<string, unknown>) => patch<Business>(`/businesses/${businessId}/preferences`, body),
+  get: (businessId: string) => as<Business>(apiService.getBusiness(businessId)),
+  orders: (businessId: string, query: Query) => page<Order>(apiService.getBusinessOrders(params({ ...query, businessId }))),
+  users: (businessId: string, query: Query) => page<User>(apiService.getBusinessUsers(params({ ...query, businessId }))),
+  vehicles: (businessId: string, query: Query) => page<Vehicle>(apiService.getBusinessVehicles(params({ ...query, businessId }))),
+  transactions: (businessId: string, query: Query) =>
+    page<Transaction>(apiService.getBusinessTransactions(params({ ...query, businessId }))),
+  wallets: (businessId: string) => as<Wallet[] | CorePage<Wallet>>(apiService.getBusinessWallets(businessId)),
+  orderStatistics: (businessId: string, query?: Query) =>
+    as<Record<string, unknown>>(apiService.getBusinessOrderStatistics(params({ ...query, businessId }))),
+  suspendUser: (businessId: string, userId: string) => as<User>(apiService.suspendBusinessUser(businessId, userId)),
+  unsuspendUser: (businessId: string, userId: string) => as<User>(apiService.unsuspendBusinessUser(businessId, userId)),
+  removeUser: (businessId: string, userId: string) => as<unknown>(apiService.removeUserFromBusiness(businessId, userId)),
+  updatePreferences: (businessId: string, body: Record<string, unknown>) =>
+    as<Business>(apiService.updateBusinessPreferences(businessId, body as never)),
 };
 
 // ── Platform finance ──────────────────────────────────────────────────────────
@@ -534,14 +566,13 @@ export type FinanceStatus = {
 };
 
 export const finance = {
-  platformWallet: () => get<Wallet>("/admins/wallets/platform-wallet"),
-  status: () => get<FinanceStatus>("/admins/wallets/finance-status"),
-  banks: () => get<{ name: string; code: string }[] | { data?: { name: string; code: string }[] }>("/admins/wallets/banks"),
-  updateSettlement: (body: { accountNumber: string; bankCode: string }) => post<unknown>("/admins/wallets/platform-wallet/settlement", body),
-  setPin: (body: { pin: string }) => post<unknown>("/admins/wallets/pin", body),
-  payout: (body: { amount: number; pin: string; reason?: string }) => post<unknown>("/admins/wallets/platform-wallet/payout", body),
-  transfer: (body: { userId: string; amount: number; pin: string; reason: string }) =>
-    post<unknown>("/admins/wallets/platform-wallet/transfer", body),
+  platformWallet: () => as<Wallet>(apiService.getPlatformWallet()),
+  status: () => as<FinanceStatus>(apiService.getFinanceStatus()),
+  banks: () => as<{ name: string; code: string }[] | { data?: { name: string; code: string }[] }>(apiService.getPlatformBanks()),
+  updateSettlement: (body: { accountNumber: string; bankCode: string }) => as<unknown>(apiService.updateSettlement(body)),
+  setPin: (body: { pin: string }) => as<unknown>(apiService.setPin(body)),
+  payout: (body: { amount: number; pin: string; reason?: string }) => as<unknown>(apiService.initiatePayout(body)),
+  transfer: (body: { userId: string; amount: number; pin: string; reason: string }) => as<unknown>(apiService.transferToUser(body)),
 };
 
 // ── Messaging ─────────────────────────────────────────────────────────────────
@@ -558,11 +589,11 @@ export type BroadcastInput = {
 
 export const messaging = {
   estimate: (body: Pick<BroadcastInput, "audience" | "userIds" | "filters">) =>
-    post<{ recipients: number; withPush: number; withEmail: number }>("/admins/notifications/broadcasts/estimate", body),
-  send: (body: BroadcastInput) => post<Broadcast>("/admins/notifications/broadcasts", body),
-  broadcasts: (query: Query) => list<Broadcast>("/admins/notifications/broadcasts", query),
-  broadcast: (broadcastId: string) => get<Broadcast>(`/admins/notifications/broadcasts/${broadcastId}`),
-  log: (query: Query) => list<NotificationRow>("/admins/notifications/log", query),
+    as<{ recipients: number; withPush: number; withEmail: number }>(apiService.estimateBroadcast(body as never)),
+  send: (body: BroadcastInput) => as<Broadcast>(apiService.createBroadcast(body as never)),
+  broadcasts: (query: Query) => page<Broadcast>(apiService.listBroadcasts(params(query))),
+  broadcast: (broadcastId: string) => as<Broadcast>(apiService.getBroadcast(broadcastId)),
+  log: (query: Query) => page<NotificationRow>(apiService.log(params(query))),
 };
 
 // ── Admin: team, logs, settings ───────────────────────────────────────────────
@@ -570,33 +601,34 @@ export const messaging = {
 export type Team = { _id: string; name?: string; entityType?: string; entityId?: string; createdAt: string; [key: string]: unknown };
 
 export const admin = {
-  teams: (query: Query) => list<Team>("/admins/teams", query),
-  createTeam: (body: Record<string, unknown>) => post<Team>("/admins/teams", body),
-  auditLogs: (query: Query) => list<Record<string, unknown>>("/audit-logs", query),
-  dataLogs: (query: Query) => list<Record<string, unknown>>("/datalogs", query),
-  reviews: (query: Query) => list<Record<string, unknown>>("/reviews", query),
+  teams: (query: Query) => page<Team>(apiService.adminListTeams(params(query))),
+  createTeam: (body: Record<string, unknown>) => as<Team>(apiService.adminCreateTeam(body as never)),
+  auditLogs: (query: Query) => page<Record<string, unknown>>(apiService.findAll(params(query))),
+  dataLogs: (query: Query) => page<Record<string, unknown>>(apiService.getLogs(params(query))),
+  reviews: (query: Query) => page<Record<string, unknown>>(apiService.getReviews(params(query))),
 };
 
 export type Country = { _id: string; name: string; code?: string; currency?: string; isActive?: boolean; [key: string]: unknown };
 export type CountryState = { _id: string; name: string; countryId?: string; isActive?: boolean; [key: string]: unknown };
 
 export const settings = {
-  countries: () => get<Country[] | CorePage<Country>>("/admin-configs/countries"),
-  country: (countryId: string) => get<Country>(`/admin-configs/countries/${countryId}`),
-  createCountry: (body: Record<string, unknown>) => post<Country>("/admin-configs/countries", body),
-  updateCountry: (countryId: string, body: Record<string, unknown>) => patch<Country>(`/admin-configs/countries/${countryId}`, body),
-  states: (countryId: string) => get<CountryState[] | CorePage<CountryState>>(`/admin-configs/countries/${countryId}/states`),
-  state: (countryId: string, stateId: string) => get<CountryState>(`/admin-configs/countries/${countryId}/states/${stateId}`),
-  createState: (countryId: string, body: Record<string, unknown>) => post<CountryState>(`/admin-configs/countries/${countryId}/states`, body),
+  countries: () => as<Country[] | CorePage<Country>>(apiService.getCountries(params({ limit: 100 }))),
+  country: (countryId: string) => as<Country>(apiService.getCountryById(countryId)),
+  createCountry: (body: Record<string, unknown>) => as<Country>(apiService.addCountry(body as never)),
+  updateCountry: (countryId: string, body: Record<string, unknown>) => as<Country>(apiService.updateCountry(countryId, body as never)),
+  states: (countryId: string) => as<CountryState[] | CorePage<CountryState>>(apiService.getCountryStates(countryId)),
+  state: (countryId: string, stateId: string) => as<CountryState>(apiService.getCountryStateById(countryId, stateId)),
+  createState: (countryId: string, body: Record<string, unknown>) =>
+    as<CountryState>(apiService.addCountryStates(countryId, [body] as never)),
   updateState: (countryId: string, stateId: string, body: Record<string, unknown>) =>
-    patch<CountryState>(`/admin-configs/countries/${countryId}/states/${stateId}`, body),
-  deliveryPricing: () => get<Record<string, unknown>>("/admin-configs/delivery-pricing"),
+    as<CountryState>(apiService.updateCountryState(countryId, stateId, body as never)),
+  deliveryPricing: () => as<Record<string, unknown>>(apiService.getDeliveryPricing()),
 };
 
 export const deliveryPrice = {
-  analytics: (query?: Query) => get<Record<string, unknown>>("/delivery-price/admin/analytics", query),
-  config: () => get<Record<string, unknown>>("/delivery-price/admin/config"),
-  updateConfig: (body: Record<string, unknown>) => patch<Record<string, unknown>>("/delivery-price/admin/config", body),
+  analytics: (query?: Query) => as<Record<string, unknown>>(apiService.analytics(params(query))),
+  config: () => as<Record<string, unknown>>(apiService.adminConfig()),
+  updateConfig: (body: Record<string, unknown>) => as<Record<string, unknown>>(apiService.updateConfig(body as never)),
 };
 
 /** Some endpoints return a bare array and some a page; tables want one shape. */
@@ -827,8 +859,8 @@ export type DataLogRow = {
 };
 
 export const adminLogs = {
-  auditLogs: (query: Query) => list<AuditLogRow>("/audit-logs", query),
-  dataLogs: (query: Query) => list<DataLogRow>("/datalogs", query),
+  auditLogs: (query: Query) => page<AuditLogRow>(apiService.findAll(params(query))),
+  dataLogs: (query: Query) => page<DataLogRow>(apiService.getLogs(params(query))),
 };
 
 /** Country config as the core stores it; money fields are kobo. */
@@ -871,7 +903,7 @@ export type StateConfig = {
 export const settingsExtra = {
   /** POST /admin-configs/countries/:id/states takes an array of { name, code }; config is set with a PATCH afterwards. */
   createStates: (countryId: string, body: { name: string; code: string }[]) =>
-    post<{ name: string; code: string }[]>(`/admin-configs/countries/${countryId}/states`, body),
+    as<{ name: string; code: string }[]>(apiService.addCountryStates(countryId, body as never)),
 };
 
 // ── Delivery price calculator (this endpoint already returns naira, not kobo) ─
@@ -912,3 +944,327 @@ export type DeliveryCalcConfig = {
 
 /** What POST /admins/notifications/broadcasts/estimate actually returns (`total`, not `recipients`). */
 export type BroadcastEstimate = { total?: number; recipients?: number; withPush: number; withEmail: number };
+
+// ── Coupons ───────────────────────────────────────────────────────────────────
+
+export type CouponType = "FIXED" | "PERCENTAGE";
+export type CouponLifecycle = "ACTIVE" | "EXPIRED" | "EXHAUSTED" | "INACTIVE";
+
+export type Person = {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  photo?: string;
+};
+
+export type Coupon = {
+  _id: string;
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: CouponType;
+  /** Percentage (0–100) or a FIXED amount in kobo. */
+  value: number;
+  maxDiscount?: number;
+  expirationDate: string;
+  isActive: boolean;
+  usageCount: number;
+  limit: number;
+  isOneTime: boolean;
+  isGeneral: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  // Admin rollups
+  lifecycle: CouponLifecycle;
+  discountTotal: number;
+  uniqueUsers: number;
+  lastUsedAt?: string;
+  groupNames: string[];
+  isReward: boolean;
+  [key: string]: unknown;
+};
+
+export type CouponInput = {
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: CouponType;
+  value: number;
+  maxDiscount?: number;
+  expirationDate: string;
+  limit: number;
+  isActive?: boolean;
+  isOneTime?: boolean;
+  isGeneral?: boolean;
+};
+
+export type CouponUpdate = Partial<
+  Pick<
+    CouponInput,
+    "name" | "description" | "expirationDate" | "limit" | "maxDiscount" | "isActive" | "isGeneral" | "isOneTime"
+  >
+>;
+
+export type CouponUsage = {
+  _id: string;
+  couponId: string;
+  userId: string;
+  orderId: string;
+  createdAt: string;
+  discountAmount?: number;
+  user?: Person;
+  order?: {
+    _id: string;
+    orderNumber?: string;
+    status?: string;
+    type?: string;
+    discountAmount?: number;
+    totalAmountPayable?: number;
+    currency?: string;
+    createdAt?: string;
+  };
+  [key: string]: unknown;
+};
+
+export type CouponsSummary = {
+  total: number;
+  active: number;
+  expiring7d: number;
+  redemptions30d: number;
+  redemptionsTotal: number;
+  discount30d: number;
+  discountTotal: number;
+  rewardCoupons: number;
+  rewardCouponsRedeemed: number;
+  daily: { date: string; count: number; discount: number }[];
+  topCoupons: { code: string; name?: string; count: number; discount: number }[];
+};
+
+export type CouponGroup = {
+  _id: string;
+  name: string;
+  userCount: number;
+  couponCount: number;
+  coupons?: Pick<Coupon, "_id" | "code" | "name" | "isActive" | "expirationDate">[];
+  users?: Person[];
+  createdAt?: string;
+  [key: string]: unknown;
+};
+
+export const coupons = {
+  list: (query: Query) => page<Coupon>(apiService.listCoupons(params(query))),
+  summary: () => as<CouponsSummary>(apiService.couponsSummary()),
+  get: (couponId: string) => as<Coupon>(apiService.getCoupon(couponId)),
+  usages: (couponId: string, query: Query) => page<CouponUsage>(apiService.usages(params({ ...query, couponId }))),
+  create: (body: CouponInput) => as<Coupon>(apiService.createCoupon(body as never)),
+  update: (couponId: string, body: CouponUpdate) => as<Coupon>(apiService.updateCoupon(couponId, body as never)),
+  deactivate: (code: string) => as<unknown>(apiService.deactivateCoupon(code)),
+  groups: (query: Query) => page<CouponGroup>(apiService.listGroups(params(query))),
+  group: (groupId: string) => as<CouponGroup>(apiService.getGroup(groupId)),
+  createGroup: (body: { name: string; couponCodes: string[]; userIds?: string[] }) =>
+    as<CouponGroup>(apiService.createGroup(body as never)),
+  updateGroup: (groupId: string, body: { name?: string; couponCodes?: string[] }) =>
+    as<CouponGroup>(apiService.updateGroup(groupId, body as never)),
+  addGroupUsers: (groupId: string, userIds: string[]) => as<CouponGroup>(apiService.addGroupUsers(groupId, { userIds })),
+  removeGroupUsers: (groupId: string, userIds: string[]) => as<CouponGroup>(apiService.removeGroupUsers(groupId, { userIds })),
+};
+
+// ── Achievements (customer badges) ────────────────────────────────────────────
+
+export type AchievementCategory = "SINGLE" | "BATCH" | "BULK" | "WALLET" | "REFERRAL" | "SPECIAL";
+
+export type AchievementDefinition = {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  unit: string;
+  tier: number;
+  rewardPercent: number;
+  unlockedCount: number;
+  unlocked30d: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  discountTotal: number;
+  [key: string]: unknown;
+};
+
+export type AchievementsSummary = {
+  badges: number;
+  customersWithBadges: number;
+  unlocksTotal: number;
+  unlocks30d: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  rewardsOutstanding: number;
+  discountTotal: number;
+  rewardPercentByTier: Record<string, number>;
+  rewardMaxDiscount: number;
+  rewardValidityDays: number;
+  daily: { date: string; count: number }[];
+};
+
+export type AchievementUnlock = {
+  userId: string;
+  key: string;
+  title: string;
+  category: AchievementCategory;
+  unlockedAt: string;
+  acknowledgedAt?: string;
+  couponCode?: string;
+  couponExpiresAt?: string;
+  rewardState?: "REDEEMED" | "ACTIVE" | "EXPIRED" | "NONE";
+  discountAmount?: number;
+  user?: Person;
+  [key: string]: unknown;
+};
+
+export type CustomerAchievement = {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  progress: number;
+  unit: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "PENDING";
+  unlockedAt?: string;
+  isNew: boolean;
+  reward: { percent: number; maxDiscount: number; validityDays: number; couponCode?: string; expiresAt?: string };
+};
+
+export type CustomerAchievements = {
+  results: CustomerAchievement[];
+  unlockedCount: number;
+  stats: Record<string, number>;
+};
+
+export const achievements = {
+  catalogue: () => as<AchievementDefinition[]>(apiService.catalogue()),
+  summary: () => as<AchievementsSummary>(apiService.achievementsSummary()),
+  unlocks: (query: Query) => page<AchievementUnlock>(apiService.unlocks(params(query))),
+  forUser: (userId: string) => as<CustomerAchievements>(apiService.forUser(userId)),
+  grant: (userId: string, body: { key: string; reason?: string }) => as<CustomerAchievements>(apiService.grant(userId, body)),
+  revoke: (userId: string, key: string) => as<CustomerAchievements>(apiService.revoke(userId, key)),
+};
+
+// ── Support: issue reports ────────────────────────────────────────────────────
+
+export type IssueStatus = "OPEN" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
+export type IssuePriority = "HIGH" | "MEDIUM" | "LOW";
+export type IssueCategory =
+  "ORDER" | "DELIVERY" | "RIDER_BEHAVIOUR" | "APP_TECHNICAL" | "PAYMENT_REFUND" | "SAFETY_SECURITY" | "OTHER";
+export type IssueSubjectType = "ORDER" | "TRANSACTION" | "GENERAL";
+
+export type IssueNote = { _id?: string; adminId: string | Person; note: string; createdAt: string };
+
+export type Issue = {
+  _id: string;
+  reference: string;
+  userId: string;
+  subjectType: IssueSubjectType;
+  orderId?: string;
+  transactionId?: string;
+  category: IssueCategory;
+  priority: IssuePriority;
+  description: string;
+  attachments: string[];
+  status: IssueStatus;
+  resolution?: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  assignedTo?: string;
+  firstResponseAt?: string;
+  notes?: IssueNote[];
+  noteCount?: number;
+  createdAt: string;
+  updatedAt?: string;
+  user?: Person;
+  assignee?: Person;
+  order?: {
+    _id: string;
+    orderNumber?: string;
+    status?: string;
+    type?: string;
+    totalAmountPayable?: number;
+    currency?: string;
+    createdAt?: string;
+  };
+  transaction?: {
+    _id: string;
+    reference?: string;
+    amount?: number;
+    currency?: string;
+    status?: string;
+    purpose?: string;
+    createdAt?: string;
+  };
+  [key: string]: unknown;
+};
+
+export type IssuesSummary = {
+  open: number;
+  inReview: number;
+  unassigned: number;
+  highPriorityOpen: number;
+  resolved7d: number;
+  new7d: number;
+  avgResolutionHours: number | null;
+  avgFirstResponseHours: number | null;
+  overdue: number;
+  byCategory: { key: string; count: number }[];
+  byPriority: { key: string; count: number }[];
+};
+
+export const issues = {
+  list: (query: Query) => page<Issue>(apiService.listIssues(params(query))),
+  summary: () => as<IssuesSummary>(apiService.issuesSummary()),
+  get: (issueId: string) => as<Issue>(apiService.getIssue(issueId)),
+  forUser: (userId: string, query: Query) => page<Issue>(apiService.listUserIssues(params({ ...query, userId }))),
+  updateStatus: (issueId: string, body: { status: IssueStatus; resolution?: string }) =>
+    as<Issue>(apiService.updateStatus(issueId, body as never)),
+  assign: (issueId: string, adminId: string | null) => as<Issue>(apiService.assign(issueId, { adminId } as never)),
+  updatePriority: (issueId: string, priority: IssuePriority) => as<Issue>(apiService.updatePriority(issueId, { priority } as never)),
+  addNote: (issueId: string, note: string) => as<Issue>(apiService.addNote(issueId, { note })),
+};
+
+// ── In-app announcements ("what's new" popups) ────────────────────────────────
+
+/**
+ * Typed straight off the generated contract — the shape the pages read IS the DTO. New
+ * namespaces should look like this rather than re-declaring the types above.
+ */
+export type {
+  Announcement,
+  AnnouncementAction,
+  AnnouncementActionDto,
+  AnnouncementReceiptRowDto,
+  AnnouncementsSummaryResponseDto as AnnouncementsSummary,
+  AppScreenDto as AppScreen,
+  AppScreensResponseDto as AppScreens,
+  CreateAnnouncementRequestDto as AnnouncementInput,
+  UpdateAnnouncementRequestDto as AnnouncementUpdate,
+} from "@/services";
+export { AnnouncementActionType, AnnouncementAudience, AnnouncementOutcome, AnnouncementStatus } from "@/services";
+
+export const announcements = {
+  list: (query: Query) => page<import("@/services").Announcement>(apiService.adminListAnnouncements(params(query))),
+  summary: () => apiService.adminAnnouncementsSummary(),
+  screens: () => apiService.adminListAnnouncementScreens(),
+  get: (announcementId: string) => apiService.adminGetAnnouncement(announcementId),
+  receipts: (announcementId: string, query: Query) =>
+    page<import("@/services").AnnouncementReceiptRowDto>(apiService.adminListAnnouncementReceipts(params({ ...query, announcementId }))),
+  create: (body: import("@/services").CreateAnnouncementRequestDto) => apiService.adminCreateAnnouncement(body),
+  update: (announcementId: string, body: import("@/services").UpdateAnnouncementRequestDto) =>
+    apiService.adminUpdateAnnouncement(announcementId, body),
+  setStatus: (announcementId: string, status: import("@/services").AnnouncementStatus) =>
+    apiService.adminUpdateAnnouncementStatus(announcementId, { status }),
+  remove: (announcementId: string) => apiService.adminDeleteAnnouncement(announcementId),
+};
