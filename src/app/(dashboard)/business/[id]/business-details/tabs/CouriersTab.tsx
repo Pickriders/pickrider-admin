@@ -10,6 +10,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useAction, useBusinessUsers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { Avatar, Badge, Button, ConfirmDialog, DataTable, statusTone, type ColumnMeta } from "@/components/kit";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * The couriers a business has enrolled. Suspend and unsuspend hit the
@@ -41,6 +42,8 @@ export function CouriersTab({ businessId }: { businessId: string }) {
   const remove = useAction((userId: string) => businesses.removeUser(businessId, userId), { success: "Courier removed from the business.", invalidate, onSuccess: close });
   const busy = suspend.isPending || unsuspend.isPending || remove.isPending;
 
+  const { can } = useCan();
+  const canManage = can("business.manage");
   const columns = useMemo<ColumnDef<User, unknown>[]>(
     () => [
       {
@@ -105,6 +108,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
         cell: ({ row }) => {
           const user = row.original;
           const suspended = user.status === "SUSPENDED";
+          if (!canManage) return null;
           return (
             <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
               <Button
@@ -124,7 +128,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
         meta: { align: "right" } satisfies ColumnMeta,
       },
     ],
-    [],
+    [canManage],
   );
 
   const target = pending?.user;
@@ -166,6 +170,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
                   <Badge tone={statusTone(row.status?.toLowerCase())}>{row.status?.toLowerCase()}</Badge>
                 </div>
                 <p className="truncate text-xs text-ink-muted">{row.phone || row.email || ""}</p>
+                {canManage ? (
                 <div className="mt-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button size="sm" variant="outline" onClick={() => setPending({ kind: suspended ? "unsuspend" : "suspend", user: row })}>
                     {suspended ? "Unsuspend" : "Suspend"}
@@ -174,6 +179,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
                     Remove
                   </Button>
                 </div>
+                ) : null}
               </div>
             </div>
           );

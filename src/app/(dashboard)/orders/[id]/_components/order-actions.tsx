@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, SlidersHorizontal } from "lucide-react";
+import { Ban, BellRing, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 
 import { Button, ConfirmDialog, Drawer, Field, Select, Textarea } from "@/components/kit";
@@ -8,17 +8,19 @@ import { orders, type OrderRow, type OrderStatus } from "@/lib/admin/api";
 import { statusLabel } from "@/lib/admin/format";
 import { useAction } from "@/lib/admin/hooks";
 
-import { STATUS_OVERRIDES } from "../../lib";
+import { STATUS_OVERRIDES, STATUS_OVERRIDE_HINT } from "../../lib";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
- * The two things an admin can do to an order. Cancel runs the real cancel
- * flow (refund + rider settlement, audited). The status override is a raw
- * record correction with no side effects, so it only offers sensible steps
- * and never "cancelled": that must go through Cancel so money moves.
+ * The two things an admin can do to an order. Cancel runs the real cancel flow (refund + rider
+ * settlement, audited). The status override runs the matching side effects on the API — start
+ * time, rider settlement on completion, releasing the rider — so it only offers steps the
+ * delivery could have taken, and never "cancelled": that must go through Cancel so money moves.
  */
 export function OrderActions({ order }: { order: OrderRow }) {
   const closed = order.status === "COMPLETED" || order.status === "CANCELLED";
-  const options = STATUS_OVERRIDES[order.status] ?? [];
+  const { can } = useCan();
+  const options = can("order.overrideStatus") ? (STATUS_OVERRIDES[order.status] ?? []) : [];
   const invalidate = [["order", order._id], ["order-offers", order._id], ["orders"], ["stats"]];
 
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -30,6 +32,25 @@ export function OrderActions({ order }: { order: OrderRow }) {
       setCancelOpen(false);
       setReason("");
     },
+  });
+
+  // Ring riders again for an order still waiting (a scheduled one must be paid and inside its lead).
+  const waitingOnSchedule =
+    order.isScheduled &&
+    !order.scheduleDispatchedAt &&
+    order.scheduledFor &&
+    new Date(order.scheduledFor).getTime() - Date.now() > 30 * 60 * 1000;
+  const canRing =
+    order.status === "INITIATED" &&
+    can("order.cancel") &&
+    (!order.isScheduled || order.paymentStatus === "PAID") &&
+    !waitingOnSchedule;
+  const ring = useAction(() => orders.ringRiders(order._id), {
+    success: (data) =>
+      data.riders
+        ? `Rang ${data.riders} rider${data.riders === 1 ? "" : "s"}.`
+        : "No eligible riders nearby right now; the order stays queued.",
+    invalidate,
   });
 
   const [statusOpen, setStatusOpen] = useState(false);
@@ -50,7 +71,12 @@ export function OrderActions({ order }: { order: OrderRow }) {
           Update status
         </Button>
       ) : null}
-      {!closed ? (
+      {canRing ? (
+        <Button icon={BellRing} onClick={() => ring.mutate(undefined)} loading={ring.isPending}>
+          Ring riders
+        </Button>
+      ) : null}
+      {!closed && can("order.cancel") ? (
         <Button variant="danger" icon={Ban} onClick={() => setCancelOpen(true)}>
           Cancel order
         </Button>
@@ -67,7 +93,12 @@ export function OrderActions({ order }: { order: OrderRow }) {
         loading={cancel.isPending}
       >
         <Field label="Reason" hint="Shown in the audit log and to the customer.">
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why is this order being cancelled?" autoFocus />
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why is this order being cancelled?"
+            autoFocus
+          />
         </Field>
         {!reason.trim() ? <p className="mt-2 text-xs text-ink-faint">A reason is required.</p> : null}
       </ConfirmDialog>
@@ -76,7 +107,7 @@ export function OrderActions({ order }: { order: OrderRow }) {
         open={statusOpen}
         onClose={() => (update.isPending ? undefined : setStatusOpen(false))}
         title="Update order status"
-        subtitle="A manual correction to the record. Nothing is charged, refunded or dispatched."
+        subtitle="Moves the order the way the app would have, including paying the rider on completion. Cancelling stays under Cancel order."
         width="sm"
         footer={
           <div className="flex justify-end gap-2">
@@ -103,9 +134,14 @@ export function OrderActions({ order }: { order: OrderRow }) {
               ))}
             </Select>
           </Field>
-          {next === "ACCEPTED" && !order.riderId ? (
+          {next ? (
+            <p className="rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink-muted">
+              {STATUS_OVERRIDE_HINT[next]}
+            </p>
+          ) : null}
+          {next === "COMPLETED" && order.paymentStatus !== "PAID" ? (
             <p className="rounded-xl border border-warning/40 bg-warning-soft px-3 py-2 text-xs text-warning">
-              No rider is attached to this order. Marking it accepted will not assign one.
+              This order has not been paid for. Completion will be refused until it is.
             </p>
           ) : null}
         </div>

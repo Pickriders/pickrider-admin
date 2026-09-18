@@ -141,7 +141,7 @@ function BoardCard({ order }: { order: OrderRow }) {
       </div>
       {stale ? (
         <p className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-warning">
-          <Clock size={12} /> Waiting {Math.round((Date.now() - new Date(order.createdAt).getTime()) / 60_000)} min for a rider
+          <Clock size={12} /> Waiting {Math.round((Date.now() - new Date(order.scheduleDispatchedAt ?? order.createdAt).getTime()) / 60_000)} min for a rider
         </p>
       ) : null}
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">

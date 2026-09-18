@@ -3,6 +3,7 @@
 import { PageHeader, Tabs } from "@/components/kit";
 import { useTabParam } from "@/lib/admin/url-state";
 
+import { AnnouncementsTab } from "./announcements-tab";
 import { ComposeTab } from "./compose-tab";
 import { HistoryTab } from "./history-tab";
 import { LogTab } from "./log-tab";
@@ -11,11 +12,12 @@ import { LogTab } from "./log-tab";
  * Messaging: write a broadcast to a segment, read back what was sent, and
  * inspect every delivery the platform recorded. Tab lives in the URL.
  */
-const TABS = ["compose", "history", "log"] as const;
+const TABS = ["compose", "announcements", "history", "log"] as const;
 type Tab = (typeof TABS)[number];
 
 const DESCRIPTION: Record<Tab, string> = {
   compose: "One message to customers, couriers or businesses, over push and email. Everyone also gets an in-app copy.",
+  announcements: "In-app popups that tell customers or couriers what's new, with a button that opens a screen or a link.",
   history: "Every broadcast sent, with how far it got.",
   log: "Each notification the platform tried to deliver, and whether it landed.",
 };
@@ -31,11 +33,12 @@ export function MessagingHub() {
         className="mb-4"
         items={[
           { id: "compose", label: "Compose" },
+          { id: "announcements", label: "Announcements" },
           { id: "history", label: "History" },
           { id: "log", label: "Log" },
         ]}
       />
-      {tab === "compose" ? <ComposeTab /> : tab === "history" ? <HistoryTab /> : <LogTab />}
+      {tab === "compose" ? <ComposeTab /> : tab === "announcements" ? <AnnouncementsTab /> : tab === "history" ? <HistoryTab /> : <LogTab />}
     </div>
   );
 }

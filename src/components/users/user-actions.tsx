@@ -1,12 +1,13 @@
 "use client";
 
-import { Ban, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
+import { Ban, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, Search, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { Badge, Button, ConfirmDialog, Drawer, Field, Input, Select, Textarea, cx } from "@/components/kit";
-import { users, type Order, type TransactionType, type User, type UserStatus, type Wallet } from "@/lib/admin/api";
+import { Badge, Button, ConfirmDialog, Drawer, Field, Input, Select, Skeleton, Textarea, cx, useDebounced } from "@/components/kit";
+import { users, type RefundableOrder, type TransactionType, type User, type UserStatus, type Wallet } from "@/lib/admin/api";
 import { fullName, naira, when } from "@/lib/admin/format";
-import { useAction, useOrders } from "@/lib/admin/hooks";
+import { useAction, useRefundableOrders } from "@/lib/admin/hooks";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * The admin actions every user record shares: account status, manual wallet
@@ -70,11 +71,12 @@ export function UserActions({
   const close = () => setOpen(null);
   const isActive = user.status === "ACTIVE";
   const paused = Boolean(user.dispatchPaused);
+  const { can } = useCan();
 
   return (
     <>
       <div className="flex flex-wrap items-center gap-2">
-        {showDispatch ? (
+        {showDispatch && can("user.dispatch") ? (
           <Button
             size={size}
             variant={paused ? "success" : "outline"}
@@ -84,26 +86,32 @@ export function UserActions({
             {paused ? "Resume dispatch" : "Stop ringing"}
           </Button>
         ) : null}
-        <Button size={size} variant="outline" icon={WalletIcon} onClick={() => setOpen("wallet")}>
-          Adjust wallet
-        </Button>
-        {showRefund ? (
+        {can("wallet.adjust") ? (
+          <Button size={size} variant="outline" icon={WalletIcon} onClick={() => setOpen("wallet")}>
+            Adjust wallet
+          </Button>
+        ) : null}
+        {showRefund && can("wallet.refund") ? (
           <Button size={size} variant="outline" icon={Undo2} onClick={() => setOpen("refund")}>
             Refund order
           </Button>
         ) : null}
-        <Button size={size} variant="outline" icon={Phone} onClick={() => setOpen("phone")}>
-          Change phone
-        </Button>
-        <Button
-          size={size}
-          variant="outline"
-          icon={isActive ? Ban : ShieldAlert}
-          className={isActive ? "text-danger" : "text-success"}
-          onClick={() => setOpen("status")}
-        >
-          {isActive ? "Suspend" : "Change status"}
-        </Button>
+        {can("user.phone") ? (
+          <Button size={size} variant="outline" icon={Phone} onClick={() => setOpen("phone")}>
+            Change phone
+          </Button>
+        ) : null}
+        {can("user.status") ? (
+          <Button
+            size={size}
+            variant="outline"
+            icon={isActive ? Ban : ShieldAlert}
+            className={isActive ? "text-danger" : "text-success"}
+            onClick={() => setOpen("status")}
+          >
+            {isActive ? "Suspend" : "Change status"}
+          </Button>
+        ) : null}
       </div>
 
       <StatusDrawer user={user} open={open === "status"} onClose={close} />
@@ -201,13 +209,16 @@ export function WalletDrawer({
   }, [open]);
 
   const kobo = Math.round(Number(amount) * 100);
-  const valid = Number.isFinite(kobo) && kobo > 0 && reason.trim().length > 0;
   const balance = wallet?.balance ?? 0;
+  // A debit can't take the wallet below zero; the API refuses it too, so say so before the click.
+  const overdrawn = type === "DEBIT" && kobo > balance;
+  const valid = Number.isFinite(kobo) && kobo > 0 && reason.trim().length > 0 && !overdrawn;
   const next = type === "CREDIT" ? balance + kobo : balance - kobo;
 
   const action = useAction((body: { amount: number; type: TransactionType; reason: string }) => users.adjustWallet(user._id, body), {
     success: (_, vars) => `${vars.type === "CREDIT" ? "Credited" : "Debited"} ${naira(vars.amount)}`,
-    invalidate: userInvalidations(user._id),
+    // Both legs are recorded: the user's wallet and the platform wallet move together.
+    invalidate: [...userInvalidations(user._id), ["finance", "platform-wallet"], "transactions"],
     onSuccess: onClose,
   });
 
@@ -217,7 +228,7 @@ export function WalletDrawer({
       onClose={onClose}
       width="sm"
       title="Adjust wallet"
-      subtitle="Manual credit or debit. Every adjustment is audited."
+      subtitle="A credit comes out of the platform wallet; a debit goes back into it. Both legs are recorded and audited."
       footer={
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
@@ -256,7 +267,11 @@ export function WalletDrawer({
             </button>
           ))}
         </div>
-        <Field label="Amount (naira)" hint={kobo > 0 ? `Balance after: ${naira(next)}` : "Type the amount in naira, for example 1500."}>
+        <Field
+          label="Amount (naira)"
+          hint={kobo > 0 && !overdrawn ? `Balance after: ${naira(next)}` : "Type the amount in naira, for example 1500."}
+          error={overdrawn ? `Only ${naira(balance)} is available to debit.` : undefined}
+        >
           <Input type="number" min={0} step="0.01" inputMode="decimal" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </Field>
         <Field label="Reason" hint="Required. Shown in the audit log.">
@@ -271,32 +286,41 @@ export function WalletDrawer({
 
 export function RefundDrawer({ user, open, onClose }: { user: User; open: boolean; onClose: () => void }) {
   const [orderId, setOrderId] = useState("");
-  const [manualId, setManualId] = useState("");
+  const [term, setTerm] = useState("");
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   useEffect(() => {
     if (open) {
       setOrderId("");
-      setManualId("");
+      setTerm("");
       setAmount("");
       setReason("");
     }
   }, [open]);
 
-  // Only fetched while the drawer is open so the page never pays for it.
-  const recent = useOrders({ byUserId: user._id, limit: 50, order: "DESC" }, { enabled: open });
-  const orders: Order[] = useMemo(() => recent.data?.items ?? [], [recent.data]);
-  const chosenId = orderId || manualId.trim();
-  const selected = orders.find((o) => o._id === chosenId);
+  // Only fetched while the drawer is open. The API already limits this to orders paid on the wallet
+  // and reports what has gone back, so an unpaid or already-refunded order can't be picked.
+  const debounced = useDebounced(term.trim(), 300);
+  const refundable = useRefundableOrders(user._id, open, debounced);
+  const orders = useMemo(() => refundable.data ?? [], [refundable.data]);
+  const [chosen, setChosen] = useState<RefundableOrder | null>(null);
+  const selected = chosen && chosen._id === orderId ? chosen : orders.find((o) => o._id === orderId) ?? null;
   const kobo = amount ? Math.round(Number(amount) * 100) : undefined;
-  const amountOk = kobo === undefined || (Number.isFinite(kobo) && kobo > 0 && (!selected?.totalAmountPayable || kobo <= selected.totalAmountPayable));
-  const valid = Boolean(chosenId) && reason.trim().length > 0 && amountOk;
+  const maxKobo = selected?.refundable ?? 0;
+  const amountOk = kobo === undefined || (Number.isFinite(kobo) && kobo > 0 && kobo <= maxKobo);
+  const valid = Boolean(selected) && maxKobo > 0 && reason.trim().length > 0 && amountOk;
 
   const action = useAction((body: { orderId: string; amount?: number; reason: string }) => users.refund(user._id, body), {
     success: (_, vars) => (vars.amount ? `Refunded ${naira(vars.amount)}` : "Order refunded in full"),
-    invalidate: userInvalidations(user._id),
+    invalidate: [...userInvalidations(user._id), ["user", user._id, "refundable-orders"]],
     onSuccess: onClose,
   });
+
+  const pick = (order: RefundableOrder) => {
+    setChosen(order);
+    setOrderId(order._id);
+    setAmount("");
+  };
 
   return (
     <Drawer
@@ -304,48 +328,84 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
       onClose={onClose}
       width="sm"
       title="Refund an order"
-      subtitle="Money goes back to the customer's wallet. Audited."
+      subtitle="Money goes back to the customer's wallet. Only orders paid from the wallet can be refunded. Audited."
       footer={
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
             Cancel
           </Button>
-          <Button loading={action.isPending} disabled={!valid} onClick={() => action.mutate({ orderId: chosenId, amount: kobo, reason: reason.trim() })}>
-            {kobo ? `Refund ${naira(kobo)}` : "Refund in full"}
+          <Button loading={action.isPending} disabled={!valid} onClick={() => action.mutate({ orderId, amount: kobo, reason: reason.trim() })}>
+            {kobo ? `Refund ${naira(kobo)}` : selected ? `Refund ${naira(maxKobo)}` : "Refund"}
           </Button>
         </div>
       }
     >
       <div className="space-y-4">
-        <Field label="Order" hint={recent.isLoading ? "Loading recent orders" : orders.length ? "Most recent 50 orders." : "No orders found for this customer."}>
-          <Select value={orderId} onChange={(e) => setOrderId(e.target.value)}>
-            <option value="">Pick an order</option>
-            {orders.map((o) => (
-              <option key={o._id} value={o._id}>
-                #{o.orderNumber ?? o._id.slice(-6)} · {naira(o.totalAmountPayable)} · {o.status.toLowerCase().replace("_", " ")} · {when(o.createdAt)}
-              </option>
-            ))}
-          </Select>
-        </Field>
-        {!orderId ? (
-          <Field label="Or paste an order id">
-            <Input value={manualId} onChange={(e) => setManualId(e.target.value)} placeholder="64f1c2…" />
-          </Field>
-        ) : null}
         {selected ? (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
-            <span className="font-semibold text-ink">#{selected.orderNumber}</span>
-            <Badge tone="neutral">{selected.type}</Badge>
-            <span className="text-ink-muted">Order value {naira(selected.totalAmountPayable)}</span>
-            {selected.paymentStatus ? <Badge tone="neutral">{String(selected.paymentStatus).toLowerCase()}</Badge> : null}
-          </div>
-        ) : null}
+          <Field label="Order">
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+              <span className="font-semibold text-ink">#{selected.orderNumber}</span>
+              <Badge tone="neutral">{selected.type}</Badge>
+              <span className="text-ink-muted">Paid {naira(selected.totalAmountPayable)}</span>
+              {selected.refunded > 0 ? <Badge tone="warning">{naira(selected.refunded)} refunded</Badge> : null}
+              <Badge tone={selected.refundable > 0 ? "success" : "neutral"}>{naira(selected.refundable)} refundable</Badge>
+              <button
+                type="button"
+                onClick={() => {
+                  setOrderId("");
+                  setChosen(null);
+                }}
+                className="ml-auto text-xs font-semibold text-brand-dark hover:underline"
+              >
+                Change
+              </button>
+            </div>
+          </Field>
+        ) : (
+          <Field label="Order" hint="Type an order number to narrow the list. Paid orders only, newest first.">
+            <Input left={<Search size={15} />} value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Order number" />
+            <div className="mt-2 max-h-64 overflow-y-auto rounded-xl border border-line bg-surface">
+              {refundable.isLoading ? (
+                <div className="space-y-2 p-3">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-2/3" />
+                </div>
+              ) : !orders.length ? (
+                <p className="p-3 text-xs text-ink-muted">{debounced ? `No paid orders match “${debounced}”.` : "This customer has no paid orders to refund."}</p>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {orders.map((o) => (
+                    <li key={o._id}>
+                      <button
+                        type="button"
+                        disabled={o.refundable <= 0}
+                        onClick={() => pick(o)}
+                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-card disabled:opacity-50"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-ink">
+                            #{o.orderNumber} · {naira(o.totalAmountPayable)}
+                          </span>
+                          <span className="block truncate text-[11px] text-ink-muted">
+                            {o.status.toLowerCase().replace("_", " ")} · {when(o.createdAt)}
+                            {o.refunded > 0 ? ` · ${naira(o.refunded)} already refunded` : ""}
+                          </span>
+                        </span>
+                        <Badge tone={o.refundable > 0 ? "success" : "neutral"}>{o.refundable > 0 ? `${naira(o.refundable)} left` : "Refunded"}</Badge>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Field>
+        )}
         <Field
           label="Amount (naira), optional"
-          hint={amountOk ? "Leave blank to refund the full order value." : "Must be more than zero and not above the order value."}
+          hint={amountOk ? `Leave blank to refund everything still refundable${selected ? ` (${naira(maxKobo)})` : ""}.` : `Must be more than zero and at most ${naira(maxKobo)}.`}
           error={!amountOk ? "Check the amount" : undefined}
         >
-          <Input type="number" min={0} step="0.01" inputMode="decimal" placeholder="Full order value" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <Input type="number" min={0} step="0.01" inputMode="decimal" placeholder={selected ? (maxKobo / 100).toFixed(2) : "0.00"} value={amount} onChange={(e) => setAmount(e.target.value)} disabled={!selected} />
         </Field>
         <Field label="Reason" hint="Required. Shown in the audit log.">
           <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Rider never showed up" />

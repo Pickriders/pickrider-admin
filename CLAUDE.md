@@ -44,18 +44,27 @@ changes the risk profile of ordinary-looking work:
 ```
 src/
 ├── app/
-│   ├── (dashboard)/      admin, analytics, business, couriers, customers,
-│   │                     delivery-price, finances, orders, vehicles
+│   ├── (dashboard)/      achievements, admin, analytics, business, coupons, couriers,
+│   │                     customers, dashboard, delivery-price, finances, messaging,
+│   │                     orders, support, vehicles — each with `_components/` tabs
 │   ├── auth/             login etc. (unauthenticated)
 │   ├── layout.tsx        root layout
 │   └── globals.css
-├── api/{queries,mutations}   React Query hooks over the generated client
-├── components/
-│   ├── ui/               shadcn primitives — Button, Table, Select, DateCalender, …
-│   ├── charts/           Recharts wrappers
-│   ├── layouts/  common/  svg/
-│   └── <Feature>Table/   OrdersTable, CouriersTable, VehiclesTable, …
-├── constant/   hooks/   lib/   providers/   services/   styles/   utils/
+├── services/apiService/  GENERATED swagger client (`apiService`) + hand-written index.ts
+├── lib/admin/
+│   ├── api.ts            typed namespaces (users, orders, coupons, announcements, …) —
+│   │                     every function delegates to a generated apiService method
+│   ├── api.test.ts       route contract: verb + path + query + body per namespace function
+│   ├── hooks.ts          React Query hooks over api.ts (`useAction` = mutation + toast)
+│   ├── http.ts           errorMessage()
+│   ├── url-state.ts      useTableState / useTabParam — table + tab state in the URL
+│   └── format.ts         naira/count/when/… display helpers
+├── lib/admin-access.ts   role matrix: SECTION_ACCESS, ACTION_ROLES, can()
+├── components/kit/       the admin's own primitives — Panel, Button, Badge, DataTable,
+│                         Drawer, ConfirmDialog, StatCard, UserPicker, charts
+├── components/ui/        shadcn primitives (older screens)
+├── api/mutations/auth.ts auth flows (OTP, reset) on the generated client
+├── constant/   hooks/   providers/   styles/   utils/
 └── middleware.ts         auth gate
 ```
 
@@ -66,44 +75,62 @@ src/
 
 ## 4. Hard rules
 
-1. **Never edit the generated API client.**
+1. **Never edit the generated API client, and never bypass it.**
    `src/services/apiService/{Api,ApiRoute,data-contracts,http-client}.ts` come from
-   `yarn generate-types` (which also runs on every `yarn dev`). Only `apiService/index.ts` is
-   hand-written. To change them, change `backend-api` and regenerate — see `sync-api-types`.
-2. **Tables are URL-driven.** Use `useApiReactTableQuery`, `useTableUrlFilter`, `useURLQuery`,
-   and `useRowSelection` from `src/hooks/` so filters, pagination, and selection live in the
+   `yarn generate-types` (which also runs on every `yarn dev`, exactly like `yarn start` in
+   customer-app and rider-app). Only `apiService/index.ts` is hand-written (bearer token +
+   401 redirect). To change a route, change `backend-api` and regenerate — see the
+   `sync-api-types` skill. **No hand-written axios calls**: every request goes through a
+   generated `apiService.<method>()`, wrapped in a namespace in `src/lib/admin/api.ts` so a
+   route the backend renames fails `tsc` instead of 404ing in front of staff.
+2. **Every `api.ts` function gets a line in `src/lib/admin/api.test.ts`.** The test fails if a
+   namespace function has no route case, so a new endpoint cannot ship without pinning its
+   verb, path, query and body. New namespaces should type themselves straight off
+   `data-contracts.ts` (see `announcements`) rather than re-declaring the DTO by hand.
+3. **Tables are URL-driven.** Use `useTableState` / `useTabParam` from `src/lib/admin/url-state.ts`
+   with the kit `DataTable` so filters, pagination and the open drawer (`?id=`) live in the
    query string — shareable between staff and surviving a refresh. Don't hold table state in
    local component state.
-3. **Money from the API is in sub-units** (kobo/cents). Convert with `subUnitToBaseUnit()` from
+4. **Money from the API is in sub-units** (kobo/cents). Convert with `subUnitToBaseUnit()` from
    `@/utils` before display and `baseUnitToSubUnit()` before sending. This app shows balances,
    settlements, and refunds — an error here is a wrong financial figure in front of staff.
-4. **Tailwind + shadcn only.** Compose classes with `cn()` from `@/lib/utils`. Reuse a primitive
-   from `src/components/ui/` before writing anything bespoke; add new primitives the shadcn way.
-   No Sass modules, no styled-components.
-5. **Never commit secrets** — `.env*` and any credential file. Don't read, print, or inline them.
+5. **Tailwind + the kit.** Compose classes with `cx()` from `@/components/kit` (or `cn()` from
+   `@/lib/utils` on older screens). Reuse a primitive from `src/components/kit/` (then
+   `src/components/ui/`) before writing anything bespoke. No Sass modules, no styled-components.
+6. **Never commit secrets** — `.env*` and any credential file. Don't read, print, or inline them.
    Remember `NEXT_PUBLIC_*` values ship to the browser and are not secret; nothing else belongs
    client-side.
-6. **Do not upgrade Next, React, or Tailwind** as a side effect of a task.
+7. **Do not upgrade Next, React, or Tailwind** as a side effect of a task.
 
 ---
 
 ## 5. Conventions
 
-**Data access** — React Query hooks in `src/api/queries/` and `src/api/mutations/`, built on
-the local `useApiQuery` / `useApiMutation` wrappers. Export a `*_KEY` constant per domain and
-invalidate it from related mutations:
+**Data access** — three layers, never skipped:
 
 ```ts
-export const AUDIT_KEY = "audit-logs";
-
-export const useGetAuditLogsQuery = (page = 1, limit = 15) =>
-  useApiQuery({
-    queryKey: [AUDIT_KEY, page, limit],
-    queryFn: () => apiService.findAll({ page, limit, order: "DESC" }),
-  });
+// 1. src/lib/admin/api.ts — a namespace function per route, on the generated client
+export const announcements = {
+  list: (query: Query) => page<Announcement>(apiService.adminListAnnouncements(params(query))),
+  setStatus: (id: string, status: AnnouncementStatus) => apiService.adminUpdateAnnouncementStatus(id, { status }),
+};
+// 2. src/lib/admin/api.test.ts — its route case
+{ name: "announcements.setStatus", call: () => api.announcements.setStatus(ID, "ACTIVE"), method: "PATCH", path: `${P}/admins/announcements/${ID}/status`, data: { status: "ACTIVE" } },
+// 3. src/lib/admin/hooks.ts — the React Query hook the page uses
+export const useAnnouncements = (query: Query) => useQuery({ queryKey: ["announcements", query], queryFn: () => announcements.list(query), ...keep });
 ```
 
-Never call `apiService` directly from a component — go through a hook.
+Mutations use `useAction(fn, { success, invalidate, onSuccess })` from hooks.ts — it toasts and
+invalidates for you. Never call `apiService` or an `api.ts` namespace directly from a component.
+
+**Permissions** — add an entry to `ACTION_ROLES` in `src/lib/admin-access.ts` and gate the
+button with `const { can } = useCan(); can("announcement.manage")`. The backend is the real
+guard; this only hides what a role cannot do.
+
+**In-app announcements** — the Messaging page's Announcements tab writes "what's new" popups
+for the customer and rider apps. Internal deep links are picked from the screen registry the
+backend serves (`GET admins/announcements/screens`, source: `backend-api/src/announcements/app-screens.ts`).
+Nothing here needs updating when an app gains a screen — that list lives in the backend.
 
 **Server vs client components** — App Router with `rsc: true`. Anything using hooks, React
 Query, or browser APIs needs `"use client"`. Keep the boundary as low in the tree as you can.
@@ -115,16 +142,14 @@ states. Don't invent new spinner patterns.
 
 ---
 
-## 6. A known trap: client-side analytics
+## 6. Aggregates come from the backend
 
-The backend exposes **no cross-entity aggregate endpoints**, so
-`src/api/queries/analytics.ts` derives every dashboard headline figure client-side — fanning
-out `limit: 1` calls for counts and windowed fetches bucketed per day for the time-series
-charts. It is documented as such at the top of that file.
-
-This is fragile and chatty. **Before adding more client-side derivation, consider whether the
-right fix is a new aggregate endpoint in `backend-api`** — and say so in your report rather than
-quietly deepening the workaround.
+Dashboard headline figures, series and leaderboards come from `admins/stats/*`
+(`stats.*` in `api.ts`) and each feature's `summary` endpoint (`coupons.summary`,
+`issues.summary`, `announcements.summary`, …). The old client-side fan-out
+(`src/api/queries/analytics.ts`) is gone. **Do not bring it back**: if a page needs a number the
+API does not give, add an aggregate endpoint in `backend-api` and say so in your report rather
+than deriving it from list calls.
 
 ---
 
@@ -135,15 +160,17 @@ yarn dev      # http://localhost:3006 — NOTE: runs generate-types first (see b
 yarn build
 ```
 
-**`yarn dev` runs `generate-types` first**, hitting the remote dev API and **rewriting
-`src/services/apiService/`**, which drops unrelated churn into your working tree. To launch
-without it:
+**`yarn dev` runs `generate-types` first** (the same convention as customer-app and rider-app),
+hitting the **deployed dev API** and rewriting `src/services/apiService/`. That is the point:
+the client is always the deployed contract. Two consequences:
 
-```bash
-npx next dev --port 3006
-```
+- A backend change that is not deployed yet is not in the client. To build against it, dump the
+  local backend's document and generate from that instead:
+  `cd ../backend-api && yarn swagger:dump` then here `yarn generate-types:local`.
+- If the regenerated client drops routes you rely on, the deployed API is behind your backend
+  branch — `git checkout -- src/services/apiService` and use the local recipe above.
 
-If the tree gets dirtied anyway: `git checkout -- src/services/apiService`.
+`yarn dev:offline` skips the regeneration when you just need the UI up.
 
 The app redirects to `/auth/login` without an access-token cookie. Never start a dev server
 blocking in the foreground.
@@ -155,11 +182,17 @@ blocking in the foreground.
 ```bash
 npx tsc --noEmit
 yarn lint
+yarn test
 ```
 
-Both clean. **This repo has no test suite** — don't invent `yarn test` or claim tests pass. The
-type-checker and lint are the only automated gates, so review your own diff for what they can't
-catch: money conversions, permission checks, and destructive actions without confirmation.
+All three clean. Jest (`jest.config.js`, via `next/jest`) runs `src/**/*.test.ts(x)`; the
+route-contract test in `src/lib/admin/api.test.ts` is the one that catches API drift. The
+pre-commit hook (`.husky/pre-commit`) runs `tsc`, then lint-staged: `eslint --fix` and
+`jest --findRelatedTests` on the staged files — the same shape as backend-api's hook. CI
+(`.github/workflows/ci.yml`) runs all three on every push and PR.
+
+Still review your own diff for what tooling can't catch: money conversions, permission checks,
+and destructive actions without confirmation.
 
 Branch off `dev`; PR into `dev`. Commit only when asked. Never commit `.next/`, `out/`, or
 `tsconfig.tsbuildinfo`.
@@ -178,8 +211,9 @@ Two GitHub Actions workflows in `.github/workflows/` run this:
   open, it regenerates the description instead. Only *merged* PRs promote; closing one without
   merging does nothing. It can also be run by hand from the Actions tab (`workflow_dispatch`)
   to refresh either chain.
-- **`ci.yml`** — type-checks (`npx tsc --noEmit`) and lints — there is no test suite here on **every branch and every pull request** — each push (feature branches
-  included, before a PR exists) and each PR regardless of its base.
+- **`ci.yml`** — type-checks (`npx tsc --noEmit`), lints and runs `yarn test` on **every branch
+  and every pull request** — each push (feature branches included, before a PR exists) and each
+  PR regardless of its base.
 
 **`.github/scripts/release-notes.sh`** builds the release PR description. It lists **squash-merged
 pull requests only** — author name and commit title — because a squash merge is the one thing

@@ -50,8 +50,9 @@ export function toKobo(input: string): number | null {
 /** What the transactions metrics endpoints take for a picked range. */
 export function rangeToDateRange(range: RangeValue): string | undefined {
   if (range.all) return undefined;
-  const parts = [range.from, range.to].filter(Boolean);
-  return parts.length ? parts.join(",") : undefined;
+  if (!range.from && !range.to) return undefined;
+  // "start[,end]" on the core: a lone end date must not be sent alone or it becomes the start.
+  return [range.from ?? "2023-01-01", range.to].filter(Boolean).join(",");
 }
 
 export function isObjectId(value: string | null | undefined) {

@@ -8,8 +8,11 @@ import {
   Car,
   ClipboardList,
   LayoutDashboard,
+  LifeBuoy,
+  Medal,
   Megaphone,
   ShieldCheck,
+  Ticket,
   Users,
   Wallet,
   type LucideIcon,
@@ -27,7 +30,7 @@ import { cn } from "@/lib/utils";
  * licences to review, vehicles to verify, orders nobody has picked up.
  */
 type NavItem = { label: string; href: string; icon: LucideIcon; badge?: (a: AttentionCounts) => number | undefined };
-type AttentionCounts = { licencesAwaitingReview?: number; vehiclesPendingVerification?: number; ordersAwaitingRiderStale?: number; withdrawalsProcessing?: number; failedNotifications24h?: number };
+type AttentionCounts = { licencesAwaitingReview?: number; vehiclesPendingVerification?: number; ordersAwaitingRiderStale?: number; withdrawalsProcessing?: number; failedNotifications24h?: number; issuesOpen?: number };
 
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
@@ -43,6 +46,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       { label: "Orders", href: "/orders", icon: ClipboardList, badge: (a) => a.ordersAwaitingRiderStale },
       { label: "Couriers", href: "/couriers", icon: Bike, badge: (a) => a.licencesAwaitingReview },
       { label: "Vehicles", href: "/vehicles", icon: Car, badge: (a) => a.vehiclesPendingVerification },
+      { label: "Support", href: "/support", icon: LifeBuoy, badge: (a) => a.issuesOpen },
     ],
   },
   {
@@ -58,6 +62,8 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       { label: "Finances", href: "/finances", icon: Wallet, badge: (a) => a.withdrawalsProcessing },
       { label: "Messaging", href: "/messaging", icon: Megaphone, badge: (a) => a.failedNotifications24h },
       { label: "Delivery Price", href: "/delivery-price", icon: Calculator },
+      { label: "Coupons", href: "/coupons", icon: Ticket },
+      { label: "Achievements", href: "/achievements", icon: Medal },
     ],
   },
   {

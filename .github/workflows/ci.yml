@@ -32,7 +32,7 @@ concurrency:
 
 jobs:
   test:
-    name: Type-check and lint
+    name: Type-check, lint and test
     runs-on: ubuntu-latest
 
     steps:
@@ -46,13 +46,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # No test suite in this repo yet. `yarn build` is deliberately not run:
-      # `next build` needs runtime env vars this workflow has no access to.
+      # `yarn build` is deliberately not run: `next build` needs runtime env vars this
+      # workflow has no access to. The type-check covers the generated client (a method the
+      # backend renamed fails here) and the jest suite pins each API namespace to its route.
       - name: Type-check
         run: npx tsc --noEmit
 
       - name: Lint
         run: yarn lint
 
-      - name: Note on test coverage
-        run: echo "::notice::pickrider-admin has no test suite — type-check and lint are the only gates."
+      - name: Test
+        run: yarn test --ci

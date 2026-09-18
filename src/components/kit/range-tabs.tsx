@@ -16,8 +16,13 @@ const PRESETS = [
   { days: 90, label: "90d" },
 ] as const;
 
+/**
+ * Calendar day in Lagos, not UTC: between midnight and 1am WAT `toISOString()` still says
+ * yesterday, which dropped the current day from every "last N days" window.
+ */
+const LAGOS_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos", year: "numeric", month: "2-digit", day: "2-digit" });
 function isoDay(date: Date) {
-  return date.toISOString().slice(0, 10);
+  return LAGOS_DAY.format(date);
 }
 
 export function presetRange(days: number): RangeValue {

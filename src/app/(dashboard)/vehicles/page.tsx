@@ -11,6 +11,7 @@ import { Button, DataTable, PageHeader, cx } from "@/components/kit";
 
 import { VehicleFormDrawer } from "./VehicleFormDrawer";
 import { VEHICLE_STATUS_LABEL, VEHICLE_STATUS_OPTIONS, VehicleMobileCard, vehicleColumns } from "./vehicle-shared";
+import { useCan } from "@/lib/admin/use-can";
 
 /**
  * Every vehicle on the platform. Status chips sit above the table so the
@@ -28,6 +29,7 @@ function VehiclesList() {
   const table = useTableState();
   const [adding, setAdding] = useState(false);
   const attention = useAttention();
+  const { can } = useCan();
 
   const query = useMemo(() => ({ ...table.query, vehicleSearch: table.state.search }), [table.query, table.state.search]);
   const data = useVehicles(query);
@@ -42,9 +44,11 @@ function VehiclesList() {
         title="Vehicles"
         description="Every motorbike registered by a courier or a business, and where each one is in review."
         actions={
-          <Button icon={Plus} onClick={() => setAdding(true)}>
-            Add vehicle
-          </Button>
+          can("vehicle.create") ? (
+            <Button icon={Plus} onClick={() => setAdding(true)}>
+              Add vehicle
+            </Button>
+          ) : undefined
         }
       />
 

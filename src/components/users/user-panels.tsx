@@ -12,6 +12,7 @@ import { useOrders, useTransactions } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { phoneLabel } from "./user-actions";
+import { errorMessage } from "@/lib/admin/http";
 
 /**
  * Pieces the customer and courier detail pages share: the identity header,
@@ -236,7 +237,7 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       columns={orderColumns}
       data={orders.data}
       loading={orders.isLoading}
-      error={orders.error ? "Could not load orders." : null}
+      error={orders.error ? errorMessage(orders.error, "Could not load orders.") : null}
       onRetry={() => orders.refetch()}
       filters={filters}
       searchPlaceholder="Order number"
@@ -404,7 +405,7 @@ export function UserTransactionsTable({
       columns={transactionColumns}
       data={data}
       loading={transactions.isLoading}
-      error={transactions.error ? "Could not load transactions." : null}
+      error={transactions.error ? errorMessage(transactions.error, "Could not load transactions.") : null}
       onRetry={() => transactions.refetch()}
       filters={filters}
       searchPlaceholder="Reference on this page"
