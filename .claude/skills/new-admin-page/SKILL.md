@@ -19,45 +19,45 @@ src/app/(dashboard)/settlements/
 **do not add your own auth check**. Add `"use client"` at the top of any page using hooks,
 React Query, or browser APIs.
 
-## 2. The data hook
+## 2. The data layer — three files, always
 
-Never call `apiService` from the page. Add a hook in `src/api/queries/<domain>.ts`:
+Never call `apiService` from the page. Every route gets:
+
+1. A namespace function in `src/lib/admin/api.ts` on the **generated** client (check the method
+   name in `src/services/apiService/Api.ts`; if the route is missing, the backend change is not
+   in the client yet — see `sync-api-types`). Type the response off `data-contracts.ts`.
+2. A route case in `src/lib/admin/api.test.ts` (verb, path, query, body). The suite fails until
+   it exists.
+3. A hook in `src/lib/admin/hooks.ts` — `useQuery` for reads, `useAction` for writes (it toasts
+   and invalidates).
 
 ```ts
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { apiService } from "@/services";
-
-export const SETTLEMENT_KEY = "settlements";
-
-export const useGetSettlementsQuery = (page = 1, limit = 15) =>
-  useApiQuery({
-    queryKey: [SETTLEMENT_KEY, page, limit],
-    queryFn: () => apiService.getSettlements({ page, limit, order: "DESC" }),
-  });
+// api.ts
+export const settlements = {
+  list: (query: Query) => page<Settlement>(apiService.listSettlements(params(query))),
+  approve: (id: string) => apiService.approveSettlement(id),
+};
+// api.test.ts
+{ name: "settlements.list", call: () => api.settlements.list({ page: 1 }), method: "GET", path: `${P}/admins/settlements`, params: { page: "1" }, paged: true },
+// hooks.ts
+export const useSettlements = (query: Query) => useQuery({ queryKey: ["settlements", query], queryFn: () => settlements.list(query), ...keep });
 ```
-
-Mutations go in `src/api/mutations/` and invalidate `[SETTLEMENT_KEY]` in `onSuccess`.
-Export both from the `src/api` barrel.
 
 ## 3. The table — keep state in the URL
 
-Use the existing hooks so filters, pagination, and selection are shareable and survive refresh:
-
-- `useApiReactTableQuery` — pairs a React Query fetch with TanStack Table state
-- `useTableUrlFilter` — filter state in the query string
-- `useURLQuery` — read/write query params
-- `useRowSelection` — bulk-selection state
-
-Copy an existing table (`src/components/OrdersTable/`, `CouriersTable/`, `VehiclesTable/`)
-rather than assembling one from scratch. Reuse `TableSearchInput`, `TableFilter`,
-`TableStatus`, `PaginationBtns`, `PaginationInfo`, and `TableLoading` from
-`src/components/ui/`.
+`useTableState({ limit })` from `src/lib/admin/url-state.ts` owns page/limit/sort/search/filters
+in the query string; `useTabParam` owns the tab. Feed it to the kit `DataTable` (columns via
+`ColumnDef` + `meta()` for sort keys, CSV and responsive hiding; `filters` for select chips;
+`toolbarExtra` for buttons; `mobileCard` for phones). Open a row's drawer with
+`table.update({ id })` so the URL is shareable. Copy `src/app/(dashboard)/orders/_components/`
+or `messaging/_components/announcements-tab.tsx` rather than assembling one from scratch.
 
 ## 4. UI
 
-Tailwind + shadcn primitives from `src/components/ui/`, composed with `cn()` from
-`@/lib/utils`. `SectionHeader` / `PrimaryHeading` for headers, `Skeleton` / `PageLoading` for
-loading, Sonner for toasts.
+Tailwind + the kit (`src/components/kit/`): `PageHeader`, `Panel`/`PanelHeader`, `StatCard`,
+`Badge`, `Button`, `Drawer`, `ConfirmDialog`, `Field`/`Input`/`Select`/`Textarea`, `Skeleton`,
+`EmptyState`, composed with `cx()`. Sonner for toasts (via `useAction`). Gate write buttons with
+`useCan()` and a new `ACTION_ROLES` entry in `src/lib/admin-access.ts`.
 
 **Money columns**: values from the API are in sub-units — run them through
 `subUnitToBaseUnit()` from `@/utils` before rendering.
@@ -73,8 +73,8 @@ add a breadcrumb via `BreadCrumb` / `BreadCrumbNav` if the area uses them.
 ## 6. Finish
 
 ```bash
-npx tsc --noEmit && yarn lint
+npx tsc --noEmit && yarn lint && yarn test
 ```
 
-No test suite exists here — don't claim tests. Report the new route and whether any needed data
-is missing from the API (a new backend endpoint often beats more client-side derivation).
+Report the new route and whether any needed data is missing from the API (a new backend
+endpoint beats client-side derivation).
