@@ -225,7 +225,7 @@ function Verification({ id }: { id: string }) {
   const close = () => setDialog(null);
 
   const approve = useAction(
-    async () => (licence.status === "SUBMITTED" ? users.licenceApprove(id, {}) : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" })),
+    async () => (licence.status === "SUBMITTED" ? users.licenceApprove(id) : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" })),
     { success: "Licence approved", invalidate: licenceInvalidations(id), onSuccess: close },
   );
   const suspend = useAction((body: { status: KycStatus; comment?: string }) => users.licenceUpdate(id, body), {

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tansta
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -155,3 +155,12 @@ export const useIssuesSummary = () => useQuery({ queryKey: ["issues", "summary"]
 export const useIssue = (id: string) => useQuery({ queryKey: ["issue", id], queryFn: () => issues.get(id), enabled: Boolean(id) });
 export const useUserIssues = (userId: string, query: Query, enabled = true) =>
   useQuery({ queryKey: ["issues", "user", userId, query], queryFn: () => issues.forUser(userId, query), ...keep, enabled: Boolean(userId) && enabled });
+
+// In-app announcements
+export const useAnnouncements = (query: Query) => useQuery({ queryKey: ["announcements", query], queryFn: () => announcements.list(query), ...keep });
+export const useAnnouncement = (announcementId: string) =>
+  useQuery({ queryKey: ["announcement", announcementId], queryFn: () => announcements.get(announcementId), enabled: Boolean(announcementId), refetchInterval: POLL_MS });
+export const useAnnouncementsSummary = () => useQuery({ queryKey: ["announcements", "summary"], queryFn: announcements.summary, refetchInterval: POLL_MS });
+export const useAnnouncementScreens = () => useQuery({ queryKey: ["announcements", "screens"], queryFn: announcements.screens, staleTime: 60 * 60_000 });
+export const useAnnouncementReceipts = (announcementId: string, query: Query) =>
+  useQuery({ queryKey: ["announcement", announcementId, "receipts", query], queryFn: () => announcements.receipts(announcementId, query), enabled: Boolean(announcementId), ...keep });

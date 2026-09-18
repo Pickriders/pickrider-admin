@@ -80,6 +80,7 @@ export const ACTION_ROLES = {
   "coupon.manage": GROWTH,
   "badge.manage": GROWTH,
   "broadcast.send": GROWTH,
+  "announcement.manage": GROWTH,
   // Support
   "support.handle": OPS,
   // Admin section

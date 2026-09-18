@@ -1,6 +1,5 @@
 /* eslint-disable */
 /* tslint:disable */
-// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -9,114 +8,6 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
-
-/** Manual admin status override (audited). */
-export enum OrderStatus {
-  INITIATED = "INITIATED",
-  ACCEPTED = "ACCEPTED",
-  ON_GOING = "ON_GOING",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-}
-
-/** @default "ACCEPTED" */
-export enum LocationUpdateStatus {
-  ACCEPTED = "ACCEPTED",
-  DECLINED = "DECLINED",
-}
-
-export enum OrderLocationStatus {
-  PENDING = "PENDING",
-  IN_TRANSIT = "IN_TRANSIT",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  ARRIVED = "ARRIVED",
-}
-
-/** @default "USER" */
-export enum CancelledBy {
-  USER = "USER",
-  RIDER = "RIDER",
-  ADMIN = "ADMIN",
-}
-
-/** @default "SINGLE" */
-export enum NotificationCategory {
-  SINGLE = "SINGLE",
-  BROADCAST = "BROADCAST",
-  SCHEDULED_BROADCAST = "SCHEDULED_BROADCAST",
-}
-
-/** @default "EMAIL" */
-export enum NotificationType {
-  IN_APP = "IN_APP",
-  PUSH = "PUSH",
-  SMS = "SMS",
-  EMAIL = "EMAIL",
-}
-
-export enum CouponType {
-  FIXED = "FIXED",
-  PERCENTAGE = "PERCENTAGE",
-}
-
-/** @default "ACCEPTED" */
-export enum Status {
-  PENDING = "PENDING",
-  REJECTED = "REJECTED",
-  ACCEPTED = "ACCEPTED",
-}
-
-/** CREDIT tops up, DEBIT deducts. */
-export enum TransactionType {
-  CREDIT = "CREDIT",
-  DEBIT = "DEBIT",
-}
-
-export enum UserStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  SUSPENDED = "SUSPENDED",
-  BANNED = "BANNED",
-}
-
-export enum PaymentProvider {
-  PAYSTACK = "PAYSTACK",
-  FLUTTERWAVE = "FLUTTERWAVE",
-}
-
-export enum EntityType {
-  TEAM = "TEAM",
-  USER = "USER",
-  BUSINESS = "BUSINESS",
-}
-
-export enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
-
-export enum UserSignUpRoles {
-  USER = "USER",
-  PLATFORM_RIDER = "PLATFORM_RIDER",
-  DEVELOPER = "DEVELOPER",
-}
-
-export enum Role {
-  USER = "USER",
-  ADMIN = "ADMIN",
-  SUPER_ADMIN = "SUPER_ADMIN",
-  PLATFORM_ADMIN = "PLATFORM_ADMIN",
-  PLATFORM_RIDER = "PLATFORM_RIDER",
-  PLATFORM_OPERATION = "PLATFORM_OPERATION",
-  PLATFORM_FINANCE = "PLATFORM_FINANCE",
-  PLATFORM_BUSINESS = "PLATFORM_BUSINESS",
-  PLATFORM_MANAGER = "PLATFORM_MANAGER",
-  DEVELOPER = "DEVELOPER",
-  BUSINESS_ADMIN = "BUSINESS_ADMIN",
-  BUSINESS_USER = "BUSINESS_USER",
-  BUSINESS_RIDER = "BUSINESS_RIDER",
-}
 
 export interface CountryConfigSchemaDto {
   exchangeRate: number;
@@ -407,11 +298,665 @@ export interface UpdateStateDto {
   config?: StateConfigDto;
 }
 
+export interface RangeDto {
+  /** @format date-time */
+  from: string;
+  /** @format date-time */
+  to: string;
+}
+
+export interface OrderWindowDto {
+  orders: number;
+  completed: number;
+  cancelled: number;
+  ongoing: number;
+  volume: number;
+  riderFees: number;
+  serviceCharge: number;
+  discounts: number;
+  completedVolume: number;
+  averageOrderValue: number;
+  completionRate: number;
+  cancellationRate: number;
+  customers: number;
+  riders: number;
+  byStatus: object;
+  byType: object;
+  byPaymentStatus: object;
+}
+
+export interface OverviewResponseDto {
+  range: RangeDto;
+  current: OrderWindowDto;
+  previous: OrderWindowDto;
+  users: object;
+  vehicles: object;
+  wallets: object;
+  transactions: object;
+  live: object;
+}
+
+export interface SeriesPointDto {
+  bucket: string;
+  orders: number;
+  completed: number;
+  cancelled: number;
+  volume: number;
+  serviceCharge: number;
+  riderFees: number;
+  single: number;
+  batch: number;
+  bulk: number;
+  newCustomers: number;
+  newRiders: number;
+  moneyIn: number;
+  moneyOut: number;
+}
+
+export interface SeriesResponseDto {
+  range: RangeDto;
+  bucket: string;
+  points: SeriesPointDto[];
+}
+
+export interface TopRiderDto {
+  riderId: string;
+  rider: object;
+  deliveries: number;
+  cancelled: number;
+  riderFees: number;
+  volume: number;
+  rating: number | null;
+  reviews: number;
+}
+
+export interface PeakCellDto {
+  day: number;
+  hour: number;
+  count: number;
+  volume: number;
+}
+
+export interface PeakHoursResponseDto {
+  range: RangeDto;
+  cells: PeakCellDto[];
+}
+
+export interface ChargeWindowDto {
+  /** Commission taken from rider earnings */
+  riderCommission: number;
+  riderCommissionCount: number;
+  /** Service charge paid by customers */
+  serviceCharge: number;
+  serviceChargeCount: number;
+  /** riderCommission + serviceCharge */
+  total: number;
+  /** Rider earning rows (trips paid out) in the window */
+  trips: number;
+  /** Trips where a commission was actually taken */
+  tripsCharged: number;
+  ridersCharged: number;
+  /** Average commission per charged trip */
+  averageCommission: number;
+}
+
+export interface ChargesResponseDto {
+  range: RangeDto;
+  current: ChargeWindowDto;
+  previous: ChargeWindowDto;
+}
+
+export interface PageableType {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: any[][];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AttentionResponseDto {
+  licencesAwaitingReview: number;
+  vehiclesPendingVerification: number;
+  ordersAwaitingRider: number;
+  ordersAwaitingRiderStale: number;
+  withdrawalsProcessing: number;
+  withdrawalsProcessingAmount: number;
+  failedTransactions24h: number;
+  failedNotifications24h: number;
+  suspendedRiders: number;
+  ridersPausedFromDispatch: number;
+  /** Issue reports still OPEN or IN_REVIEW */
+  issuesOpen: number;
+  /** Open reports nobody has picked up */
+  issuesUnassigned: number;
+}
+
+export interface UserOverviewResponseDto {
+  range: RangeDto;
+  user: object;
+  wallet: object | null;
+  asCustomer: object;
+  asRider: object;
+  transactions: object;
+  reviews: object;
+  vehicles: object[];
+  business: object | null;
+}
+
+export interface InsightsRangeDto {
+  /** @format date-time */
+  from: string;
+  /** @format date-time */
+  to: string;
+}
+
+export interface EarningsSummaryDto {
+  /** Order earnings after commission, sub-units */
+  net: number;
+  /** Order earnings before commission, sub-units */
+  gross: number;
+  /** Platform commission taken on those earnings, sub-units */
+  charges: number;
+  /** Referral bonuses credited in the window, sub-units */
+  referralBonus: number;
+  /** Paid deliveries in the window */
+  deliveries: number;
+  /** net / deliveries, sub-units */
+  avgPerDelivery: number;
+  /** net for the previous window of the same length */
+  previousNet: number;
+  /** % change of net vs the previous window, one decimal */
+  deltaPct: number;
+}
+
+export interface RatingSummaryDto {
+  average: number;
+  count: number;
+  /** Counts for 1★..5★ */
+  distribution: number[];
+}
+
+export interface BidStatsDto {
+  total: number;
+  won: number;
+  /** % of bids accepted, one decimal */
+  winRate: number;
+}
+
+export interface PerformanceSummaryDto {
+  orders: number;
+  completed: number;
+  cancelled: number;
+  /** % of orders completed, one decimal */
+  completionRate: number;
+  rating: RatingSummaryDto;
+  /** Average minutes from starting a pickup leg to arriving */
+  avgPickupMins: number;
+  /** Average minutes from starting an order to completing it */
+  avgDeliveryMins: number;
+  /** Sum of completed legs, km (one decimal) */
+  distanceKm: number;
+  bids: BidStatsDto;
+}
+
+export interface ActivitySummaryDto {
+  /** Mon..Sun of the current Lagos week; true = ≥1 completed delivery */
+  activeDays: boolean[];
+  /** Consecutive days (ending today or yesterday) with ≥1 completed delivery */
+  streakDays: number;
+}
+
+export interface GoalSummaryDto {
+  /** Rider-set weekly net target, sub-units */
+  weeklyTarget?: number;
+  /** Net earned since Monday, sub-units */
+  weekNet: number;
+  /** 0-100, capped */
+  progressPct: number;
+}
+
+export interface InsightsOverviewResponseDto {
+  range: InsightsRangeDto;
+  earnings: EarningsSummaryDto;
+  performance: PerformanceSummaryDto;
+  activity: ActivitySummaryDto;
+  goal: GoalSummaryDto;
+}
+
+export interface EarningsByTypeDto {
+  single: number;
+  batch: number;
+  bulk: number;
+}
+
+export interface EarningsSeriesPointDto {
+  /** ISO start of the bucket (Lagos time) */
+  bucket: string;
+  net: number;
+  gross: number;
+  deliveries: number;
+  /** Gross rider fee by order type */
+  byType: EarningsByTypeDto;
+}
+
+export interface EarningsSeriesResponseDto {
+  range: InsightsRangeDto;
+  bucket: "day" | "week" | "month";
+  points: EarningsSeriesPointDto[];
+  /** Gross rider fee by order type over the whole window */
+  byType: EarningsByTypeDto;
+}
+
+export interface RiderReviewDto {
+  _id: string;
+  rating: number;
+  comment: string;
+  orderNumber?: string;
+  /** Customer first name only */
+  customerName?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface RiderReviewsResponseDto {
+  results: RiderReviewDto[];
+  totalRecords: number;
+  page: number;
+  limit: number;
+  summary: RatingSummaryDto;
+}
+
+export interface PeakHourCellDto {
+  /** 0 = Sunday … 6 = Saturday (Lagos time) */
+  day: number;
+  /** 0-23 (Lagos time) */
+  hour: number;
+  count: number;
+}
+
+export interface HotZoneDto {
+  latitude: number;
+  longitude: number;
+  /** Pickups created in the window at this ~100 m cell */
+  weight: number;
+}
+
+export interface DemandResponseDto {
+  range: InsightsRangeDto;
+  /** Radius around the rider the data covers, km */
+  radiusKm: number;
+  /** False when the rider has no known location yet */
+  hasLocation: boolean;
+  peakHours: PeakHourCellDto[];
+  hotZones: HotZoneDto[];
+}
+
+export interface MapPointDto {
+  latitude: number;
+  longitude: number;
+  type: "PICKUP" | "DROPOFF";
+}
+
+export interface MyMapResponseDto {
+  range: InsightsRangeDto;
+  points: MapPointDto[];
+}
+
+export interface LeaderboardEntryDto {
+  riderId: string;
+  /** "Chidi O." — first name and last initial */
+  name: string;
+  photo?: string;
+  deliveries: number;
+  rating: number;
+  rank: number;
+  isMe: boolean;
+}
+
+export interface LeaderboardMeDto {
+  /** 0 when the rider has no completed delivery in the window */
+  rank: number;
+  deliveries: number;
+  /** Riders ranked in this scope and window */
+  totalRanked: number;
+}
+
+export interface LeaderboardResponseDto {
+  range: InsightsRangeDto;
+  scope: "state" | "country";
+  results: LeaderboardEntryDto[];
+  me: LeaderboardMeDto;
+}
+
+export interface AchievementDto {
+  key: string;
+  title: string;
+  description: string;
+  /** Icon name the client maps to an asset */
+  icon: string;
+  target: number;
+  /** Current value towards target (capped at target once unlocked) */
+  progress: number;
+  /** @format date-time */
+  unlockedAt?: string;
+  /** Unlocked and not yet acknowledged — show the celebration */
+  isNew: boolean;
+}
+
+export interface AchievementsResponseDto {
+  results: AchievementDto[];
+  unlockedCount: number;
+}
+
+export enum InsightsRangePreset {
+  Today = "today",
+  Week = "week",
+  Month = "month",
+  LastMonth = "last_month",
+  Year = "year",
+  All = "all",
+}
+
+export interface InsightsWindowDto {
+  /** @format date-time */
+  from: string;
+  /** @format date-time */
+  to: string;
+}
+
+export interface DeliveriesByTypeDto {
+  single: number;
+  batch: number;
+  bulk: number;
+}
+
+export interface DeliveriesSummaryDto {
+  /** Completed deliveries in the window */
+  completed: number;
+  /** Orders cancelled in the window (by anyone) */
+  cancelled: number;
+  /** Orders still in progress right now (not range-bound) */
+  active: number;
+  byType: DeliveriesByTypeDto;
+  /** Completed deliveries in the previous window of the same length */
+  previousCompleted: number;
+  /** Percent change vs the previous window, one decimal */
+  deltaPct: number;
+}
+
+export interface SpendSummaryDto {
+  /** What the customer paid (sum of totalAmountPayable on paid orders) */
+  total: number;
+  /** Delivery fees portion (negotiated with riders) */
+  deliveryFees: number;
+  /** Platform service charges portion */
+  serviceCharges: number;
+  /** Saved through coupons/discounts */
+  saved: number;
+  /** Refunded back to the wallet in the window */
+  refunded: number;
+  /** Average paid per delivery */
+  avgPerDelivery: number;
+  previousTotal: number;
+  deltaPct: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
+export interface TimingSummaryDto {
+  /** Average minutes from order creation to a rider accepting */
+  avgAcceptMins: number;
+  /** Average minutes from ride start to completion */
+  avgDeliveryMins: number;
+  /** Kilometres covered on completed deliveries */
+  distanceKm: number;
+}
+
+export interface ActivityStreakDto {
+  /** Consecutive calendar months (Lagos time) with at least one completed delivery, ending this month */
+  months: number;
+  /** @format date-time */
+  lastDeliveryAt: string | null;
+  /**
+   * Account creation date
+   * @format date-time
+   */
+  memberSince: string | null;
+  /** Lifetime completed deliveries */
+  lifetimeDeliveries: number;
+}
+
+export interface PlaceDto {
+  type: "PICKUP" | "DROPOFF";
+  address: string;
+  latitude: number;
+  longitude: number;
+  /** Times this address was used */
+  count: number;
+  /** @format date-time */
+  lastUsedAt: string;
+}
+
+export interface CustomerInsightsOverviewResponseDto {
+  range: InsightsWindowDto;
+  deliveries: DeliveriesSummaryDto;
+  spend: SpendSummaryDto;
+  timing: TimingSummaryDto;
+  activity: ActivityStreakDto;
+  /** Top three places in the window */
+  topPlaces: PlaceDto[];
+}
+
+export interface InsightsSeriesPointDto {
+  /** Bucket start, ISO */
+  bucket: string;
+  deliveries: number;
+  /** Sub-units */
+  spend: number;
+}
+
+export interface CustomerInsightsSeriesResponseDto {
+  range: InsightsWindowDto;
+  bucket: "day" | "week" | "month";
+  points: InsightsSeriesPointDto[];
+  /** @example "NGN" */
+  currency: string;
+}
+
+export interface CustomerInsightsPlacesResponseDto {
+  pickups: PlaceDto[];
+  dropoffs: PlaceDto[];
+}
+
+export interface RecapHighlightDto {
+  /** Stable key the app maps to an icon/copy, e.g. BUSIEST_DAY */
+  key: string;
+  title: string;
+  value: string;
+}
+
+export interface CustomerInsightsRecapResponseDto {
+  range: InsightsWindowDto;
+  deliveries: DeliveriesSummaryDto;
+  spend: SpendSummaryDto;
+  timing: TimingSummaryDto;
+  activity: ActivityStreakDto;
+  /** Top three places in the window */
+  topPlaces: PlaceDto[];
+  /** @example "2026-09" */
+  month: string;
+  highlights: RecapHighlightDto[];
+  /** True when the month has no activity at all */
+  empty?: boolean;
+}
+
+export enum AchievementCategory {
+  SINGLE = "SINGLE",
+  BATCH = "BATCH",
+  BULK = "BULK",
+  WALLET = "WALLET",
+  REFERRAL = "REFERRAL",
+  SPECIAL = "SPECIAL",
+}
+
+export interface AchievementRewardDto {
+  /** Percentage off the next delivery */
+  percent: number;
+  /** Cap in sub-units */
+  maxDiscount: number;
+  validityDays: number;
+  /** Coupon code once issued */
+  couponCode?: string;
+  /** @format date-time */
+  expiresAt?: string;
+}
+
+export interface CustomerAchievementDto {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  /** Progress towards target, clamped */
+  progress: number;
+  /** Unit for the progress line, e.g. "single orders" */
+  unit: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "PENDING";
+  /** @format date-time */
+  unlockedAt?: string;
+  /** Unlocked but the celebration has not been shown yet */
+  isNew: boolean;
+  reward: AchievementRewardDto;
+}
+
+export interface CustomerAchievementsResponseDto {
+  results: CustomerAchievementDto[];
+  unlockedCount: number;
+  /** Keys unlocked on this request — drive the celebration modal */
+  newlyUnlocked: string[];
+}
+
+export interface AcknowledgeAchievementResponseDto {
+  acknowledged: boolean;
+}
+
+export interface AdminAchievementDefinitionDto {
+  key: string;
+  category: AchievementCategory;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  unit: string;
+  tier: number;
+  /** Reward percentage for this tier */
+  rewardPercent: number;
+  /** Customers who have unlocked it */
+  unlockedCount: number;
+  /** Unlocks in the last 30 days */
+  unlocked30d: number;
+  /** Reward coupons issued */
+  rewardsIssued: number;
+  /** Reward coupons redeemed */
+  rewardsRedeemed: number;
+  /** Discount granted through this badge, in sub-units */
+  discountTotal: number;
+}
+
+export interface AchievementsSummaryResponseDto {
+  badges: number;
+  /** Customers with at least one badge */
+  customersWithBadges: number;
+  /** Badges unlocked, all time */
+  unlocksTotal: number;
+  /** Badges unlocked in the last 30 days */
+  unlocks30d: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  /** Issued, not redeemed, still valid */
+  rewardsOutstanding: number;
+  /** Discount granted through badge rewards, in sub-units */
+  discountTotal: number;
+  /** Reward percentages by tier */
+  rewardPercentByTier: object;
+  /** Cap on a reward discount, in sub-units */
+  rewardMaxDiscount: number;
+  rewardValidityDays: number;
+  /** Unlocks per day, last 30 days: {date, count} */
+  daily: object[];
+}
+
+export interface AdminAchievementUnlockDto {
+  userId: string;
+  key: string;
+  title: string;
+  category: AchievementCategory;
+  /** @format date-time */
+  unlockedAt: string;
+  /** @format date-time */
+  acknowledgedAt?: string;
+  couponCode?: string;
+  /** @format date-time */
+  couponExpiresAt?: string;
+  rewardState?: "REDEEMED" | "ACTIVE" | "EXPIRED" | "NONE";
+  /** Discount the reward gave, in sub-units, once redeemed */
+  discountAmount?: number;
+  user?: object;
+}
+
+export interface ListAchievementUnlocksResponseDto {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: AdminAchievementUnlockDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AdminCustomerAchievementsResponseDto {
+  results: CustomerAchievementDto[];
+  unlockedCount: number;
+  /** The lifetime stats every badge is judged on */
+  stats: object;
+}
+
+export interface GrantAchievementRequestDto {
+  /** Badge key from the catalogue */
+  key: string;
+  /**
+   * Why it was granted by hand (audit trail)
+   * @maxLength 500
+   */
+  reason?: string;
+}
+
+/** Required for customer/rider/business logins. Optional for the admin console: any platform staff role signs in. */
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN",
+  SUPER_ADMIN = "SUPER_ADMIN",
+  PLATFORM_ADMIN = "PLATFORM_ADMIN",
+  PLATFORM_RIDER = "PLATFORM_RIDER",
+  PLATFORM_OPERATION = "PLATFORM_OPERATION",
+  PLATFORM_FINANCE = "PLATFORM_FINANCE",
+  PLATFORM_BUSINESS = "PLATFORM_BUSINESS",
+  PLATFORM_MANAGER = "PLATFORM_MANAGER",
+  DEVELOPER = "DEVELOPER",
+  BUSINESS_ADMIN = "BUSINESS_ADMIN",
+  BUSINESS_USER = "BUSINESS_USER",
+  BUSINESS_RIDER = "BUSINESS_RIDER",
+}
+
 export interface LoginRequestDto {
   identifier: string;
   /** @minLength 8 */
   password: string;
-  role: Role;
+  /** Required for customer/rider/business logins. Optional for the admin console: any platform staff role signs in. */
+  role?: Role;
   /** @default "USER" */
   accessType?: string;
 }
@@ -478,6 +1023,17 @@ export interface CountryDto {
    * @maxLength 3
    */
   currency: string;
+}
+
+export enum UserSignUpRoles {
+  USER = "USER",
+  PLATFORM_RIDER = "PLATFORM_RIDER",
+  DEVELOPER = "DEVELOPER",
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
 }
 
 export interface CreateUserRequestDto {
@@ -547,6 +1103,9 @@ export interface PreferenceDetailsDto {
     vibration?: boolean;
     /** @default true */
     sound?: boolean;
+  };
+  goals: {
+    weeklyEarningsTarget?: number;
   };
 }
 
@@ -634,12 +1193,7 @@ export interface User {
   driversLicense?: string;
   driversLicenseDoc?: string;
   /** @default "PENDING" */
-  driversLicenseVerified:
-    | "APPROVE"
-    | "DISAPPROVE"
-    | "SUSPENDED"
-    | "SUBMITTED"
-    | "PENDING";
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   driversLicenseVerifiedComment?: string;
   /** @default "USER" */
   accessType: "USER" | "ADMIN";
@@ -668,6 +1222,13 @@ export interface User {
   referredBy?: string;
   referralCode?: string;
   preferences?: PreferenceDetailsDto;
+  achievements?: object;
+  /** @default false */
+  dispatchPaused?: boolean;
+  /** @format date-time */
+  dispatchPausedAt?: string;
+  dispatchPausedReason?: string;
+  adminPreferences?: object;
   photo?: string;
   country: {
     name?: string;
@@ -688,6 +1249,8 @@ export interface User {
     coordinates?: number[];
   };
   pushToken?: string;
+  /** @default 0 */
+  supportUnreadCount: number;
   /** @default false */
   isDeleted: boolean;
   /** @default false */
@@ -791,14 +1354,7 @@ export interface Business {
     code?: string;
   };
   /** @default "PARTNER" */
-  type:
-    | "BANKING"
-    | "CLIENT"
-    | "PARTNER"
-    | "SUPPLIER"
-    | "MERCHANT"
-    | "AGENCY_BANKING"
-    | "PICKRIDERS_AGENT";
+  type: "BANKING" | "CLIENT" | "PARTNER" | "SUPPLIER" | "MERCHANT" | "AGENCY_BANKING" | "PICKRIDERS_AGENT";
   /** @default false */
   isDeleted: boolean;
   /** @format date-time */
@@ -868,6 +1424,12 @@ export interface ChangePasswordRequestDto {
   confirmPassword: string;
 }
 
+export enum EntityType {
+  TEAM = "TEAM",
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
 export interface Wallet {
   entityId: string;
   name: string;
@@ -905,6 +1467,11 @@ export interface WalletListResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+}
+
+export enum PaymentProvider {
+  PAYSTACK = "PAYSTACK",
+  FLUTTERWAVE = "FLUTTERWAVE",
 }
 
 export interface FundWalletRequestDto {
@@ -965,6 +1532,29 @@ export interface UpdateSettlementAccountRequestDto {
 export interface InitiateWithdrawalRequestDto {
   /** @min 10000 */
   amount: number;
+}
+
+export interface Coupon {
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: string;
+  value: number;
+  /** Cap on a PERCENTAGE discount, in sub-units */
+  maxDiscount?: number;
+  /** @format date-time */
+  expirationDate: string;
+  isActive?: boolean;
+  usageCount?: number;
+  limit: number;
+  isOneTime?: boolean;
+  isGeneral?: boolean;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
 }
 
 export interface ReferralReferredUserDto {
@@ -1035,7 +1625,8 @@ export interface Transaction {
     | "ORDER_DISCOUNT"
     | "PROVIDER_DEPOSIT_FEE"
     | "PROVIDER_WITHDRAWAL_FEE"
-    | "ORDER_SERVICE_CHARGE";
+    | "ORDER_SERVICE_CHARGE"
+    | "PLATFORM_TRANSFER";
   status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
   /** @default {} */
   metadata?: object;
@@ -1085,11 +1676,20 @@ export interface OrderRequestNotificationDto {
   sound?: boolean;
 }
 
+export interface GoalsDto {
+  /**
+   * Weekly net earnings target, sub-units
+   * @min 0
+   */
+  weeklyEarningsTarget?: number;
+}
+
 export interface UpdatePreferencesRequestDto {
   notification?: NotificationDto;
   bidding?: BiddingDto;
   orderRequestNotification?: OrderRequestNotificationDto;
   onboarding?: object;
+  goals?: GoalsDto;
 }
 
 export interface OrderRecipient {
@@ -1184,27 +1784,6 @@ export interface OrderLocationUpdate {
   updatedAt: string;
 }
 
-export interface Coupon {
-  code: string;
-  name?: string;
-  description?: string;
-  currency: string;
-  type: string;
-  value: number;
-  /** @format date-time */
-  expirationDate: string;
-  isActive?: boolean;
-  usageCount?: number;
-  limit: number;
-  isOneTime?: boolean;
-  isGeneral?: boolean;
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
 export interface Review {
   userId: string;
   riderId: string;
@@ -1225,6 +1804,7 @@ export interface Review {
 export interface Order {
   userId?: string;
   riderId?: string;
+  eligibleRiderIds?: string[];
   vehicleId?: string;
   couponId?: string;
   businessId?: string;
@@ -1281,7 +1861,16 @@ export interface Order {
   currency: string;
   /** @format date-time */
   scheduledFor?: string;
+  countryCode?: string;
+  stateCode?: string;
+  /** @format date-time */
+  scheduleDispatchedAt?: string;
+  /** @format date-time */
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
+  scheduleRemindersSent?: string[];
   color?: string;
+  title?: string;
   isQueued?: boolean;
   /** @format date-time */
   queuedAt?: string;
@@ -1340,10 +1929,49 @@ export interface ListUserResponseDto {
   totalPages: number;
 }
 
+export interface UpdateAdminPreferencesRequestDto {
+  theme?: "light" | "dark" | "system";
+  /**
+   * Font id from the admin font list.
+   * @maxLength 80
+   */
+  font?: string;
+}
+
+export interface UpdateUserPhoneRequestDto {
+  /**
+   * New phone number in E.164 (+234...) or local (0803...) form.
+   * @pattern /^\+?\d{10,15}$/
+   */
+  phone: string;
+  /** Why the number was changed (audited). */
+  reason?: string;
+}
+
+export interface UpdateDispatchPauseRequestDto {
+  /** true stops every order from ringing this rider; false resumes. */
+  paused: boolean;
+  /** Why (audited, shown on the rider record). */
+  reason?: string;
+}
+
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  BANNED = "BANNED",
+}
+
 export interface UpdateUserStatusRequestDto {
   status: UserStatus;
   /** Optional note explaining the status change (audited). */
   reason?: string;
+}
+
+/** CREDIT tops up, DEBIT deducts. */
+export enum TransactionType {
+  CREDIT = "CREDIT",
+  DEBIT = "DEBIT",
 }
 
 export interface AdjustWalletRequestDto {
@@ -1368,6 +1996,13 @@ export interface RefundOrderRequestDto {
   amount?: number;
   /** Reason for the refund (audited). */
   reason: string;
+}
+
+/** @default "ACCEPTED" */
+export enum Status {
+  PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  ACCEPTED = "ACCEPTED",
 }
 
 export interface UpdateDriverLicenseRequestDto {
@@ -1422,6 +2057,159 @@ export interface TransactionMetricsSummaryResponseDto {
   uniqueEntities: number;
 }
 
+export enum CouponLifecycle {
+  ACTIVE = "ACTIVE",
+  EXPIRED = "EXPIRED",
+  EXHAUSTED = "EXHAUSTED",
+  INACTIVE = "INACTIVE",
+}
+
+export enum CouponType {
+  FIXED = "FIXED",
+  PERCENTAGE = "PERCENTAGE",
+}
+
+export interface AdminCouponDto {
+  code: string;
+  name?: string;
+  description?: string;
+  currency: string;
+  type: string;
+  value: number;
+  /** Cap on a PERCENTAGE discount, in sub-units */
+  maxDiscount?: number;
+  /** @format date-time */
+  expirationDate: string;
+  isActive?: boolean;
+  usageCount?: number;
+  limit: number;
+  isOneTime?: boolean;
+  isGeneral?: boolean;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  lifecycle: CouponLifecycle;
+  /** Sum of discounts granted on orders that used this coupon, in sub-units */
+  discountTotal: number;
+  /** Distinct customers who redeemed it */
+  uniqueUsers: number;
+  /** @format date-time */
+  lastUsedAt?: string;
+  /** Groups the coupon is attached to */
+  groupNames: string[];
+  /** Issued automatically as a badge reward */
+  isReward: boolean;
+}
+
+export interface ListCouponsResponseDto {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: AdminCouponDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface CouponsSummaryResponseDto {
+  total: number;
+  active: number;
+  /** Active coupons expiring within 7 days */
+  expiring7d: number;
+  /** Redemptions in the last 30 days */
+  redemptions30d: number;
+  /** Redemptions, all time */
+  redemptionsTotal: number;
+  /** Discount granted in the last 30 days, in sub-units */
+  discount30d: number;
+  /** Discount granted, all time, in sub-units */
+  discountTotal: number;
+  /** Badge reward coupons issued */
+  rewardCoupons: number;
+  /** Badge reward coupons redeemed */
+  rewardCouponsRedeemed: number;
+  /** Redemptions per day for the last 30 days: {date, count, discount} */
+  daily: object[];
+  /** Top coupons by redemptions in the last 30 days */
+  topCoupons: object[];
+}
+
+export interface AdminCouponGroupDto {
+  name: string;
+  userIds?: string[];
+  couponIds?: string[];
+  users: User[];
+  coupons: Coupon[];
+  userCount: number;
+  couponCount: number;
+}
+
+export interface ListCouponGroupsResponseDto {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: AdminCouponGroupDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AdminCouponUsageDto {
+  couponId: string;
+  userId: string;
+  orderId: string;
+  coupon?: Coupon;
+  user?: User;
+  order?: Coupon;
+  /** Discount applied on the order, in sub-units */
+  discountAmount?: number;
+}
+
+export interface ListCouponUsagesResponseDto {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: AdminCouponUsageDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface UpdateCouponRequestDto {
+  /**
+   * @minLength 4
+   * @maxLength 80
+   */
+  name?: string;
+  /** @maxLength 500 */
+  description?: string;
+  /** @format date-time */
+  expirationDate?: string;
+  /**
+   * Total redemptions allowed
+   * @min 1
+   */
+  limit?: number;
+  /**
+   * Cap on a PERCENTAGE discount, in sub-units
+   * @min 1
+   */
+  maxDiscount?: number;
+  /** Pause (false) or resume (true) redemptions */
+  isActive?: boolean;
+  isGeneral?: boolean;
+  isOneTime?: boolean;
+}
+
+export interface UpdateGroupRequestDto {
+  /** @minLength 6 */
+  name?: string;
+  /** Replaces the coupons attached to this group */
+  couponCodes?: string[];
+}
+
 export interface CreateCouponRequestDto {
   code: string;
   name?: string;
@@ -1431,6 +2219,8 @@ export interface CreateCouponRequestDto {
   type: CouponType;
   /** @default 10 */
   value: number;
+  /** Cap on a PERCENTAGE discount, in sub-units */
+  maxDiscount?: number;
   /** @format date-time */
   expirationDate: string;
   isActive?: boolean;
@@ -1532,9 +2322,28 @@ export interface InitiatePayoutDto {
   reason?: string;
 }
 
+export interface TransferToWalletDto {
+  /** The user (customer or rider) whose wallet receives the money. */
+  userId: string;
+  /**
+   * Amount in sub-units (10000 = ₦1).
+   * @min 1
+   */
+  amount: number;
+  /**
+   * 4-digit platform withdrawal PIN.
+   * @minLength 4
+   * @maxLength 4
+   */
+  pin: string;
+  /** Why the money is being sent (audited, shown on both ledgers). */
+  reason: string;
+}
+
 export interface Notification {
   entityId?: string;
   entityType?: EntityType;
+  broadcastId?: string;
   content: string;
   subject: string;
   type: "IN_APP" | "PUSH" | "SMS" | "EMAIL";
@@ -1586,6 +2395,21 @@ export interface CreateTemplateRequestDto {
   isActive?: boolean;
 }
 
+/** @default "EMAIL" */
+export enum NotificationType {
+  IN_APP = "IN_APP",
+  PUSH = "PUSH",
+  SMS = "SMS",
+  EMAIL = "EMAIL",
+}
+
+/** @default "SINGLE" */
+export enum NotificationCategory {
+  SINGLE = "SINGLE",
+  BROADCAST = "BROADCAST",
+  SCHEDULED_BROADCAST = "SCHEDULED_BROADCAST",
+}
+
 export interface NotificationAction {
   action?: string;
   title?: string;
@@ -1624,6 +2448,50 @@ export interface TriggerNotificationRequestDto {
   /** Arbitrary key-value data forwarded in the push payload (e.g. { type }) */
   data?: object;
   template?: TemplateRequestDto;
+}
+
+export enum BroadcastAudience {
+  CUSTOMERS = "CUSTOMERS",
+  RIDERS = "RIDERS",
+  BUSINESSES = "BUSINESSES",
+  USERS = "USERS",
+}
+
+export interface BroadcastFiltersDto {
+  status?: ("ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED")[];
+  /** Riders only: restrict to riders currently online */
+  onlineOnly?: boolean;
+  /** Riders only: restrict to riders with an approved licence */
+  licenceApprovedOnly?: boolean;
+  /** Country code, e.g. NG */
+  country?: string;
+}
+
+export interface BroadcastEstimateRequestDto {
+  audience: BroadcastAudience;
+  userIds?: string[];
+  filters?: BroadcastFiltersDto;
+}
+
+export interface BroadcastRequestDto {
+  audience: BroadcastAudience;
+  /** Required when audience is USERS */
+  userIds?: string[];
+  filters?: BroadcastFiltersDto;
+  /** PUSH and/or EMAIL. Every recipient also gets an in-app copy. */
+  channels: ("IN_APP" | "PUSH" | "SMS" | "EMAIL")[];
+  /**
+   * Push title and email subject
+   * @minLength 3
+   * @maxLength 120
+   */
+  subject: string;
+  /**
+   * Plain text; line breaks are kept
+   * @minLength 5
+   * @maxLength 2000
+   */
+  message: string;
 }
 
 export interface CityDto {
@@ -1919,6 +2787,23 @@ export interface QuoteOrderRequestDto {
   dropoffLocation: QuoteLocationDto;
 }
 
+export interface QuoteOrderResponseDto {
+  /** Delivery fee before service charge, in sub-units */
+  totalAmount: number;
+  /** Platform service charge, in sub-units */
+  serviceCharge: number;
+  /** What the customer pays: totalAmount + serviceCharge */
+  totalAmountPayable: number;
+  /** Pickup-to-dropoff distance in kilometres */
+  distanceKm: number;
+  /** Lowest percentage of the fee a rider may offer */
+  minimumOfferPercentage: number;
+  /** Highest percentage above the fee a rider may bid */
+  maxRiderSurgePercentage: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
 export interface QuoteBatchOrderRequestDto {
   /** Order channel (e.g. VENDOR_STOREFRONT) */
   channel?: string;
@@ -1930,6 +2815,33 @@ export interface QuoteBatchOrderRequestDto {
   dropoffLocations: QuoteLocationDto[];
 }
 
+export interface QuoteOrderLegDto {
+  latitude?: number;
+  longitude?: number;
+  /** This leg's marginal cost, in sub-units */
+  amount: number;
+}
+
+export interface QuoteBatchOrderResponseDto {
+  totalAmount: number;
+  serviceCharge: number;
+  totalAmountPayable: number;
+  minimumOfferPercentage: number;
+  maxRiderSurgePercentage: number;
+  /** @example "NGN" */
+  currency: string;
+  /** Per-leg breakdown so callers can show how the run total was built */
+  legs: QuoteOrderLegDto[];
+  /** Sum of the legs before any discount */
+  rawTotal: number;
+  /** Raw total after the batch discount */
+  discountedTotal: number;
+  /** Run-level price floor for the state */
+  minimumOrderPrice: number;
+  /** True when the floor raised the total */
+  minimumApplied: boolean;
+}
+
 export interface QuoteBulkOrderRequestDto {
   /** Order channel (e.g. VENDOR_STOREFRONT) */
   channel?: string;
@@ -1937,6 +2849,16 @@ export interface QuoteBulkOrderRequestDto {
   minimumDeliveryFee?: number;
   pickupLocations: QuoteLocationDto[];
   dropoffLocation: QuoteLocationDto;
+}
+
+export interface QuoteBulkOrderResponseDto {
+  totalAmount: number;
+  serviceCharge: number;
+  totalAmountPayable: number;
+  minimumOfferPercentage: number;
+  maxRiderSurgePercentage: number;
+  /** @example "NGN" */
+  currency: string;
 }
 
 export interface CreateBatchPickupLocationDto {
@@ -2007,19 +2929,25 @@ export interface RidersRequestDto {
   riderIds?: string[];
   /** Enable sequential rider dispatch (ring one rider at a time with 30s timeout) */
   sequentialDispatch?: boolean;
-  /** Callback URL for dispatch status updates (required for sequential dispatch) */
+  /**
+   * Ignored: the destination comes from STOREFRONT_DISPATCH_CALLBACK_URL, never the request.
+   * @deprecated
+   */
   callbackUrl?: string;
   /** Rider sorting strategy for sequential dispatch */
-  sortingStrategy?: "BANDS" | "SCORING";
+  sortingStrategy?: "BANDS" | "SCORING" | "FAIR";
 }
 
 export interface ReDispatchRequestDto {
   /** Specific rider IDs to target */
   riderIds?: string[];
-  /** Callback URL for dispatch status updates */
-  callbackUrl: string;
+  /**
+   * Ignored: the destination comes from STOREFRONT_DISPATCH_CALLBACK_URL, never the request.
+   * @deprecated
+   */
+  callbackUrl?: string;
   /** Rider sorting strategy */
-  sortingStrategy?: "BANDS" | "SCORING";
+  sortingStrategy?: "BANDS" | "SCORING" | "FAIR";
 }
 
 export interface ReassignRiderRequestDto {
@@ -2029,6 +2957,15 @@ export interface ReassignRiderRequestDto {
   callbackUrl: string;
   /** Reason for reassigning the rider */
   reason?: string;
+}
+
+export interface NearbyRidersCountResponseDto {
+  /** Riders who would receive an order placed from this point right now */
+  count: number;
+  /** Search radius in km (the state’s dispatch radius) */
+  radiusKm: number;
+  /** True when served from the 60 s cache */
+  cached: boolean;
 }
 
 export interface RiderLocationsRequestDto {
@@ -2044,6 +2981,31 @@ export interface CancelLocationRequestDto {
   reason: string;
 }
 
+export interface RescheduleOrderRequestDto {
+  /**
+   * New scheduled time (ISO). At least 1 h from now, at most 30 days ahead.
+   * @format date-time
+   */
+  scheduledFor: string;
+  /**
+   * New title for the schedule
+   * @maxLength 60
+   */
+  title?: string;
+  /**
+   * New colour tag for the calendar
+   * @maxLength 20
+   */
+  color?: string;
+}
+
+/** @default "USER" */
+export enum CancelledBy {
+  USER = "USER",
+  RIDER = "RIDER",
+  ADMIN = "ADMIN",
+}
+
 export interface CancelOrderRequestDto {
   reason: string;
   cancelledBy?: CancelledBy;
@@ -2054,6 +3016,17 @@ export interface MakeOfferRequestDto {
   offerAmount: number;
 }
 
+export interface OrderPaymentLinkResponseDto {
+  /** Provider payment reference */
+  reference: string;
+  /** Hosted checkout URL */
+  url: string;
+  /** Amount payable, in sub-units */
+  amount: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
 export interface InitializeOrderPaymentRequestDto {
   /** Email of the person paying for the order (receives the Paystack receipt). */
   email: string;
@@ -2061,6 +3034,14 @@ export interface InitializeOrderPaymentRequestDto {
 
 export interface AcceptRejectOfferRequestDto {
   status: Status;
+}
+
+export enum OrderLocationStatus {
+  PENDING = "PENDING",
+  IN_TRANSIT = "IN_TRANSIT",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  ARRIVED = "ARRIVED",
 }
 
 export interface UpdateLocationStatusRequestDto {
@@ -2083,6 +3064,27 @@ export interface UpdateOrderLocationDto {
   latitude?: number;
 }
 
+export interface QuoteOrderLocationResponseDto {
+  /** True when only contact details changed — no re-pricing */
+  detailsOnly: boolean;
+  /** Raw price difference the change introduces, in sub-units */
+  deltaAmount: number;
+  /** What the customer is actually charged, in sub-units */
+  chargeable: number;
+  /** True when the change costs the customer nothing */
+  free: boolean;
+  /** @example "NGN" */
+  currency: string;
+  /** True when the free-change allowance is exhausted */
+  capReached: boolean;
+}
+
+/** @default "ACCEPTED" */
+export enum LocationUpdateStatus {
+  ACCEPTED = "ACCEPTED",
+  DECLINED = "DECLINED",
+}
+
 export interface AcceptRejectLocationUpdateRequestDto {
   status: LocationUpdateStatus;
 }
@@ -2097,6 +3099,15 @@ export interface CompleteLocationRequestDto {
 export interface AdminCancelOrderRequestDto {
   /** Reason for cancelling the order (audited, refunds the customer). */
   reason: string;
+}
+
+/** Manual admin status override (audited). */
+export enum OrderStatus {
+  INITIATED = "INITIATED",
+  ACCEPTED = "ACCEPTED",
+  ON_GOING = "ON_GOING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
 export interface AdminUpdateOrderStatusRequestDto {
@@ -2120,6 +3131,13 @@ export interface DataLog {
 }
 
 export interface DataLogsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: any[][];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
   count: number;
   records: DataLog[];
 }
@@ -2151,6 +3169,395 @@ export interface ListAuditLogResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+}
+
+export enum IssueCategory {
+  ORDER = "ORDER",
+  DELIVERY = "DELIVERY",
+  RIDER_BEHAVIOUR = "RIDER_BEHAVIOUR",
+  APP_TECHNICAL = "APP_TECHNICAL",
+  PAYMENT_REFUND = "PAYMENT_REFUND",
+  SAFETY_SECURITY = "SAFETY_SECURITY",
+  OTHER = "OTHER",
+}
+
+export enum IssuePriority {
+  HIGH = "HIGH",
+  MEDIUM = "MEDIUM",
+  LOW = "LOW",
+}
+
+export interface CreateIssueRequestDto {
+  category: IssueCategory;
+  priority?: IssuePriority;
+  /**
+   * What happened, in the customer’s words
+   * @minLength 10
+   * @maxLength 2000
+   */
+  description: string;
+  /** Order the issue is about (must belong to the caller) */
+  orderId?: string;
+  /** Transaction the issue is about (must belong to the caller) */
+  transactionId?: string;
+  /** Up to 3 images/videos as base64 data URIs (or already-hosted https URLs) */
+  attachments?: string[];
+}
+
+export enum IssueSubjectType {
+  ORDER = "ORDER",
+  TRANSACTION = "TRANSACTION",
+  GENERAL = "GENERAL",
+}
+
+export enum IssueStatus {
+  OPEN = "OPEN",
+  IN_REVIEW = "IN_REVIEW",
+  RESOLVED = "RESOLVED",
+  CLOSED = "CLOSED",
+}
+
+export interface IssueNote {
+  _id: string;
+  adminId: string;
+  note: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface IssueReport {
+  _id: string;
+  /** Short human-readable reference, e.g. ISS-7K3M2Q */
+  reference: string;
+  userId: string;
+  subjectType: IssueSubjectType;
+  orderId?: string;
+  transactionId?: string;
+  category: IssueCategory;
+  priority: IssuePriority;
+  description: string;
+  /** Cloud URLs of uploaded images/videos */
+  attachments: string[];
+  status: IssueStatus;
+  /** Support note shown to the customer once resolved/closed */
+  resolution?: string;
+  /** @format date-time */
+  resolvedAt?: string;
+  resolvedBy?: string;
+  assignedTo?: string;
+  notes?: IssueNote[];
+  /** @format date-time */
+  firstResponseAt?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+}
+
+export interface ListIssuesResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: IssueReport[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface IssuesCountByKeyDto {
+  key: string;
+  count: number;
+}
+
+export interface IssuesSummaryResponseDto {
+  /** OPEN reports */
+  open: number;
+  /** IN_REVIEW reports */
+  inReview: number;
+  /** OPEN or IN_REVIEW with nobody assigned */
+  unassigned: number;
+  /** Open/in-review reports at HIGH priority */
+  highPriorityOpen: number;
+  /** Resolved or closed in the last 7 days */
+  resolved7d: number;
+  /** New reports in the last 7 days */
+  new7d: number;
+  /** Average hours from report to resolution, last 30 days */
+  avgResolutionHours: number | null;
+  /** Average hours until first status change, last 30 days */
+  avgFirstResponseHours: number | null;
+  /** Open/in-review reports older than 48 hours */
+  overdue: number;
+  /** Open/in-review reports per category */
+  byCategory: IssuesCountByKeyDto[];
+  /** Open/in-review reports per priority */
+  byPriority: IssuesCountByKeyDto[];
+}
+
+export interface UpdateIssueStatusRequestDto {
+  status: IssueStatus;
+  /**
+   * Note shown to the customer; expected when resolving or closing
+   * @maxLength 2000
+   */
+  resolution?: string;
+}
+
+export interface AssignIssueRequestDto {
+  /** Admin user id to assign to; omit or null to unassign */
+  adminId?: string | null;
+}
+
+export interface UpdateIssuePriorityRequestDto {
+  priority: IssuePriority;
+}
+
+export interface AddIssueNoteRequestDto {
+  /**
+   * Internal note; the customer never sees it
+   * @maxLength 2000
+   */
+  note: string;
+}
+
+export enum AnnouncementAudience {
+  CUSTOMERS = "CUSTOMERS",
+  RIDERS = "RIDERS",
+}
+
+export enum AnnouncementActionType {
+  INTERNAL = "INTERNAL",
+  EXTERNAL = "EXTERNAL",
+}
+
+export interface AnnouncementAction {
+  type: AnnouncementActionType;
+  /** Button label, e.g. "Try the price calculator" */
+  label: string;
+  /** Screen path (INTERNAL) or https URL (EXTERNAL) */
+  target: string;
+}
+
+export enum AnnouncementStatus {
+  DRAFT = "DRAFT",
+  ACTIVE = "ACTIVE",
+  ARCHIVED = "ARCHIVED",
+}
+
+export interface AnnouncementStats {
+  /** Distinct people the popup has been shown to */
+  reached: number;
+  /** Every time the popup was shown, repeats included */
+  impressions: number;
+  /** Taps on "Show me later" */
+  later: number;
+  /** People who closed it for good without taking the action */
+  confirmed: number;
+  /** People who tapped the action */
+  acted: number;
+}
+
+export interface Announcement {
+  _id: string;
+  title: string;
+  /** Plain text; line breaks are kept */
+  body: string;
+  /** A single emoji shown large above the title */
+  emoji?: string;
+  /** Optional illustration shown above the title */
+  imageUrl?: string;
+  audience: AnnouncementAudience;
+  action?: AnnouncementAction;
+  status: AnnouncementStatus;
+  /**
+   * Do not show before this moment
+   * @format date-time
+   */
+  startsAt?: string;
+  /**
+   * Stop showing after this moment
+   * @format date-time
+   */
+  endsAt?: string;
+  /**
+   * When it first went ACTIVE
+   * @format date-time
+   */
+  publishedAt?: string;
+  stats: AnnouncementStats;
+  createdBy: string;
+  updatedBy?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+}
+
+export interface PendingAnnouncementsResponseDto {
+  /** Oldest published first, so a backlog reads in order */
+  results: Announcement[];
+}
+
+export enum AnnouncementOutcome {
+  CONFIRMED = "CONFIRMED",
+  ACTED = "ACTED",
+}
+
+export interface AcknowledgeAnnouncementRequestDto {
+  outcome: AnnouncementOutcome;
+}
+
+export interface ListAnnouncementsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: Announcement[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AnnouncementsSummaryResponseDto {
+  /** Announcements currently popping in an app */
+  active: number;
+  drafts: number;
+  archived: number;
+  /** Distinct people reached across active announcements */
+  reached: number;
+  /** People who tapped an action across active announcements */
+  acted: number;
+  /** People who closed one for good without acting */
+  confirmed: number;
+  /** acted / (acted + confirmed), 0-100 */
+  actionRate: number;
+}
+
+export interface AppScreenDto {
+  /** Route path, e.g. /distance-calculator */
+  path: string;
+  label: string;
+  description: string;
+}
+
+export interface AppScreensResponseDto {
+  CUSTOMERS: AppScreenDto[];
+  RIDERS: AppScreenDto[];
+}
+
+export interface AnnouncementReceiptUserDto {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  photo?: string;
+}
+
+export interface AnnouncementReceiptRowDto {
+  _id: string;
+  announcementId: string;
+  userId: string;
+  impressions: number;
+  later: number;
+  /** @format date-time */
+  lastSeenAt?: string;
+  /**
+   * Set once; the announcement never pops for this person again
+   * @format date-time
+   */
+  acknowledgedAt?: string;
+  outcome?: AnnouncementOutcome;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+  user?: AnnouncementReceiptUserDto;
+}
+
+export interface ListAnnouncementReceiptsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: AnnouncementReceiptRowDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AnnouncementActionDto {
+  type: AnnouncementActionType;
+  /**
+   * Button label
+   * @minLength 2
+   * @maxLength 40
+   */
+  label: string;
+  /**
+   * INTERNAL: a screen path from GET admins/announcements/screens (e.g. /distance-calculator). EXTERNAL: an https URL.
+   * @maxLength 500
+   */
+  target: string;
+}
+
+export interface CreateAnnouncementRequestDto {
+  /**
+   * @minLength 3
+   * @maxLength 80
+   */
+  title: string;
+  /**
+   * Plain text; line breaks are kept
+   * @minLength 5
+   * @maxLength 500
+   */
+  body: string;
+  /**
+   * One emoji shown large above the title
+   * @maxLength 8
+   */
+  emoji?: string;
+  /** https URL of an illustration */
+  imageUrl?: string;
+  audience: AnnouncementAudience;
+  action?: AnnouncementActionDto;
+  /** DRAFT (default) keeps it hidden; ACTIVE publishes it right away */
+  status?: "DRAFT" | "ACTIVE";
+  /**
+   * Do not show before this moment
+   * @format date-time
+   */
+  startsAt?: string;
+  /**
+   * Stop showing after this moment
+   * @format date-time
+   */
+  endsAt?: string;
+}
+
+export interface UpdateAnnouncementRequestDto {
+  /**
+   * @minLength 3
+   * @maxLength 80
+   */
+  title?: string;
+  /**
+   * @minLength 5
+   * @maxLength 500
+   */
+  body?: string;
+  /** @maxLength 8 */
+  emoji?: string | null;
+  imageUrl?: string | null;
+  audience?: AnnouncementAudience;
+  action?: AnnouncementActionDto | null;
+  /** @format date-time */
+  startsAt?: string | null;
+  /** @format date-time */
+  endsAt?: string | null;
+}
+
+export interface UpdateAnnouncementStatusRequestDto {
+  status: AnnouncementStatus;
 }
 
 export type Object = object;
@@ -2292,9 +3699,35 @@ export interface QuoteDto {
 
 export interface FeedbackDto {
   quoteShortId: string;
-  verdict: "too_low" | "fair" | "too_high";
+  verdict: object;
   suggestedPrice?: number;
-  segment?: "rider" | "customer" | "business";
+  segment?: object;
+}
+
+export interface DeliveryPriceEventDto {
+  quoteShortId?: string;
+  type?: "share" | "copy" | "book";
+}
+
+export interface UpdateDeliveryCalculatorConfigDto {
+  /**
+   * Extra stops a quote may include beyond the first drop-off
+   * @min 0
+   * @max 20
+   */
+  maxExtraStops?: number;
+  /**
+   * Days after which a saved quote is treated as stale
+   * @min 1
+   * @max 365
+   */
+  staleDays?: number;
+  /**
+   * Percentage off for batch (multi-stop) quotes, 0-100
+   * @min 0
+   * @max 100
+   */
+  batchDiscountPercent?: number;
 }
 
 export interface WebPointDto {
@@ -2319,6 +3752,14 @@ export interface CreateWebOrderDto {
   stateCode?: string;
 }
 
+export interface SupportUnreadResponseDto {
+  /**
+   * Unread support messages for the caller
+   * @example 3
+   */
+  count: number;
+}
+
 export type GetHeartbeatData = any;
 
 export type GetDeliveryPricingData = object;
@@ -2333,45 +3774,273 @@ export type GetCountriesData = ListCountryResponseDto;
 
 export type AddCountryData = Country;
 
-export interface UpdateCountryParams {
-  countryId: string;
-}
-
 export type UpdateCountryData = Country;
-
-export interface GetCountryByIdParams {
-  countryId: string;
-}
 
 export type GetCountryByIdData = Country;
 
 export type AddCountryStatesPayload = StateDto[];
 
-export interface AddCountryStatesParams {
-  countryId: string;
-}
-
 export type AddCountryStatesData = StateDto[];
-
-export interface GetCountryStatesParams {
-  countryId: string;
-}
 
 export type GetCountryStatesData = ListStateResponseDto;
 
-export interface GetCountryStateByIdParams {
-  countryId: string;
-  stateId: string;
-}
-
 export type GetCountryStateByIdData = State;
 
-export interface UpdateCountryStateParams {
-  countryId: string;
-  stateId: string;
+export type UpdateCountryStateData = State;
+
+export interface OverviewParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
 }
 
-export type UpdateCountryStateData = State;
+export type OverviewData = OverviewResponseDto;
+
+export interface SeriesParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  bucket?: "day" | "week" | "month";
+  riderId?: string;
+  userId?: string;
+}
+
+export type SeriesData = SeriesResponseDto;
+
+export interface TopRidersParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  limit?: string;
+}
+
+export type TopRidersData = TopRiderDto[];
+
+export interface PeakHoursParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+}
+
+export type PeakHoursData = PeakHoursResponseDto;
+
+export interface ChargesParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+}
+
+export type ChargesData = ChargesResponseDto;
+
+export interface ChargesByRiderParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  /** Rider name or phone, or business name */
+  search?: any;
+  sortBy?: "charges" | "trips" | "earned" | "last";
+  order?: "ASC" | "DESC";
+  limit?: any;
+  page?: any;
+}
+
+export type ChargesByRiderData = PageableType;
+
+export type AttentionData = AttentionResponseDto;
+
+export interface CustomersParams {
+  search?: any;
+  phoneVerified?: any;
+  /** Comma separated UserStatus */
+  status?: any;
+  sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent";
+  order?: "ASC" | "DESC";
+  limit?: any;
+  page?: any;
+}
+
+export type CustomersData = PageableType;
+
+export interface BusinessesParams {
+  search?: any;
+  isActive?: any;
+  sortBy?: "joined" | "name";
+  order?: "ASC" | "DESC";
+  limit?: any;
+  page?: any;
+}
+
+export type BusinessesData = PageableType;
+
+export interface UserOverviewParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  userId: string;
+}
+
+export type UserOverviewData = UserOverviewResponseDto;
+
+export interface GetInsightsOverviewParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+}
+
+export type GetInsightsOverviewData = InsightsOverviewResponseDto;
+
+export interface GetEarningsSeriesParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  /** @default "day" */
+  bucket?: "day" | "week" | "month";
+}
+
+export type GetEarningsSeriesData = EarningsSeriesResponseDto;
+
+export interface GetRiderReviewsParams {
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+}
+
+export type GetRiderReviewsData = RiderReviewsResponseDto;
+
+export interface GetDemandParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+}
+
+export type GetDemandData = DemandResponseDto;
+
+export interface GetMyMapParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+}
+
+export type GetMyMapData = MyMapResponseDto;
+
+export interface GetInsightsLeaderboardParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  /** @default "state" */
+  scope?: "state" | "country";
+}
+
+export type GetInsightsLeaderboardData = LeaderboardResponseDto;
+
+export type GetAchievementsData = AchievementsResponseDto;
+
+export type AcknowledgeAchievementData = any;
+
+export interface GetCustomerInsightsOverviewParams {
+  range?: InsightsRangePreset;
+  /**
+   * Explicit window, overrides `range`: YYYY-MM-DD,YYYY-MM-DD or a single start
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+}
+
+export type GetCustomerInsightsOverviewData = CustomerInsightsOverviewResponseDto;
+
+export interface GetCustomerInsightsSeriesParams {
+  range?: InsightsRangePreset;
+  /**
+   * Explicit window, overrides `range`: YYYY-MM-DD,YYYY-MM-DD or a single start
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  /** Defaults to a bucket that suits the range */
+  bucket?: "day" | "week" | "month";
+}
+
+export type GetCustomerInsightsSeriesData = CustomerInsightsSeriesResponseDto;
+
+export interface GetCustomerInsightsPlacesParams {
+  /**
+   * @min 1
+   * @max 20
+   * @default 5
+   */
+  limit?: number;
+}
+
+export type GetCustomerInsightsPlacesData = CustomerInsightsPlacesResponseDto;
+
+export type GetCustomerInsightsRecapData = CustomerInsightsRecapResponseDto;
+
+export type GetCustomerAchievementsData = CustomerAchievementsResponseDto;
+
+export type AcknowledgeCustomerAchievementData = AcknowledgeAchievementResponseDto;
+
+export type CatalogueData = AdminAchievementDefinitionDto[];
+
+export type AchievementsSummaryData = AchievementsSummaryResponseDto;
+
+export interface UnlocksParams {
+  /** Badge key, e.g. ORDERS_5 */
+  key?: string;
+  /**
+   * Customer name, email or phone
+   * @maxLength 100
+   */
+  search?: string;
+  /** Reward coupon state */
+  reward?: "issued" | "redeemed" | "unredeemed" | "expired";
+  /** @format date-time */
+  from?: string;
+  /** @format date-time */
+  to?: string;
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+}
+
+export type UnlocksData = ListAchievementUnlocksResponseDto;
+
+export type ForUserData = AdminCustomerAchievementsResponseDto;
+
+export type GrantData = AdminCustomerAchievementsResponseDto;
+
+export type RevokeData = AdminCustomerAchievementsResponseDto;
 
 export type LoginAdminsData = AuthTokenResponseDto;
 
@@ -2417,37 +4086,17 @@ export type ChangeUserPasswordData = MessageResponseDto;
 
 export type GetUserWalletsData = WalletListResponseDto;
 
-export interface GetUserWalletParams {
-  walletId: string;
-}
-
 export type GetUserWalletData = Wallet;
-
-export interface InitializeFundWalletParams {
-  walletId: string;
-}
 
 export type InitializeFundWalletData = FundWalletResponseDto;
 
-export interface CancelFundWalletParams {
-  walletId: string;
-}
-
 export type CancelFundWalletData = CancelFundWalletResponseDto;
-
-export interface UpdateSettlementAccountParams {
-  walletId: string;
-}
 
 export type UpdateSettlementAccountData = Wallet;
 
-export interface InitiateWithdrawalParams {
-  walletId: string;
-}
-
 export type InitiateWithdrawalData = Wallet;
 
-export type GetActiveCouponsData = object[];
+export type GetActiveCouponsData = Coupon[];
 
 export interface GetAllReferralsParams {
   /** the records sorting order */
@@ -2487,10 +4136,6 @@ export interface GetUserTransactionsSummaryParams {
 
 export type GetUserTransactionsSummaryData = TransactionSummaryResponseDto;
 
-export interface GetUserTransactionParams {
-  transactionId: string;
-}
-
 export type GetUserTransactionData = Transaction;
 
 export type DeleteUserAccountData = MessageResponseDto;
@@ -2503,10 +4148,6 @@ export type UpdateUserPreferencesData = User;
 
 export type ToggleOnlinePresenceData = User;
 
-export interface GetRiderOrderParams {
-  orderId: string;
-}
-
 export type GetRiderOrderData = Order;
 
 export type VerifyDriversLicenseData = User;
@@ -2515,28 +4156,23 @@ export type SubmitDriversLicenseData = object;
 
 export type GetUserVehicleData = Vehicle;
 
-export type CreateUser2Data = CreateUserRequestDto;
+export type AdminCreateUserData = CreateUserRequestDto;
 
 export interface GetUsersParams {
   /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
-  sortBy?:
-    | "createdAt"
-    | "lastLoginDate"
-    | "completedDeliveries"
-    | "totalEarned";
+  sortBy?: "createdAt" | "lastLoginDate" | "completedDeliveries" | "totalEarned";
   /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
-  driversLicenseVerified?:
-    | "APPROVE"
-    | "DISAPPROVE"
-    | "SUSPENDED"
-    | "SUBMITTED"
-    | "PENDING";
+  driversLicenseVerified?: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   /** Search by user email, phone, firstname, lastname, middlename, or nin. This query is case insensitive. */
   userSearch?: string;
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   phoneVerified?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   emailVerified?: "0" | "1" | "false" | "true";
+  /** Riders only: true = riders an admin stopped ringing, false = riders still receiving requests */
+  dispatchPaused?: "0" | "1" | "false" | "true";
+  /** Riders only: filter by whether the rider app is currently online */
+  isOnline?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
   isRider?: "0" | "1" | "false" | "true";
   /** Filter by setting either of the enum values ['0', '1', 'false', 'true'] */
@@ -2553,68 +4189,48 @@ export interface GetUsersParams {
 
 export type GetUsersData = ListUserResponseDto;
 
-export interface GetUserParams {
-  userId: string;
-}
+export type AdminGetMyProfileData = User;
+
+export type AdminUpdateMyPhotoData = UpdatedPhotoResponseDto;
+
+export type AdminUpdateMyAddressesData = MessageResponseDto;
+
+export type AdminChangeMyPasswordData = MessageResponseDto;
+
+export type GetAdminPreferencesData = object;
+
+export type UpdateAdminPreferencesData = object;
+
+export type UpdateUserPhoneData = object;
+
+export type SetDispatchPausedData = object;
 
 export type GetUserData = User;
 
-export interface GetUserWallets2Params {
-  userId: string;
-}
-
-export type GetUserWallets2Data = WalletListResponseDto;
-
-export interface UpdateUserStatusParams {
-  userId: string;
-}
+export type AdminGetUserWalletsData = WalletListResponseDto;
 
 export type UpdateUserStatusData = object;
 
-export interface AdjustUserWalletParams {
+export type AdjustUserWalletData = any;
+
+export interface RefundableOrdersParams {
+  limit?: number;
+  /** Order number */
+  search?: string;
   userId: string;
 }
 
-export type AdjustUserWalletData = object;
-
-export interface RefundCustomerOrderParams {
-  userId: string;
-}
+export type RefundableOrdersData = any;
 
 export type RefundCustomerOrderData = object;
 
-export interface VerifyDriversLicense2Params {
-  userId: string;
-}
-
-export type VerifyDriversLicense2Data = User;
-
-export interface ApproveDriversLicenseSubmissionParams {
-  userId: string;
-}
+export type AdminVerifyDriversLicenseData = User;
 
 export type ApproveDriversLicenseSubmissionData = object;
 
-export interface UpdateDriversLicenseParams {
-  userId: string;
-}
-
 export type UpdateDriversLicenseData = User;
 
-export interface UpdateSettlementAccount2Params {
-  userId: string;
-  walletId: string;
-}
-
-export type UpdateSettlementAccount2Data = Wallet;
-
-export type GetUserProfile2Data = User;
-
-export type UpdateProfilePhoto2Data = UpdatedPhotoResponseDto;
-
-export type UpdateUserAddresses2Data = MessageResponseDto;
-
-export type ChangeUserPassword2Data = MessageResponseDto;
+export type AdminUpdateSettlementAccountData = Wallet;
 
 export type CreateWalletData = Wallet;
 
@@ -2638,7 +4254,9 @@ export interface GetTransactionsParams {
 
 export type GetTransactionsData = ListTransactionResponseDto;
 
-export interface GetTransactions2Params {
+export interface AdminGetTransactionsParams {
+  /** Reference, description, or wallet owner name / phone / email */
+  search?: any;
   /** provide a user (entity) id to get transactions for a user */
   entityId?: string;
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
@@ -2656,7 +4274,7 @@ export interface GetTransactions2Params {
   limit?: number;
 }
 
-export type GetTransactions2Data = ListTransactionResponseDto;
+export type AdminGetTransactionsData = ListTransactionResponseDto;
 
 export interface GetExternalPaymentMetricsParams {
   /** provide a user (entity) id to scope metrics to a single customer */
@@ -2674,31 +4292,70 @@ export interface GetTransactionSummaryParams {
 
 export type GetTransactionSummaryData = TransactionMetricsSummaryResponseDto;
 
-export interface GetTransactionParams {
-  transactionId: string;
+export type GetTransactionData = Transaction;
+
+export interface ListCouponsParams {
+  /**
+   * Code or name
+   * @maxLength 100
+   */
+  search?: string;
+  lifecycle?: CouponLifecycle;
+  type?: CouponType;
+  /** "true" for general (everyone), "false" for targeted (groups) */
+  isGeneral?: string;
+  /** "true" to list only badge reward coupons (BADGE-…) */
+  rewards?: string;
+  sortBy?: "createdAt" | "expirationDate" | "usageCount" | "code" | "value";
+  order?: "ASC" | "DESC";
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
 }
 
-export type GetTransactionData = Transaction;
+export type ListCouponsData = ListCouponsResponseDto;
 
 export type CreateCouponData = object;
 
+export type CouponsSummaryData = CouponsSummaryResponseDto;
+
+export interface ListGroupsParams {
+  /** Group name */
+  search?: string;
+  /** "true" to include the per-badge reward groups (badge:…) */
+  includeRewardGroups?: string;
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+}
+
+export type ListGroupsData = ListCouponGroupsResponseDto;
+
 export type CreateGroupData = object;
 
-export interface AddGroupUsersParams {
-  groupId: string;
+export type GetGroupData = AdminCouponGroupDto;
+
+export type UpdateGroupData = AdminCouponGroupDto;
+
+export type GetCouponData = AdminCouponDto;
+
+export type UpdateCouponData = AdminCouponDto;
+
+export interface UsagesParams {
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+  couponId: string;
 }
+
+export type UsagesData = ListCouponUsagesResponseDto;
 
 export type AddGroupUsersData = object;
 
-export interface RemoveGroupUsersParams {
-  groupId: string;
-}
-
 export type RemoveGroupUsersData = object;
-
-export interface DeactivateCouponParams {
-  couponCode: string;
-}
 
 export type DeactivateCouponData = any;
 
@@ -2718,7 +4375,7 @@ export type GetBanksData = GetBanksResponseDto;
 
 export type CreateDedicatedVirtualAccountData = object;
 
-export type GetBanks2Data = GetBanksResponseDto;
+export type GetPlatformBanksData = GetBanksResponseDto;
 
 export type GetFinanceStatusData = any;
 
@@ -2727,6 +4384,8 @@ export type UpdateSettlementData = any;
 export type SetPinData = any;
 
 export type InitiatePayoutData = any;
+
+export type TransferToUserData = any;
 
 export interface GetNotificationsParams {
   order?: "ASC" | "DESC";
@@ -2737,10 +4396,6 @@ export interface GetNotificationsParams {
 
 export type GetNotificationsData = ListNotificationResponseDto;
 
-export interface GetUserNotificationParams {
-  notificationId: string;
-}
-
 export type GetUserNotificationData = Notification;
 
 export type BulkMarkNotificationsAsReadData = MessageResponseDto;
@@ -2749,28 +4404,40 @@ export type CreateTemplateData = object;
 
 export type TriggerNotificationData = any;
 
+export type EstimateBroadcastData = any;
+
+export type CreateBroadcastData = object;
+
+export interface ListBroadcastsParams {
+  limit?: any;
+  page?: any;
+}
+
+export type ListBroadcastsData = any;
+
+export type GetBroadcastData = object;
+
+export interface LogParams {
+  category?: any;
+  /** Comma separated NotificationType */
+  type?: any;
+  /** Comma separated NotificationStatus */
+  status?: any;
+  entityId?: any;
+  broadcastId?: any;
+  limit?: any;
+  page?: any;
+}
+
+export type LogData = any;
+
 export type CreateBusinessData = CreateBusinessRequestDto;
 
 export type CreateBusinessUserData = CreateBusinessUserRequestDto;
 
-export interface GetBusinessUserParams {
-  businessId: string;
-  userId: string;
-}
-
 export type GetBusinessUserData = User;
 
-export interface UpdateBusinessUserParams {
-  businessId: string;
-  userId: string;
-}
-
 export type UpdateBusinessUserData = User;
-
-export interface RemoveUserFromBusinessParams {
-  businessId: string;
-  userId: string;
-}
 
 export type RemoveUserFromBusinessData = MessageResponseDto;
 
@@ -2796,21 +4463,9 @@ export type GetBusinessUsersData = ListUserResponseDto;
 
 export type AddVehiclesData = MessageResponseDto;
 
-export interface AssignUserVehicleParams {
-  vehicleId: string;
-}
-
 export type AssignUserVehicleData = MessageResponseDto;
 
-export interface AddKycDetailsParams {
-  businessId: string;
-}
-
 export type AddKycDetailsData = MessageResponseDto;
-
-export interface GetUserReviewsParams {
-  userId: string;
-}
 
 export type GetUserReviewsData = ListReviewResponseDto;
 
@@ -2833,11 +4488,6 @@ export interface GetBusinessTransactionsParams {
 }
 
 export type GetBusinessTransactionsData = ListTransactionResponseDto;
-
-export interface GetBusinessTransactionParams {
-  businessId: string;
-  transactionId: string;
-}
 
 export type GetBusinessTransactionData = Transaction;
 
@@ -2867,23 +4517,9 @@ export interface GetBusinessOrdersParams {
 
 export type GetBusinessOrdersData = ListOrderResponseDto;
 
-export interface GetBusinessOrderParams {
-  businessId: string;
-  orderId: string;
-}
-
 export type GetBusinessOrderData = Order;
 
-export interface GetBusinessWalletsParams {
-  businessId: string;
-}
-
 export type GetBusinessWalletsData = WalletListResponseDto;
-
-export interface GetBusinessWalletParams {
-  walletId: string;
-  businessId: string;
-}
 
 export type GetBusinessWalletData = Wallet;
 
@@ -2917,10 +4553,6 @@ export interface GetBusinessOrderTypeChartParams {
 
 export type GetBusinessOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
-export interface GetBusinessParams {
-  businessId: string;
-}
-
 export type GetBusinessData = Business;
 
 export interface GetBusinessVehiclesParams {
@@ -2939,32 +4571,25 @@ export interface GetBusinessVehiclesParams {
 
 export type GetBusinessVehiclesData = VehicleListResponseDto;
 
-export interface UpdateBusinessPreferencesParams {
-  businessId: string;
-}
-
 export type UpdateBusinessPreferencesData = Business;
-
-export interface SuspendBusinessUserParams {
-  businessId: string;
-  userId: string;
-}
 
 export type SuspendBusinessUserData = User;
 
-export interface UnsuspendBusinessUserParams {
-  businessId: string;
-  userId: string;
-}
-
 export type UnsuspendBusinessUserData = User;
 
-export interface UpdateBusinessVehicleParams {
-  businessId: string;
-  vehicleId: string;
-}
-
 export type UpdateBusinessVehicleData = Vehicle;
+
+export interface GetReviewsParams {
+  /** 1 = include the customer and the order on each row */
+  expand?: any;
+  /** Only reviews left by this customer */
+  userId?: any;
+  /** Only reviews left for this rider */
+  riderId?: any;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
 
 export type GetReviewsData = ListReviewResponseDto;
 
@@ -2972,15 +4597,7 @@ export type RateRiderData = Review;
 
 export type UpdateUserVehicleData = Vehicle;
 
-export interface GetVehicleParams {
-  vehicleId: string;
-}
-
 export type GetVehicleData = Vehicle;
-
-export interface DeleteUserVehicleParams {
-  vehicleId: string;
-}
 
 export type DeleteUserVehicleData = MessageResponseDto;
 
@@ -3003,42 +4620,15 @@ export interface GetVehiclesParams {
 
 export type GetVehiclesData = VehicleListResponseDto;
 
-export interface UpdateUserVehicle2Params {
-  userId: string;
-}
-
-export type UpdateUserVehicle2Data = Vehicle;
-
-export interface VerifyVehicleParams {
-  vehicleId: string;
-  userId: string;
-}
+export type AdminUpdateUserVehicleData = Vehicle;
 
 export type VerifyVehicleData = Vehicle;
 
-export interface RejectVehicleParams {
-  vehicleId: string;
-  userId: string;
-}
-
 export type RejectVehicleData = Vehicle;
-
-export interface SuspendVehicleParams {
-  vehicleId: string;
-  userId: string;
-}
 
 export type SuspendVehicleData = Vehicle;
 
-export interface GetVehicle2Params {
-  vehicleId: string;
-}
-
-export type GetVehicle2Data = Vehicle;
-
-export interface DeleteVehicleParams {
-  vehicleId: string;
-}
+export type AdminGetVehicleData = Vehicle;
 
 export type DeleteVehicleData = MessageResponseDto;
 
@@ -3046,31 +4636,28 @@ export type CreateSingleOrderData = Order;
 
 export type CreateBulkOrderData = Order;
 
-export type QuoteOrderData = any;
+export type QuoteOrderData = QuoteOrderResponseDto;
 
-export type QuoteBatchOrderData = any;
+export type QuoteBatchOrderData = QuoteBatchOrderResponseDto;
 
-export type QuoteBulkOrderData = any;
+export type QuoteBulkOrderData = QuoteBulkOrderResponseDto;
 
 export type CreateBatchOrderData = Order;
 
-export interface RequestOrderRidersParams {
-  orderId: string;
-}
-
 export type RequestOrderRidersData = User[];
-
-export interface ReDispatchParams {
-  orderId: string;
-}
 
 export type ReDispatchData = object;
 
-export interface ReassignRiderParams {
-  orderId: string;
+export type ReassignRiderData = Order;
+
+export interface GetNearbyRidersCountParams {
+  /** @example 6.5244 */
+  latitude: number;
+  /** @example 3.3792 */
+  longitude: number;
 }
 
-export type ReassignRiderData = Order;
+export type GetNearbyRidersCountData = NearbyRidersCountResponseDto;
 
 export type GetRidersLeaderboardData = any;
 
@@ -3078,47 +4665,19 @@ export type ListAllRidersData = any;
 
 export type GetRiderLocationsData = any;
 
-export interface CancelOrderLocationParams {
-  orderId: string;
-  locationId: string;
-}
-
 export type CancelOrderLocationData = OrderLocation;
 
-export interface CancelOrderParams {
-  orderId: string;
-}
+export type RescheduleOrderData = Order;
 
 export type CancelOrderData = Order;
 
-export interface MakeOrderOfferParams {
-  orderId: string;
-}
-
 export type MakeOrderOfferData = Order;
-
-export interface InitiateOrderPaymentParams {
-  orderId: string;
-  walletId: string;
-}
 
 export type InitiateOrderPaymentData = Order;
 
-export interface CreateOrderPaymentLinkParams {
-  orderId: string;
-}
-
-export type CreateOrderPaymentLinkData = any;
-
-export interface VerifyOrderPaymentParams {
-  orderId: string;
-}
+export type CreateOrderPaymentLinkData = OrderPaymentLinkResponseDto;
 
 export type VerifyOrderPaymentData = Order;
-
-export interface GetOrderPaymentInfoParams {
-  token: string;
-}
 
 export type GetOrderPaymentInfoData = any;
 
@@ -3128,105 +4687,35 @@ export interface ConfirmExternalPaymentByReferenceParams {
 
 export type ConfirmExternalPaymentByReferenceData = any;
 
-export interface InitializeExternalOrderPaymentParams {
-  token: string;
-}
-
 export type InitializeExternalOrderPaymentData = any;
-
-export interface AcceptOrRejectOrderOfferParams {
-  orderId: string;
-  offerId: string;
-}
 
 export type AcceptOrRejectOrderOfferData = Offer;
 
-export interface StartOrderParams {
-  orderId: string;
-}
-
 export type StartOrderData = Order;
-
-export interface StartOrderLocationParams {
-  orderId: string;
-  locationId: string;
-}
 
 export type StartOrderLocationData = OrderLocation;
 
-export interface UpdateOrderLocationStatusParams {
-  orderId: string;
-  locationId: string;
-}
-
 export type UpdateOrderLocationStatusData = OrderLocation;
-
-export interface GetOrderEtaParams {
-  orderId: string;
-}
 
 export type GetOrderEtaData = any;
 
-export interface QuoteOrderLocationParams {
-  orderId: string;
-  locationId: string;
-}
-
-export type QuoteOrderLocationData = any;
-
-export interface UpdateOrderLocationParams {
-  orderId: string;
-  locationId: string;
-}
+export type QuoteOrderLocationData = QuoteOrderLocationResponseDto;
 
 export type UpdateOrderLocationData = OrderLocationUpdate;
 
-export interface RespondToLocationUpdateParams {
-  orderId: string;
-  locationId: string;
-  updateId: string;
-}
-
 export type RespondToLocationUpdateData = OrderLocationUpdate;
-
-export interface ApplyOrderCouponParams {
-  orderId: string;
-  couponCode: string;
-}
 
 export type ApplyOrderCouponData = Order;
 
-export interface RemoveOrderCouponParams {
-  orderId: string;
-  couponCode: string;
-}
-
-export type RemoveOrderCouponData = object;
-
-export interface CompleteOrderLocationParams {
-  orderId: string;
-  locationId: string;
-}
+export type RemoveOrderCouponData = Order;
 
 export type CompleteOrderLocationData = OrderLocation;
 
-export interface CompleteOrderParams {
-  orderId: string;
-}
-
 export type CompleteOrderData = Order;
-
-export interface QueueOrderParams {
-  orderId: string;
-}
 
 export type QueueOrderData = Order;
 
 export type GetQueuedOrdersData = Order[];
-
-export interface GetActiveOffersParams {
-  orderId: string;
-}
 
 export type GetActiveOffersData = Offer[];
 
@@ -3270,15 +4759,7 @@ export type GetRiderOrdersData = ListOrderResponseDto;
 
 export type GetPendingLocationUpdateData = OrderLocationUpdate;
 
-export interface GetLatestLocationUpdateForCustomerParams {
-  orderId: string;
-}
-
 export type GetLatestLocationUpdateForCustomerData = OrderLocationUpdate;
-
-export interface GetUserOrderParams {
-  orderId: string;
-}
 
 export type GetUserOrderData = Order;
 
@@ -3320,35 +4801,38 @@ export interface GetOrdersParams {
   orderNumber?: any;
   /** the records sorting order */
   order?: "ASC" | "DESC";
+  sortBy?: "createdAt" | "scheduledFor" | "updatedAt";
+  /** Order number, or customer / rider name, phone or email */
+  search?: string;
   page?: number;
   limit?: number;
 }
 
 export type GetOrdersData = ListOrderResponseDto;
 
-export interface GetOrderParams {
-  orderId: string;
-}
-
 export type GetOrderData = Order;
-
-export interface GetOrderOffersParams {
-  orderId: string;
-}
 
 export type GetOrderOffersData = any;
 
-export interface CancelOrder2Params {
-  orderId: string;
-}
+export type RingRidersData = any;
 
-export type CancelOrder2Data = Order;
-
-export interface UpdateOrderStatusParams {
-  orderId: string;
-}
+export type AdminCancelOrderData = Order;
 
 export type UpdateOrderStatusData = Order;
+
+export interface GetLogsParams {
+  /** Matches inside the logged payload */
+  search?: string;
+  /** start,end (YYYY-MM-DD) */
+  dateRange?: string;
+  /** Comma separated DataLogType values */
+  logType?: string;
+  /** Comma separated DataLogLevel values */
+  level?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
 
 export type GetLogsData = DataLogsResponseDto;
 
@@ -3360,9 +4844,150 @@ export interface FindAllParams {
 
 export type FindAllData = ListAuditLogResponseDto;
 
-export interface HandleWebhookEventsParams {
-  provider: "PAYSTACK" | "FLUTTERWAVE";
+export type CreateIssueData = IssueReport;
+
+export interface ListMyIssuesParams {
+  /** One status, or several comma-separated (e.g. OPEN,IN_REVIEW) */
+  status?: IssueStatus;
+  category?: IssueCategory;
+  priority?: IssuePriority;
+  subjectType?: IssueSubjectType;
+  /** Admin user id; "unassigned" for reports nobody has picked up */
+  assignedTo?: string;
+  /** Reference (ISS-…), customer name, email or phone */
+  search?: string;
+  /** @format date-time */
+  from?: string;
+  /** @format date-time */
+  to?: string;
+  sortBy?: "createdAt" | "updatedAt" | "priority" | "status";
+  order?: "ASC" | "DESC";
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
 }
+
+export type ListMyIssuesData = ListIssuesResponseDto;
+
+export type GetMyIssueData = IssueReport;
+
+export interface ListIssuesParams {
+  /** One status, or several comma-separated (e.g. OPEN,IN_REVIEW) */
+  status?: IssueStatus;
+  category?: IssueCategory;
+  priority?: IssuePriority;
+  subjectType?: IssueSubjectType;
+  /** Admin user id; "unassigned" for reports nobody has picked up */
+  assignedTo?: string;
+  /** Reference (ISS-…), customer name, email or phone */
+  search?: string;
+  /** @format date-time */
+  from?: string;
+  /** @format date-time */
+  to?: string;
+  sortBy?: "createdAt" | "updatedAt" | "priority" | "status";
+  order?: "ASC" | "DESC";
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+}
+
+export type ListIssuesData = ListIssuesResponseDto;
+
+export type IssuesSummaryData = IssuesSummaryResponseDto;
+
+export interface ListUserIssuesParams {
+  /** One status, or several comma-separated (e.g. OPEN,IN_REVIEW) */
+  status?: IssueStatus;
+  category?: IssueCategory;
+  priority?: IssuePriority;
+  subjectType?: IssueSubjectType;
+  /** Admin user id; "unassigned" for reports nobody has picked up */
+  assignedTo?: string;
+  /** Reference (ISS-…), customer name, email or phone */
+  search?: string;
+  /** @format date-time */
+  from?: string;
+  /** @format date-time */
+  to?: string;
+  sortBy?: "createdAt" | "updatedAt" | "priority" | "status";
+  order?: "ASC" | "DESC";
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+  userId: string;
+}
+
+export type ListUserIssuesData = ListIssuesResponseDto;
+
+export type GetIssueData = IssueReport;
+
+export type UpdateStatusData = IssueReport;
+
+export type AssignData = IssueReport;
+
+export type UpdatePriorityData = IssueReport;
+
+export type AddNoteData = IssueReport;
+
+export interface ListPendingAnnouncementsParams {
+  /** Which app is asking: the customer app sends CUSTOMERS, the rider app RIDERS */
+  audience: AnnouncementAudience;
+}
+
+export type ListPendingAnnouncementsData = PendingAnnouncementsResponseDto;
+
+export type TrackAnnouncementSeenData = any;
+
+export type TrackAnnouncementLaterData = any;
+
+export type AcknowledgeAnnouncementData = any;
+
+export interface AdminListAnnouncementsParams {
+  status?: AnnouncementStatus;
+  audience?: AnnouncementAudience;
+  /**
+   * Title or body text
+   * @maxLength 100
+   */
+  search?: string;
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+}
+
+export type AdminListAnnouncementsData = ListAnnouncementsResponseDto;
+
+export type AdminCreateAnnouncementData = Announcement;
+
+export type AdminAnnouncementsSummaryData = AnnouncementsSummaryResponseDto;
+
+export type AdminListAnnouncementScreensData = AppScreensResponseDto;
+
+export type AdminGetAnnouncementData = Announcement;
+
+export type AdminUpdateAnnouncementData = Announcement;
+
+export type AdminDeleteAnnouncementData = any;
+
+export interface AdminListAnnouncementReceiptsParams {
+  /** acknowledged: closed for good; pending: shown but still popping */
+  state?: "acknowledged" | "pending";
+  outcome?: AnnouncementOutcome;
+  /** @default 1 */
+  page?: number;
+  /** @default 20 */
+  limit?: number;
+  announcementId: string;
+}
+
+export type AdminListAnnouncementReceiptsData = ListAnnouncementReceiptsResponseDto;
+
+export type AdminUpdateAnnouncementStatusData = Announcement;
 
 export type HandleWebhookEventsData = object;
 
@@ -3374,19 +4999,21 @@ export interface GetUserTeamParams {
 
 export type GetUserTeamData = object;
 
-export type CreateTeam2Data = object;
+export type AdminCreateTeamData = object;
 
-export type FindAll2Data = ListTeamsResponseDto;
+export interface AdminListTeamsParams {
+  order?: "ASC" | "DESC";
+  limit?: any;
+  page?: any;
+}
+
+export type AdminListTeamsData = ListTeamsResponseDto;
 
 export type RunData = any;
 
 export type QuoteData = any;
 
 export type PublicConfigData = any;
-
-export interface GetQuoteParams {
-  shortId: string;
-}
 
 export type GetQuoteData = any;
 
@@ -3395,8 +5022,8 @@ export type FeedbackData = any;
 export type EventData = any;
 
 export interface AnalyticsParams {
-  from: string;
-  to: string;
+  from?: string;
+  to?: string;
 }
 
 export type AnalyticsData = any;
@@ -3407,39 +5034,18 @@ export type UpdateConfigData = object;
 
 export type CreateData = any;
 
-export interface TrackParams {
-  token: string;
-}
-
 export type TrackData = any;
-
-export interface SearchParams {
-  token: string;
-}
 
 export type SearchData = any;
 
-export interface OffersParams {
-  token: string;
-}
-
 export type OffersData = any;
-
-export interface AcceptOfferParams {
-  token: string;
-  offerId: string;
-}
 
 export type AcceptOfferData = any;
 
-export interface PayParams {
-  token: string;
-}
-
 export type PayData = any;
 
-export interface CancelParams {
-  token: string;
-}
-
 export type CancelData = any;
+
+export type GetUnreadCountData = SupportUnreadResponseDto;
+
+export type MarkAsReadData = SupportUnreadResponseDto;
