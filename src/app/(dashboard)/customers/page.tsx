@@ -173,7 +173,7 @@ function CustomersList() {
       mobileCard={(row) => <CustomerCard row={row} />}
       toolbarExtra={
         <LinkButton href="/messaging?audience=CUSTOMERS" variant="outline" size="md" icon={Megaphone}>
-          <span className="hidden sm:inline">Message customers</span>
+          <span>Message customers</span>
         </LinkButton>
       }
     />
