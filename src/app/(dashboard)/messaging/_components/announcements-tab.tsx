@@ -210,15 +210,15 @@ export function AnnouncementsTab() {
         emptyDescription="Tell people what's new, like a price calculator or scheduled orders, and it pops the next time they open the app."
         onRowClick={(row) => openDetail(row._id!)}
         toolbarExtra={
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex gap-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {STATUS_CHIPS.map((chip) => (
                 <button
                   key={chip.value}
                   type="button"
                   onClick={() => table.update({ status: chip.value || undefined })}
                   className={cx(
-                    "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+                    "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
                     status === chip.value ? "border-transparent bg-ink text-card" : "border-line text-ink-muted hover:bg-surface",
                   )}
                 >
@@ -226,7 +226,7 @@ export function AnnouncementsTab() {
                 </button>
               ))}
             </div>
-            <Button icon={Plus} size="sm" disabled={!canManage} onClick={() => openEditor(null)}>
+            <Button icon={Plus} size="md" disabled={!canManage} onClick={() => openEditor(null)} className="w-full sm:w-auto">
               New announcement
             </Button>
           </div>

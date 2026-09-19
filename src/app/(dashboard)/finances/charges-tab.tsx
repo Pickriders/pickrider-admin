@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Bike, CircleDollarSign, ExternalLink, Percent, Receipt, Users } from "lucide-react";
+import { ArrowDownWideNarrow, Bike, CircleDollarSign, ExternalLink, Percent, Receipt, Users } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -18,6 +18,7 @@ import {
   Drawer,
   Pager,
   RangeTabs,
+  Select,
   Skeleton,
   StatCard,
   StatGrid,
@@ -127,9 +128,20 @@ export function ChargesTab() {
   );
 }
 
+const RIDER_SORTS: { value: string; label: string }[] = [
+  { value: "charges:DESC", label: "Most commission" },
+  { value: "charges:ASC", label: "Least commission" },
+  { value: "earned:DESC", label: "Earned the most" },
+  { value: "trips:DESC", label: "Most paid trips" },
+  { value: "trips:ASC", label: "Fewest paid trips" },
+  { value: "last:DESC", label: "Most recent trip" },
+  { value: "last:ASC", label: "Longest since a trip" },
+];
+
 function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
-  const table = useTableState({ limit: 20 });
+  const table = useTableState({ limit: 20, sortBy: "charges", order: "DESC" });
   const [selected, setSelected] = useState<RiderChargeRow | null>(null);
+  const sortValue = `${table.state.sortBy ?? "charges"}:${table.state.order ?? "DESC"}`;
   const { dateRange: _ignored, ...rest } = table.query as Record<string, unknown> & { dateRange?: string };
   void _ignored;
   const data = useRiderCharges({ ...(rest as Record<string, string | number | undefined>), ...query, search: table.state.search });
@@ -204,6 +216,41 @@ function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
         dateFilter={false}
         csvName="rider-charges"
         defaultSort={{ sortBy: "charges", order: "DESC" }}
+        filters={[
+          {
+            key: "entityType",
+            label: "Paid as",
+            options: [
+              { value: "USER", label: "Rider, own account" },
+              { value: "BUSINESS", label: "Through a business" },
+            ],
+          },
+          {
+            key: "online",
+            label: "Availability",
+            options: [{ value: "true", label: "Online right now" }],
+          },
+        ]}
+        toolbarExtra={
+          <label className="flex items-center gap-2 text-xs font-semibold text-ink-muted">
+            <ArrowDownWideNarrow size={14} className="shrink-0" />
+            <span className="sr-only">Sort riders</span>
+            <Select
+              value={sortValue}
+              onChange={(e) => {
+                const [sortBy, order] = e.target.value.split(":") as [string, "ASC" | "DESC"];
+                table.update({ sortBy, order, page: undefined });
+              }}
+              className="w-full sm:w-52"
+            >
+              {RIDER_SORTS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </label>
+        }
         emptyIcon={Users}
         emptyTitle="No commission taken in this window"
         emptyDescription="Riders show up here once a completed trip pays out with a charge on it."
