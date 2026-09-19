@@ -139,7 +139,7 @@ export function GroupFormDrawer({
             onChange={setMembers}
             only="customers"
             label="Members (optional)"
-            emptyHint="No members yet — you can add more from the group page."
+            emptyHint="No members yet. You can add more from the group page."
           />
         ) : null}
       </div>

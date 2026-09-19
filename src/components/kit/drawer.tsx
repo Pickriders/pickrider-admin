@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { AlertTriangle, CircleHelp, ShieldAlert, X, type LucideIcon } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cx } from "@/components/kit/primitives";
@@ -80,7 +80,18 @@ export function Drawer({
   );
 }
 
-/** Confirmation dialog on the same visual system as the drawer. */
+/**
+ * Confirmation dialog on the same visual system as the drawer. Every sensitive
+ * action goes through it: an icon and tint say how serious the step is, the
+ * description says exactly what happens next, and the primary button names
+ * the action rather than saying "OK".
+ */
+const CONFIRM_TONE: Record<"primary" | "warning" | "danger", { icon: LucideIcon; chip: string; button: string; ring: string }> = {
+  primary: { icon: CircleHelp, chip: "bg-brand-soft text-brand-dark", button: "bg-brand text-brand-ink hover:bg-brand-dark", ring: "from-brand/15" },
+  warning: { icon: AlertTriangle, chip: "bg-warning-soft text-warning", button: "bg-warning text-white hover:brightness-95", ring: "from-warning/15" },
+  danger: { icon: ShieldAlert, chip: "bg-danger-soft text-danger", button: "bg-danger text-white hover:brightness-95", ring: "from-danger/15" },
+};
+
 export function ConfirmDialog({
   open,
   onClose,
@@ -88,8 +99,11 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   tone = "primary",
+  icon,
   loading,
+  disabled,
   children,
 }: {
   open: boolean;
@@ -98,8 +112,13 @@ export function ConfirmDialog({
   title: ReactNode;
   description?: ReactNode;
   confirmLabel?: ReactNode;
-  tone?: "primary" | "danger";
+  cancelLabel?: ReactNode;
+  tone?: "primary" | "warning" | "danger";
+  /** Overrides the tone's default icon. */
+  icon?: LucideIcon;
   loading?: boolean;
+  /** Keeps the primary button off until the form inside is complete. */
+  disabled?: boolean;
   children?: ReactNode;
 }) {
   useEffect(() => {
@@ -112,34 +131,43 @@ export function ConfirmDialog({
   }, [open, onClose, loading]);
 
   if (!open || typeof document === "undefined") return null;
+  const look = CONFIRM_TONE[tone];
+  const Icon = icon ?? look.icon;
 
   return createPortal(
     <div className="fixed inset-0 z-[60] flex items-end justify-center p-3 sm:items-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={loading ? undefined : onClose} />
-      <div role="alertdialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-pop admin-fade-up">
-        <h2 className="text-base font-black tracking-tight text-ink">{title}</h2>
-        {description ? <p className="mt-1.5 text-sm text-ink-muted">{description}</p> : null}
-        {children ? <div className="mt-4">{children}</div> : null}
-        <div className="mt-5 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="h-10 rounded-xl px-4 text-sm font-semibold text-ink-muted hover:bg-surface hover:text-ink disabled:opacity-60"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={loading}
-            className={cx(
-              "h-10 rounded-xl px-4 text-sm font-semibold text-white shadow-sm disabled:opacity-60",
-              tone === "danger" ? "bg-danger" : "bg-brand text-brand-ink",
-            )}
-          >
-            {loading ? "Working…" : confirmLabel}
-          </button>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[3px]" onClick={loading ? undefined : onClose} />
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-line bg-card shadow-pop admin-fade-up"
+      >
+        <div className={cx("pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b to-transparent", look.ring)} />
+        <div className="relative px-6 pb-6 pt-6">
+          <span className={cx("grid h-12 w-12 place-items-center rounded-2xl", look.chip)}>
+            <Icon size={22} />
+          </span>
+          <h2 className="mt-4 text-lg font-black tracking-tight text-ink">{title}</h2>
+          {description ? <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{description}</p> : null}
+          {children ? <div className="mt-4">{children}</div> : null}
+          <div className="mt-6 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-muted transition-colors hover:bg-surface hover:text-ink disabled:opacity-60"
+            >
+              {cancelLabel}
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={loading || disabled}
+              className={cx("h-11 rounded-xl px-4 text-sm font-bold shadow-sm transition-all active:scale-[0.98] disabled:opacity-60", look.button)}
+            >
+              {loading ? "Working…" : confirmLabel}
+            </button>
+          </div>
         </div>
       </div>
     </div>,

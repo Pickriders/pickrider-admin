@@ -95,7 +95,7 @@ const COLUMNS: ColumnDef<AchievementUnlock, unknown>[] = [
     meta: meta({ align: "right", hideBelow: "md", csv: { key: "discountAmount", label: "Discount (kobo)" } }),
     cell: ({ row }) => (
       <span className="text-sm font-semibold text-ink">
-        {row.original.discountAmount ? naira(row.original.discountAmount) : <span className="text-ink-faint">—</span>}
+        {row.original.discountAmount ? naira(row.original.discountAmount) : <span className="text-ink-faint">None</span>}
       </span>
     ),
   },

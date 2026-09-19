@@ -128,7 +128,7 @@ export function AnnouncementFormDrawer({
     },
   });
   const update = useAction((input: AnnouncementUpdate) => announcements.update(editing!._id!, input), {
-    success: "Saved — it will pop again for everyone",
+    success: "Saved. It will pop again for everyone",
     invalidate,
     onSuccess: (saved) => {
       setConfirmReset(false);
@@ -252,7 +252,7 @@ export function AnnouncementFormDrawer({
             }
             hint="Two or three short lines work best; the popup is small."
           >
-            <Textarea value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} className="min-h-28" placeholder="Try the new price calculator — get an estimate for any trip before you book." />
+            <Textarea value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} className="min-h-28" placeholder="Try the new price calculator: get an estimate for any trip before you book." />
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr]">
@@ -315,7 +315,7 @@ export function AnnouncementFormDrawer({
                       <option value="">Pick a screen</option>
                       {screenOptions.map((s) => (
                         <option key={s.path} value={s.path}>
-                          {s.label} — {s.description}
+                          {s.label}: {s.description}
                         </option>
                       ))}
                     </Select>
