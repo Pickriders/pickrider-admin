@@ -138,11 +138,17 @@ export function DataTable<T extends Record<string, unknown>>({
   const pageStart = total ? (state.page - 1) * state.limit + 1 : 0;
   const pageEnd = Math.min(total, state.page * state.limit);
 
-  // One wrapping row: on a phone the search takes the first line and every
-  // button shares the second, with export pushed to the right; on a desktop
-  // it all sits on one line.
+  // Three rows on a phone (search, then the filter controls with export at the
+  // right, then the page's own action at full width); one line on a desktop.
+  const hasControls = Boolean(filters.length || dateFilter || table.activeFilterCount);
+  const hasExtras = Boolean(liveHint || toolbarExtra || csvName);
+  const exportButton = (className: string, label = true) => (
+    <Button variant="outline" size="md" icon={Download} onClick={exportCsv} disabled={!rows.length} className={className} aria-label="Export CSV">
+      {label ? <span>Export</span> : null}
+    </Button>
+  );
   const toolbar = (
-    <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
+    <div className="flex flex-col gap-2 px-4 pt-4 sm:flex-row sm:flex-wrap sm:items-center">
       {searchable ? (
         <div className="w-full sm:w-64">
           <Input
@@ -154,31 +160,34 @@ export function DataTable<T extends Record<string, unknown>>({
           />
         </div>
       ) : null}
-      {filters.length ? (
-        <Button
-          variant={activeFilterEntries.length ? "secondary" : "outline"}
-          size="md"
-          icon={SlidersHorizontal}
-          onClick={() => setFiltersOpen((v) => !v)}
-        >
-          Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
-        </Button>
+      {hasControls || csvName ? (
+        <div className={cx("flex items-center gap-2", !hasControls && "sm:hidden")}>
+          {filters.length ? (
+            <Button
+              variant={activeFilterEntries.length ? "secondary" : "outline"}
+              size="md"
+              icon={SlidersHorizontal}
+              onClick={() => setFiltersOpen((v) => !v)}
+            >
+              Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
+            </Button>
+          ) : null}
+          {dateFilter ? <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} /> : null}
+          {table.activeFilterCount ? (
+            <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
+              Clear
+            </Button>
+          ) : null}
+          {csvName ? exportButton("ml-auto sm:hidden", false) : null}
+        </div>
       ) : null}
-      {dateFilter ? <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} /> : null}
-      {table.activeFilterCount ? (
-        <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
-          Clear
-        </Button>
+      {hasExtras ? (
+        <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center sm:justify-end [&>*]:w-full sm:[&>*]:w-auto">
+          {liveHint}
+          {toolbarExtra}
+          {csvName ? exportButton("hidden sm:inline-flex") : null}
+        </div>
       ) : null}
-      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-        {liveHint}
-        {toolbarExtra}
-        {csvName ? (
-          <Button variant="outline" size="md" icon={Download} onClick={exportCsv} disabled={!rows.length}>
-            <span className="hidden sm:inline">Export</span>
-          </Button>
-        ) : null}
-      </div>
     </div>
   );
 

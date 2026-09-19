@@ -5,7 +5,7 @@ import { ArrowDownLeft, ArrowUpRight, BadgeCheck, Clock, LogIn, Mail, Package, P
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 
-import { Avatar, Badge, Button, DataTable, EmptyState, Panel, PanelHeader, Skeleton, statusTone, type ColumnMeta, type FilterSpec, type Tone } from "@/components/kit";
+import { Avatar, Badge, Button, DataTable, EmptyState, Panel, PanelHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec, type Tone } from "@/components/kit";
 import type { KycStatus, Order, Transaction, User } from "@/lib/admin/api";
 import { ago, day, fullName, naira, statusLabel, when } from "@/lib/admin/format";
 import { useOrders, useTransactions } from "@/lib/admin/hooks";
@@ -85,42 +85,51 @@ export function UserHeader({
     );
   }
   const name = fullName(user) || "Unnamed user";
+  const meta: { label: string; tone?: string }[] = [
+    { label: `Joined ${day(user.createdAt)}` },
+    { label: user.lastLoginDate ? `Last seen ${ago(user.lastLoginDate)}` : "Never signed in" },
+    ...(user.bvnVerified ? [{ label: "BVN verified", tone: "text-success" }] : []),
+    ...(user.nin ? [{ label: "NIN on file" }] : []),
+  ];
   return (
-    <Panel className="p-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex min-w-0 items-start gap-4">
+    <Panel className="p-4 sm:p-5">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <Avatar src={user.photo} name={name} size={56} />
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-xl font-black tracking-tight text-ink">{name}</h1>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h1 className="max-w-full truncate text-lg font-black tracking-tight text-ink sm:text-xl">{name}</h1>
               <Badge tone={statusTone(user.status)} dot>
                 {statusLabel(user.status)}
               </Badge>
               {badges}
             </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
+            <div className="mt-2 flex flex-col gap-1 text-sm text-ink-muted sm:flex-row sm:flex-wrap sm:gap-x-4">
               {user.phone ? (
-                <span className="inline-flex items-center gap-1.5">
-                  <Phone size={13} /> {phoneLabel(user.phone)}
-                  {user.phoneVerified ? <BadgeCheck size={13} className="text-success" aria-label="Phone verified" /> : null}
+                <span className="inline-flex min-w-0 items-center gap-1.5">
+                  <Phone size={13} className="shrink-0" />
+                  <span className="truncate">{phoneLabel(user.phone)}</span>
+                  {user.phoneVerified ? <BadgeCheck size={13} className="shrink-0 text-success" aria-label="Phone verified" /> : null}
                 </span>
               ) : null}
               {user.email ? (
                 <span className="inline-flex min-w-0 items-center gap-1.5">
-                  <Mail size={13} /> <span className="truncate">{user.email}</span>
-                  {user.emailVerified ? <BadgeCheck size={13} className="text-success" aria-label="Email verified" /> : null}
+                  <Mail size={13} className="shrink-0" />
+                  <span className="truncate">{user.email}</span>
+                  {user.emailVerified ? <BadgeCheck size={13} className="shrink-0 text-success" aria-label="Email verified" /> : null}
                 </span>
               ) : null}
             </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-faint">
-              <span>Joined {day(user.createdAt)}</span>
-              <span>{user.lastLoginDate ? `Last seen ${ago(user.lastLoginDate)}` : "Never signed in"}</span>
-              {user.bvnVerified ? <span className="text-success">BVN verified</span> : null}
-              {user.nin ? <span>NIN on file</span> : null}
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {meta.map((item) => (
+                <span key={item.label} className={cx("rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold", item.tone ?? "text-ink-muted")}>
+                  {item.label}
+                </span>
+              ))}
             </div>
           </div>
         </div>
-        {actions ? <div className="shrink-0">{actions}</div> : null}
+        {actions ? <div className="border-t border-line pt-4 xl:shrink-0 xl:border-0 xl:pt-0">{actions}</div> : null}
       </div>
       {banner ? <div className="mt-4">{banner}</div> : null}
     </Panel>
