@@ -59,7 +59,8 @@ export function RecentOrders({ limit = 8 }: { limit?: number }) {
                         {name ? <span className="font-medium text-ink-muted"> · {name}</span> : null}
                       </p>
                       <p className="truncate text-xs text-ink-muted">
-                        {TYPE_LABEL[order.type] ?? order.type} · {naira(order.totalAmountPayable)}
+                        {TYPE_LABEL[order.type] ?? order.type}
+                        {order.isScheduled ? ` · scheduled${order.scheduledFor ? ` for ${time(order.scheduledFor)}` : ""}` : ""} · {naira(order.totalAmountPayable)}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">

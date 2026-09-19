@@ -138,8 +138,14 @@ const orderColumns: ColumnDef<Order, unknown>[] = [
     header: "Order",
     cell: ({ row }) => (
       <div>
-        <p className="font-semibold text-ink">#{row.original.orderNumber ?? row.original._id.slice(-6)}</p>
-        <p className="text-xs text-ink-faint">{statusLabel(row.original.type)}</p>
+        <p className="flex items-center gap-1.5 font-semibold text-ink">
+          <span>#{row.original.orderNumber ?? row.original._id.slice(-6)}</span>
+          {row.original.isScheduled ? <Badge tone="info">Scheduled</Badge> : null}
+        </p>
+        <p className="text-xs text-ink-faint">
+          {statusLabel(row.original.type)}
+          {row.original.isScheduled && row.original.scheduledFor ? ` · for ${when(row.original.scheduledFor)}` : ""}
+        </p>
       </div>
     ),
     meta: { csv: { key: "orderNumber", label: "Order" } } satisfies ColumnMeta,
@@ -193,8 +199,10 @@ function OrderCard({ order }: { order: Order }) {
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="font-semibold text-ink">
-          #{order.orderNumber ?? order._id.slice(-6)} <span className="text-xs font-medium text-ink-faint">{statusLabel(order.type)}</span>
+        <p className="flex flex-wrap items-center gap-1.5 font-semibold text-ink">
+          <span>#{order.orderNumber ?? order._id.slice(-6)}</span>
+          <span className="text-xs font-medium text-ink-faint">{statusLabel(order.type)}</span>
+          {order.isScheduled ? <Badge tone="info">Scheduled</Badge> : null}
         </p>
         <p className="truncate text-xs text-ink-muted">{order.pickup?.address ?? ""}</p>
         <p className="mt-1 text-xs text-ink-faint">{when(order.createdAt)}</p>
@@ -223,6 +231,7 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       orderNumber: state.search,
       status: state.filters.orderStatus,
       type: state.filters.orderType,
+      isScheduled: state.filters.orderScheduled,
       dateRange: table.query.dateRange,
     }),
     [state, userId, table.query.dateRange],
@@ -231,6 +240,7 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
   const filters: FilterSpec[] = [
     { key: "orderStatus", label: "Status", options: ORDER_STATUS_OPTIONS },
     { key: "orderType", label: "Type", options: ORDER_TYPE_OPTIONS },
+    { key: "orderScheduled", label: "Scheduled", options: [{ value: "true", label: "Scheduled only" }, { value: "false", label: "Not scheduled" }] },
   ];
   return (
     <DataTable

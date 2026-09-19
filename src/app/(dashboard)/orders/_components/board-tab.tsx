@@ -51,7 +51,7 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
 
   return (
     <div className="space-y-5">
-      <StatGrid columns={6}>
+      <StatGrid columns={3}>
         <StatCard
           label="Awaiting rider"
           value={count(live?.awaitingRider ?? grouped.INITIATED.length)}

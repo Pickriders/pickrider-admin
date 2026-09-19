@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bike, CheckCircle2, PackageX, Truck, UserX, Wifi, type LucideIcon } from "lucide-react";
+import { Bike, CalendarClock, CheckCircle2, PackageX, Truck, UserX, Wifi, type LucideIcon } from "lucide-react";
 
 import type { Overview } from "@/lib/admin/api";
 import { count } from "@/lib/admin/format";
@@ -9,7 +9,8 @@ import { Panel, Skeleton, cx } from "@/components/kit/primitives";
 
 /**
  * What is happening this second: live orders by stage, riders online, and
- * today's completed and cancelled counts. Six tiles, one calm row.
+ * today's completed and cancelled counts, plus scheduled bookings waiting
+ * for their time. One calm row.
  */
 type Tile = { key: string; label: string; value: number; sub?: string; href: string; icon: LucideIcon; accent: "brand" | "warning" | "danger" | "info" | "success"; urgent?: boolean };
 
@@ -25,6 +26,7 @@ export function LiveRow({ live, loading }: { live?: Overview["live"]; loading: b
   const stale = live?.awaitingRiderStale ?? 0;
   const tiles: Tile[] = [
     { key: "awaiting", label: "Awaiting a rider", value: live?.awaitingRider ?? 0, sub: stale ? `${count(stale)} waiting too long` : undefined, href: "/orders?status=INITIATED", icon: UserX, accent: stale ? "danger" : "warning", urgent: stale > 0 },
+    { key: "scheduled", label: "Scheduled, waiting", value: live?.scheduled ?? 0, sub: "Booked ahead, not yet rung", href: "/orders?tab=scheduled", icon: CalendarClock, accent: "info" },
     { key: "accepted", label: "Rider assigned", value: live?.accepted ?? 0, href: "/orders?status=ACCEPTED", icon: Bike, accent: "brand" },
     { key: "ongoing", label: "In transit", value: live?.ongoing ?? 0, href: "/orders?status=ON_GOING", icon: Truck, accent: "info" },
     { key: "online", label: "Riders online", value: live?.ridersOnline ?? 0, href: "/couriers?isOnline=true", icon: Wifi, accent: "success" },
@@ -47,7 +49,7 @@ export function LiveRow({ live, loading }: { live?: Overview["live"]; loading: b
           live
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-3 p-6 pt-4 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 p-5 pt-4 sm:grid-cols-3 sm:p-6 sm:pt-4 xl:grid-cols-7">
         {tiles.map((tile) => {
           const Icon = tile.icon;
           return (
