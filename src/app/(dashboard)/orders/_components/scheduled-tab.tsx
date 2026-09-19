@@ -292,7 +292,6 @@ export function ScheduledTab() {
         emptyIcon={CalendarClock}
         emptyTitle={phase === "all" ? "No scheduled orders waiting" : `Nothing ${PHASE_LABEL[phase].toLowerCase()}`}
         emptyDescription="Customers' prepaid bookings show here until a rider accepts them."
-        liveHint="Refreshes every 20s"
       />
     </div>
   );

@@ -64,7 +64,7 @@ export function OverviewTab() {
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
           <div>
             <h3 className="text-sm font-bold tracking-tight text-ink">The queue right now</h3>
-            <p className="mt-0.5 text-xs text-ink-muted">Refreshes every 20 seconds. Each tile opens that view of the queue.</p>
+            <p className="mt-0.5 text-xs text-ink-muted">Each tile opens that view of the queue.</p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-[11px] font-bold text-success">
             <span className="relative flex h-2 w-2">

@@ -45,7 +45,7 @@ const COLUMNS: ColumnDef<Order, unknown>[] = [
         <p className="truncate font-semibold text-ink">#{row.original.orderNumber ?? row.original._id.slice(-6)}</p>
         <p className="truncate text-xs capitalize text-ink-muted">
           {row.original.type?.toLowerCase()}
-          {row.original.isScheduled ? " · scheduled" : ""}
+          {row.original.isScheduled ? <Badge tone="info" className="ml-1.5">Scheduled</Badge> : null}
         </p>
       </div>
     ),

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import type { Transaction } from "@/lib/admin/api";
-import { usePlatformWallet, useTransaction, useTransactions } from "@/lib/admin/hooks";
+import { useMarkSeen, usePlatformWallet, useTransaction, useTransactions } from "@/lib/admin/hooks";
 import { naira, when } from "@/lib/admin/format";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
@@ -57,6 +57,7 @@ function EntityCell({ tx, platformEntityId }: { tx: Transaction; platformEntityI
 
 export function TransactionsTab({ preset }: { preset: Preset }) {
   const table = useTableState({ limit: 20 });
+  useMarkSeen("transactionFailures", table.state.filters.status === "FAILED");
   const wallet = usePlatformWallet();
   const platformEntityId = wallet.data?.entityId;
   const [selected, setSelected] = useState<string | null>(null);
