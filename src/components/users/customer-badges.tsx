@@ -156,7 +156,7 @@ export function CustomerBadges({ userId, enabled = true }: { userId: string; ena
               <option value="">Choose…</option>
               {grantable.map((row) => (
                 <option key={row.key} value={row.key}>
-                  {row.title} — {row.reward.percent}% reward ({row.progress}/{row.target} {row.unit})
+                  {row.title}: {row.reward.percent}% reward ({row.progress}/{row.target} {row.unit})
                 </option>
               ))}
             </Select>

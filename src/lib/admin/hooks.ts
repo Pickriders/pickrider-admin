@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
@@ -28,6 +29,25 @@ export const useUserOverview = (userId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["stats", "user-overview", userId, range], queryFn: () => stats.userOverview(userId, range), placeholderData: keepPreviousData, enabled: Boolean(userId) });
 
 // Me
+/**
+ * Marks an attention signal as looked at by this admin the moment the screen
+ * that shows it opens, so its badge drops to zero until something new lands.
+ */
+export function useMarkSeen(key: "messagingFailures" | "transactionFailures", enabled = true) {
+  const client = useQueryClient();
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    me.updatePreferences({ seen: { [key]: new Date().toISOString() } })
+      .then(() => {
+        if (!cancelled) void client.invalidateQueries({ queryKey: ["stats", "attention"] });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [key, enabled, client]);
+}
 export const useMe = () => useQuery({ queryKey: ["me"], queryFn: me.get, staleTime: 5 * 60_000 });
 
 // Lists
