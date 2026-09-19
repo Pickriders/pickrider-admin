@@ -180,6 +180,7 @@ const CASES: Case[] = [
   { name: "achievements.forUser", call: () => api.achievements.forUser(ID), method: "GET", path: `${P}/admins/achievements/users/${ID}` },
   { name: "achievements.grant", call: () => api.achievements.grant(ID, { key: "FIRST_ORDER" }), method: "POST", path: `${P}/admins/achievements/users/${ID}/grant`, data: { key: "FIRST_ORDER" } },
   { name: "achievements.revoke", call: () => api.achievements.revoke(ID, "FIRST_ORDER"), method: "DELETE", path: `${P}/admins/achievements/users/${ID}/FIRST_ORDER` },
+  { name: "stats.customersOverview", call: () => api.stats.customersOverview({ from: "2026-09-01", to: "2026-09-07", bucket: "day" }), method: "GET", path: `${P}/admins/stats/customers/overview`, params: { from: "2026-09-01", to: "2026-09-07", bucket: "day" } },
   // issues
   { name: "issues.list", call: () => api.issues.list({ status: "OPEN,IN_REVIEW" }), method: "GET", path: `${P}/admins/issues`, params: { status: "OPEN,IN_REVIEW" }, paged: true },
   { name: "issues.summary", call: () => api.issues.summary(), method: "GET", path: `${P}/admins/issues/summary` },

@@ -29,6 +29,7 @@ import { PLATFORM_STAFF_ROLES } from "@/lib/admin-access";
 
 import {
   CATEGORY_LABEL,
+  PRIORITY_LABEL,
   PRIORITY_OPTIONS,
   PersonCell,
   PriorityBadge,
@@ -75,14 +76,19 @@ function IssueDetail({ id }: { id: string }) {
   );
 
   const [assignee, setAssignee] = useState<string>("");
+  // Who the report should move to, waiting for the admin to confirm.
+  const [assignTarget, setAssignTarget] = useState<{ adminId: string | null; label: string } | null>(null);
   const assign = useAction((adminId: string | null) => issues.assign(id, adminId), {
     success: (_, adminId) => (adminId ? "Report assigned." : "Report unassigned."),
     invalidate,
+    onSuccess: () => setAssignTarget(null),
   });
 
+  const [priorityTarget, setPriorityTarget] = useState<IssuePriority | null>(null);
   const priority = useAction((next: IssuePriority) => issues.updatePriority(id, next), {
     success: "Priority updated.",
     invalidate,
+    onSuccess: () => setPriorityTarget(null),
   });
 
   const [note, setNote] = useState("");
@@ -126,7 +132,7 @@ function IssueDetail({ id }: { id: string }) {
               <Button
                 variant="outline"
                 icon={UserCheck}
-                onClick={() => assign.mutate(me.data?._id ?? null)}
+                onClick={() => setAssignTarget({ adminId: me.data?._id ?? null, label: "you" })}
                 loading={assign.isPending}
                 disabled={!me.data?._id}
               >
@@ -305,7 +311,7 @@ function IssueDetail({ id }: { id: string }) {
                   ]}
                 />
               ) : (
-                <p className="text-sm text-ink-muted">General report — not tied to an order or transaction.</p>
+                <p className="text-sm text-ink-muted">General report, not tied to an order or transaction.</p>
               )}
             </div>
           </Panel>
@@ -319,8 +325,12 @@ function IssueDetail({ id }: { id: string }) {
                   disabled={issue.status === "CLOSED" || assign.isPending}
                   onChange={(event) => {
                     const next = event.target.value;
+                    const member = (staff.data?.items ?? []).find((m) => m._id === next);
                     setAssignee(next);
-                    assign.mutate(next || null);
+                    setAssignTarget({
+                      adminId: next || null,
+                      label: !next ? "nobody" : member?._id === me.data?._id ? "you" : fullName(member) || member?.email || "this admin",
+                    });
                   }}
                 >
                   <option value="">Unassigned</option>
@@ -336,7 +346,7 @@ function IssueDetail({ id }: { id: string }) {
                 <Select
                   value={issue.priority}
                   disabled={terminal || priority.isPending}
-                  onChange={(event) => priority.mutate(event.target.value as IssuePriority)}
+                  onChange={(event) => setPriorityTarget(event.target.value as IssuePriority)}
                 >
                   {PRIORITY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -366,6 +376,35 @@ function IssueDetail({ id }: { id: string }) {
         </div>
       </div>
 
+      <ConfirmDialog
+        open={assignTarget !== null}
+        onClose={() => {
+          setAssignTarget(null);
+          setAssignee("");
+        }}
+        onConfirm={() => assignTarget && assign.mutate(assignTarget.adminId)}
+        title={assignTarget?.adminId ? `Assign this report to ${assignTarget.label}?` : "Leave this report unassigned?"}
+        description={
+          assignTarget?.adminId
+            ? issue.status === "OPEN"
+              ? "It moves to In review and the customer is told somebody is looking at it."
+              : "Only the assignee changes; the customer is not notified."
+            : "It goes back into the unassigned queue for someone else to pick up."
+        }
+        confirmLabel={assignTarget?.adminId ? "Assign" : "Unassign"}
+        tone={assignTarget?.adminId ? "primary" : "warning"}
+        loading={assign.isPending}
+      />
+      <ConfirmDialog
+        open={priorityTarget !== null && priorityTarget !== issue.priority}
+        onClose={() => setPriorityTarget(null)}
+        onConfirm={() => priorityTarget && priority.mutate(priorityTarget)}
+        title={priorityTarget ? `Set priority to ${PRIORITY_LABEL[priorityTarget].toLowerCase()}?` : ""}
+        description="Priority decides where this report sits in the queue. The customer is not notified."
+        confirmLabel="Change priority"
+        tone={priorityTarget === "HIGH" ? "warning" : "primary"}
+        loading={priority.isPending}
+      />
       <ConfirmDialog
         open={statusTarget !== null}
         onClose={() => setStatusTarget(null)}

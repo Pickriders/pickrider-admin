@@ -71,16 +71,16 @@ export function MoneyMoved({
               <Link
                 key={item.label}
                 href={item.href}
-                className={cx("min-w-0 rounded-2xl border p-4 transition-colors", item.dark ? "border-transparent bg-ink text-card hover:opacity-95" : "border-line hover:bg-surface")}
+                className={cx("min-w-0 rounded-2xl border p-4 transition-colors", item.dark ? "border-transparent bg-ink text-card hover:opacity-95 dark:border-brand/40 dark:bg-brand-soft dark:text-ink dark:hover:opacity-100 dark:hover:bg-brand-soft/80" : "border-line hover:bg-surface")}
               >
-                <span className={cx("inline-grid h-8 w-8 place-items-center rounded-lg", item.dark ? "bg-card/15 text-card" : "bg-brand-soft text-brand-dark")}>
+                <span className={cx("inline-grid h-8 w-8 place-items-center rounded-lg", item.dark ? "bg-card/15 text-card dark:bg-brand/20 dark:text-brand" : "bg-brand-soft text-brand-dark")}>
                   <Icon size={15} />
                 </span>
-                <p className={cx("mt-3 truncate text-xl font-black leading-none tracking-tight tabular-nums", item.dark ? "text-card" : "text-ink")} title={naira(item.value)}>
-                  {loading ? <Skeleton className={cx("h-6 w-16", item.dark && "bg-card/20")} /> : nairaCompact(item.value)}
+                <p className={cx("mt-3 truncate text-xl font-black leading-none tracking-tight tabular-nums", item.dark ? "text-card dark:text-ink" : "text-ink")} title={naira(item.value)}>
+                  {loading ? <Skeleton className={cx("h-6 w-16", item.dark && "bg-card/20 dark:bg-brand/20")} /> : nairaCompact(item.value)}
                 </p>
-                <p className={cx("mt-1.5 text-xs font-semibold", item.dark ? "text-card/70" : "text-ink-muted")}>{item.label}</p>
-                <p className={cx("text-[11px]", item.dark ? "text-card/50" : "text-ink-faint")}>{item.hint}</p>
+                <p className={cx("mt-1.5 text-xs font-semibold", item.dark ? "text-card/70 dark:text-ink-muted" : "text-ink-muted")}>{item.label}</p>
+                <p className={cx("text-[11px]", item.dark ? "text-card/50 dark:text-ink-faint" : "text-ink-faint")}>{item.hint}</p>
               </Link>
             );
           })}

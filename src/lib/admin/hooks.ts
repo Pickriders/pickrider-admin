@@ -31,6 +31,8 @@ export const useUserOverview = (userId: string, range: RangeQuery) =>
 export const useMe = () => useQuery({ queryKey: ["me"], queryFn: me.get, staleTime: 5 * 60_000 });
 
 // Lists
+export const useCustomersOverview = (range: RangeQuery & { bucket?: string }) =>
+  useQuery({ queryKey: ["stats", "customers-overview", range], queryFn: () => stats.customersOverview(range), refetchInterval: POLL_MS, placeholderData: keepPreviousData });
 export const useCustomers = (query: Query) => useQuery({ queryKey: ["customers", query], queryFn: () => stats.customers(query), ...keep });
 export const useBusinesses = (query: Query) => useQuery({ queryKey: ["businesses", query], queryFn: () => stats.businesses(query), ...keep });
 export const useUsers = (query: Query, enabled = true) => useQuery({ queryKey: ["users", query], queryFn: () => users.list(query), ...keep, enabled });
@@ -136,7 +138,7 @@ export const useBroadcastLive = (id: string, running: boolean) =>
 
 // Coupons
 export const useCoupons = (query: Query) => useQuery({ queryKey: ["coupons", query], queryFn: () => coupons.list(query), ...keep });
-export const useCouponsSummary = () => useQuery({ queryKey: ["coupons", "summary"], queryFn: coupons.summary, refetchInterval: POLL_MS });
+export const useCouponsSummary = (range?: RangeQuery) => useQuery({ queryKey: ["coupons", "summary", range], queryFn: () => coupons.summary(range), refetchInterval: POLL_MS, placeholderData: keepPreviousData });
 export const useCoupon = (id: string) => useQuery({ queryKey: ["coupon", id], queryFn: () => coupons.get(id), enabled: Boolean(id) });
 export const useCouponUsages = (id: string, query: Query) => useQuery({ queryKey: ["coupon", id, "usages", query], queryFn: () => coupons.usages(id, query), ...keep, enabled: Boolean(id) });
 export const useCouponGroups = (query: Query) => useQuery({ queryKey: ["coupon-groups", query], queryFn: () => coupons.groups(query), ...keep });
@@ -144,14 +146,14 @@ export const useCouponGroup = (id: string) => useQuery({ queryKey: ["coupon-grou
 
 // Achievements
 export const useAchievementCatalogue = () => useQuery({ queryKey: ["achievements", "catalogue"], queryFn: achievements.catalogue, refetchInterval: POLL_MS });
-export const useAchievementsSummary = () => useQuery({ queryKey: ["achievements", "summary"], queryFn: achievements.summary, refetchInterval: POLL_MS });
+export const useAchievementsSummary = (range?: RangeQuery) => useQuery({ queryKey: ["achievements", "summary", range], queryFn: () => achievements.summary(range), refetchInterval: POLL_MS, placeholderData: keepPreviousData });
 export const useAchievementUnlocks = (query: Query) => useQuery({ queryKey: ["achievements", "unlocks", query], queryFn: () => achievements.unlocks(query), ...keep });
 export const useCustomerAchievements = (userId: string, enabled = true) =>
   useQuery({ queryKey: ["achievements", "user", userId], queryFn: () => achievements.forUser(userId), enabled: Boolean(userId) && enabled });
 
 // Support (issue reports)
 export const useIssues = (query: Query) => useQuery({ queryKey: ["issues", query], queryFn: () => issues.list(query), ...keep, refetchInterval: POLL_MS });
-export const useIssuesSummary = () => useQuery({ queryKey: ["issues", "summary"], queryFn: issues.summary, refetchInterval: POLL_MS });
+export const useIssuesSummary = (range?: RangeQuery) => useQuery({ queryKey: ["issues", "summary", range], queryFn: () => issues.summary(range), refetchInterval: POLL_MS, placeholderData: keepPreviousData });
 export const useIssue = (id: string) => useQuery({ queryKey: ["issue", id], queryFn: () => issues.get(id), enabled: Boolean(id) });
 export const useUserIssues = (userId: string, query: Query, enabled = true) =>
   useQuery({ queryKey: ["issues", "user", userId, query], queryFn: () => issues.forUser(userId, query), ...keep, enabled: Boolean(userId) && enabled });

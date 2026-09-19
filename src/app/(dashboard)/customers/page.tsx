@@ -4,12 +4,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { BadgeCheck, Megaphone, Users } from "lucide-react";
 import { Suspense, useMemo } from "react";
 
-import { Avatar, Badge, DataTable, LinkButton, PageHeader, Skeleton, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import { Avatar, Badge, DataTable, LinkButton, PageHeader, Skeleton, Tabs, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import type { CustomerRow } from "@/lib/admin/api";
 import { ago, count, day, fullName, naira, statusLabel } from "@/lib/admin/format";
 import { useCustomers } from "@/lib/admin/hooks";
-import { useTableState } from "@/lib/admin/url-state";
+import { useTabParam, useTableState } from "@/lib/admin/url-state";
+
+import { CustomersOverviewTab } from "./_components/overview-tab";
 import { errorMessage } from "@/lib/admin/http";
 
 /**
@@ -178,13 +180,37 @@ function CustomersList() {
   );
 }
 
-export default function CustomersPage() {
+const TABS = ["overview", "list"] as const;
+type Tab = (typeof TABS)[number];
+
+const DESCRIPTION: Record<Tab, string> = {
+  overview: "Who is using the app, how often they order, what they spend, and who cancels the most.",
+  list: "Everyone who orders on Pickriders: balances, order history and account actions.",
+};
+
+function CustomersHub() {
+  const [tab, setTab] = useTabParam<Tab>("overview", TABS);
   return (
     <div>
-      <PageHeader title="Customers" description="Everyone who orders on Pickriders: balances, order history and account actions." />
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-        <CustomersList />
-      </Suspense>
+      <PageHeader title="Customers" description={DESCRIPTION[tab]} />
+      <Tabs
+        value={tab}
+        onChange={setTab}
+        className="mb-4"
+        items={[
+          { id: "overview", label: "Overview" },
+          { id: "list", label: "Customers" },
+        ]}
+      />
+      {tab === "overview" ? <CustomersOverviewTab /> : <CustomersList />}
     </div>
+  );
+}
+
+export default function CustomersPage() {
+  return (
+    <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      <CustomersHub />
+    </Suspense>
   );
 }

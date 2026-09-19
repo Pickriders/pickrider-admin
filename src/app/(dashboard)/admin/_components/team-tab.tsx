@@ -368,7 +368,7 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
               </Button>
             </div>
           ) : isSelf ? (
-            <p className="text-xs text-ink-faint">This is your own account — another admin has to change its status.</p>
+            <p className="text-xs text-ink-faint">This is your own account. Another admin has to change its status.</p>
           ) : targetIsOwner ? (
             <p className="text-xs text-ink-faint">Only a super admin can change a super admin&apos;s status.</p>
           ) : null}

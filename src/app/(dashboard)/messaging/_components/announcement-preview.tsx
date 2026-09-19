@@ -55,7 +55,7 @@ export function AnnouncementPreview({
               <div className="mb-3 flex h-24 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-danger/50 bg-danger/5 px-3 text-center">
                 <ImageOff size={18} className="text-danger" />
                 <p className="text-[10px] font-semibold leading-tight text-danger">
-                  {isSvg ? "SVG images do not show in the apps — use a JPG, PNG or WebP." : "This link is not an image the apps can load — use a direct JPG, PNG or WebP URL."}
+                  {isSvg ? "SVG images do not show in the apps. Use a JPG, PNG or WebP." : "This link is not an image the apps can load. Use a direct JPG, PNG or WebP URL."}
                 </p>
               </div>
             ) : (
