@@ -73,7 +73,7 @@ export const COUPON_COLUMNS: ColumnDef<Coupon, unknown>[] = [
           )}
         </span>
         <span className="block truncate text-xs text-ink-muted">
-          {row.original.name || row.original.description || "—"}
+          {row.original.name || row.original.description || "No description"}
         </span>
       </span>
     ),
