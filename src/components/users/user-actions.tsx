@@ -75,7 +75,7 @@ export function UserActions({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center xl:justify-end [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*]:w-auto">
         {showDispatch && can("user.dispatch") ? (
           <Button
             size={size}

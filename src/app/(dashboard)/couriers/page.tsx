@@ -271,7 +271,7 @@ function CouriersList() {
         mobileCard={(row) => <RiderCard row={row} />}
         toolbarExtra={
           <LinkButton href="/messaging?audience=RIDERS" variant="outline" size="md" icon={Megaphone}>
-            <span className="hidden sm:inline">Message riders</span>
+            <span>Message riders</span>
           </LinkButton>
         }
       />

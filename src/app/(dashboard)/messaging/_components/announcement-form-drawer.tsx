@@ -1,6 +1,6 @@
 "use client";
 
-import { Bike, ExternalLink, Layers, MousePointerClick, Save, Send, Users, type LucideIcon } from "lucide-react";
+import { Bike, Check, ExternalLink, Layers, MousePointerClick, Save, Send, Users, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Button, ConfirmDialog, Drawer, Field, Input, Select, Textarea, cx } from "@/components/kit";
@@ -354,7 +354,11 @@ function Section({ step, title, hint, children }: { step: number; title: string;
   );
 }
 
-/** Labelled cards for a single-choice setting; every card says what picking it means. */
+/**
+ * Labelled cards for a single-choice setting; every card says what picking it
+ * means. Two options sit side by side; three or more stack as full-width rows so
+ * labels and hints never wrap into a ragged grid in the narrow form column.
+ */
 function Choice<T extends string>({
   label,
   value,
@@ -366,35 +370,43 @@ function Choice<T extends string>({
   onChange: (next: T) => void;
   options: { id: T; icon: LucideIcon; label: string; hint: string }[];
 }) {
+  const stacked = options.length > 2;
   return (
-    <div role="radiogroup" aria-label={label}>
-      <div className={cx("grid grid-cols-1 gap-2", options.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
-        {options.map((option) => {
-          const active = option.id === value;
-          const Icon = option.icon;
-          return (
-            <button
-              key={option.id}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onChange(option.id)}
+    <div role="radiogroup" aria-label={label} className={cx("grid gap-2", stacked ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
+      {options.map((option) => {
+        const active = option.id === value;
+        const Icon = option.icon;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(option.id)}
+            className={cx(
+              "flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors",
+              active ? "border-brand bg-brand-soft/60" : "border-line bg-card hover:bg-surface",
+            )}
+          >
+            <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+              <Icon size={17} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-ink">{option.label}</span>
+              <span className="block text-xs leading-snug text-ink-muted">{option.hint}</span>
+            </span>
+            <span
               className={cx(
-                "flex items-start gap-3 rounded-2xl border p-3 text-left transition-colors",
-                active ? "border-brand bg-brand-soft/60" : "border-line bg-card hover:bg-surface",
+                "grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-colors",
+                active ? "border-brand bg-brand text-brand-ink" : "border-line-strong bg-card text-transparent",
               )}
+              aria-hidden
             >
-              <span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-xl", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
-                <Icon size={16} />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-bold text-ink">{option.label}</span>
-                <span className="block text-[11px] leading-snug text-ink-muted">{option.hint}</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              <Check size={12} strokeWidth={3} />
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
