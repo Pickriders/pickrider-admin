@@ -1,7 +1,7 @@
 "use client";
 
-import { Save, Send } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Bike, ExternalLink, Layers, MousePointerClick, Save, Send, Users, type LucideIcon } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Button, ConfirmDialog, Drawer, Field, Input, Select, Textarea, cx } from "@/components/kit";
 import {
@@ -30,9 +30,14 @@ const EMOJI_PICKS = ["🎉", "✨", "🚀", "🧮", "📅", "🎁", "🏅", "�
 
 type ActionMode = "NONE" | AnnouncementActionType;
 
-const AUDIENCES: { id: AnnouncementAudience; label: string; hint: string }[] = [
-  { id: AnnouncementAudience.CUSTOMERS, label: "Customers", hint: "Pops in the customer app" },
-  { id: AnnouncementAudience.RIDERS, label: "Couriers", hint: "Pops in the rider app" },
+const AUDIENCES: { id: AnnouncementAudience; icon: LucideIcon; label: string; hint: string }[] = [
+  { id: AnnouncementAudience.CUSTOMERS, icon: Users, label: "Customers", hint: "Pops in the customer app" },
+  { id: AnnouncementAudience.RIDERS, icon: Bike, label: "Couriers", hint: "Pops in the rider app" },
+];
+const BUTTONS: { id: ActionMode; icon: LucideIcon; label: string; hint: string }[] = [
+  { id: "NONE", icon: MousePointerClick, label: "Just “Got it”", hint: "No action, closes the popup" },
+  { id: AnnouncementActionType.INTERNAL, icon: Layers, label: "Open a screen", hint: "Deep link inside the app" },
+  { id: AnnouncementActionType.EXTERNAL, icon: ExternalLink, label: "Open a link", hint: "In the in-app browser" },
 ];
 
 /** ISO → value a datetime-local input accepts (local time, no seconds). */
@@ -205,66 +210,46 @@ export function AnnouncementFormDrawer({
       }
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_17rem]">
-        <div className="space-y-5">
-          <div>
-            <p className="mb-1.5 text-xs font-semibold text-ink-muted">Which app</p>
-            <div className="grid grid-cols-2 gap-2">
-              {AUDIENCES.map((item) => {
-                const active = item.id === audience;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setAudience(item.id)}
-                    className={cx(
-                      "rounded-xl border px-3 py-2.5 text-left transition-colors",
-                      active ? "border-transparent bg-ink text-card" : "border-line bg-card hover:bg-surface",
-                    )}
-                  >
-                    <span className="block text-sm font-bold">{item.label}</span>
-                    <span className={cx("block text-[11px]", active ? "text-card/70" : "text-ink-muted")}>{item.hint}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        <div className="space-y-6">
+          <Section step={1} title="Who sees it" hint="One app per announcement.">
+            <Choice label="Which app" value={audience} onChange={setAudience} options={AUDIENCES} />
+          </Section>
 
-          <Field
-            label={
-              <span className="flex justify-between">
-                <span>Title</span>
-                <span className={cx("font-medium", title.length > TITLE_MAX ? "text-danger" : "text-ink-faint")}>
-                  {title.length}/{TITLE_MAX}
+          <Section step={2} title="What it says" hint="Short and clear; the popup is small.">
+            <Field
+              label={
+                <span className="flex justify-between">
+                  <span>Title</span>
+                  <span className={cx("font-medium", title.length > TITLE_MAX ? "text-danger" : "text-ink-faint")}>
+                    {title.length}/{TITLE_MAX}
+                  </span>
                 </span>
-              </span>
-            }
-          >
-            <Input value={title} maxLength={TITLE_MAX} onChange={(e) => setTitle(e.target.value)} placeholder="Know the price before you order" />
-          </Field>
-          <Field
-            label={
-              <span className="flex justify-between">
-                <span>Message</span>
-                <span className={cx("font-medium", body.length > BODY_MAX ? "text-danger" : "text-ink-faint")}>
-                  {body.length}/{BODY_MAX}
+              }
+            >
+              <Input value={title} maxLength={TITLE_MAX} onChange={(e) => setTitle(e.target.value)} placeholder="Know the price before you order" />
+            </Field>
+            <Field
+              label={
+                <span className="flex justify-between">
+                  <span>Message</span>
+                  <span className={cx("font-medium", body.length > BODY_MAX ? "text-danger" : "text-ink-faint")}>
+                    {body.length}/{BODY_MAX}
+                  </span>
                 </span>
-              </span>
-            }
-            hint="Two or three short lines work best; the popup is small."
-          >
-            <Textarea value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} className="min-h-28" placeholder="Try the new price calculator: get an estimate for any trip before you book." />
-          </Field>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr]">
-            <Field label="Emoji" hint="Shown large above the title when there is no image">
-              <div className="flex flex-wrap gap-1.5">
+              }
+              hint="Two or three short lines work best."
+            >
+              <Textarea value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} className="min-h-28" placeholder="Try the new price calculator: get an estimate for any trip before you book." />
+            </Field>
+            <Field label="Emoji" hint="Shown large above the title when there is no image.">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {EMOJI_PICKS.map((pick) => (
                   <button
                     key={pick}
                     type="button"
                     onClick={() => setEmoji(pick)}
                     className={cx(
-                      "grid h-9 w-9 place-items-center rounded-lg border text-lg transition-colors",
+                      "grid h-10 w-10 place-items-center rounded-xl border text-lg transition-colors",
                       emoji === pick ? "border-brand bg-brand-soft" : "border-line hover:bg-surface",
                     )}
                     aria-label={`Use ${pick}`}
@@ -272,45 +257,22 @@ export function AnnouncementFormDrawer({
                     {pick}
                   </button>
                 ))}
-                <Input value={emoji} maxLength={8} onChange={(e) => setEmoji(e.target.value)} className="w-16 text-center" aria-label="Custom emoji" />
+                <span className="block w-20">
+                  <Input value={emoji} maxLength={8} onChange={(e) => setEmoji(e.target.value)} className="text-center" aria-label="Custom emoji" placeholder="Other" />
+                </span>
               </div>
             </Field>
-            <Field label="Image URL (optional)" hint="https only; replaces the emoji">
+            <Field label="Image URL (optional)" hint="https only; replaces the emoji.">
               <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" />
             </Field>
-          </div>
+          </Section>
 
-          <div>
-            <p className="mb-1.5 text-xs font-semibold text-ink-muted">Button</p>
-            <div className="grid grid-cols-3 gap-2">
-              {(
-                [
-                  { id: "NONE", label: "Just “Got it”", hint: "No action, closes the popup" },
-                  { id: AnnouncementActionType.INTERNAL, label: "Open a screen", hint: "Deep-link inside the app" },
-                  { id: AnnouncementActionType.EXTERNAL, label: "Open a link", hint: "In the in-app browser" },
-                ] as { id: ActionMode; label: string; hint: string }[]
-              ).map((item) => {
-                const active = item.id === mode;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setMode(item.id)}
-                    className={cx(
-                      "rounded-xl border px-3 py-2 text-left transition-colors",
-                      active ? "border-brand bg-brand-soft" : "border-line bg-card hover:bg-surface",
-                    )}
-                  >
-                    <span className="block text-sm font-bold text-ink">{item.label}</span>
-                    <span className="block text-[11px] text-ink-muted">{item.hint}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <Section step={3} title="The button" hint="What happens when they tap it.">
+            <Choice label="Button" value={mode} onChange={setMode} options={BUTTONS} />
             {mode !== "NONE" ? (
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {mode === AnnouncementActionType.INTERNAL ? (
-                  <Field label="Screen" hint={screens.isLoading ? "Loading screens…" : "Only screens that exist in the app are listed"}>
+                  <Field label="Screen" hint={screens.isLoading ? "Loading screens…" : "Only screens that exist in the app are listed."}>
                     <Select value={screen} onChange={(e) => setScreen(e.target.value)} disabled={screens.isLoading}>
                       <option value="">Pick a screen</option>
                       {screenOptions.map((s) => (
@@ -321,7 +283,7 @@ export function AnnouncementFormDrawer({
                     </Select>
                   </Field>
                 ) : (
-                  <Field label="Link" hint="Opens inside the app, not in Safari or Chrome">
+                  <Field label="Link" hint="Opens inside the app, not in Safari or Chrome.">
                     <Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://pickriders.com/blog/…" />
                   </Field>
                 )}
@@ -339,16 +301,18 @@ export function AnnouncementFormDrawer({
                 </Field>
               </div>
             ) : null}
-          </div>
+          </Section>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Start showing (optional)" hint="Leave empty to show as soon as it is live">
-              <Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
-            </Field>
-            <Field label="Stop showing (optional)" hint="Leave empty to keep showing until archived">
-              <Input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
-            </Field>
-          </div>
+          <Section step={4} title="When it shows" hint="Both optional. Empty means as soon as it is live, until it is archived.">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Field label="Start showing">
+                <Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
+              </Field>
+              <Field label="Stop showing">
+                <Input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
+              </Field>
+            </div>
+          </Section>
         </div>
 
         <div className="md:sticky md:top-0 md:self-start">
@@ -371,5 +335,66 @@ export function AnnouncementFormDrawer({
         tone="danger"
       />
     </Drawer>
+  );
+}
+
+/** A numbered block of the form, so the drawer reads top to bottom as steps. */
+function Section({ step, title, hint, children }: { step: number; title: string; hint: string; children: ReactNode }) {
+  return (
+    <section className="space-y-4">
+      <div className="flex items-start gap-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-ink text-xs font-black text-card">{step}</span>
+        <div className="min-w-0">
+          <h3 className="text-sm font-bold text-ink">{title}</h3>
+          <p className="text-xs text-ink-muted">{hint}</p>
+        </div>
+      </div>
+      <div className="space-y-4 sm:pl-10">{children}</div>
+    </section>
+  );
+}
+
+/** Labelled cards for a single-choice setting; every card says what picking it means. */
+function Choice<T extends string>({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: T;
+  onChange: (next: T) => void;
+  options: { id: T; icon: LucideIcon; label: string; hint: string }[];
+}) {
+  return (
+    <div role="radiogroup" aria-label={label}>
+      <div className={cx("grid grid-cols-1 gap-2", options.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+        {options.map((option) => {
+          const active = option.id === value;
+          const Icon = option.icon;
+          return (
+            <button
+              key={option.id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(option.id)}
+              className={cx(
+                "flex items-start gap-3 rounded-2xl border p-3 text-left transition-colors",
+                active ? "border-brand bg-brand-soft/60" : "border-line bg-card hover:bg-surface",
+              )}
+            >
+              <span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-xl", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+                <Icon size={16} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-bold text-ink">{option.label}</span>
+                <span className="block text-[11px] leading-snug text-ink-muted">{option.hint}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

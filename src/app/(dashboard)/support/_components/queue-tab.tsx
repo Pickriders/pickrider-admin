@@ -136,7 +136,6 @@ export function QueueTab() {
         emptyIcon={LifeBuoy}
         emptyTitle={view === "open" ? "The queue is clear" : "Nothing here"}
         emptyDescription="Reports customers file from the app land here."
-        liveHint="Refreshes every 20s"
       />
     </div>
   );

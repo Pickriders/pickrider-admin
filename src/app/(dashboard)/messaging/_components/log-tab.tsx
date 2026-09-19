@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 import { Badge, Button, DataTable, Drawer, KeyValue, type ColumnMeta, type FilterSpec } from "@/components/kit";
 import type { NotificationRow } from "@/lib/admin/api";
 import { when } from "@/lib/admin/format";
-import { useNotificationLog } from "@/lib/admin/hooks";
+import { useMarkSeen, useNotificationLog } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
@@ -104,6 +104,7 @@ function Recipient({ row }: { row: NotificationRow }) {
 
 export function LogTab() {
   const table = useTableState({ limit: 20 });
+  useMarkSeen("messagingFailures");
   const query = useMemo(() => {
     const { sortBy: _sort, dateRange: _range, ...rest } = table.query;
     void _sort;

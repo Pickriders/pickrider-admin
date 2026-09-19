@@ -109,7 +109,7 @@ export type User = {
   [key: string]: unknown;
 };
 
-export type AdminPreferences = { theme?: "light" | "dark" | "system"; font?: string };
+export type AdminPreferences = { theme?: "light" | "dark" | "system"; font?: string; seen?: Record<string, string> };
 
 export type Wallet = {
   _id: string;
@@ -299,6 +299,8 @@ export type Overview = {
     cancelledToday: number;
     placedToday: number;
     ridersOnline: number;
+    /** Prepaid bookings waiting for their time */
+    scheduled?: number;
   };
 };
 
