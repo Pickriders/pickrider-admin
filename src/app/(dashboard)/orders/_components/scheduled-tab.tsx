@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { BellRing, CalendarClock } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Badge, Button, DataTable, cx, type ColumnMeta } from "@/components/kit";
+import { Badge, Button, ConfirmDialog, DataTable, cx, type ColumnMeta } from "@/components/kit";
 import { orders as ordersApi, type OrderRow, type Paged } from "@/lib/admin/api";
 import { ago, count, naira, when } from "@/lib/admin/format";
 import { useAction, useOrders } from "@/lib/admin/hooks";
@@ -38,7 +38,7 @@ const PHASE_LABEL: Record<Phase, string> = {
   unpaid: "Awaiting payment",
   waiting: "Waiting for its time",
   ringing: "Ringing riders",
-  overdue: "Past grace — refund due",
+  overdue: "Past grace, refund due",
 };
 const PHASE_TONE: Record<Phase, "neutral" | "info" | "warning" | "danger"> = {
   unpaid: "neutral",
@@ -62,33 +62,48 @@ function untilLabel(value: string) {
 
 function RingButton({ order, size = "sm" }: { order: OrderRow; size?: "sm" | "md" }) {
   const phase = phaseOf(order);
+  const [confirm, setConfirm] = useState(false);
   const ring = useAction(() => ordersApi.ringRiders(order._id), {
     success: (data) =>
       data.riders
         ? `Rang ${count(data.riders)} rider${data.riders === 1 ? "" : "s"} for ${orderNumber(order)}.`
         : `No eligible riders near ${orderNumber(order)} right now; it stays queued.`,
     invalidate: ["orders", ["order", order._id], "stats"],
+    onSuccess: () => setConfirm(false),
   });
   // Only a paid booking inside its lead can be rung; the API refuses anything else.
   const allowed = phase === "ringing" || phase === "overdue";
   return (
-    <Button
-      size={size}
-      variant={phase === "ringing" ? "primary" : "outline"}
-      icon={BellRing}
-      onClick={() => ring.mutate(undefined)}
-      loading={ring.isPending}
-      disabled={!allowed}
-      title={
-        allowed
-          ? undefined
-          : phase === "unpaid"
-            ? "Not paid yet"
-            : "Riders are rung from 30 minutes before the booked time"
-      }
-    >
-      Ring riders
-    </Button>
+    <>
+      <ConfirmDialog
+        open={confirm}
+        onClose={() => setConfirm(false)}
+        onConfirm={() => ring.mutate(undefined)}
+        loading={ring.isPending}
+        icon={BellRing}
+        tone="warning"
+        title={`Ring riders for ${orderNumber(order)} now?`}
+        description="Every eligible rider near the pickup gets the request on their phone immediately, ahead of the automatic cycle. The first to accept takes the order."
+        confirmLabel="Ring riders"
+      />
+      <Button
+        size={size}
+        variant={phase === "ringing" ? "primary" : "outline"}
+        icon={BellRing}
+        onClick={() => setConfirm(true)}
+        loading={ring.isPending}
+        disabled={!allowed}
+        title={
+          allowed
+            ? undefined
+            : phase === "unpaid"
+              ? "Not paid yet"
+              : "Riders are rung from 30 minutes before the booked time"
+        }
+      >
+        Ring riders
+      </Button>
+    </>
   );
 }
 

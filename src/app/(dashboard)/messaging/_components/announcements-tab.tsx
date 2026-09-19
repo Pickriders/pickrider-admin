@@ -119,7 +119,7 @@ const BASE_COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
     id: "publishedAt",
     header: "Live since",
     meta: meta({ hideBelow: "lg", csv: { key: "publishedAt", label: "Live since" } }),
-    cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink-muted">{row.original.publishedAt ? when(row.original.publishedAt) : "—"}</span>,
+    cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink-muted">{row.original.publishedAt ? when(row.original.publishedAt) : "Not published"}</span>,
   },
 ];
 
@@ -180,10 +180,10 @@ export function AnnouncementsTab() {
   return (
     <>
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Live now" value={summary.data ? count(summary.data.active) : "—"} hint={summary.data ? `${count(summary.data.drafts)} drafts` : undefined} icon={Sparkles} loading={summary.isLoading} />
-        <StatCard label="People reached" value={summary.data ? count(summary.data.reached) : "—"} hint="Across live announcements" icon={Users} loading={summary.isLoading} />
-        <StatCard label="Took the action" value={summary.data ? count(summary.data.acted) : "—"} hint={summary.data ? `${count(summary.data.confirmed)} just closed it` : undefined} icon={MousePointerClick} loading={summary.isLoading} />
-        <StatCard label="Action rate" value={summary.data ? percent(summary.data.actionRate, 0) : "—"} hint="Of everyone who closed one" icon={Eye} loading={summary.isLoading} />
+        <StatCard label="Live now" value={summary.data ? count(summary.data.active) : ""} hint={summary.data ? `${count(summary.data.drafts)} drafts` : undefined} icon={Sparkles} loading={summary.isLoading} />
+        <StatCard label="People reached" value={summary.data ? count(summary.data.reached) : ""} hint="Across live announcements" icon={Users} loading={summary.isLoading} />
+        <StatCard label="Took the action" value={summary.data ? count(summary.data.acted) : ""} hint={summary.data ? `${count(summary.data.confirmed)} just closed it` : undefined} icon={MousePointerClick} loading={summary.isLoading} />
+        <StatCard label="Action rate" value={summary.data ? percent(summary.data.actionRate, 0) : ""} hint="Of everyone who closed one" icon={Eye} loading={summary.isLoading} />
       </div>
 
       <DataTable<AnnouncementRow>
@@ -207,7 +207,7 @@ export function AnnouncementsTab() {
         csvName="announcements"
         emptyIcon={Sparkles}
         emptyTitle="No announcements yet"
-        emptyDescription="Tell people what's new — a price calculator, scheduled orders — and it pops the next time they open the app."
+        emptyDescription="Tell people what's new, like a price calculator or scheduled orders, and it pops the next time they open the app."
         onRowClick={(row) => openDetail(row._id!)}
         toolbarExtra={
           <div className="flex flex-wrap items-center gap-2">
@@ -272,14 +272,14 @@ function AnnouncementDetailDrawer({
 }) {
   const detail = useAnnouncement(id);
   const a = detail.data;
-  const [confirm, setConfirm] = useState<null | "archive" | "delete">(null);
+  const [confirm, setConfirm] = useState<null | "archive" | "delete" | "pause" | "publish" | "restore">(null);
   const [receiptsPage, setReceiptsPage] = useState(1);
   const receipts = useAnnouncementReceipts(id, { page: receiptsPage, limit: 10 });
   const invalidate = ["announcements", ["announcement", id]];
 
   const setStatus = useAction((status: AnnouncementStatus) => announcements.setStatus(id, status), {
     success: (saved, status) =>
-      saved.status === AnnouncementStatus.ACTIVE ? "Announcement is live" : saved.status === AnnouncementStatus.ARCHIVED ? "Archived" : status === AnnouncementStatus.DRAFT && isArchived ? "Restored as a draft" : "Paused — it no longer pops",
+      saved.status === AnnouncementStatus.ACTIVE ? "Announcement is live" : saved.status === AnnouncementStatus.ARCHIVED ? "Archived" : status === AnnouncementStatus.DRAFT && isArchived ? "Restored as a draft" : "Paused. It no longer pops",
     invalidate,
     onSuccess: () => setConfirm(null),
   });
@@ -315,7 +315,7 @@ function AnnouncementDetailDrawer({
               </Button>
             ) : null}
             {isArchived ? (
-              <Button variant="outline" icon={Pause} loading={setStatus.isPending} onClick={() => setStatus.mutate(AnnouncementStatus.DRAFT)}>
+              <Button variant="outline" icon={Pause} onClick={() => setConfirm("restore")}>
                 Restore as draft
               </Button>
             ) : (
@@ -324,11 +324,11 @@ function AnnouncementDetailDrawer({
               </Button>
             )}
             {isLive ? (
-              <Button variant="outline" icon={Pause} loading={setStatus.isPending} onClick={() => setStatus.mutate(AnnouncementStatus.DRAFT)}>
+              <Button variant="outline" icon={Pause} onClick={() => setConfirm("pause")}>
                 Pause
               </Button>
             ) : (
-              <Button icon={Play} loading={setStatus.isPending} onClick={() => setStatus.mutate(AnnouncementStatus.ACTIVE)}>
+              <Button icon={Play} onClick={() => setConfirm("publish")}>
                 Publish
               </Button>
             )}
@@ -379,7 +379,7 @@ function AnnouncementDetailDrawer({
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold text-ink">{fullName(r.user) || r.userId}</span>
                         <span className="block truncate text-[11px] text-ink-muted">
-                          shown {count(r.impressions)}× · later {count(r.later)}× · last {r.lastSeenAt ? when(r.lastSeenAt) : "—"}
+                          shown {count(r.impressions)}× · later {count(r.later)}× · last {r.lastSeenAt ? when(r.lastSeenAt) : "never"}
                         </span>
                       </span>
                       {r.acknowledgedAt ? (
@@ -413,6 +413,34 @@ function AnnouncementDetailDrawer({
         description="It stops popping right away and leaves the live list. You can restore or republish it later; the numbers stay."
         confirmLabel="Archive"
         tone="danger"
+      />
+      <ConfirmDialog
+        open={confirm === "pause"}
+        onClose={() => setConfirm(null)}
+        onConfirm={() => setStatus.mutate(AnnouncementStatus.DRAFT)}
+        loading={setStatus.isPending}
+        title="Pause this announcement?"
+        description="It stops popping in the app right away and goes back to being a draft. Publish it again whenever you like; the numbers stay."
+        confirmLabel="Pause"
+        tone="warning"
+      />
+      <ConfirmDialog
+        open={confirm === "publish"}
+        onClose={() => setConfirm(null)}
+        onConfirm={() => setStatus.mutate(AnnouncementStatus.ACTIVE)}
+        loading={setStatus.isPending}
+        title="Publish this announcement?"
+        description={a ? `It pops for every ${AUDIENCE_LABEL[a.audience].toLowerCase()} the next time they open the app.` : undefined}
+        confirmLabel="Publish"
+      />
+      <ConfirmDialog
+        open={confirm === "restore"}
+        onClose={() => setConfirm(null)}
+        onConfirm={() => setStatus.mutate(AnnouncementStatus.DRAFT)}
+        loading={setStatus.isPending}
+        title="Restore as a draft?"
+        description="It comes back to the drafts list, unpublished, so you can edit it before it pops again."
+        confirmLabel="Restore"
       />
       <ConfirmDialog
         open={confirm === "delete"}

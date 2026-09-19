@@ -29,13 +29,16 @@ export const REWARD_STATE_TONE: Record<string, Tone> = {
   NONE: "neutral",
 };
 
-export function TierBadge({ tier, percent }: { tier: number; percent: number }) {
+/** Icon chip colour per tier, so a badge's weight reads before its name. */
+export const TIER_CHIP: Record<number, string> = {
+  3: "bg-brand-soft text-brand-dark",
+  2: "bg-info-soft text-info",
+  1: "bg-surface text-ink-muted",
+};
+
+export function TierBadge({ tier, percent, compact }: { tier: number; percent: number; compact?: boolean }) {
   const tone: Tone = tier === 3 ? "brand" : tier === 2 ? "info" : "neutral";
-  return (
-    <Badge tone={tone}>
-      Tier {tier} · {percent}% off
-    </Badge>
-  );
+  return <Badge tone={tone}>{compact ? `Tier ${tier}` : `Tier ${tier} · ${percent}% off`}</Badge>;
 }
 
 export function RewardStateBadge({ state }: { state?: string }) {

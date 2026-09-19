@@ -75,7 +75,7 @@ const USAGE_COLUMNS: ColumnDef<CouponUsage, unknown>[] = [
           {row.original.order.orderNumber ?? row.original.orderId}
         </Link>
       ) : (
-        <span className="text-xs text-ink-faint">—</span>
+        <span className="text-xs text-ink-faint">No order</span>
       ),
   },
   {
@@ -113,12 +113,16 @@ function CouponDetail({ id }: { id: string }) {
 
   const [editing, setEditing] = useState(false);
   const [pausing, setPausing] = useState(false);
+  const [resuming, setResuming] = useState(false);
   const invalidate = [["coupon", id], "coupons"];
   const toggleActive = useAction((isActive: boolean) => coupons.update(id, { isActive }), {
     success: (_, isActive) =>
       isActive ? "Coupon resumed." : "Coupon paused. Nobody can redeem it until it is resumed.",
     invalidate,
-    onSuccess: () => setPausing(false),
+    onSuccess: () => {
+      setPausing(false);
+      setResuming(false);
+    },
   });
 
   if (isPending) return <Skeleton className="h-96 w-full" />;
@@ -155,12 +159,7 @@ function CouponDetail({ id }: { id: string }) {
                   Pause
                 </Button>
               ) : (
-                <Button
-                  variant="success"
-                  icon={Play}
-                  onClick={() => toggleActive.mutate(true)}
-                  loading={toggleActive.isPending}
-                >
+                <Button variant="success" icon={Play} onClick={() => setResuming(true)}>
                   Resume
                 </Button>
               )}
@@ -230,6 +229,15 @@ function CouponDetail({ id }: { id: string }) {
       </div>
 
       <CouponFormDrawer open={editing} onClose={() => setEditing(false)} coupon={coupon} />
+      <ConfirmDialog
+        open={resuming}
+        onClose={() => setResuming(false)}
+        onConfirm={() => toggleActive.mutate(true)}
+        title={`Resume ${coupon.code}?`}
+        description="Customers can apply it at checkout again straight away, within its limits and expiry."
+        confirmLabel="Resume coupon"
+        loading={toggleActive.isPending}
+      />
       <ConfirmDialog
         open={pausing}
         onClose={() => setPausing(false)}

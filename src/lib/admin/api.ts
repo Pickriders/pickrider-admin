@@ -50,6 +50,11 @@ export function params<T>(query?: Query): T {
 }
 
 /** Narrow a generated response to the shape the pages read. */
+/** Through the generated client's request, with the bearer token, for routes whose method has no query slot. */
+function get<T>(path: string, query?: Record<string, unknown>) {
+  return apiService.request({ path: `/api/v1${path}`, method: "GET", query, secure: true, format: "json" }) as unknown as Promise<T>;
+}
+
 function as<T>(promise: Promise<unknown>): Promise<T> {
   return promise as Promise<T>;
 }
@@ -356,6 +361,45 @@ export type UserOverview = {
   business: Business | null;
 };
 
+export type CustomerWindow = {
+  newCustomers: number;
+  active: number;
+  returning: number;
+  firstTimers: number;
+  signedIn: number;
+  orders: number;
+  completed: number;
+  cancelled: number;
+  cancelledByCustomer: number;
+  spent: number;
+  ordersPerActive: number;
+  spendPerActive: number;
+};
+
+export type CustomerLeader = {
+  userId: string;
+  user: Pick<User, "_id" | "firstname" | "lastname" | "phone" | "email" | "photo" | "status" | "phoneVerified">;
+  orders: number;
+  completed: number;
+  cancelled: number;
+  cancelledByCustomer: number;
+  spent: number;
+  lastOrderAt: string;
+};
+
+export type CustomersOverview = {
+  range: StatsRange;
+  bucket: "day" | "week" | "month";
+  current: CustomerWindow;
+  previous: CustomerWindow;
+  base: { total: number; byStatus: Record<string, number>; phoneVerified: number; everOrdered: number };
+  frequency: { one: number; twoToThree: number; fourToNine: number; tenPlus: number };
+  series: { bucket: string; newCustomers: number; activeCustomers: number; orders: number; cancelled: number }[];
+  topSpenders: CustomerLeader[];
+  mostOrders: CustomerLeader[];
+  mostCancelled: CustomerLeader[];
+};
+
 export type CustomerRow = User & {
   walletBalance: number;
   orders: number;
@@ -412,6 +456,7 @@ export const stats = {
   charges: (range: RangeQuery) => as<Charges>(apiService.charges(params(range))),
   chargesByRider: (query: Query) => page<RiderChargeRow>(apiService.chargesByRider(params(query))),
   customers: (query: Query) => page<CustomerRow>(apiService.customers(params(query))),
+  customersOverview: (range: RangeQuery & { bucket?: string }) => get<CustomersOverview>("/admins/stats/customers/overview", range),
   businesses: (query: Query) => page<BusinessRow>(apiService.businesses(params(query))),
   userOverview: (userId: string, range: RangeQuery) => as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
 };
@@ -1040,6 +1085,9 @@ export type CouponsSummary = {
   discountTotal: number;
   rewardCoupons: number;
   rewardCouponsRedeemed: number;
+  window: StatsWindow;
+  current: { redemptions: number; discount: number; newCoupons: number };
+  previous: { redemptions: number; discount: number; newCoupons: number };
   daily: { date: string; count: number; discount: number }[];
   topCoupons: { code: string; name?: string; count: number; discount: number }[];
 };
@@ -1057,7 +1105,7 @@ export type CouponGroup = {
 
 export const coupons = {
   list: (query: Query) => page<Coupon>(apiService.listCoupons(params(query))),
-  summary: () => as<CouponsSummary>(apiService.couponsSummary()),
+  summary: (range?: RangeQuery) => get<CouponsSummary>("/admins/coupons/summary", range),
   get: (couponId: string) => as<Coupon>(apiService.getCoupon(couponId)),
   usages: (couponId: string, query: Query) => page<CouponUsage>(apiService.usages(params({ ...query, couponId }))),
   create: (body: CouponInput) => as<Coupon>(apiService.createCoupon(body as never)),
@@ -1095,6 +1143,22 @@ export type AchievementDefinition = {
   [key: string]: unknown;
 };
 
+/** What every windowed summary echoes back so the tiles can be labelled. */
+export type StatsWindow = { from: string; to: string; days: number; all: boolean };
+
+export type AchievementWindow = { unlocks: number; rewardsIssued: number; rewardsRedeemed: number; discount: number };
+export type AchievementBadgeRollup = {
+  key: string;
+  title: string;
+  category: AchievementCategory;
+  tier: number;
+  icon: string;
+  unlocks: number;
+  previousUnlocks: number;
+  lifetime: number;
+  rewardsRedeemed: number;
+};
+
 export type AchievementsSummary = {
   badges: number;
   customersWithBadges: number;
@@ -1107,7 +1171,11 @@ export type AchievementsSummary = {
   rewardPercentByTier: Record<string, number>;
   rewardMaxDiscount: number;
   rewardValidityDays: number;
+  window: StatsWindow;
+  current: AchievementWindow;
+  previous: AchievementWindow;
   daily: { date: string; count: number }[];
+  byBadge: AchievementBadgeRollup[];
 };
 
 export type AchievementUnlock = {
@@ -1148,7 +1216,7 @@ export type CustomerAchievements = {
 
 export const achievements = {
   catalogue: () => as<AchievementDefinition[]>(apiService.catalogue()),
-  summary: () => as<AchievementsSummary>(apiService.achievementsSummary()),
+  summary: (range?: RangeQuery) => get<AchievementsSummary>("/admins/achievements/summary", range),
   unlocks: (query: Query) => page<AchievementUnlock>(apiService.unlocks(params(query))),
   forUser: (userId: string) => as<CustomerAchievements>(apiService.forUser(userId)),
   grant: (userId: string, body: { key: string; reason?: string }) => as<CustomerAchievements>(apiService.grant(userId, body)),
@@ -1221,11 +1289,16 @@ export type IssuesSummary = {
   overdue: number;
   byCategory: { key: string; count: number }[];
   byPriority: { key: string; count: number }[];
+  window: StatsWindow;
+  current: IssuesWindow;
+  previous: IssuesWindow;
+  daily: { date: string; opened: number; resolved: number }[];
 };
+export type IssuesWindow = { opened: number; resolved: number; avgResolutionHours: number | null; avgFirstResponseHours: number | null };
 
 export const issues = {
   list: (query: Query) => page<Issue>(apiService.listIssues(params(query))),
-  summary: () => as<IssuesSummary>(apiService.issuesSummary()),
+  summary: (range?: RangeQuery) => get<IssuesSummary>("/admins/issues/summary", range),
   get: (issueId: string) => as<Issue>(apiService.getIssue(issueId)),
   forUser: (userId: string, query: Query) => page<Issue>(apiService.listUserIssues(params({ ...query, userId }))),
   updateStatus: (issueId: string, body: { status: IssueStatus; resolution?: string }) =>
