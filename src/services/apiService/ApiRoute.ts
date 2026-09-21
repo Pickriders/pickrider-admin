@@ -5330,7 +5330,7 @@ export namespace Api {
    * No description
    * @tags admins/announcements
    * @name AdminUpdateAnnouncement
-   * @summary Edit the copy, action, audience or window
+   * @summary Edit the copy, action, audience or window. Resets the announcement: receipts are deleted and counters zeroed, so it pops again for everyone.
    * @request PATCH:/api/v1/admins/announcements/{announcementId}
    * @secure
    * @response `200` `AdminUpdateAnnouncementData`

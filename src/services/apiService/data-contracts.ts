@@ -1180,6 +1180,7 @@ export interface User {
   addresses?: AddressesDetailDto;
   /** @default false */
   phoneVerified: boolean;
+  pendingPhone?: string;
   /** @default false */
   emailVerified: boolean;
   gender?: string;
@@ -2439,6 +2440,8 @@ export interface TriggerNotificationRequestDto {
   entityId?: string;
   /** The externalRecipient field is required if entityId is not provided */
   externalRecipient?: string;
+  /** SMS only: deliver to this number instead of the entity's saved phone (e.g. a phone-change code) */
+  phoneOverride?: string;
   /** Notification actions */
   actions?: NotificationAction[];
   sound?: string;
