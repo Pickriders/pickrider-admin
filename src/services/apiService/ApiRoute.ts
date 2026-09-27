@@ -125,6 +125,7 @@ import {
   CreateWebOrderDto,
   CreditPlatformWalletData,
   CustomersData,
+  CustomersOverviewData,
   DeactivateCouponData,
   DeleteUserAccountData,
   DeleteUserVehicleData,
@@ -710,6 +711,10 @@ export namespace Api {
       to?: string;
       /** 1 = everything since the first order */
       all?: string;
+      /** Only riders online right now */
+      online?: "true";
+      /** Riders on their own account, or riders paid through a business */
+      entityType?: "USER" | "BUSINESS";
       /** Rider name or phone, or business name */
       search?: any;
       sortBy?: "charges" | "trips" | "earned" | "last";
@@ -736,6 +741,30 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = AttentionData;
+  }
+
+  /**
+   * No description
+   * @tags admins/stats
+   * @name CustomersOverview
+   * @request GET:/api/v1/admins/stats/customers/overview
+   * @secure
+   * @response `200` `CustomersOverviewData`
+   */
+  export namespace CustomersOverview {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day) */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+      to?: string;
+      /** 1 = everything since the first order */
+      all?: string;
+      bucket?: "day" | "week" | "month";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CustomersOverviewData;
   }
 
   /**
@@ -1152,7 +1181,14 @@ export namespace Api {
    */
   export namespace AchievementsSummary {
     export type RequestParams = {};
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+      to?: string;
+      /** 1 = everything on record */
+      all?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = AchievementsSummaryData;
@@ -2512,7 +2548,14 @@ export namespace Api {
    */
   export namespace CouponsSummary {
     export type RequestParams = {};
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+      to?: string;
+      /** 1 = everything on record */
+      all?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = CouponsSummaryData;
@@ -5005,7 +5048,14 @@ export namespace Api {
    */
   export namespace IssuesSummary {
     export type RequestParams = {};
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+      to?: string;
+      /** 1 = everything on record */
+      all?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = IssuesSummaryData;
@@ -5330,7 +5380,7 @@ export namespace Api {
    * No description
    * @tags admins/announcements
    * @name AdminUpdateAnnouncement
-   * @summary Edit the copy, action, audience or window
+   * @summary Edit the copy, action, audience or window. Resets the announcement: receipts are deleted and counters zeroed, so it pops again for everyone.
    * @request PATCH:/api/v1/admins/announcements/{announcementId}
    * @secure
    * @response `200` `AdminUpdateAnnouncementData`
