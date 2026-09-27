@@ -15,6 +15,7 @@ import {
   AcceptRejectLocationUpdateRequestDto,
   AcceptRejectOfferRequestDto,
   AchievementsSummaryData,
+  AchievementsSummaryParams,
   AcknowledgeAchievementData,
   AcknowledgeAnnouncementData,
   AcknowledgeAnnouncementRequestDto,
@@ -97,6 +98,7 @@ import {
   ConfirmExternalPaymentByReferenceData,
   ConfirmExternalPaymentByReferenceParams,
   CouponsSummaryData,
+  CouponsSummaryParams,
   CreateAnnouncementRequestDto,
   CreateBatchOrderData,
   CreateBatchOrderDto,
@@ -130,6 +132,8 @@ import {
   CreateWebOrderDto,
   CreditPlatformWalletData,
   CustomersData,
+  CustomersOverviewData,
+  CustomersOverviewParams,
   CustomersParams,
   DeactivateCouponData,
   DeleteUserAccountData,
@@ -280,6 +284,7 @@ import {
   InitiateWithdrawalData,
   InitiateWithdrawalRequestDto,
   IssuesSummaryData,
+  IssuesSummaryParams,
   KYCDetailsDto,
   ListAllRidersData,
   ListBroadcastsData,
@@ -752,6 +757,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/stats
+   * @name CustomersOverview
+   * @request GET:/api/v1/admins/stats/customers/overview
+   * @secure
+   * @response `200` `CustomersOverviewData`
+   */
+  customersOverview = (query: CustomersOverviewParams, params: RequestParams = {}) =>
+    this.request<CustomersOverviewData, any>({
+      path: `/api/v1/admins/stats/customers/overview`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/stats
    * @name Customers
    * @request GET:/api/v1/admins/stats/customers
    * @secure
@@ -1090,10 +1113,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `AchievementsSummaryData`
    */
-  achievementsSummary = (params: RequestParams = {}) =>
+  achievementsSummary = (query: AchievementsSummaryParams, params: RequestParams = {}) =>
     this.request<AchievementsSummaryData, any>({
       path: `/api/v1/admins/achievements/summary`,
       method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,
@@ -2428,10 +2452,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `CouponsSummaryData`
    */
-  couponsSummary = (params: RequestParams = {}) =>
+  couponsSummary = (query: CouponsSummaryParams, params: RequestParams = {}) =>
     this.request<CouponsSummaryData, any>({
       path: `/api/v1/admins/coupons/summary`,
       method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,
@@ -4724,10 +4749,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `IssuesSummaryData`
    */
-  issuesSummary = (params: RequestParams = {}) =>
+  issuesSummary = (query: IssuesSummaryParams, params: RequestParams = {}) =>
     this.request<IssuesSummaryData, any>({
       path: `/api/v1/admins/issues/summary`,
       method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,
@@ -5025,7 +5051,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags admins/announcements
    * @name AdminUpdateAnnouncement
-   * @summary Edit the copy, action, audience or window
+   * @summary Edit the copy, action, audience or window. Resets the announcement: receipts are deleted and counters zeroed, so it pops again for everyone.
    * @request PATCH:/api/v1/admins/announcements/{announcementId}
    * @secure
    * @response `200` `AdminUpdateAnnouncementData`

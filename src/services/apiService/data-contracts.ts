@@ -433,6 +433,71 @@ export interface AttentionResponseDto {
   issuesUnassigned: number;
 }
 
+export interface CustomerWindowDto {
+  /** Customers who signed up in the window */
+  newCustomers: number;
+  /** Customers who placed at least one order in the window */
+  active: number;
+  /** Active customers who had ordered before the window too */
+  returning: number;
+  /** Active customers whose first ever order fell in the window */
+  firstTimers: number;
+  /** Customers who opened the app in the window */
+  signedIn: number;
+  orders: number;
+  completed: number;
+  cancelled: number;
+  /** Orders the customer cancelled themselves */
+  cancelledByCustomer: number;
+  /** What customers were charged on completed orders */
+  spent: number;
+  /** Orders per active customer */
+  ordersPerActive: number;
+  /** Spend per active customer */
+  spendPerActive: number;
+}
+
+export interface CustomerSeriesPointDto {
+  bucket: string;
+  newCustomers: number;
+  activeCustomers: number;
+  orders: number;
+  cancelled: number;
+}
+
+export interface CustomerLeaderDto {
+  userId: string;
+  user: object;
+  orders: number;
+  completed: number;
+  cancelled: number;
+  /** Cancelled by the customer themselves */
+  cancelledByCustomer: number;
+  spent: number;
+  /** @format date-time */
+  lastOrderAt: string;
+}
+
+export interface CustomersOverviewResponseDto {
+  range: RangeDto;
+  /** Series bucket unit */
+  bucket: string;
+  current: CustomerWindowDto;
+  previous: CustomerWindowDto;
+  /** Lifetime headcounts: total, byStatus, phoneVerified, everOrdered */
+  base: object;
+  /** Active customers by how many orders they placed in the window: one, twoToThree, fourToNine, tenPlus */
+  frequency: object;
+  /** Per bucket across the window, dense */
+  series: CustomerSeriesPointDto[];
+  /** Biggest spenders in the window */
+  topSpenders: CustomerLeaderDto[];
+  /** Most orders in the window */
+  mostOrders: CustomerLeaderDto[];
+  /** Most cancellations in the window */
+  mostCancelled: CustomerLeaderDto[];
+}
+
 export interface UserOverviewResponseDto {
   range: RangeDto;
   user: object;
@@ -866,6 +931,30 @@ export interface AdminAchievementDefinitionDto {
   discountTotal: number;
 }
 
+export interface AchievementWindowDto {
+  unlocks: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  /** Discount granted through rewards unlocked in the window, in sub-units */
+  discount: number;
+}
+
+export interface AchievementBadgeRollupDto {
+  key: string;
+  title: string;
+  category: string;
+  tier: number;
+  icon: string;
+  /** Unlocks inside the window */
+  unlocks: number;
+  /** Unlocks in the window before */
+  previousUnlocks: number;
+  /** Unlocks, all time */
+  lifetime: number;
+  /** Rewards from window unlocks that were redeemed */
+  rewardsRedeemed: number;
+}
+
 export interface AchievementsSummaryResponseDto {
   badges: number;
   /** Customers with at least one badge */
@@ -887,6 +976,14 @@ export interface AchievementsSummaryResponseDto {
   rewardValidityDays: number;
   /** Unlocks per day, last 30 days: {date, count} */
   daily: object[];
+  /** The window these figures cover: from, to, days, all */
+  window: object;
+  /** Unlocks, rewards and discount inside the window */
+  current: AchievementWindowDto;
+  /** The same figures for the window before, for trends */
+  previous: AchievementWindowDto;
+  /** Every badge with its unlocks in the window, most unlocked first */
+  byBadge: AchievementBadgeRollupDto[];
 }
 
 export interface AdminAchievementUnlockDto {
@@ -1180,6 +1277,7 @@ export interface User {
   addresses?: AddressesDetailDto;
   /** @default false */
   phoneVerified: boolean;
+  pendingPhone?: string;
   /** @default false */
   emailVerified: boolean;
   gender?: string;
@@ -1407,8 +1505,8 @@ export interface AddressDto {
 }
 
 export interface UpdateAddressesRequestDto {
-  home?: AddressDto;
-  work?: AddressDto;
+  home?: AddressDto | null;
+  work?: AddressDto | null;
 }
 
 export interface UserKYCDetailDto {
@@ -1788,7 +1886,7 @@ export interface Review {
   userId: string;
   riderId: string;
   orderId: string;
-  comment: string;
+  comment?: string;
   /**
    * @min 1
    * @max 5
@@ -1936,6 +2034,8 @@ export interface UpdateAdminPreferencesRequestDto {
    * @maxLength 80
    */
   font?: string;
+  /** Attention signals this admin has just looked at, keyed by signal, value an ISO time. Known keys: messagingFailures, transactionFailures. */
+  seen?: object;
 }
 
 export interface UpdateUserPhoneRequestDto {
@@ -2113,6 +2213,14 @@ export interface ListCouponsResponseDto {
   totalPages: number;
 }
 
+export interface CouponsWindowDto {
+  redemptions: number;
+  /** Discount granted, in sub-units */
+  discount: number;
+  /** Coupons created */
+  newCoupons: number;
+}
+
 export interface CouponsSummaryResponseDto {
   total: number;
   active: number;
@@ -2130,9 +2238,15 @@ export interface CouponsSummaryResponseDto {
   rewardCoupons: number;
   /** Badge reward coupons redeemed */
   rewardCouponsRedeemed: number;
-  /** Redemptions per day for the last 30 days: {date, count, discount} */
+  /** The window daily, topCoupons, current and previous cover: from, to, days, all */
+  window: object;
+  /** Redemptions, discount and coupons created inside the window */
+  current: CouponsWindowDto;
+  /** The same figures for the window before, for trends */
+  previous: CouponsWindowDto;
+  /** Redemptions per day across the window: {date, count, discount} */
   daily: object[];
-  /** Top coupons by redemptions in the last 30 days */
+  /** Top coupons by redemptions in the window */
   topCoupons: object[];
 }
 
@@ -2439,6 +2553,8 @@ export interface TriggerNotificationRequestDto {
   entityId?: string;
   /** The externalRecipient field is required if entityId is not provided */
   externalRecipient?: string;
+  /** SMS only: deliver to this number instead of the entity's saved phone (e.g. a phone-change code) */
+  phoneOverride?: string;
   /** Notification actions */
   actions?: NotificationAction[];
   sound?: string;
@@ -2671,7 +2787,7 @@ export interface RateRiderRequestDto {
    * @max 5
    */
   rating: number;
-  comment: string;
+  comment?: string;
 }
 
 export interface UpdateVehicleStatusRequestDto {
@@ -3269,6 +3385,13 @@ export interface IssuesCountByKeyDto {
   count: number;
 }
 
+export interface IssuesWindowDto {
+  opened: number;
+  resolved: number;
+  avgResolutionHours: number | null;
+  avgFirstResponseHours: number | null;
+}
+
 export interface IssuesSummaryResponseDto {
   /** OPEN reports */
   open: number;
@@ -3292,6 +3415,14 @@ export interface IssuesSummaryResponseDto {
   byCategory: IssuesCountByKeyDto[];
   /** Open/in-review reports per priority */
   byPriority: IssuesCountByKeyDto[];
+  /** The window the figures below cover: from, to, days, all */
+  window: object;
+  /** Opened, resolved and response times inside the window */
+  current: IssuesWindowDto;
+  /** The same figures for the window before, for trends */
+  previous: IssuesWindowDto;
+  /** Reports opened and resolved per Lagos day across the window */
+  daily: object[];
 }
 
 export interface UpdateIssueStatusRequestDto {
@@ -3863,6 +3994,10 @@ export interface ChargesByRiderParams {
   to?: string;
   /** 1 = everything since the first order */
   all?: string;
+  /** Only riders online right now */
+  online?: "true";
+  /** Riders on their own account, or riders paid through a business */
+  entityType?: "USER" | "BUSINESS";
   /** Rider name or phone, or business name */
   search?: any;
   sortBy?: "charges" | "trips" | "earned" | "last";
@@ -3874,6 +4009,18 @@ export interface ChargesByRiderParams {
 export type ChargesByRiderData = PageableType;
 
 export type AttentionData = AttentionResponseDto;
+
+export interface CustomersOverviewParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  bucket?: "day" | "week" | "month";
+}
+
+export type CustomersOverviewData = CustomersOverviewResponseDto;
 
 export interface CustomersParams {
   search?: any;
@@ -4020,6 +4167,15 @@ export type GetCustomerAchievementsData = CustomerAchievementsResponseDto;
 export type AcknowledgeCustomerAchievementData = AcknowledgeAchievementResponseDto;
 
 export type CatalogueData = AdminAchievementDefinitionDto[];
+
+export interface AchievementsSummaryParams {
+  /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+  to?: string;
+  /** 1 = everything on record */
+  all?: string;
+}
 
 export type AchievementsSummaryData = AchievementsSummaryResponseDto;
 
@@ -4326,6 +4482,15 @@ export interface ListCouponsParams {
 export type ListCouponsData = ListCouponsResponseDto;
 
 export type CreateCouponData = object;
+
+export interface CouponsSummaryParams {
+  /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+  to?: string;
+  /** 1 = everything on record */
+  all?: string;
+}
 
 export type CouponsSummaryData = CouponsSummaryResponseDto;
 
@@ -4910,6 +5075,15 @@ export interface ListIssuesParams {
 }
 
 export type ListIssuesData = ListIssuesResponseDto;
+
+export interface IssuesSummaryParams {
+  /** ISO date or YYYY-MM-DD (Lagos day); default 30 days ago */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive); default now */
+  to?: string;
+  /** 1 = everything on record */
+  all?: string;
+}
 
 export type IssuesSummaryData = IssuesSummaryResponseDto;
 
