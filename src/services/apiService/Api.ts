@@ -44,6 +44,17 @@ import {
   AdminDeleteAnnouncementData,
   AdminGetAnnouncementData,
   AdminGetMyProfileData,
+  AdminGetRiderAchievementsData,
+  AdminGetRiderDeliveryMapData,
+  AdminGetRiderDeliveryMapParams,
+  AdminGetRiderEarningsSeriesData,
+  AdminGetRiderEarningsSeriesParams,
+  AdminGetRiderInsightsOverviewData,
+  AdminGetRiderInsightsOverviewParams,
+  AdminGetRiderInsightsProfileData,
+  AdminGetRiderInsightsProfileParams,
+  AdminGetRiderRankData,
+  AdminGetRiderRankParams,
   AdminGetTransactionsData,
   AdminGetTransactionsParams,
   AdminGetUserWalletsData,
@@ -55,6 +66,7 @@ import {
   AdminListAnnouncementsParams,
   AdminListTeamsData,
   AdminListTeamsParams,
+  AdminRemoveUserPhotoData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
   AdminUpdateMyAddressesData,
@@ -81,6 +93,7 @@ import {
   CancelFundWalletData,
   CancelFundWalletRequestDto,
   CancelLocationRequestDto,
+  CancelLocationUpdateData,
   CancelOrderData,
   CancelOrderLocationData,
   CancelOrderRequestDto,
@@ -972,6 +985,128 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/riders/insights/achievements/${key}/ack`,
       method: "PATCH",
       secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderInsightsOverview
+   * @summary A rider's earnings, performance, activity and goal for the window (default: last 7 days)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/overview
+   * @secure
+   * @response `200` `AdminGetRiderInsightsOverviewData`
+   */
+  adminGetRiderInsightsOverview = (
+    { riderId, ...query }: AdminGetRiderInsightsOverviewParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminGetRiderInsightsOverviewData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/overview`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderEarningsSeries
+   * @summary A rider's net/gross earnings per day, week or month, with the split by order type
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/earnings/series
+   * @secure
+   * @response `200` `AdminGetRiderEarningsSeriesData`
+   */
+  adminGetRiderEarningsSeries = (
+    { riderId, ...query }: AdminGetRiderEarningsSeriesParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminGetRiderEarningsSeriesData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/earnings/series`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderDeliveryMap
+   * @summary A rider's completed pickup and drop-off points
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/map
+   * @secure
+   * @response `200` `AdminGetRiderDeliveryMapData`
+   */
+  adminGetRiderDeliveryMap = ({ riderId, ...query }: AdminGetRiderDeliveryMapParams, params: RequestParams = {}) =>
+    this.request<AdminGetRiderDeliveryMapData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/map`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderRank
+   * @summary Where the rider ranks by completed deliveries in their state (or country)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/rank
+   * @secure
+   * @response `200` `AdminGetRiderRankData`
+   */
+  adminGetRiderRank = ({ riderId, ...query }: AdminGetRiderRankParams, params: RequestParams = {}) =>
+    this.request<AdminGetRiderRankData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/rank`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderAchievements
+   * @summary A rider's milestones and progress (read-only: never records an unlock)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/achievements
+   * @secure
+   * @response `200` `AdminGetRiderAchievementsData`
+   */
+  adminGetRiderAchievements = (riderId: string, params: RequestParams = {}) =>
+    this.request<AdminGetRiderAchievementsData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/achievements`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders/insights
+   * @name AdminGetRiderInsightsProfile
+   * @summary Admin-only: working hours, cancellations and reasons, location-change answers, withdrawals, lifetime
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/profile
+   * @secure
+   * @response `200` `AdminGetRiderInsightsProfileData`
+   */
+  adminGetRiderInsightsProfile = (
+    { riderId, ...query }: AdminGetRiderInsightsProfileParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminGetRiderInsightsProfileData, any>({
+      path: `/api/v1/admins/riders/${riderId}/insights/profile`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -2056,6 +2191,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name AdminRemoveUserPhoto
+   * @summary Remove a user's profile photo so the app asks them to upload a new one
+   * @request PATCH:/api/v1/admins/users/{userId}/photo/remove
+   * @secure
+   * @response `200` `AdminRemoveUserPhotoData`
+   */
+  adminRemoveUserPhoto = (userId: string, params: RequestParams = {}) =>
+    this.request<AdminRemoveUserPhotoData, any>({
+      path: `/api/v1/admins/users/${userId}/photo/remove`,
+      method: "PATCH",
+      secure: true,
       format: "json",
       ...params,
     });
@@ -4226,6 +4379,23 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name CancelLocationUpdate
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}/updates/{updateId}/cancel
+   * @secure
+   * @response `200` `CancelLocationUpdateData`
+   */
+  cancelLocationUpdate = (orderId: string, locationId: string, updateId: string, params: RequestParams = {}) =>
+    this.request<CancelLocationUpdateData, any>({
+      path: `/api/v1/orders/${orderId}/locations/${locationId}/updates/${updateId}/cancel`,
+      method: "PATCH",
+      secure: true,
       format: "json",
       ...params,
     });

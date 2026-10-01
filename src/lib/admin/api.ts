@@ -501,6 +501,8 @@ export const users = {
     as<RefundableOrder[]>(apiService.refundableOrders(params({ userId, limit: 50, search }))),
   updatePhone: (userId: string, body: { phone: string; reason?: string }) => as<User>(apiService.updateUserPhone(userId, body)),
   setDispatch: (userId: string, body: { paused: boolean; reason?: string }) => as<User>(apiService.setDispatchPaused(userId, body)),
+  /** Clear the profile photo so the app asks for a new one (e.g. the orange failed-upload placeholder). */
+  removePhoto: (userId: string) => as<User>(apiService.adminRemoveUserPhoto(userId)),
   licenceVerify: (userId: string, body: Record<string, unknown>) => as<User>(apiService.adminVerifyDriversLicense(userId, body as never)),
   /** The approve route takes no body; the licence on file is what gets approved. */
   licenceApprove: (userId: string) => as<User>(apiService.approveDriversLicenseSubmission(userId)),
@@ -1342,4 +1344,38 @@ export const announcements = {
   setStatus: (announcementId: string, status: import("@/services").AnnouncementStatus) =>
     apiService.adminUpdateAnnouncementStatus(announcementId, { status }),
   remove: (announcementId: string) => apiService.adminDeleteAnnouncement(announcementId),
+};
+
+// ── Rider insights (admins/riders/:riderId/insights/*) ──────────────────────────
+/**
+ * The same insights a rider sees in the app, for staff, plus an admin-only `profile`. Typed off the
+ * generated contract. The endpoints take the rider app's `dateRange` ("from,to"); all time starts at
+ * the platform's launch year.
+ */
+export type {
+  AchievementsResponseDto as RiderAchievements,
+  EarningsSeriesResponseDto as RiderEarningsSeries,
+  InsightsOverviewResponseDto as RiderInsightsOverview,
+  LeaderboardResponseDto as RiderRank,
+  MyMapResponseDto as RiderDeliveryMap,
+  RiderAdminInsightsResponseDto as RiderInsightsProfile,
+} from "@/services";
+
+export const toDateRange = (range: RangeQuery) =>
+  range.all ? "2020-01-01" : range.from ? [range.from, range.to].filter(Boolean).join(",") : undefined;
+
+type RiderParam = { riderId: string };
+
+export const riderInsights = {
+  overview: (riderId: string, range: RangeQuery) =>
+    apiService.adminGetRiderInsightsOverview(params({ riderId, dateRange: toDateRange(range) }) as RiderParam),
+  earnings: (riderId: string, range: RangeQuery, bucket?: "day" | "week" | "month") =>
+    apiService.adminGetRiderEarningsSeries(params({ riderId, dateRange: toDateRange(range), bucket }) as RiderParam),
+  map: (riderId: string, range: RangeQuery) =>
+    apiService.adminGetRiderDeliveryMap(params({ riderId, dateRange: toDateRange(range) }) as RiderParam),
+  rank: (riderId: string, range: RangeQuery, scope?: "state" | "country") =>
+    apiService.adminGetRiderRank(params({ riderId, dateRange: toDateRange(range), scope }) as RiderParam),
+  achievements: (riderId: string) => apiService.adminGetRiderAchievements(riderId),
+  profile: (riderId: string, range: RangeQuery) =>
+    apiService.adminGetRiderInsightsProfile(params({ riderId, dateRange: toDateRange(range) }) as RiderParam),
 };

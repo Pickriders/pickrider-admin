@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, riderInsights, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -27,6 +27,20 @@ export const useRiderCharges = (query: Query) => useQuery({ queryKey: ["stats", 
 export const useAttention = () => useQuery({ queryKey: ["stats", "attention"], queryFn: stats.attention, refetchInterval: POLL_MS });
 export const useUserOverview = (userId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["stats", "user-overview", userId, range], queryFn: () => stats.userOverview(userId, range), placeholderData: keepPreviousData, enabled: Boolean(userId) });
+
+// Rider insights (one rider, for staff)
+export const useRiderInsightsOverview = (riderId: string, range: RangeQuery) =>
+  useQuery({ queryKey: ["rider-insights", riderId, "overview", range], queryFn: () => riderInsights.overview(riderId, range), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
+export const useRiderEarnings = (riderId: string, range: RangeQuery, bucket?: "day" | "week" | "month") =>
+  useQuery({ queryKey: ["rider-insights", riderId, "earnings", range, bucket], queryFn: () => riderInsights.earnings(riderId, range, bucket), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
+export const useRiderDeliveryMap = (riderId: string, range: RangeQuery, enabled = true) =>
+  useQuery({ queryKey: ["rider-insights", riderId, "map", range], queryFn: () => riderInsights.map(riderId, range), placeholderData: keepPreviousData, enabled: Boolean(riderId) && enabled });
+export const useRiderRank = (riderId: string, range: RangeQuery, scope?: "state" | "country") =>
+  useQuery({ queryKey: ["rider-insights", riderId, "rank", range, scope], queryFn: () => riderInsights.rank(riderId, range, scope), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
+export const useRiderAchievements = (riderId: string) =>
+  useQuery({ queryKey: ["rider-insights", riderId, "achievements"], queryFn: () => riderInsights.achievements(riderId), enabled: Boolean(riderId) });
+export const useRiderInsightsProfile = (riderId: string, range: RangeQuery) =>
+  useQuery({ queryKey: ["rider-insights", riderId, "profile", range], queryFn: () => riderInsights.profile(riderId, range), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
 
 // Me
 /**

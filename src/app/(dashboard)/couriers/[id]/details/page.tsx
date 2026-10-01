@@ -33,8 +33,11 @@ import { count, fullName, maskAccount, naira, percent, statusLabel, trend, when 
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
+import { RiderInsights } from "./_components/insights";
+
 /**
- * One rider: how they deliver over the picked window, lifetime totals,
+ * One rider: insights (the rider app's own numbers plus staff-only reliability
+ * signals and red flags), how they deliver over the picked window, lifetime totals,
  * rating, vehicles, wallet and settlement account, earnings and wallet
  * history, plus the dispatch pause and the shared account actions.
  *
@@ -42,7 +45,7 @@ import { useTableState, useTabParam } from "@/lib/admin/url-state";
  * not shown; the earnings tab (ORDER_EARNING transactions) is the closest
  * per-delivery record and lifetime totals come from the overview.
  */
-const TABS = ["earnings", "reviews", "transactions", "activity"] as const;
+const TABS = ["insights", "earnings", "reviews", "transactions", "activity"] as const;
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
@@ -141,7 +144,7 @@ function CourierDetail({ id }: { id: string }) {
   const rangeQuery = useMemo(() => rangeToQuery(range), [range]);
   const overview = useUserOverview(id, rangeQuery);
   const series = useSeries({ ...rangeQuery, riderId: id });
-  const [tab, setTab] = useTabParam<Tab>("earnings", TABS);
+  const [tab, setTab] = useTabParam<Tab>("insights", TABS);
   const [dispatchOpen, setDispatchOpen] = useState(false);
   const table = useTableState();
   const ratingFilter = Number(table.state.filters.rating) || undefined;
@@ -228,7 +231,7 @@ function CourierDetail({ id }: { id: string }) {
       />
       {user ? <DispatchDialog user={user} open={dispatchOpen} onClose={() => setDispatchOpen(false)} /> : null}
 
-      <StatGrid columns={6}>
+      <StatGrid columns={3}>
         <StatCard
           label={`Deliveries, ${windowLabel}`}
           value={count(current?.completed)}
@@ -339,6 +342,7 @@ function CourierDetail({ id }: { id: string }) {
         value={tab}
         onChange={setTab}
         items={[
+          { id: "insights", label: "Insights" },
           { id: "earnings", label: "Earnings", count: lifetime?.completed },
           { id: "reviews", label: "Reviews", count: data?.reviews.count },
           { id: "transactions", label: "Wallet history" },
@@ -346,6 +350,7 @@ function CourierDetail({ id }: { id: string }) {
         ]}
       />
 
+      {tab === "insights" ? <RiderInsights riderId={id} range={rangeQuery} windowLabel={windowLabel} /> : null}
       {tab === "earnings" ? (
         <UserTransactionsTable
           userId={id}

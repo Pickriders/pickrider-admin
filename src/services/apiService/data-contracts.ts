@@ -715,6 +715,64 @@ export interface AchievementsResponseDto {
   unlockedCount: number;
 }
 
+export interface CancellationReasonDto {
+  reason: string;
+  count: number;
+}
+
+export interface RiderCancellationsDto {
+  /** Cancelled orders assigned to the rider in the window */
+  total: number;
+  /** Of those, cancelled by the rider */
+  byRider: number;
+  /** Of those, cancelled by the customer */
+  byCustomer: number;
+  /** Of those, cancelled by staff */
+  byAdmin: number;
+  /** Most common reasons the rider gave, top 5 */
+  riderReasons: CancellationReasonDto[];
+}
+
+export interface RiderLocationChangesDto {
+  /** Customer location-change requests on the rider’s orders in the window */
+  total: number;
+  accepted: number;
+  declined: number;
+  /** Left to lapse without an answer */
+  expired: number;
+  /** Withdrawn by the customer before the rider answered */
+  cancelled: number;
+}
+
+export interface RiderWithdrawalsDto {
+  count: number;
+  /** Successful withdrawals in the window, sub-units */
+  total: number;
+  /** Still processing, sub-units */
+  processing: number;
+  failed: number;
+}
+
+export interface RiderLifetimeDto {
+  completed: number;
+  /** @format date-time */
+  firstDeliveryAt?: string;
+  /** @format date-time */
+  lastDeliveryAt?: string;
+  /** Distinct days with at least one completed delivery, ever */
+  activeDays: number;
+}
+
+export interface RiderAdminInsightsResponseDto {
+  range: InsightsRangeDto;
+  /** When this rider completes deliveries (Lagos time) */
+  workingHours: PeakHourCellDto[];
+  cancellations: RiderCancellationsDto;
+  locationChanges: RiderLocationChangesDto;
+  withdrawals: RiderWithdrawalsDto;
+  lifetime: RiderLifetimeDto;
+}
+
 export enum InsightsRangePreset {
   Today = "today",
   Week = "week",
@@ -1841,6 +1899,7 @@ export interface OrderLocation {
   isOrigin: boolean;
   /** @default false */
   isDestination: boolean;
+  locationChangeLocked?: boolean;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -1853,7 +1912,7 @@ export interface OrderLocationUpdate {
   locationId: string;
   requestedBy: string;
   /** @default "PENDING" */
-  status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+  status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED" | "CANCELLED";
   oldAddress: string;
   oldPosition: object;
   oldAmountTo: number;
@@ -4125,6 +4184,67 @@ export type GetAchievementsData = AchievementsResponseDto;
 
 export type AcknowledgeAchievementData = any;
 
+export interface AdminGetRiderInsightsOverviewParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  riderId: string;
+}
+
+export type AdminGetRiderInsightsOverviewData = InsightsOverviewResponseDto;
+
+export interface AdminGetRiderEarningsSeriesParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  /** @default "day" */
+  bucket?: "day" | "week" | "month";
+  riderId: string;
+}
+
+export type AdminGetRiderEarningsSeriesData = EarningsSeriesResponseDto;
+
+export interface AdminGetRiderDeliveryMapParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  riderId: string;
+}
+
+export type AdminGetRiderDeliveryMapData = MyMapResponseDto;
+
+export interface AdminGetRiderRankParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  /** @default "state" */
+  scope?: "state" | "country";
+  riderId: string;
+}
+
+export type AdminGetRiderRankData = LeaderboardResponseDto;
+
+export type AdminGetRiderAchievementsData = AchievementsResponseDto;
+
+export interface AdminGetRiderInsightsProfileParams {
+  /**
+   * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+   * @pattern DATE_RANGE_PATTERN
+   */
+  dateRange?: string;
+  riderId: string;
+}
+
+export type AdminGetRiderInsightsProfileData = RiderAdminInsightsResponseDto;
+
 export interface GetCustomerInsightsOverviewParams {
   range?: InsightsRangePreset;
   /**
@@ -4367,6 +4487,8 @@ export type GetAdminPreferencesData = object;
 export type UpdateAdminPreferencesData = object;
 
 export type UpdateUserPhoneData = object;
+
+export type AdminRemoveUserPhotoData = object;
 
 export type SetDispatchPausedData = object;
 
@@ -4876,6 +4998,8 @@ export type GetOrderEtaData = any;
 export type QuoteOrderLocationData = QuoteOrderLocationResponseDto;
 
 export type UpdateOrderLocationData = OrderLocationUpdate;
+
+export type CancelLocationUpdateData = OrderLocationUpdate;
 
 export type RespondToLocationUpdateData = OrderLocationUpdate;
 
