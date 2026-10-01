@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, Search, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
+import { Ban, ImageOff, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, Search, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Badge, Button, ConfirmDialog, Drawer, Field, Input, Select, Skeleton, Textarea, cx, useDebounced } from "@/components/kit";
@@ -15,7 +15,11 @@ import { useCan } from "@/lib/admin/use-can";
  * pause. Each one is a small form in a drawer or a confirm dialog and
  * refreshes the queries it touches.
  */
-export type UserActionKind = "status" | "wallet" | "refund" | "phone" | "dispatch";
+export type UserActionKind = "status" | "wallet" | "refund" | "phone" | "dispatch" | "photo";
+
+/** The plain orange image the backend saved when a photo upload failed — not a real photo. */
+const FAILED_UPLOAD_PLACEHOLDER = "/defaults/fvnk7afjcvjyjwvvcoty";
+export const isFailedUploadPhoto = (url?: string | null) => !!url && url.includes(FAILED_UPLOAD_PLACEHOLDER);
 
 const USER_STATUSES: { value: UserStatus; label: string; hint: string }[] = [
   { value: "ACTIVE", label: "Active", hint: "Full access to the app." },
@@ -96,6 +100,17 @@ export function UserActions({
             Refund order
           </Button>
         ) : null}
+        {user.photo && can("user.photo") ? (
+          <Button
+            size={size}
+            variant="outline"
+            icon={ImageOff}
+            className={isFailedUploadPhoto(user.photo) ? "text-warning" : undefined}
+            onClick={() => setOpen("photo")}
+          >
+            Remove photo
+          </Button>
+        ) : null}
         {can("user.phone") ? (
           <Button size={size} variant="outline" icon={Phone} onClick={() => setOpen("phone")}>
             Change phone
@@ -119,6 +134,7 @@ export function UserActions({
       {showRefund ? <RefundDrawer user={user} open={open === "refund"} onClose={close} /> : null}
       <PhoneDrawer user={user} open={open === "phone"} onClose={close} />
       {showDispatch ? <DispatchDialog user={user} open={open === "dispatch"} onClose={close} /> : null}
+      <RemovePhotoDialog user={user} open={open === "photo"} onClose={close} />
     </>
   );
 }
@@ -524,6 +540,46 @@ export function DispatchDialog({ user, open, onClose }: { user: User; open: bool
           <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Too many cancellations this week" />
         </Field>
       )}
+    </ConfirmDialog>
+  );
+}
+
+// ── Profile photo ─────────────────────────────────────────────────────────────
+
+/** Clear a user's photo so the app asks for a new one (riders can't take orders until they add it). */
+export function RemovePhotoDialog({ user, open, onClose }: { user: User; open: boolean; onClose: () => void }) {
+  const failed = isFailedUploadPhoto(user.photo);
+  const name = fullName(user) || "This user";
+  const action = useAction((_: undefined) => users.removePhoto(user._id), {
+    success: () => "Photo removed. They'll be asked to upload a new one.",
+    invalidate: userInvalidations(user._id),
+    onSuccess: onClose,
+  });
+
+  return (
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      loading={action.isPending}
+      tone="danger"
+      title="Remove profile photo"
+      description={
+        failed
+          ? `This isn't a real photo: the upload failed and a plain orange placeholder was saved instead. Removing it asks ${name} to upload their photo again.`
+          : `${name} will be asked to upload a new photo the next time they open the app. Riders can't take orders until they do.`
+      }
+      confirmLabel="Remove photo"
+      onConfirm={() => action.mutate(undefined)}
+    >
+      {user.photo ? (
+        <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={user.photo} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
+          <p className="text-xs text-ink-muted">
+            {failed ? "Failed upload (orange placeholder)" : "Current photo"}
+          </p>
+        </div>
+      ) : null}
     </ConfirmDialog>
   );
 }

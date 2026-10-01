@@ -66,6 +66,13 @@ const CASES: Case[] = [
   { name: "stats.customers", call: () => api.stats.customers({ search: "ada" }), method: "GET", path: `${P}/admins/stats/customers`, params: { search: "ada" }, paged: true },
   { name: "stats.businesses", call: () => api.stats.businesses({ page: 1 }), method: "GET", path: `${P}/admins/stats/businesses`, params: { page: "1" }, paged: true },
   { name: "stats.userOverview", call: () => api.stats.userOverview(ID, { all: true }), method: "GET", path: `${P}/admins/stats/users/${ID}/overview`, params: { all: "true" } },
+  // rider insights
+  { name: "riderInsights.overview", call: () => api.riderInsights.overview(ID, { from: "2026-09-01", to: "2026-09-30" }), method: "GET", path: `${P}/admins/riders/${ID}/insights/overview`, params: { dateRange: "2026-09-01,2026-09-30" } },
+  { name: "riderInsights.earnings", call: () => api.riderInsights.earnings(ID, { all: true }, "week"), method: "GET", path: `${P}/admins/riders/${ID}/insights/earnings/series`, params: { dateRange: "2020-01-01", bucket: "week" } },
+  { name: "riderInsights.map", call: () => api.riderInsights.map(ID, { from: "2026-09-01" }), method: "GET", path: `${P}/admins/riders/${ID}/insights/map`, params: { dateRange: "2026-09-01" } },
+  { name: "riderInsights.rank", call: () => api.riderInsights.rank(ID, { from: "2026-09-01", to: "2026-09-30" }, "country"), method: "GET", path: `${P}/admins/riders/${ID}/insights/rank`, params: { dateRange: "2026-09-01,2026-09-30", scope: "country" } },
+  { name: "riderInsights.achievements", call: () => api.riderInsights.achievements(ID), method: "GET", path: `${P}/admins/riders/${ID}/insights/achievements` },
+  { name: "riderInsights.profile", call: () => api.riderInsights.profile(ID, { from: "2026-09-01", to: "2026-09-30" }), method: "GET", path: `${P}/admins/riders/${ID}/insights/profile`, params: { dateRange: "2026-09-01,2026-09-30" } },
   // auth / me
   { name: "auth.login", call: () => api.auth.login({ identifier: "a@b.c", password: "pw" }), method: "POST", path: `${P}/auth/admins/login`, data: { identifier: "a@b.c", password: "pw" } },
   { name: "me.get", call: () => api.me.get(), method: "GET", path: `${P}/admins/users/me` },
@@ -84,6 +91,7 @@ const CASES: Case[] = [
   { name: "users.refundableOrders", call: () => api.users.refundableOrders(ID, "PR-1"), method: "GET", path: `${P}/admins/users/${ID}/refundable-orders`, params: { limit: "50", search: "PR-1" } },
   { name: "users.updatePhone", call: () => api.users.updatePhone(ID, { phone: "0801" }), method: "PATCH", path: `${P}/admins/users/${ID}/phone`, data: { phone: "0801" } },
   { name: "users.setDispatch", call: () => api.users.setDispatch(ID, { paused: true }), method: "PATCH", path: `${P}/admins/users/${ID}/dispatch`, data: { paused: true } },
+  { name: "users.removePhoto", call: () => api.users.removePhoto(ID), method: "PATCH", path: `${P}/admins/users/${ID}/photo/remove` },
   { name: "users.licenceVerify", call: () => api.users.licenceVerify(ID, { number: "1" }), method: "PATCH", path: `${P}/admins/users/${ID}/drivers-license/verify`, data: { number: "1" } },
   { name: "users.licenceApprove", call: () => api.users.licenceApprove(ID), method: "PATCH", path: `${P}/admins/users/${ID}/drivers-license/approve` },
   { name: "users.licenceUpdate", call: () => api.users.licenceUpdate(ID, { status: "APPROVE" }), method: "PATCH", path: `${P}/admins/users/${ID}/drivers-license/update`, data: { status: "APPROVE" } },
