@@ -43,6 +43,12 @@ import {
   AdminDeleteAnnouncementData,
   AdminGetAnnouncementData,
   AdminGetMyProfileData,
+  AdminGetRiderAchievementsData,
+  AdminGetRiderDeliveryMapData,
+  AdminGetRiderEarningsSeriesData,
+  AdminGetRiderInsightsOverviewData,
+  AdminGetRiderInsightsProfileData,
+  AdminGetRiderRankData,
   AdminGetTransactionsData,
   AdminGetUserWalletsData,
   AdminGetVehicleData,
@@ -50,6 +56,7 @@ import {
   AdminListAnnouncementScreensData,
   AdminListAnnouncementsData,
   AdminListTeamsData,
+  AdminRemoveUserPhotoData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
   AdminUpdateMyAddressesData,
@@ -77,6 +84,7 @@ import {
   CancelFundWalletData,
   CancelFundWalletRequestDto,
   CancelLocationRequestDto,
+  CancelLocationUpdateData,
   CancelOrderData,
   CancelOrderLocationData,
   CancelOrderRequestDto,
@@ -1016,6 +1024,154 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = AcknowledgeAchievementData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderInsightsOverview
+   * @summary A rider's earnings, performance, activity and goal for the window (default: last 7 days)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/overview
+   * @secure
+   * @response `200` `AdminGetRiderInsightsOverviewData`
+   */
+  export namespace AdminGetRiderInsightsOverview {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+       * @pattern DATE_RANGE_PATTERN
+       */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderInsightsOverviewData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderEarningsSeries
+   * @summary A rider's net/gross earnings per day, week or month, with the split by order type
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/earnings/series
+   * @secure
+   * @response `200` `AdminGetRiderEarningsSeriesData`
+   */
+  export namespace AdminGetRiderEarningsSeries {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+       * @pattern DATE_RANGE_PATTERN
+       */
+      dateRange?: string;
+      /** @default "day" */
+      bucket?: "day" | "week" | "month";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderEarningsSeriesData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderDeliveryMap
+   * @summary A rider's completed pickup and drop-off points
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/map
+   * @secure
+   * @response `200` `AdminGetRiderDeliveryMapData`
+   */
+  export namespace AdminGetRiderDeliveryMap {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+       * @pattern DATE_RANGE_PATTERN
+       */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderDeliveryMapData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderRank
+   * @summary Where the rider ranks by completed deliveries in their state (or country)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/rank
+   * @secure
+   * @response `200` `AdminGetRiderRankData`
+   */
+  export namespace AdminGetRiderRank {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+       * @pattern DATE_RANGE_PATTERN
+       */
+      dateRange?: string;
+      /** @default "state" */
+      scope?: "state" | "country";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderRankData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderAchievements
+   * @summary A rider's milestones and progress (read-only: never records an unlock)
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/achievements
+   * @secure
+   * @response `200` `AdminGetRiderAchievementsData`
+   */
+  export namespace AdminGetRiderAchievements {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderAchievementsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders/insights
+   * @name AdminGetRiderInsightsProfile
+   * @summary Admin-only: working hours, cancellations and reasons, location-change answers, withdrawals, lifetime
+   * @request GET:/api/v1/admins/riders/{riderId}/insights/profile
+   * @secure
+   * @response `200` `AdminGetRiderInsightsProfileData`
+   */
+  export namespace AdminGetRiderInsightsProfile {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Comma-separated start and end date (e.g., 2023-09-01,2023-09-30)
+       * @pattern DATE_RANGE_PATTERN
+       */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetRiderInsightsProfileData;
   }
 
   /**
@@ -2113,6 +2269,25 @@ export namespace Api {
     export type RequestBody = UpdateUserPhoneRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = UpdateUserPhoneData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name AdminRemoveUserPhoto
+   * @summary Remove a user's profile photo so the app asks them to upload a new one
+   * @request PATCH:/api/v1/admins/users/{userId}/photo/remove
+   * @secure
+   * @response `200` `AdminRemoveUserPhotoData`
+   */
+  export namespace AdminRemoveUserPhoto {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminRemoveUserPhotoData;
   }
 
   /**
@@ -4415,6 +4590,26 @@ export namespace Api {
       "x-state-code": string;
     };
     export type ResponseBody = UpdateOrderLocationData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name CancelLocationUpdate
+   * @request PATCH:/api/v1/orders/{orderId}/locations/{locationId}/updates/{updateId}/cancel
+   * @secure
+   * @response `200` `CancelLocationUpdateData`
+   */
+  export namespace CancelLocationUpdate {
+    export type RequestParams = {
+      orderId: string;
+      locationId: string;
+      updateId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CancelLocationUpdateData;
   }
 
   /**
