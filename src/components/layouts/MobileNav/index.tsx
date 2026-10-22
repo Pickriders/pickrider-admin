@@ -67,7 +67,7 @@ export const MobileNav = () => {
             <X size={18} />
           </button>
         </div>
-        <nav className="admin-scroll flex-1 overflow-y-auto py-4">
+        <nav className="flex-1 overflow-y-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <SidebarNav onNavigate={() => setOpen(false)} />
         </nav>
       </div>
