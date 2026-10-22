@@ -2,7 +2,8 @@
 
 import {
   Bike,
-  ChevronLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   BarChart3,
   Building2,
   Calculator,
@@ -158,8 +159,8 @@ const COLLAPSE_KEY = "pickriders_admin_sidebar_collapsed";
 
 /**
  * Desktop sidebar that folds to an icon rail, like the storefront admin. The choice is
- * remembered on this device. The toggle sits on the rail's edge, outside the scrolling
- * list so it's never clipped.
+ * remembered on this device. The toggle lives inside the sidebar, at the top, so the
+ * page content can never sit over it. The list scrolls without a visible scrollbar.
  */
 export const Sidebar = () => {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -181,24 +182,27 @@ export const Sidebar = () => {
     });
 
   return (
-    <div className="sticky left-0 top-[4.5rem] h-[calc(100vh-4.5rem)]">
-      <aside
-        className={cn(
-          "admin-scroll h-full overflow-y-auto overflow-x-hidden border-r border-line bg-card py-5 transition-[width] duration-200",
-          collapsed ? "w-[4.5rem]" : "w-[15.5rem]",
-        )}
-      >
+    <aside
+      className={cn(
+        "sticky left-0 top-[4.5rem] flex h-[calc(100vh-4.5rem)] flex-col border-r border-line bg-card transition-[width] duration-200",
+        collapsed ? "w-[4.5rem]" : "w-[15.5rem]",
+      )}
+    >
+      <div className={cn("flex shrink-0 pb-2 pt-4", collapsed ? "justify-center px-2.5" : "justify-end px-3")}>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="grid h-9 w-9 place-items-center rounded-xl text-ink-faint transition-colors hover:bg-surface hover:text-ink"
+        >
+          {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <SidebarNav collapsed={collapsed} />
-      </aside>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3 top-6 z-10 grid h-6 w-6 place-items-center rounded-full border border-line bg-card text-ink-faint shadow-card transition-colors hover:text-ink"
-      >
-        <ChevronLeft size={13} className={cn("transition-transform duration-200", collapsed && "rotate-180")} />
-      </button>
-    </div>
+      </div>
+    </aside>
   );
 };
