@@ -3,16 +3,17 @@
 import { ExternalLink, Phone, Star } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton, statusTone } from "@/components/kit";
+import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton } from "@/components/kit";
 import type { OrderParty, OrderRow } from "@/lib/admin/api";
-import { ago, count, fullName, naira, percent, when } from "@/lib/admin/format";
+import { ago, count, fullName, naira, orderPaymentDisplay, orderSource, percent, when } from "@/lib/admin/format";
 import { useOrder } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
-import { displayPhone, isStale, orderNumber, paymentLabel, phoneHref, totalDistanceKm, typeLabel } from "../../lib";
-import { OrderStatusBadge, PaymentBadge, TypeBadge } from "../../_components/order-cells";
+import { displayPhone, isStale, orderNumber, phoneHref, totalDistanceKm, typeLabel } from "../../lib";
+import { OrderPaymentBadge, OrderStatusBadge, SourceBadge, TypeBadge, bidsOf } from "../../_components/order-cells";
 import { OrderActions } from "./order-actions";
 import { RiderBids } from "./rider-bids";
+import { RiderHistory } from "./rider-history";
 import { RouteMap } from "./route-map";
 import { StopsTimeline } from "./stops-timeline";
 
@@ -107,7 +108,9 @@ export function OrderDetail({ orderId }: { orderId: string }) {
   const stops = order.locations ?? [];
   const stale = isStale(order);
   const rider = order.rider;
-  const bids = (order.offers ?? []).length;
+  const bids = bidsOf(order);
+  const payment = orderPaymentDisplay(order);
+  const storefront = orderSource(order.channel) === "STORE";
   const distance = totalDistanceKm(order);
 
   return (
@@ -125,10 +128,10 @@ export function OrderDetail({ orderId }: { orderId: string }) {
         description={
           <span className="flex flex-wrap items-center gap-1.5">
             <OrderStatusBadge status={order.status} />
-            <PaymentBadge status={order.paymentStatus} />
+            <OrderPaymentBadge order={order} />
+            <SourceBadge channel={order.channel} />
             <TypeBadge type={order.type} />
             {order.isScheduled ? <Badge tone="brand">Scheduled {order.scheduledFor ? when(order.scheduledFor) : ""}</Badge> : null}
-            {order.channel ? <Badge tone="neutral">{order.channel.replace(/_/g, " ").toLowerCase()}</Badge> : null}
             <span className="text-ink-muted">Placed {when(order.createdAt)}, {ago(order.createdAt)}</span>
           </span>
         }
@@ -156,6 +159,7 @@ export function OrderDetail({ orderId }: { orderId: string }) {
               <StopsTimeline stops={stops} />
             </div>
           </Panel>
+          <RiderHistory orderId={order._id} enabled={(order.riderReleaseCount ?? 0) > 0} />
           <RiderBids orderId={order._id} askingPrice={order.totalAmount} />
         </div>
 
@@ -196,12 +200,26 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                       label: "Discount",
                       value: order.discountAmount ? `${naira(order.discountAmount)}${order.discount && order.discountType === "PERCENTAGE" ? ` (${percent(order.discount, 0)})` : ""}` : "None",
                     },
-                    { label: "Payment", value: <Badge tone={statusTone(order.paymentStatus)}>{paymentLabel(order.paymentStatus)}</Badge> },
+                    { label: "Payment", value: order.paymentStatus ? <OrderPaymentBadge order={order} /> : undefined },
                     { label: "Paid on", value: order.paidDate ? when(order.paidDate) : undefined },
-                    { label: "Method", value: typeof order.paymentMethod === "string" ? order.paymentMethod : order.channel ? order.channel.replace(/_/g, " ").toLowerCase() : "Wallet" },
+                    {
+                      label: "Method",
+                      value: storefront
+                        ? "Storefront (Paystack)"
+                        : typeof order.paymentMethod === "string"
+                          ? order.paymentMethod
+                          : order.channel
+                            ? order.channel.replace(/_/g, " ").toLowerCase()
+                            : "Wallet",
+                    },
                     { label: "Coupon", value: order.coupon?.code ?? undefined },
                   ]}
                 />
+                {payment.hint ? (
+                  <p className="mt-4 rounded-xl border border-info/30 bg-info-soft px-3 py-2 text-xs text-info">
+                    <span className="font-semibold">{payment.label}.</span> {payment.hint}
+                  </p>
+                ) : null}
               </div>
             </div>
           </Panel>

@@ -95,6 +95,8 @@ export type User = {
   dispatchPaused?: boolean;
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  /** Withdrawals paused on this account by an admin (riders mostly); `active` false or absent means none. */
+  withdrawalRestriction?: WithdrawalRestrictionView | null;
   businessId?: string;
   country?: string;
   state?: string;
@@ -108,6 +110,23 @@ export type User = {
   totalEarned?: number;
   [key: string]: unknown;
 };
+
+export type WithdrawalRestrictionReason = "KYC_REVIEW" | "DISPUTE" | "UNDER_INVESTIGATION" | "OTHER";
+
+/** GET admins/users/:id and the user overview: the restriction as the admin sees it (the rider never sees the admin ids). */
+export type WithdrawalRestrictionView = {
+  active: boolean;
+  reason?: WithdrawalRestrictionReason | null;
+  /** The rider-facing sentence for the reason. */
+  message?: string | null;
+  note?: string | null;
+  restrictedAt?: string | null;
+  restrictedBy?: string | null;
+  liftedAt?: string | null;
+  liftedBy?: string | null;
+};
+
+export type WithdrawalRestrictionInput = { restricted: boolean; reason?: WithdrawalRestrictionReason; note?: string };
 
 export type AdminPreferences = { theme?: "light" | "dark" | "system"; font?: string; seen?: Record<string, string> };
 
@@ -188,7 +207,26 @@ export type Transaction = {
   balanceAfter?: number;
   metadata?: Record<string, unknown>;
   createdAt: string;
+  /** Admin list and detail: who the wallet belongs to, resolved by the API. */
+  owner?: TransactionOwner;
+  /** Admin list and detail: the rider behind a business rider earning (rows with metadata.riderId). */
+  rider?: TransactionOwner;
   [key: string]: unknown;
+};
+
+export type TransactionOwnerKind = "CUSTOMER" | "RIDER" | "BUSINESS" | "PLATFORM" | "TEAM";
+
+/** Mirrors TransactionOwnerDto; `kind` as a string union so pages can compare it to literals. */
+export type TransactionOwner = {
+  kind: TransactionOwnerKind;
+  id: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  photo?: string;
+  status?: string;
+  isOnline?: boolean;
+  missing?: boolean;
 };
 
 export type Vehicle = {
@@ -361,6 +399,7 @@ export type UserOverview = {
   reviews: { average: number | null; count: number; distribution: number[] };
   vehicles: Vehicle[];
   business: Business | null;
+  withdrawalRestriction?: WithdrawalRestrictionView | null;
 };
 
 export type CustomerWindow = {
@@ -403,7 +442,9 @@ export type CustomersOverview = {
 };
 
 export type CustomerRow = User & {
+  /** Sum of the customer's wallets, kobo. */
   walletBalance: number;
+  walletCurrency?: string;
   orders: number;
   completedOrders: number;
   cancelledOrders: number;
@@ -509,6 +550,9 @@ export const users = {
   licenceUpdate: (userId: string, body: Record<string, unknown>) => as<User>(apiService.updateDriversLicense(userId, body as never)),
   settlementAccount: (userId: string, walletId: string, body: Record<string, unknown>) =>
     as<Wallet>(apiService.adminUpdateSettlementAccount(userId, walletId, body as never)),
+  /** Pause (reason required) or lift wallet withdrawals; the note is shown to the rider. */
+  setWithdrawalRestriction: (userId: string, body: WithdrawalRestrictionInput) =>
+    as<User>(apiService.adminSetWithdrawalRestriction(userId, body as never)),
 };
 
 export type RefundableOrder = {
@@ -530,6 +574,8 @@ export const orders = {
   list: (query: Query) => page<Order>(apiService.getOrders(params(query))),
   get: (orderId: string) => as<Order>(apiService.getOrder(orderId)),
   offers: (orderId: string) => as<Record<string, unknown>>(apiService.getOrderOffers(orderId)),
+  /** Every rider who held the order, oldest first, with each release and where the current rider is. */
+  riderHistory: (orderId: string) => apiService.adminOrderRiderHistory(orderId),
   cancel: (orderId: string, body: { reason: string }) => as<Order>(apiService.adminCancelOrder(orderId, body)),
   /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
   ringRiders: (orderId: string) => as<{ riders: number; order: Order }>(apiService.ringRiders(orderId)),
@@ -765,8 +811,11 @@ export type OrderRow = Order & {
   currency?: string;
   paidDate?: string;
   cancelledBy?: string;
+  /** VENDOR_STOREFRONT = storefront, CUSTOMER_WEB = web, absent = customer app. */
   channel?: string;
   offers?: unknown[];
+  /** Admin list: how many rider offers the order has had, any status. */
+  offersCount?: number;
   totalLocations?: number;
   confirmedLocations?: number;
   cancelledLocations?: number;
@@ -778,6 +827,9 @@ export type OrderRow = Order & {
   vehicleId?: string;
   coupon?: { code?: string; name?: string } | null;
   review?: { rating?: number; comment?: string; createdAt?: string } | null;
+  /** Times an accepted rider was taken off before pickup, and the latest one. */
+  riderReleaseCount?: number;
+  lastRiderRelease?: import("@/services").OrderLastRiderRelease | null;
 };
 
 export type OrderBid = {
@@ -1359,6 +1411,24 @@ export type {
   LeaderboardResponseDto as RiderRank,
   MyMapResponseDto as RiderDeliveryMap,
   RiderAdminInsightsResponseDto as RiderInsightsProfile,
+} from "@/services";
+
+// ── Rider releases (admins/riders/:riderId/releases) ─────────────────────────────
+/**
+ * Trips the rider was taken off before pickup: their own "Can't make it" (free in the first two
+ * minutes, counted as a cancellation after), or the store's "Find another rider".
+ */
+export type { AdminRiderReleasesResponseDto as RiderReleases, RiderReleaseItemDto as RiderReleaseItem } from "@/services";
+
+export const riderReleases = {
+  list: (riderId: string) => apiService.adminListRiderReleases(riderId),
+};
+
+/** GET /admins/orders/:orderId/rider-history: one stint per rider who held the order, oldest first. */
+export type {
+  AdminOrderRiderHistoryResponseDto as OrderRiderHistory,
+  OrderRiderStintDto as OrderRiderStint,
+  RiderStintOutcome,
 } from "@/services";
 
 export const toDateRange = (range: RangeQuery) =>
