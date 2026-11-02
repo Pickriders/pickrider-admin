@@ -62,6 +62,7 @@ export const ACTION_ROLES = {
   "user.status": OPS,
   "user.phone": OPS,
   "user.dispatch": OPS,
+  "user.withdrawals": OPS,
   "user.photo": OPS,
   "user.create": ADMINS,
   "licence.review": OPS,

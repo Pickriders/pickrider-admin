@@ -73,6 +73,8 @@ const CASES: Case[] = [
   { name: "riderInsights.rank", call: () => api.riderInsights.rank(ID, { from: "2026-09-01", to: "2026-09-30" }, "country"), method: "GET", path: `${P}/admins/riders/${ID}/insights/rank`, params: { dateRange: "2026-09-01,2026-09-30", scope: "country" } },
   { name: "riderInsights.achievements", call: () => api.riderInsights.achievements(ID), method: "GET", path: `${P}/admins/riders/${ID}/insights/achievements` },
   { name: "riderInsights.profile", call: () => api.riderInsights.profile(ID, { from: "2026-09-01", to: "2026-09-30" }), method: "GET", path: `${P}/admins/riders/${ID}/insights/profile`, params: { dateRange: "2026-09-01,2026-09-30" } },
+  // rider releases
+  { name: "riderReleases.list", call: () => api.riderReleases.list(ID), method: "GET", path: `${P}/admins/riders/${ID}/releases` },
   // auth / me
   { name: "auth.login", call: () => api.auth.login({ identifier: "a@b.c", password: "pw" }), method: "POST", path: `${P}/auth/admins/login`, data: { identifier: "a@b.c", password: "pw" } },
   { name: "me.get", call: () => api.me.get(), method: "GET", path: `${P}/admins/users/me` },
@@ -96,10 +98,12 @@ const CASES: Case[] = [
   { name: "users.licenceApprove", call: () => api.users.licenceApprove(ID), method: "PATCH", path: `${P}/admins/users/${ID}/drivers-license/approve` },
   { name: "users.licenceUpdate", call: () => api.users.licenceUpdate(ID, { status: "APPROVE" }), method: "PATCH", path: `${P}/admins/users/${ID}/drivers-license/update`, data: { status: "APPROVE" } },
   { name: "users.settlementAccount", call: () => api.users.settlementAccount(ID, OTHER, { bankCode: "058" }), method: "PATCH", path: `${P}/admins/users/${ID}/wallets/${OTHER}/settlement-account`, data: { bankCode: "058" } },
+  { name: "users.setWithdrawalRestriction", call: () => api.users.setWithdrawalRestriction(ID, { restricted: true, reason: "DISPUTE", note: "n" }), method: "PATCH", path: `${P}/admins/users/${ID}/withdrawal-restriction`, data: { restricted: true, reason: "DISPUTE", note: "n" } },
   // orders
-  { name: "orders.list", call: () => api.orders.list({ status: "INITIATED", search: "PR", sortBy: "scheduledFor" }), method: "GET", path: `${P}/admins/orders`, params: { status: "INITIATED", search: "PR", sortBy: "scheduledFor" }, paged: true },
+  { name: "orders.list", call: () => api.orders.list({ status: "INITIATED", search: "PR", sortBy: "scheduledFor", releasedOnly: true }), method: "GET", path: `${P}/admins/orders`, params: { status: "INITIATED", search: "PR", sortBy: "scheduledFor", releasedOnly: "true" }, paged: true },
   { name: "orders.get", call: () => api.orders.get(ID), method: "GET", path: `${P}/admins/orders/${ID}` },
   { name: "orders.offers", call: () => api.orders.offers(ID), method: "GET", path: `${P}/admins/orders/${ID}/offers` },
+  { name: "orders.riderHistory", call: () => api.orders.riderHistory(ID), method: "GET", path: `${P}/admins/orders/${ID}/rider-history` },
   { name: "orders.cancel", call: () => api.orders.cancel(ID, { reason: "r" }), method: "POST", path: `${P}/admins/orders/${ID}/cancel`, data: { reason: "r" } },
   { name: "orders.ringRiders", call: () => api.orders.ringRiders(ID), method: "POST", path: `${P}/admins/orders/${ID}/ring-riders` },
   { name: "orders.updateStatus", call: () => api.orders.updateStatus(ID, { status: "COMPLETED" }), method: "PATCH", path: `${P}/admins/orders/${ID}/status`, data: { status: "COMPLETED" } },

@@ -6,13 +6,13 @@ import { useMemo } from "react";
 
 import { Badge, DataTable, type ColumnMeta, type FilterSpec } from "@/components/kit";
 import type { OrderRow, Paged } from "@/lib/admin/api";
-import { fullName, naira, statusLabel, when } from "@/lib/admin/format";
+import { ORDER_SOURCE_LABEL, fullName, naira, orderPaymentDisplay, orderSource, statusLabel, when } from "@/lib/admin/format";
 import { useOrders } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
-import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, paymentLabel, statusAt, totalDistanceKm, typeLabel } from "../lib";
-import { OrderStatusBadge, PartyCell, PaymentBadge, StatusWithTime, TypeBadge } from "./order-cells";
+import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, statusAt, totalDistanceKm, typeLabel } from "../lib";
+import { CourierCell, OrderPaymentBadge, OrderStatusBadge, PartyCell, SourceBadge, StatusWithTime, TypeBadge } from "./order-cells";
 
 /**
  * Every order the platform has seen, server paginated. Search is by order
@@ -30,6 +30,8 @@ const FILTERS: FilterSpec[] = [
       { value: "false", label: "Instant only" },
     ],
   },
+  // Orders a rider was taken off at least once before pickup (riderReleaseCount > 0).
+  { key: "releasedOnly", label: "Rider released", options: [{ value: "true", label: "Rider released" }] },
 ];
 
 const meta = (value: ColumnMeta) => value;
@@ -38,11 +40,14 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "order",
     header: "Order",
-    meta: meta({ csv: { key: "orderNumber", label: "Order number" } }),
+    meta: meta({
+      csv: { key: "orderNumber", label: "Order number", value: (row) => `${orderNumber(row as OrderRow)} (${ORDER_SOURCE_LABEL[orderSource((row as OrderRow).channel)]})` },
+    }),
     cell: ({ row }) => (
       <span className="flex flex-col gap-1">
         <span className="text-sm font-bold text-ink">{orderNumber(row.original)}</span>
         <span className="flex flex-wrap items-center gap-1">
+          <SourceBadge channel={row.original.channel} />
           <TypeBadge type={row.original.type} />
           {row.original.isScheduled ? <Badge tone="brand">Scheduled</Badge> : null}
         </span>
@@ -61,13 +66,7 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
     id: "rider",
     header: "Courier",
     meta: meta({ hideBelow: "lg", csv: { key: "courier", label: "Courier", value: (row) => fullName((row as OrderRow).rider) } }),
-    cell: ({ row }) => (
-      <PartyCell
-        party={row.original.rider}
-        href={row.original.rider ? `/couriers/${row.original.rider._id}` : undefined}
-        fallback={row.original.status === "INITIATED" ? `${(row.original.offers ?? []).length} bids` : "No rider"}
-      />
-    ),
+    cell: ({ row }) => <CourierCell order={row.original} href={row.original.rider ? `/couriers/${row.original.rider._id}/details` : undefined} />,
   },
   {
     id: "amount",
@@ -86,10 +85,10 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "payment",
     header: "Payment",
-    meta: meta({ hideBelow: "xl", csv: { key: "paymentStatus", label: "Payment", value: (row) => paymentLabel((row as OrderRow).paymentStatus) } }),
+    meta: meta({ hideBelow: "xl", csv: { key: "paymentStatus", label: "Payment", value: (row) => orderPaymentDisplay(row as OrderRow).label } }),
     cell: ({ row }) => (
       <span className="flex flex-col items-start gap-1">
-        <PaymentBadge status={row.original.paymentStatus} />
+        <OrderPaymentBadge order={row.original} />
         {row.original.paidDate ? <span className="text-[11px] text-ink-faint">{when(row.original.paidDate)}</span> : null}
       </span>
     ),
@@ -147,7 +146,8 @@ export function AllOrdersTab() {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="text-sm font-bold text-ink">{orderNumber(row)}</p>
-              <p className="text-[11px] text-ink-muted">
+              <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-muted">
+                <SourceBadge channel={row.channel} />
                 {typeLabel(row.type)} · {when(row.createdAt)}
               </p>
             </div>
@@ -156,12 +156,12 @@ export function AllOrdersTab() {
           {/* Both badges on one line; the timestamp goes underneath so they stay aligned. */}
           <div className="flex flex-wrap items-center gap-1.5">
             <OrderStatusBadge status={row.status} />
-            <PaymentBadge status={row.paymentStatus} />
+            <OrderPaymentBadge order={row} />
           </div>
           {statusAt(row) ? <p className="text-[11px] text-ink-faint">{when(statusAt(row))}</p> : null}
           <div className="grid grid-cols-2 gap-2">
             <PartyCell party={row.user} fallback="Unknown customer" size={24} />
-            <PartyCell party={row.rider} fallback="No rider" size={24} />
+            <CourierCell order={row} size={24} />
           </div>
         </div>
       )}

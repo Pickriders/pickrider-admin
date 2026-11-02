@@ -25,7 +25,7 @@ import {
   statusTone,
   type RangeValue,
 } from "@/components/kit";
-import { DispatchDialog, UserActions } from "@/components/users/user-actions";
+import { DispatchDialog, UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
 import type { Vehicle } from "@/lib/admin/api";
@@ -34,6 +34,7 @@ import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
 import { RiderInsights } from "./_components/insights";
+import { ReleasedTrips } from "./_components/released-trips";
 
 /**
  * One rider: insights (the rider app's own numbers plus staff-only reliability
@@ -45,7 +46,7 @@ import { RiderInsights } from "./_components/insights";
  * not shown; the earnings tab (ORDER_EARNING transactions) is the closest
  * per-delivery record and lifetime totals come from the overview.
  */
-const TABS = ["insights", "earnings", "reviews", "transactions", "activity"] as const;
+const TABS = ["insights", "earnings", "reviews", "releases", "transactions", "activity"] as const;
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
@@ -160,6 +161,7 @@ function CourierDetail({ id }: { id: string }) {
   const loading = overview.isLoading;
   const licence = licenceOf(user);
   const settlement = data?.wallet?.settlement;
+  const restriction = data?.withdrawalRestriction ?? user?.withdrawalRestriction;
   const windowLabel = range.all ? "all time" : range.preset ? `last ${range.preset} days` : "this range";
 
   if (overview.error && !data) {
@@ -206,25 +208,31 @@ function CourierDetail({ id }: { id: string }) {
               <Badge tone={licenceTone(licence.status)}>{LICENCE_LABEL[licence.status]}</Badge>
             </Link>
             {data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
+            {restriction?.active ? <Badge tone="warning">Withdrawals paused</Badge> : null}
           </>
         }
-        actions={user ? <UserActions user={user} wallet={data?.wallet} showDispatch /> : null}
+        actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showDispatch showWithdrawals /> : null}
         banner={
-          user?.dispatchPaused ? (
-            <div className="flex flex-col gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <PauseCircle size={18} className="mt-0.5 shrink-0 text-warning" />
-                <div className="text-sm">
-                  <p className="font-bold text-ink">Not receiving new orders</p>
-                  <p className="text-ink-muted">
-                    Dispatch paused {when(user.dispatchPausedAt)}
-                    {user.dispatchPausedReason ? `: ${user.dispatchPausedReason}` : ""}
-                  </p>
+          user && (user.dispatchPaused || restriction?.active) ? (
+            <div className="space-y-2">
+              <WithdrawalRestrictionBanner user={user} restriction={restriction} />
+              {user.dispatchPaused ? (
+                <div className="flex flex-col gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <PauseCircle size={18} className="mt-0.5 shrink-0 text-warning" />
+                    <div className="text-sm">
+                      <p className="font-bold text-ink">Not receiving new orders</p>
+                      <p className="text-ink-muted">
+                        Dispatch paused {when(user.dispatchPausedAt)}
+                        {user.dispatchPausedReason ? `: ${user.dispatchPausedReason}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setDispatchOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
+                    Resume dispatch
+                  </button>
                 </div>
-              </div>
-              <button type="button" onClick={() => setDispatchOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
-                Resume dispatch
-              </button>
+              ) : null}
             </div>
           ) : null
         }
@@ -345,6 +353,7 @@ function CourierDetail({ id }: { id: string }) {
           { id: "insights", label: "Insights" },
           { id: "earnings", label: "Earnings", count: lifetime?.completed },
           { id: "reviews", label: "Reviews", count: data?.reviews.count },
+          { id: "releases", label: "Released trips" },
           { id: "transactions", label: "Wallet history" },
           { id: "activity", label: "Activity" },
         ]}
@@ -361,6 +370,7 @@ function CourierDetail({ id }: { id: string }) {
         />
       ) : null}
       {tab === "reviews" ? <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} /> : null}
+      {tab === "releases" ? <ReleasedTrips riderId={id} /> : null}
       {tab === "transactions" ? (
         <div className="space-y-4">
           <MoneyByPurpose data={data?.transactions} loading={loading} />

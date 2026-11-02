@@ -7,7 +7,7 @@ import { useMemo, useState, type ReactNode } from "react";
 
 import { Avatar, Badge, Button, DataTable, EmptyState, Panel, PanelHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec, type Tone } from "@/components/kit";
 import type { KycStatus, Order, Transaction, User } from "@/lib/admin/api";
-import { ago, day, fullName, naira, statusLabel, when } from "@/lib/admin/format";
+import { ago, day, fullName, naira, orderPaymentDisplay, statusLabel, when } from "@/lib/admin/format";
 import { useOrders, useTransactions } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 
@@ -178,8 +178,19 @@ const orderColumns: ColumnDef<Order, unknown>[] = [
   {
     id: "payment",
     header: "Payment",
-    cell: ({ row }) => <span className="text-ink-muted">{row.original.paymentStatus ? statusLabel(String(row.original.paymentStatus)) : ""}</span>,
-    meta: { hideBelow: "lg", csv: { key: "paymentStatus", label: "Payment" } } satisfies ColumnMeta,
+    cell: ({ row }) => {
+      if (!row.original.paymentStatus) return null;
+      const payment = orderPaymentDisplay({ ...row.original, channel: typeof row.original.channel === "string" ? row.original.channel : undefined });
+      return (
+        <span title={payment.hint} className={cx(payment.hint ? "cursor-help" : "", payment.tone === "info" ? "text-info" : "text-ink-muted")}>
+          {payment.label}
+        </span>
+      );
+    },
+    meta: {
+      hideBelow: "lg",
+      csv: { key: "paymentStatus", label: "Payment", value: (r) => orderPaymentDisplay({ ...(r as Order), channel: typeof (r as Order).channel === "string" ? ((r as Order).channel as string) : undefined }).label },
+    } satisfies ColumnMeta,
   },
   {
     id: "route",

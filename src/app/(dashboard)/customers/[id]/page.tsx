@@ -7,7 +7,7 @@ import { Suspense, useMemo, useState } from "react";
 import { Badge, ChartCard, ErrorState, PageHeader, RangeTabs, Skeleton, StatCard, StatGrid, Tabs, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
 import { CustomerBadges } from "@/components/users/customer-badges";
 import { CustomerReports } from "@/components/users/customer-reports";
-import { UserActions } from "@/components/users/user-actions";
+import { UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, MoneyByPurpose, UserHeader, UserOrdersTable, UserTransactionsTable, bucketLabel } from "@/components/users/user-panels";
 import { fullName, naira, count, percent, trend } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
@@ -33,6 +33,7 @@ function CustomerDetail({ id }: { id: string }) {
   const previous = data?.asCustomer.previous;
   const lifetime = data?.asCustomer.lifetime;
   const loading = overview.isLoading;
+  const restriction = data?.withdrawalRestriction ?? user?.withdrawalRestriction;
   const windowLabel = range.all ? "all time" : range.preset ? `last ${range.preset} days` : "this range";
 
   if (overview.error && !data) {
@@ -60,8 +61,14 @@ function CustomerDetail({ id }: { id: string }) {
       <UserHeader
         user={user}
         loading={loading}
-        badges={data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
-        actions={user ? <UserActions user={user} wallet={data?.wallet} showRefund /> : null}
+        badges={
+          <>
+            {data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
+            {restriction?.active ? <Badge tone="warning">Withdrawals paused</Badge> : null}
+          </>
+        }
+        actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showRefund /> : null}
+        banner={user && restriction?.active ? <WithdrawalRestrictionBanner user={user} restriction={restriction} /> : null}
       />
 
       <StatGrid columns={5}>

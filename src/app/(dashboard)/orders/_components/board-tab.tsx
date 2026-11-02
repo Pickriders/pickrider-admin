@@ -6,12 +6,12 @@ import { useMemo } from "react";
 
 import { Badge, EmptyState, ErrorState, Panel, Skeleton, StatCard, StatGrid, cx, presetRange, rangeToQuery } from "@/components/kit";
 import type { OrderRow, OrderStatus } from "@/lib/admin/api";
-import { ago, count, naira } from "@/lib/admin/format";
+import { ago, count, naira, orderSource } from "@/lib/admin/format";
 import { useOrders, useOverview } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
 import { STALE_AFTER_MINUTES, isStale, orderNumber, typeLabel } from "../lib";
-import { PartyCell, TypeBadge } from "./order-cells";
+import { CourierCell, OrderPaymentBadge, PartyCell, SourceBadge, TypeBadge } from "./order-cells";
 
 /**
  * The live board: every order that is not finished, in three columns by
@@ -132,8 +132,11 @@ function BoardCard({ order }: { order: OrderRow }) {
         <div className="min-w-0">
           <p className="truncate text-sm font-bold text-ink">{orderNumber(order)}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-muted">
+            <SourceBadge channel={order.channel} />
             <TypeBadge type={order.type} />
             {order.isScheduled ? <Badge tone="brand">Scheduled</Badge> : null}
+            {/* Storefront orders are prepaid off-platform; say so, since "Paid" alone would mislead. */}
+            {orderSource(order.channel) === "STORE" ? <OrderPaymentBadge order={order} /> : null}
             <span>{ago(order.createdAt)}</span>
           </p>
         </div>
@@ -151,7 +154,7 @@ function BoardCard({ order }: { order: OrderRow }) {
         </div>
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-faint">Courier</p>
-          <PartyCell party={order.rider} fallback={order.status === "INITIATED" ? `${count((order.offers ?? []).length)} bids so far` : "No rider"} size={24} />
+          <CourierCell order={order} size={24} />
         </div>
       </div>
       {firstDrop ? (

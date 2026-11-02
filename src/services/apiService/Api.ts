@@ -64,9 +64,12 @@ import {
   AdminListAnnouncementScreensData,
   AdminListAnnouncementsData,
   AdminListAnnouncementsParams,
+  AdminListRiderReleasesData,
   AdminListTeamsData,
   AdminListTeamsParams,
+  AdminOrderRiderHistoryData,
   AdminRemoveUserPhotoData,
+  AdminSetWithdrawalRestrictionData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
   AdminUpdateMyAddressesData,
@@ -160,6 +163,8 @@ import {
   FindAllData,
   FindAllParams,
   ForUserData,
+  ForceAssignRiderData,
+  ForceAssignRiderDto,
   FundWalletRequestDto,
   GetAchievementsData,
   GetActiveCouponsData,
@@ -330,6 +335,9 @@ import {
   PasswordResetData,
   PasswordResetRequestData,
   PayData,
+  PayOrderRequestDto,
+  PayRiderTripData,
+  PayRiderTripRequestDto,
   PeakHoursData,
   PeakHoursParams,
   PublicConfigData,
@@ -354,6 +362,8 @@ import {
   RefundableOrdersData,
   RefundableOrdersParams,
   RejectVehicleData,
+  ReleaseOrderRiderData,
+  ReleaseRiderRequestDto,
   RemoveGroupUsersData,
   RemoveOrderCouponData,
   RemoveUserFromBusinessData,
@@ -365,6 +375,8 @@ import {
   RespondToLocationUpdateData,
   RevokeData,
   RiderLocationsRequestDto,
+  RiderReleaseOrderData,
+  RiderReleaseRequestDto,
   RidersRequestDto,
   RingRidersData,
   RunData,
@@ -450,6 +462,7 @@ import {
   UpdateUserVehicleData,
   UpdateVehicleRequestDto,
   UpdateVehicleStatusRequestDto,
+  UpdateWithdrawalRestrictionRequestDto,
   UsagesData,
   UsagesParams,
   UserKYCDetailDto,
@@ -2235,6 +2248,30 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/users
+   * @name AdminSetWithdrawalRestriction
+   * @summary Pause or resume wallet withdrawals for a user. reason is required when restricted is true.
+   * @request PATCH:/api/v1/admins/users/{userId}/withdrawal-restriction
+   * @secure
+   * @response `200` `AdminSetWithdrawalRestrictionData`
+   */
+  adminSetWithdrawalRestriction = (
+    userId: string,
+    data: UpdateWithdrawalRestrictionRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminSetWithdrawalRestrictionData, any>({
+      path: `/api/v1/admins/users/${userId}/withdrawal-restriction`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
    * @name GetUser
    * @request GET:/api/v1/admins/users/{userId}
    * @secure
@@ -3967,6 +4004,67 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags orders
+   * @name PayRiderTrip
+   * @summary Pay the rider half the agreed price for a trip to the store on a called-off storefront delivery
+   * @request POST:/api/v1/orders/{orderId}/trip-pay
+   * @secure
+   * @response `201` `PayRiderTripData`
+   */
+  payRiderTrip = (orderId: string, data: PayRiderTripRequestDto, params: RequestParams = {}) =>
+    this.request<PayRiderTripData, any>({
+      path: `/api/v1/orders/${orderId}/trip-pay`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name ReleaseOrderRider
+   * @summary Take the accepted rider off an order before pickup and ring the other eligible riders
+   * @request POST:/api/v1/orders/{orderId}/release-rider
+   * @secure
+   * @response `200` `ReleaseOrderRiderData`
+   * @response `201` `ReleaseRiderResponseDto`
+   */
+  releaseOrderRider = (orderId: string, data: ReleaseRiderRequestDto, params: RequestParams = {}) =>
+    this.request<ReleaseOrderRiderData, any>({
+      path: `/api/v1/orders/${orderId}/release-rider`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name RiderReleaseOrder
+   * @summary Rider: "Can't make it". Give an accepted order back before pickup. Free for 2 minutes after accepting, then it counts as a cancellation (3 counted per Lagos day; the 4th is refused with RELEASE_LIMIT_REACHED)
+   * @request POST:/api/v1/orders/{orderId}/rider-release
+   * @secure
+   * @response `200` `RiderReleaseOrderData`
+   * @response `201` `RiderReleaseResponseDto`
+   */
+  riderReleaseOrder = (orderId: string, data: RiderReleaseRequestDto, params: RequestParams = {}) =>
+    this.request<RiderReleaseOrderData, any>({
+      path: `/api/v1/orders/${orderId}/rider-release`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
    * @name ReassignRider
    * @request POST:/api/v1/orders/{orderId}/reassign
    * @secure
@@ -3975,6 +4073,27 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   reassignRider = (orderId: string, data: ReassignRiderRequestDto, params: RequestParams = {}) =>
     this.request<ReassignRiderData, any>({
       path: `/api/v1/orders/${orderId}/reassign`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name ForceAssignRider
+   * @summary Hand the order straight to a chosen rider without ringing them (rider must be online and free)
+   * @request POST:/api/v1/orders/{orderId}/force-assign
+   * @secure
+   * @response `200` `ForceAssignRiderData`
+   * @response `201` `ForceAssignRiderResponseDto`
+   */
+  forceAssignRider = (orderId: string, data: ForceAssignRiderDto, params: RequestParams = {}) =>
+    this.request<ForceAssignRiderData, any>({
+      path: `/api/v1/orders/${orderId}/force-assign`,
       method: "POST",
       body: data,
       secure: true,
@@ -4015,6 +4134,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/orders/riders/leaderboard`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -4033,6 +4153,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/orders/riders/list`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -4143,11 +4264,13 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @secure
    * @response `200` `InitiateOrderPaymentData`
    */
-  initiateOrderPayment = (orderId: string, walletId: string, params: RequestParams = {}) =>
+  initiateOrderPayment = (orderId: string, walletId: string, data: PayOrderRequestDto, params: RequestParams = {}) =>
     this.request<InitiateOrderPaymentData, any>({
       path: `/api/v1/orders/${orderId}/wallets/${walletId}/pay`,
       method: "PATCH",
+      body: data,
       secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -4161,11 +4284,13 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @response `200` `CreateOrderPaymentLinkData`
    * @response `201` `OrderPaymentLinkResponseDto`
    */
-  createOrderPaymentLink = (orderId: string, params: RequestParams = {}) =>
+  createOrderPaymentLink = (orderId: string, data: PayOrderRequestDto, params: RequestParams = {}) =>
     this.request<CreateOrderPaymentLinkData, any>({
       path: `/api/v1/orders/${orderId}/payment-link`,
       method: "POST",
+      body: data,
       secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -4746,6 +4871,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/orders
+   * @name AdminOrderRiderHistory
+   * @summary Every rider who held the order, oldest first: who accepted when, who released and why, and where it is now
+   * @request GET:/api/v1/admins/orders/{orderId}/rider-history
+   * @secure
+   * @response `200` `AdminOrderRiderHistoryData`
+   */
+  adminOrderRiderHistory = (orderId: string, params: RequestParams = {}) =>
+    this.request<AdminOrderRiderHistoryData, any>({
+      path: `/api/v1/admins/orders/${orderId}/rider-history`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/orders
    * @name RingRiders
    * @request POST:/api/v1/admins/orders/{orderId}/ring-riders
    * @secure
@@ -4793,6 +4936,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/riders
+   * @name AdminListRiderReleases
+   * @summary A rider's released trips (newest first) with counts for today (Lagos), 7 days and 30 days
+   * @request GET:/api/v1/admins/riders/{riderId}/releases
+   * @secure
+   * @response `200` `AdminListRiderReleasesData`
+   */
+  adminListRiderReleases = (riderId: string, params: RequestParams = {}) =>
+    this.request<AdminListRiderReleasesData, any>({
+      path: `/api/v1/admins/riders/${riderId}/releases`,
+      method: "GET",
+      secure: true,
       format: "json",
       ...params,
     });

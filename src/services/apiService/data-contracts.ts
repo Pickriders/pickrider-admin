@@ -498,6 +498,33 @@ export interface CustomersOverviewResponseDto {
   mostCancelled: CustomerLeaderDto[];
 }
 
+/** Required when restricted is true. */
+export enum WithdrawalRestrictionReason {
+  KYC_REVIEW = "KYC_REVIEW",
+  DISPUTE = "DISPUTE",
+  UNDER_INVESTIGATION = "UNDER_INVESTIGATION",
+  OTHER = "OTHER",
+}
+
+export interface AdminWithdrawalRestrictionViewDto {
+  /** true while withdrawals are paused on this account. */
+  active: boolean;
+  /** Required when restricted is true. */
+  reason?: WithdrawalRestrictionReason | null;
+  /** Friendly sentence for the reason, ready to display. */
+  message?: string | null;
+  /** Optional note from the admin, shown under the message. */
+  note?: string | null;
+  /** @format date-time */
+  restrictedAt?: string | null;
+  /** Admin user id */
+  restrictedBy?: string | null;
+  /** @format date-time */
+  liftedAt?: string | null;
+  /** Admin user id */
+  liftedBy?: string | null;
+}
+
 export interface UserOverviewResponseDto {
   range: RangeDto;
   user: object;
@@ -508,6 +535,8 @@ export interface UserOverviewResponseDto {
   reviews: object;
   vehicles: object[];
   business: object | null;
+  /** Same as user.withdrawalRestriction */
+  withdrawalRestriction: AdminWithdrawalRestrictionViewDto;
 }
 
 export interface InsightsRangeDto {
@@ -1212,6 +1241,16 @@ export interface CreateUserRequestDto {
   businessName?: string;
 }
 
+export interface UpdateProfileRequestDto {
+  firstname?: string;
+  lastname?: string;
+  pushToken?: string;
+  /** Referral code of another user (e.g. for Google sign-in users who skipped registration). Same logic as registration. */
+  referralCode?: string;
+  /** Whether the user is a vendor */
+  isVendor?: boolean;
+}
+
 export interface AddressDetailDto {
   country: string;
   state: string;
@@ -1262,6 +1301,22 @@ export interface PreferenceDetailsDto {
   goals: {
     weeklyEarningsTarget?: number;
   };
+}
+
+export interface WithdrawalRestriction {
+  active: boolean;
+  /** Required when restricted is true. */
+  reason?: WithdrawalRestrictionReason;
+  /** @maxLength 280 */
+  note?: string;
+  /** @format date-time */
+  restrictedAt?: string;
+  /** Admin who restricted. Never sent to the rider. */
+  restrictedBy?: string;
+  /** @format date-time */
+  liftedAt?: string;
+  /** Admin who lifted. Never sent to the rider. */
+  liftedBy?: string;
 }
 
 export interface BusinessDetailsSchemaDto {
@@ -1384,6 +1439,7 @@ export interface User {
   /** @format date-time */
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  withdrawalRestriction?: WithdrawalRestriction;
   adminPreferences?: object;
   photo?: string;
   country: {
@@ -1524,16 +1580,6 @@ export interface Business {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
-}
-
-export interface UpdateProfileRequestDto {
-  firstname?: string;
-  lastname?: string;
-  pushToken?: string;
-  /** Referral code of another user (e.g. for Google sign-in users who skipped registration). Same logic as registration. */
-  referralCode?: string;
-  /** Whether the user is a vendor */
-  isVendor?: boolean;
 }
 
 export interface UpdateLocationRequestDto {
@@ -1958,6 +2004,17 @@ export interface Review {
   updatedAt: string;
 }
 
+export interface OrderLastRiderRelease {
+  riderId: string;
+  initiatedBy: "RIDER" | "OWNER" | "ADMIN";
+  reason: string;
+  note?: string;
+  /** True when it counted as the rider's cancellation */
+  counted: boolean;
+  /** @format date-time */
+  at: string;
+}
+
 export interface Order {
   userId?: string;
   riderId?: string;
@@ -1970,7 +2027,7 @@ export interface Order {
   /** @default "INITIATED" */
   status: "INITIATED" | "ACCEPTED" | "ON_GOING" | "COMPLETED" | "CANCELLED";
   /** @default "PENDING" */
-  paymentStatus: "PENDING" | "PAID" | "FAILED";
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   cancelledBy?: "USER" | "RIDER" | "ADMIN";
   /** @default 0 */
   totalAmount?: number;
@@ -2045,6 +2102,22 @@ export interface Order {
   /** @default 0 */
   vendorCommissionRate?: number;
   callbackUrl?: string;
+  dispatchState?: object;
+  /** @format date-time */
+  tripPaidAt?: string;
+  tripPayRiderId?: string;
+  tripPayAmount?: number;
+  riderReleaseCount?: number;
+  lastRiderRelease?: OrderLastRiderRelease;
+  /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
+  canRelease?: boolean;
+  /**
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * @format date-time
+   */
+  releaseFreeUntil?: string | null;
+  /** Rider view: counted releases the rider has left today */
+  releasesLeftToday?: number;
   paymentToken?: string;
   externalPaymentReference?: string;
   externalPaymentUrl?: string;
@@ -2114,6 +2187,18 @@ export interface UpdateDispatchPauseRequestDto {
   reason?: string;
 }
 
+export interface UpdateWithdrawalRestrictionRequestDto {
+  /** true pauses withdrawals on this account; false lifts the restriction. */
+  restricted: boolean;
+  /** Required when restricted is true. */
+  reason?: WithdrawalRestrictionReason;
+  /**
+   * Optional note shown to the rider in the app. Audited.
+   * @maxLength 280
+   */
+  note?: string;
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -2178,6 +2263,83 @@ export interface WalletCreateRequestDto {
   countryCode: string;
   entityId: string;
   entityType: EntityType;
+}
+
+export enum TransactionOwnerKind {
+  CUSTOMER = "CUSTOMER",
+  RIDER = "RIDER",
+  BUSINESS = "BUSINESS",
+  PLATFORM = "PLATFORM",
+  TEAM = "TEAM",
+}
+
+export interface TransactionOwnerDto {
+  kind: TransactionOwnerKind;
+  /** User, business or team id (the transaction entityId) */
+  id: string;
+  /** Display name. "Pickriders platform" for platform wallet rows. */
+  name: string;
+  phone?: string;
+  email?: string;
+  photo?: string;
+  /** UserStatus for people, ACTIVE or INACTIVE for businesses */
+  status?: string;
+  /** Riders only: whether the rider app is online right now */
+  isOnline?: boolean;
+  /** true when the account no longer exists (deleted or never resolved) */
+  missing?: boolean;
+}
+
+export interface AdminTransactionResponseDto {
+  entityId: string;
+  walletId?: string;
+  entityType: EntityType;
+  currency: string;
+  amount: number;
+  /** @default 0 */
+  charge?: number;
+  reference: string;
+  description?: string;
+  /** @default 0 */
+  balanceBefore: number;
+  balanceAfter: number;
+  type: "CREDIT" | "DEBIT";
+  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
+  purpose:
+    | "ORDER_EARNING"
+    | "WALLET_FUNDING"
+    | "WALLET_WITHDRAWAL"
+    | "REFERRAL_BONUS"
+    | "ORDER_PAYMENT"
+    | "ORDER_EXTERNAL_FUNDING"
+    | "ORDER_PAYMENT_REFUND"
+    | "ORDER_EARNING_SPLIT"
+    | "ORDER_DISCOUNT"
+    | "PROVIDER_DEPOSIT_FEE"
+    | "PROVIDER_WITHDRAWAL_FEE"
+    | "ORDER_SERVICE_CHARGE"
+    | "PLATFORM_TRANSFER";
+  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
+  /** @default {} */
+  metadata?: object;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  owner: TransactionOwnerDto;
+  /** The rider behind a business rider earning, only when the row carries metadata.riderId */
+  rider?: TransactionOwnerDto;
+}
+
+export interface ListAdminTransactionResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: AdminTransactionResponseDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
 }
 
 export interface ExternalPaymentMetricsResponseDto {
@@ -2530,6 +2692,8 @@ export interface Notification {
   /** @default "SUCCESS" */
   status: "FAILED" | "SUCCESS";
   failureReason?: string;
+  /** What the notification is about, so a tap can open it: { type, orderId?, transactionId?, url? } */
+  data?: object;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -2791,11 +2955,127 @@ export interface ListReviewResponseDto {
   totalPages: number;
 }
 
-export interface ListOrderResponseDto {
+export interface OrderListItemResponseDto {
+  userId?: string;
+  riderId?: string;
+  eligibleRiderIds?: string[];
+  vehicleId?: string;
+  couponId?: string;
+  businessId?: string;
+  transactionIds?: string[];
+  type: "SINGLE" | "BATCH" | "BULK";
+  /** @default "INITIATED" */
+  status: "INITIATED" | "ACCEPTED" | "ON_GOING" | "COMPLETED" | "CANCELLED";
+  /** @default "PENDING" */
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  cancelledBy?: "USER" | "RIDER" | "ADMIN";
+  /** @default 0 */
+  totalAmount?: number;
+  /** @default 0 */
+  discount?: number;
+  /** @default 0 */
+  discountAmount?: number;
+  /** @default "PERCENTAGE" */
+  discountType?: "FIXED" | "PERCENTAGE";
+  /** @default 0 */
+  serviceCharge?: number;
+  /** @default 0 */
+  totalAmountPayable?: number;
+  totalLocations: number;
+  /** @default 0 */
+  confirmedLocations?: number;
+  /** @default 0 */
+  cancelledLocations?: number;
+  /** @default 0 */
+  ongoingLocations?: number;
+  /** @format date-time */
+  startedAt?: string;
+  /** @format date-time */
+  paidDate?: string;
+  /** @format date-time */
+  acceptedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** @format date-time */
+  cancelledAt?: string;
+  cancellationReason?: string;
+  locations?: OrderLocation[];
+  orderNumber: string;
+  /** @default false */
+  isScheduled: boolean;
+  /** @default false */
+  autoAcceptOffer: boolean;
+  /** @default 0 */
+  minimumOfferPercentage: number;
+  /** @default 40 */
+  maxRiderSurgePercentage: number;
+  negotiatedAmount: number;
+  offers: Offer[];
+  locationUpdates?: OrderLocationUpdate[];
+  currency: string;
+  /** @format date-time */
+  scheduledFor?: string;
+  countryCode?: string;
+  stateCode?: string;
+  /** @format date-time */
+  scheduleDispatchedAt?: string;
+  /** @format date-time */
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
+  scheduleRemindersSent?: string[];
+  color?: string;
+  title?: string;
+  isQueued?: boolean;
+  /** @format date-time */
+  queuedAt?: string;
+  business?: Business;
+  user?: User;
+  vehicle?: Vehicle;
+  rider?: User;
+  coupon?: Coupon;
+  transactions?: Transaction[];
+  review?: Review;
+  channel?: string;
+  storefrontVendorId?: string;
+  /** @default 0 */
+  foodValue?: number;
+  /** @default 0 */
+  vendorCommissionRate?: number;
+  callbackUrl?: string;
+  dispatchState?: object;
+  /** @format date-time */
+  tripPaidAt?: string;
+  tripPayRiderId?: string;
+  tripPayAmount?: number;
+  /** How many times an accepted rider was taken off the order before pickup. Absent or 0: never */
+  riderReleaseCount?: number;
+  lastRiderRelease?: OrderLastRiderRelease;
+  /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
+  canRelease?: boolean;
+  /**
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * @format date-time
+   */
+  releaseFreeUntil?: string | null;
+  /** Rider view: counted releases the rider has left today */
+  releasesLeftToday?: number;
+  paymentToken?: string;
+  externalPaymentReference?: string;
+  externalPaymentUrl?: string;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** How many rider offers (bids) the order has received, any status */
+  offersCount: number;
+}
+
+export interface ListOrderItemsResponseDto {
   nextPage?: number | null;
   previousPage?: number | null;
   currentPage: number;
-  results: Order[];
+  results: OrderListItemResponseDto[];
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
@@ -3125,6 +3405,63 @@ export interface ReDispatchRequestDto {
   sortingStrategy?: "BANDS" | "SCORING" | "FAIR";
 }
 
+export interface PayRiderTripRequestDto {
+  /** The Pickriders user ID of the rider who went out for this order */
+  riderId: string;
+  /**
+   * Why the trip is being paid, kept for the record
+   * @maxLength 300
+   */
+  reason?: string;
+}
+
+export interface ReleaseRiderRequestDto {
+  /** Why the rider is being released, kept for the record */
+  reason: "RIDER_CANT_GO" | "RIDER_NOT_RESPONDING" | "RIDER_TOO_FAR" | "OTHER";
+  /**
+   * Free-text note from whoever released the rider
+   * @maxLength 300
+   */
+  note?: string;
+}
+
+export interface ReleaseRiderResponseDto {
+  /** The rider who was taken off the order */
+  releasedRiderId: string;
+  /** How many other riders are being rung now (0 means nobody else was available) */
+  ringing: number;
+}
+
+/** Why the rider is releasing the trip */
+export enum RiderSelfReleaseReason {
+  BIKE_PROBLEM = "BIKE_PROBLEM",
+  EMERGENCY = "EMERGENCY",
+  TOO_FAR = "TOO_FAR",
+  STORE_ISSUE = "STORE_ISSUE",
+  OTHER = "OTHER",
+}
+
+export interface RiderReleaseRequestDto {
+  /** Why the rider is releasing the trip */
+  reason: RiderSelfReleaseReason;
+  /**
+   * Optional note from the rider
+   * @maxLength 300
+   */
+  note?: string;
+}
+
+export interface RiderReleaseResponseDto {
+  /** The order the rider released */
+  orderId: string;
+  /** True when the release counted as a cancellation (it came after the free 2 minutes) */
+  counted: boolean;
+  /** Counted releases the rider has left today (Lagos day) */
+  releasesLeftToday: number;
+  /** A short line to show the rider */
+  message: string;
+}
+
 export interface ReassignRiderRequestDto {
   /** The Pickriders user ID of the rider to ring */
   riderId: string;
@@ -3132,6 +3469,143 @@ export interface ReassignRiderRequestDto {
   callbackUrl: string;
   /** Reason for reassigning the rider */
   reason?: string;
+  /** Ring only this rider. By default, if they miss the 60-second ring, the normal search restarts across the order's eligible riders. */
+  onlyThisRider?: boolean;
+}
+
+export interface ForceAssignRiderDto {
+  /** The Pickriders user ID of the rider who gets the order */
+  riderId: string;
+  /**
+   * Why the rider was assigned by hand, kept for the record
+   * @maxLength 300
+   */
+  reason?: string;
+  /** Accepted for parity with /reassign and ignored: dispatch callbacks always go to the storefront endpoint configured on this server (STOREFRONT_DISPATCH_CALLBACK_URL), never to a caller-chosen URL. */
+  callbackUrl?: string;
+}
+
+export interface AssignedRiderResponseDto {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
+  photo?: string;
+}
+
+export interface ForceAssignRiderResponseDto {
+  userId?: string;
+  riderId?: string;
+  eligibleRiderIds?: string[];
+  vehicleId?: string;
+  couponId?: string;
+  businessId?: string;
+  transactionIds?: string[];
+  type: "SINGLE" | "BATCH" | "BULK";
+  /** @default "INITIATED" */
+  status: "INITIATED" | "ACCEPTED" | "ON_GOING" | "COMPLETED" | "CANCELLED";
+  /** @default "PENDING" */
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  cancelledBy?: "USER" | "RIDER" | "ADMIN";
+  /** @default 0 */
+  totalAmount?: number;
+  /** @default 0 */
+  discount?: number;
+  /** @default 0 */
+  discountAmount?: number;
+  /** @default "PERCENTAGE" */
+  discountType?: "FIXED" | "PERCENTAGE";
+  /** @default 0 */
+  serviceCharge?: number;
+  /** @default 0 */
+  totalAmountPayable?: number;
+  totalLocations: number;
+  /** @default 0 */
+  confirmedLocations?: number;
+  /** @default 0 */
+  cancelledLocations?: number;
+  /** @default 0 */
+  ongoingLocations?: number;
+  /** @format date-time */
+  startedAt?: string;
+  /** @format date-time */
+  paidDate?: string;
+  /** @format date-time */
+  acceptedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** @format date-time */
+  cancelledAt?: string;
+  cancellationReason?: string;
+  locations?: OrderLocation[];
+  orderNumber: string;
+  /** @default false */
+  isScheduled: boolean;
+  /** @default false */
+  autoAcceptOffer: boolean;
+  /** @default 0 */
+  minimumOfferPercentage: number;
+  /** @default 40 */
+  maxRiderSurgePercentage: number;
+  negotiatedAmount: number;
+  offers: Offer[];
+  locationUpdates?: OrderLocationUpdate[];
+  currency: string;
+  /** @format date-time */
+  scheduledFor?: string;
+  countryCode?: string;
+  stateCode?: string;
+  /** @format date-time */
+  scheduleDispatchedAt?: string;
+  /** @format date-time */
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
+  scheduleRemindersSent?: string[];
+  color?: string;
+  title?: string;
+  isQueued?: boolean;
+  /** @format date-time */
+  queuedAt?: string;
+  business?: Business;
+  user?: User;
+  vehicle?: Vehicle;
+  rider?: User;
+  coupon?: Coupon;
+  transactions?: Transaction[];
+  review?: Review;
+  channel?: string;
+  storefrontVendorId?: string;
+  /** @default 0 */
+  foodValue?: number;
+  /** @default 0 */
+  vendorCommissionRate?: number;
+  callbackUrl?: string;
+  dispatchState?: object;
+  /** @format date-time */
+  tripPaidAt?: string;
+  tripPayRiderId?: string;
+  tripPayAmount?: number;
+  riderReleaseCount?: number;
+  lastRiderRelease?: OrderLastRiderRelease;
+  /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
+  canRelease?: boolean;
+  /**
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * @format date-time
+   */
+  releaseFreeUntil?: string | null;
+  /** Rider view: counted releases the rider has left today */
+  releasesLeftToday?: number;
+  paymentToken?: string;
+  externalPaymentReference?: string;
+  externalPaymentUrl?: string;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** The rider the order was assigned to */
+  assignedRider: AssignedRiderResponseDto;
 }
 
 export interface NearbyRidersCountResponseDto {
@@ -3141,6 +3615,23 @@ export interface NearbyRidersCountResponseDto {
   radiusKm: number;
   /** True when served from the 60 s cache */
   cached: boolean;
+}
+
+export interface RiderListItemResponseDto {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  photo?: string;
+  phone?: string;
+  /** The rider has the app online */
+  isOnline: boolean;
+  /** The rider is on an order right now (accepted or on the way) */
+  isBusy: boolean;
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+  /** Average review rating, 0 when unrated */
+  rating: number;
+  /** Completed deliveries, all time */
+  totalDeliveries: number;
 }
 
 export interface RiderLocationsRequestDto {
@@ -3191,6 +3682,14 @@ export interface MakeOfferRequestDto {
   offerAmount: number;
 }
 
+export interface PayOrderRequestDto {
+  /**
+   * The total (sub-units) the app showed the customer. When sent and it differs from what the backend works out, the payment is refused with PRICE_CHANGED so the customer never pays a figure they did not see.
+   * @min 0
+   */
+  expectedAmount?: number;
+}
+
 export interface OrderPaymentLinkResponseDto {
   /** Provider payment reference */
   reference: string;
@@ -3203,6 +3702,11 @@ export interface OrderPaymentLinkResponseDto {
 }
 
 export interface InitializeOrderPaymentRequestDto {
+  /**
+   * The total (sub-units) the app showed the customer. When sent and it differs from what the backend works out, the payment is refused with PRICE_CHANGED so the customer never pays a figure they did not see.
+   * @min 0
+   */
+  expectedAmount?: number;
   /** Email of the person paying for the order (receives the Paystack receipt). */
   email: string;
 }
@@ -3271,9 +3775,14 @@ export interface CompleteLocationRequestDto {
   recipientPhone?: string;
 }
 
-export interface AdminCancelOrderRequestDto {
-  /** Reason for cancelling the order (audited, refunds the customer). */
-  reason: string;
+export interface ListOrderResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: Order[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
 }
 
 /** Manual admin status override (audited). */
@@ -3285,9 +3794,118 @@ export enum OrderStatus {
   CANCELLED = "CANCELLED",
 }
 
+export interface OrderRiderHistoryRiderDto {
+  _id: string;
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
+  photo?: string;
+}
+
+export enum RiderStintOutcome {
+  RELEASED = "RELEASED",
+  ACTIVE = "ACTIVE",
+  PICKED_UP = "PICKED_UP",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum RiderReleaseInitiator {
+  RIDER = "RIDER",
+  OWNER = "OWNER",
+  ADMIN = "ADMIN",
+}
+
+export interface OrderRiderStintReleaseDto {
+  initiatedBy: RiderReleaseInitiator;
+  /** Rider releases: BIKE_PROBLEM, EMERGENCY, TOO_FAR, STORE_ISSUE, OTHER. Owner releases: RIDER_CANT_GO, RIDER_NOT_RESPONDING, RIDER_TOO_FAR, OTHER */
+  reason: string;
+  note?: string;
+  /** True when it counted as the rider's cancellation */
+  counted: boolean;
+}
+
+export interface OrderRiderStintDto {
+  /** Null when the rider account no longer exists */
+  rider: OrderRiderHistoryRiderDto | null;
+  /**
+   * When this rider accepted. Null for releases recorded before the accept time was stored
+   * @format date-time
+   */
+  acceptedAt: string | null;
+  /**
+   * When the stint ended: the release, the delivery or the cancellation. Null while the rider holds it
+   * @format date-time
+   */
+  endedAt: string | null;
+  outcome: RiderStintOutcome;
+  /**
+   * Current stint only: when the rider completed the pickup stop
+   * @format date-time
+   */
+  pickedUpAt?: string | null;
+  /** Released stints only */
+  release?: OrderRiderStintReleaseDto;
+}
+
+export interface AdminOrderRiderHistoryResponseDto {
+  orderId: string;
+  orderNumber?: string;
+  /** Manual admin status override (audited). */
+  status: OrderStatus;
+  /** How many times a rider was taken off the order before pickup */
+  releaseCount: number;
+  /** Oldest first. Ends with the current rider when there is one; when the last event was a release and nobody has taken the order since, there is no current stint */
+  stints: OrderRiderStintDto[];
+}
+
+export interface AdminCancelOrderRequestDto {
+  /** Reason for cancelling the order (audited, refunds the customer). */
+  reason: string;
+}
+
 export interface AdminUpdateOrderStatusRequestDto {
   /** Manual admin status override (audited). */
   status: OrderStatus;
+}
+
+export interface RiderReleaseCountsDto {
+  /** Releases since Lagos midnight */
+  today: number;
+  /** Releases in the last 7 days */
+  last7Days: number;
+  /** Releases in the last 30 days */
+  last30Days: number;
+  /** Counted releases since Lagos midnight */
+  countedToday: number;
+  /** Counted releases in the last 7 days */
+  countedLast7Days: number;
+  /** Counted releases in the last 30 days */
+  countedLast30Days: number;
+}
+
+export interface RiderReleaseItemDto {
+  _id: string;
+  orderId: string;
+  orderNumber?: string;
+  initiatedBy: RiderReleaseInitiator;
+  /** Rider releases: BIKE_PROBLEM, EMERGENCY, TOO_FAR, STORE_ISSUE, OTHER. Owner releases: RIDER_CANT_GO, RIDER_NOT_RESPONDING, RIDER_TOO_FAR, OTHER */
+  reason: string;
+  note?: string;
+  /** True when it counted as the rider's cancellation */
+  counted: boolean;
+  /** The order's channel (VENDOR_STOREFRONT, CUSTOMER_WEB, or none for the app) */
+  channel?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface AdminRiderReleasesResponseDto {
+  counts: RiderReleaseCountsDto;
+  /** Counted releases the rider has left today */
+  releasesLeftToday: number;
+  /** Newest first, at most 100 */
+  releases: RiderReleaseItemDto[];
 }
 
 export type SchemaMixed = object;
@@ -4082,11 +4700,18 @@ export interface CustomersOverviewParams {
 export type CustomersOverviewData = CustomersOverviewResponseDto;
 
 export interface CustomersParams {
+  /** Joined between, on createdAt: comma-separated start and end date (e.g. 2026-09-01,2026-09-30) */
+  dateRange?: string;
+  /** Only customers who placed an order in the last N days (whole number, 1 or more) */
+  orderedWithinDays?: number;
+  /** true = customers with at least one order, false = customers who never ordered */
+  hasOrdered?: "true" | "false";
   search?: any;
   phoneVerified?: any;
   /** Comma separated UserStatus */
   status?: any;
-  sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent";
+  /** cancelled = cancelledOrders, wallet = walletBalance */
+  sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent" | "cancelled" | "wallet";
   order?: "ASC" | "DESC";
   limit?: any;
   page?: any;
@@ -4353,7 +4978,7 @@ export interface CreateUserParams {
 
 export type CreateUserData = CreateUserRequestDto;
 
-export type GetUserProfileData = User;
+export type GetUserProfileData = object;
 
 export type UpdateUserProfileData = User;
 
@@ -4444,6 +5069,8 @@ export type GetUserVehicleData = Vehicle;
 export type AdminCreateUserData = CreateUserRequestDto;
 
 export interface GetUsersParams {
+  /** true = accounts an admin paused withdrawals on, false = accounts that can withdraw */
+  withdrawalRestricted?: "0" | "1" | "false" | "true";
   /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
   sortBy?: "createdAt" | "lastLoginDate" | "completedDeliveries" | "totalEarned";
   /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
@@ -4474,7 +5101,7 @@ export interface GetUsersParams {
 
 export type GetUsersData = ListUserResponseDto;
 
-export type AdminGetMyProfileData = User;
+export type AdminGetMyProfileData = object;
 
 export type AdminUpdateMyPhotoData = UpdatedPhotoResponseDto;
 
@@ -4492,7 +5119,9 @@ export type AdminRemoveUserPhotoData = object;
 
 export type SetDispatchPausedData = object;
 
-export type GetUserData = User;
+export type AdminSetWithdrawalRestrictionData = object;
+
+export type GetUserData = object;
 
 export type AdminGetUserWalletsData = WalletListResponseDto;
 
@@ -4561,7 +5190,7 @@ export interface AdminGetTransactionsParams {
   limit?: number;
 }
 
-export type AdminGetTransactionsData = ListTransactionResponseDto;
+export type AdminGetTransactionsData = ListAdminTransactionResponseDto;
 
 export interface GetExternalPaymentMetricsParams {
   /** provide a user (entity) id to scope metrics to a single customer */
@@ -4579,7 +5208,7 @@ export interface GetTransactionSummaryParams {
 
 export type GetTransactionSummaryData = TransactionMetricsSummaryResponseDto;
 
-export type GetTransactionData = Transaction;
+export type GetTransactionData = AdminTransactionResponseDto;
 
 export interface ListCouponsParams {
   /**
@@ -4811,7 +5440,7 @@ export interface GetBusinessOrdersParams {
   businessId: string;
 }
 
-export type GetBusinessOrdersData = ListOrderResponseDto;
+export type GetBusinessOrdersData = ListOrderItemsResponseDto;
 
 export type GetBusinessOrderData = Order;
 
@@ -4944,7 +5573,15 @@ export type RequestOrderRidersData = User[];
 
 export type ReDispatchData = object;
 
+export type PayRiderTripData = any;
+
+export type ReleaseOrderRiderData = ReleaseRiderResponseDto;
+
+export type RiderReleaseOrderData = RiderReleaseResponseDto;
+
 export type ReassignRiderData = Order;
+
+export type ForceAssignRiderData = ForceAssignRiderResponseDto;
 
 export interface GetNearbyRidersCountParams {
   /** @example 6.5244 */
@@ -4955,9 +5592,9 @@ export interface GetNearbyRidersCountParams {
 
 export type GetNearbyRidersCountData = NearbyRidersCountResponseDto;
 
-export type GetRidersLeaderboardData = any;
+export type GetRidersLeaderboardData = RiderListItemResponseDto[];
 
-export type ListAllRidersData = any;
+export type ListAllRidersData = RiderListItemResponseDto[];
 
 export type GetRiderLocationsData = any;
 
@@ -5036,7 +5673,7 @@ export interface GetUserOrdersParams {
   limit?: number;
 }
 
-export type GetUserOrdersData = ListOrderResponseDto;
+export type GetUserOrdersData = ListOrderItemsResponseDto;
 
 export interface GetRiderOrdersParams {
   /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
@@ -5083,6 +5720,8 @@ export interface GetOrderTypeChartParams {
 export type GetOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
 export interface GetOrdersParams {
+  /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
+  releasedOnly?: boolean;
   /** date filter for scheduled orders - provide this if filtering for scheduled orders */
   scheduledFor?: any;
   /** filter for orders by user id */
@@ -5106,17 +5745,21 @@ export interface GetOrdersParams {
   limit?: number;
 }
 
-export type GetOrdersData = ListOrderResponseDto;
+export type GetOrdersData = ListOrderItemsResponseDto;
 
 export type GetOrderData = Order;
 
 export type GetOrderOffersData = any;
+
+export type AdminOrderRiderHistoryData = AdminOrderRiderHistoryResponseDto;
 
 export type RingRidersData = any;
 
 export type AdminCancelOrderData = Order;
 
 export type UpdateOrderStatusData = Order;
+
+export type AdminListRiderReleasesData = AdminRiderReleasesResponseDto;
 
 export interface GetLogsParams {
   /** Matches inside the logged payload */
