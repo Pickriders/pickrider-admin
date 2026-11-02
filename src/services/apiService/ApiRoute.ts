@@ -55,8 +55,11 @@ import {
   AdminListAnnouncementReceiptsData,
   AdminListAnnouncementScreensData,
   AdminListAnnouncementsData,
+  AdminListRiderReleasesData,
   AdminListTeamsData,
+  AdminOrderRiderHistoryData,
   AdminRemoveUserPhotoData,
+  AdminSetWithdrawalRestrictionData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
   AdminUpdateMyAddressesData,
@@ -145,6 +148,8 @@ import {
   FeedbackDto,
   FindAllData,
   ForUserData,
+  ForceAssignRiderData,
+  ForceAssignRiderDto,
   FundWalletRequestDto,
   GetAchievementsData,
   GetActiveCouponsData,
@@ -273,6 +278,9 @@ import {
   PasswordResetData,
   PasswordResetRequestData,
   PayData,
+  PayOrderRequestDto,
+  PayRiderTripData,
+  PayRiderTripRequestDto,
   PeakHoursData,
   PublicConfigData,
   QueueOrderData,
@@ -295,6 +303,8 @@ import {
   RefundOrderRequestDto,
   RefundableOrdersData,
   RejectVehicleData,
+  ReleaseOrderRiderData,
+  ReleaseRiderRequestDto,
   RemoveGroupUsersData,
   RemoveOrderCouponData,
   RemoveUserFromBusinessData,
@@ -306,6 +316,8 @@ import {
   RespondToLocationUpdateData,
   RevokeData,
   RiderLocationsRequestDto,
+  RiderReleaseOrderData,
+  RiderReleaseRequestDto,
   RidersRequestDto,
   RingRidersData,
   RunData,
@@ -388,6 +400,7 @@ import {
   UpdateUserVehicleData,
   UpdateVehicleRequestDto,
   UpdateVehicleStatusRequestDto,
+  UpdateWithdrawalRestrictionRequestDto,
   UsagesData,
   UserKYCDetailDto,
   UserKycVerificationData,
@@ -786,11 +799,18 @@ export namespace Api {
   export namespace Customers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** Joined between, on createdAt: comma-separated start and end date (e.g. 2026-09-01,2026-09-30) */
+      dateRange?: string;
+      /** Only customers who placed an order in the last N days (whole number, 1 or more) */
+      orderedWithinDays?: number;
+      /** true = customers with at least one order, false = customers who never ordered */
+      hasOrdered?: "true" | "false";
       search?: any;
       phoneVerified?: any;
       /** Comma separated UserStatus */
       status?: any;
-      sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent";
+      /** cancelled = cancelledOrders, wallet = walletBalance */
+      sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent" | "cancelled" | "wallet";
       order?: "ASC" | "DESC";
       limit?: any;
       page?: any;
@@ -2125,6 +2145,8 @@ export namespace Api {
   export namespace GetUsers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** true = accounts an admin paused withdrawals on, false = accounts that can withdraw */
+      withdrawalRestricted?: "0" | "1" | "false" | "true";
       /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
       sortBy?: "createdAt" | "lastLoginDate" | "completedDeliveries" | "totalEarned";
       /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
@@ -2306,6 +2328,25 @@ export namespace Api {
     export type RequestBody = UpdateDispatchPauseRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = SetDispatchPausedData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name AdminSetWithdrawalRestriction
+   * @summary Pause or resume wallet withdrawals for a user. reason is required when restricted is true.
+   * @request PATCH:/api/v1/admins/users/{userId}/withdrawal-restriction
+   * @secure
+   * @response `200` `AdminSetWithdrawalRestrictionData`
+   */
+  export namespace AdminSetWithdrawalRestriction {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateWithdrawalRestrictionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminSetWithdrawalRestrictionData;
   }
 
   /**
@@ -4181,6 +4222,68 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name PayRiderTrip
+   * @summary Pay the rider half the agreed price for a trip to the store on a called-off storefront delivery
+   * @request POST:/api/v1/orders/{orderId}/trip-pay
+   * @secure
+   * @response `201` `PayRiderTripData`
+   */
+  export namespace PayRiderTrip {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PayRiderTripRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = PayRiderTripData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ReleaseOrderRider
+   * @summary Take the accepted rider off an order before pickup and ring the other eligible riders
+   * @request POST:/api/v1/orders/{orderId}/release-rider
+   * @secure
+   * @response `200` `ReleaseOrderRiderData`
+   * @response `201` `ReleaseRiderResponseDto`
+   */
+  export namespace ReleaseOrderRider {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ReleaseRiderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ReleaseOrderRiderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderReleaseOrder
+   * @summary Rider: "Can't make it". Give an accepted order back before pickup. Free for 2 minutes after accepting, then it counts as a cancellation (3 counted per Lagos day; the 4th is refused with RELEASE_LIMIT_REACHED)
+   * @request POST:/api/v1/orders/{orderId}/rider-release
+   * @secure
+   * @response `200` `RiderReleaseOrderData`
+   * @response `201` `RiderReleaseResponseDto`
+   */
+  export namespace RiderReleaseOrder {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderReleaseRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderReleaseOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name ReassignRider
    * @request POST:/api/v1/orders/{orderId}/reassign
    * @secure
@@ -4194,6 +4297,26 @@ export namespace Api {
     export type RequestBody = ReassignRiderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = ReassignRiderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ForceAssignRider
+   * @summary Hand the order straight to a chosen rider without ringing them (rider must be online and free)
+   * @request POST:/api/v1/orders/{orderId}/force-assign
+   * @secure
+   * @response `200` `ForceAssignRiderData`
+   * @response `201` `ForceAssignRiderResponseDto`
+   */
+  export namespace ForceAssignRider {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ForceAssignRiderDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ForceAssignRiderData;
   }
 
   /**
@@ -4361,7 +4484,7 @@ export namespace Api {
       walletId: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = PayOrderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = InitiateOrderPaymentData;
   }
@@ -4380,7 +4503,7 @@ export namespace Api {
       orderId: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = PayOrderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = CreateOrderPaymentLinkData;
   }
@@ -4950,6 +5073,8 @@ export namespace Api {
   export namespace GetOrders {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
+      releasedOnly?: boolean;
       /** date filter for scheduled orders - provide this if filtering for scheduled orders */
       scheduledFor?: any;
       /** filter for orders by user id */
@@ -5016,6 +5141,25 @@ export namespace Api {
   /**
    * No description
    * @tags admins/orders
+   * @name AdminOrderRiderHistory
+   * @summary Every rider who held the order, oldest first: who accepted when, who released and why, and where it is now
+   * @request GET:/api/v1/admins/orders/{orderId}/rider-history
+   * @secure
+   * @response `200` `AdminOrderRiderHistoryData`
+   */
+  export namespace AdminOrderRiderHistory {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminOrderRiderHistoryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
    * @name RingRiders
    * @request POST:/api/v1/admins/orders/{orderId}/ring-riders
    * @secure
@@ -5065,6 +5209,25 @@ export namespace Api {
     export type RequestBody = AdminUpdateOrderStatusRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = UpdateOrderStatusData;
+  }
+
+  /**
+   * No description
+   * @tags admins/riders
+   * @name AdminListRiderReleases
+   * @summary A rider's released trips (newest first) with counts for today (Lagos), 7 days and 30 days
+   * @request GET:/api/v1/admins/riders/{riderId}/releases
+   * @secure
+   * @response `200` `AdminListRiderReleasesData`
+   */
+  export namespace AdminListRiderReleases {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListRiderReleasesData;
   }
 
   /**

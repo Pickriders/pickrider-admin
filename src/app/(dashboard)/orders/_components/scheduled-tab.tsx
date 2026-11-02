@@ -13,7 +13,7 @@ import { useCan } from "@/lib/admin/use-can";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { orderNumber } from "../lib";
-import { PartyCell, PaymentBadge, TypeBadge } from "./order-cells";
+import { OrderPaymentBadge, PartyCell, ReleasedChip, SourceBadge, TypeBadge, bidsOf } from "./order-cells";
 
 /**
  * Scheduled orders that have not found a rider yet. The dispatcher rings riders 30 minutes before
@@ -148,6 +148,7 @@ export function ScheduledTab() {
           <span className="block">
             <span className="flex items-center gap-2">
               <span className="text-sm font-bold text-ink">{orderNumber(row.original)}</span>
+              <SourceBadge channel={row.original.channel} />
               <TypeBadge type={row.original.type} />
             </span>
             {row.original.title ? (
@@ -186,7 +187,7 @@ export function ScheduledTab() {
         cell: ({ row }) => (
           <span className="block text-right">
             <span className="block text-sm font-semibold text-ink">{naira(row.original.totalAmountPayable)}</span>
-            <PaymentBadge status={row.original.paymentStatus} />
+            <OrderPaymentBadge order={row.original} />
           </span>
         ),
       },
@@ -207,7 +208,12 @@ export function ScheduledTab() {
                   Since {ago(o.scheduleDispatchedAt)} · {count(o.scheduleRingCount ?? 1)} ring
                   {(o.scheduleRingCount ?? 1) === 1 ? "" : "s"}
                   {o.scheduleLastRungAt ? ` · last ${ago(o.scheduleLastRungAt)}` : ""} ·{" "}
-                  {count((o.offers ?? []).length)} offers
+                  {count(bidsOf(o))} bids
+                </span>
+              ) : null}
+              {(o.riderReleaseCount ?? 0) > 0 ? (
+                <span className="mt-1 block">
+                  <ReleasedChip order={o} />
                 </span>
               ) : null}
             </span>
@@ -285,6 +291,7 @@ export function ScheduledTab() {
               <Badge tone={PHASE_TONE[phaseOf(row)]}>{PHASE_LABEL[phaseOf(row)]}</Badge>
             </div>
             <p className="text-sm text-ink">Booked for {when(row.scheduledFor)}</p>
+            <ReleasedChip order={row} />
             <PartyCell party={row.user} fallback="Unknown" size={24} />
             {can("order.cancel") ? <RingButton order={row} size="md" /> : null}
           </div>

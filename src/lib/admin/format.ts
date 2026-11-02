@@ -119,3 +119,48 @@ export function statusLabel(status: string | null | undefined) {
 export function nairaUnits(value: number | null | undefined, digits = 0) {
   return naira(Math.round((value ?? 0) * 100), digits);
 }
+
+// ── Orders: where they came from and how they were paid ─────────────────────
+
+export type OrderSource = "APP" | "STORE" | "WEB";
+
+/** `channel` on an order: VENDOR_STOREFRONT = a vendor's storefront, CUSTOMER_WEB = the public web flow, absent = the customer app. */
+export function orderSource(channel: string | null | undefined): OrderSource {
+  if (channel === "VENDOR_STOREFRONT") return "STORE";
+  if (channel === "CUSTOMER_WEB") return "WEB";
+  return "APP";
+}
+
+export const ORDER_SOURCE_LABEL: Record<OrderSource, string> = { APP: "App", STORE: "Store", WEB: "Web" };
+
+export const STOREFRONT_REFUND_HINT = "Paid and refunded through the storefront (Paystack). No core wallet money moved.";
+export const STOREFRONT_PREPAID_HINT = "The customer paid on the storefront (Paystack) before the delivery was booked.";
+
+const PAYMENT_STATUS_LABEL: Record<string, string> = {
+  PENDING: "Payment pending",
+  PAID: "Paid",
+  FAILED: "Payment failed",
+  REFUNDED: "Refunded",
+};
+
+/**
+ * What to show for an order's payment. Storefront orders are prepaid on Paystack before the core
+ * sees them, so "Paid" there means "Storefront prepaid"; a cancelled storefront order was refunded
+ * on the storefront (newer ones carry REFUNDED, older ones still say PAID with status CANCELLED).
+ */
+export function orderPaymentDisplay(order: { channel?: string | null; status?: string | null; paymentStatus?: string | null }): {
+  label: string;
+  tone: "neutral" | "success" | "warning" | "danger" | "info";
+  hint?: string;
+} {
+  const status = order.paymentStatus ?? "";
+  if (orderSource(order.channel) === "STORE") {
+    if (status === "REFUNDED" || (order.status === "CANCELLED" && status === "PAID")) {
+      return { label: "Refunded on storefront", tone: "info", hint: STOREFRONT_REFUND_HINT };
+    }
+    if (status === "PAID") return { label: "Storefront prepaid", tone: "success", hint: STOREFRONT_PREPAID_HINT };
+  }
+  const label = PAYMENT_STATUS_LABEL[status] ?? statusLabel(status);
+  const tone = status === "PAID" ? "success" : status === "FAILED" ? "danger" : status === "PENDING" ? "warning" : status === "REFUNDED" ? "info" : "neutral";
+  return { label, tone };
+}

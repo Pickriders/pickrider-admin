@@ -17,6 +17,7 @@ export const PAYMENT_LABEL: Record<string, string> = {
   PENDING: "Payment pending",
   PAID: "Paid",
   FAILED: "Payment failed",
+  REFUNDED: "Refunded",
 };
 
 export const STOP_STATUS_LABEL: Record<string, string> = {

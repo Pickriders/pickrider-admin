@@ -1,10 +1,10 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Bike, Megaphone, PauseCircle, ShieldCheck, Wifi } from "lucide-react";
-import { Suspense, useMemo, type ReactNode } from "react";
+import { Bike, Lock, Megaphone, PauseCircle, ShieldCheck, Wifi } from "lucide-react";
+import { Suspense, useMemo } from "react";
 
-import { Avatar, Badge, DataTable, LinkButton, PageHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import { Avatar, Badge, Chip, ChipDivider, DataTable, LinkButton, PageHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import { LICENCE_LABEL, licenceTone } from "@/components/users/user-panels";
 import type { KycStatus, User } from "@/lib/admin/api";
@@ -44,6 +44,14 @@ const FILTERS: FilterSpec[] = [
     options: [
       { value: "true", label: "Paused" },
       { value: "false", label: "Ringing" },
+    ],
+  },
+  {
+    key: "withdrawalRestricted",
+    label: "Withdrawals",
+    options: [
+      { value: "true", label: "Restricted" },
+      { value: "false", label: "Allowed" },
     ],
   },
   {
@@ -113,9 +121,17 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
     id: "status",
     header: "Account",
     cell: ({ row }) => (
-      <Badge tone={statusTone(row.original.status)} dot>
-        {statusLabel(row.original.status)}
-      </Badge>
+      <span className="flex flex-col items-start gap-1">
+        <Badge tone={statusTone(row.original.status)} dot>
+          {statusLabel(row.original.status)}
+        </Badge>
+        {row.original.withdrawalRestriction?.active ? (
+          <Badge tone="warning">
+            <Lock size={10} />
+            Withdrawals paused
+          </Badge>
+        ) : null}
+      </span>
     ),
     meta: { csv: { key: "status", label: "Account" } } satisfies ColumnMeta,
   },
@@ -181,24 +197,10 @@ function RiderCard({ row }: { row: User }) {
         <p className="mt-1 text-xs text-ink-faint">
           {count(row.completedDeliveries)} deliveries · {naira(row.totalEarned)} earned
           {row.dispatchPaused ? " · dispatch paused" : ""}
+          {row.withdrawalRestriction?.active ? " · withdrawals paused" : ""}
         </p>
       </div>
     </div>
-  );
-}
-
-function Chip({ active, onClick, children, tone = "neutral" }: { active: boolean; onClick: () => void; children: ReactNode; tone?: "neutral" | "warning" }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cx(
-        "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition-colors",
-        active ? "border-transparent bg-ink text-card" : tone === "warning" ? "border-transparent bg-warning-soft text-warning hover:brightness-95" : "border-line bg-card text-ink-muted hover:text-ink",
-      )}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -219,6 +221,7 @@ function CouriersList() {
       isOnline: state.filters.isOnline,
       dispatchPaused: state.filters.dispatchPaused,
       bvnVerified: state.filters.bvnVerified,
+      withdrawalRestricted: state.filters.withdrawalRestricted,
       dateRange: table.query.dateRange,
     }),
     [state, table.query.dateRange],
@@ -228,6 +231,7 @@ function CouriersList() {
   const reviewing = state.filters.driversLicenseVerified === "SUBMITTED";
   const onlineOnly = state.filters.isOnline === "true";
   const pausedOnly = state.filters.dispatchPaused === "true";
+  const restrictedOnly = state.filters.withdrawalRestricted === "true";
   const toReview = attention.data?.licencesAwaitingReview ?? 0;
   const pausedCount = attention.data?.ridersPausedFromDispatch ?? 0;
 
@@ -240,7 +244,7 @@ function CouriersList() {
             {s.label}
           </Chip>
         ))}
-        <span className="mx-1 hidden h-5 w-px bg-line sm:block" />
+        <ChipDivider />
         <Chip tone="warning" active={reviewing} onClick={() => table.setFilter("driversLicenseVerified", reviewing ? undefined : "SUBMITTED")}>
           <ShieldCheck size={13} />
           Licences to review{toReview ? ` · ${count(toReview)}` : ""}
@@ -252,6 +256,10 @@ function CouriersList() {
         <Chip tone="warning" active={pausedOnly} onClick={() => table.setFilter("dispatchPaused", pausedOnly ? undefined : "true")}>
           <PauseCircle size={13} />
           Paused from dispatch{pausedCount ? ` · ${count(pausedCount)}` : ""}
+        </Chip>
+        <Chip tone="warning" active={restrictedOnly} onClick={() => table.setFilter("withdrawalRestricted", restrictedOnly ? undefined : "true")}>
+          <Lock size={13} />
+          Withdrawals restricted
         </Chip>
       </div>
       <DataTable

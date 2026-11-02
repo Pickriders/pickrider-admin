@@ -244,6 +244,7 @@ export function statusTone(status: string | null | undefined): Tone {
     case "ON_GOING":
     case "IN_TRANSIT":
     case "ARRIVED":
+    case "REFUNDED":
       return "info";
     case "ACCEPTED":
       return "brand";

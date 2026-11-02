@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, riderInsights, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -41,6 +41,9 @@ export const useRiderAchievements = (riderId: string) =>
   useQuery({ queryKey: ["rider-insights", riderId, "achievements"], queryFn: () => riderInsights.achievements(riderId), enabled: Boolean(riderId) });
 export const useRiderInsightsProfile = (riderId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["rider-insights", riderId, "profile", range], queryFn: () => riderInsights.profile(riderId, range), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
+
+export const useRiderReleases = (riderId: string, enabled = true) =>
+  useQuery({ queryKey: ["rider-releases", riderId], queryFn: () => riderReleases.list(riderId), enabled: Boolean(riderId) && enabled });
 
 // Me
 /**
@@ -78,6 +81,9 @@ export const useOrders = (query: Query, options?: { poll?: boolean; enabled?: bo
   useQuery({ queryKey: ["orders", query], queryFn: () => orders.list(query), ...keep, refetchInterval: options?.poll ? POLL_MS : false, enabled: options?.enabled ?? true });
 export const useOrder = (orderId: string) => useQuery({ queryKey: ["order", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), refetchInterval: POLL_MS });
 export const useOrderOffers = (orderId: string) => useQuery({ queryKey: ["order-offers", orderId], queryFn: () => orders.offers(orderId), enabled: Boolean(orderId) });
+/** Keyed under ["order", id] so the socket's order invalidation (e.g. a rider_released change) refetches it too. */
+export const useOrderRiderHistory = (orderId: string, enabled = true) =>
+  useQuery({ queryKey: ["order", orderId, "rider-history"], queryFn: () => orders.riderHistory(orderId), enabled: Boolean(orderId) && enabled, refetchInterval: POLL_MS });
 /** One order for a summary chip; no polling, unlike useOrder on the detail page. */
 export const useOrderSummary = (orderId: string) =>
   useQuery({ queryKey: ["order-summary", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), staleTime: 5 * 60_000 });
