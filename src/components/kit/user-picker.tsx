@@ -7,6 +7,7 @@ import { Avatar, Badge, Field, Input, Skeleton, cx } from "@/components/kit/prim
 import type { User } from "@/lib/admin/api";
 import { fullName } from "@/lib/admin/format";
 import { useUsers } from "@/lib/admin/hooks";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * Find people by name, phone or email instead of pasting ids. `only` narrows to couriers or
@@ -24,7 +25,7 @@ export function useDebounced<T>(value: T, delay: number) {
 export type PickedUser = Pick<User, "_id" | "firstname" | "lastname" | "email" | "phone" | "photo" | "isRider">;
 
 function label(user: PickedUser) {
-  return fullName(user) || user.email || user.phone || user._id;
+  return fullName(user) || formatEmail(user.email) || user.phone || user._id;
 }
 
 function Results({
@@ -70,7 +71,7 @@ function Results({
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-ink">{label(user)}</span>
                   <span className="block truncate text-[11px] text-ink-muted">
-                    {user.email ?? ""} {user.phone ? `· ${user.phone}` : ""}
+                    {formatEmail(user.email)} {user.phone ? `· ${user.phone}` : ""}
                   </span>
                 </span>
                 {user.isRider ? <Badge tone="brand">Courier</Badge> : null}
@@ -114,7 +115,7 @@ export function UserPicker({
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold text-ink">{label(value)}</span>
             <span className="block truncate text-[11px] text-ink-muted">
-              {value.email ?? ""} {value.phone ? `· ${value.phone}` : ""}
+              {formatEmail(value.email)} {value.phone ? `· ${value.phone}` : ""}
             </span>
           </span>
           {!disabled ? (

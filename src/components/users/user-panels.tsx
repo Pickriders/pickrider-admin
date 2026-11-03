@@ -1,7 +1,21 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownLeft, ArrowUpRight, BadgeCheck, Clock, LogIn, Mail, Package, Phone, Receipt } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  BadgeCheck,
+  CalendarDays,
+  Clock,
+  IdCard,
+  LogIn,
+  Mail,
+  Package,
+  Phone,
+  Receipt,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 
@@ -11,8 +25,10 @@ import { ago, day, fullName, naira, orderPaymentDisplay, statusLabel, when } fro
 import { useOrders, useTransactions } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 
-import { phoneLabel } from "./user-actions";
+import { CopyButton } from "./person-card";
+import { normalizePhone, phoneLabel } from "./user-actions";
 import { errorMessage } from "@/lib/admin/http";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * Pieces the customer and courier detail pages share: the identity header,
@@ -58,80 +74,192 @@ export function bucketLabel(bucket: "day" | "week" | "month" | undefined) {
 
 // ── Header ────────────────────────────────────────────────────────────────────
 
+/** One labelled line under the header: a small icon, a caption and the value. */
+function HeaderFact({ icon: Icon, label, children, className }: { icon: LucideIcon; label: string; children: ReactNode; className?: string }) {
+  return (
+    <div className={cx("flex min-w-0 items-center gap-2.5", className)}>
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-card text-ink-muted" aria-hidden>
+        <Icon size={14} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <dt className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-faint">{label}</dt>
+        <dd className="flex min-w-0 items-center gap-1 text-sm font-semibold text-ink">{children}</dd>
+      </div>
+    </div>
+  );
+}
+
+/** A skeleton bar centred in a box of the real line's height, so text arriving never shifts the layout. */
+function Line({ box, bar }: { box: string; bar: string }) {
+  return (
+    <span className={cx("flex items-center", box)}>
+      <Skeleton className={bar} />
+    </span>
+  );
+}
+
+/**
+ * UserHeader while the profile loads: the same panel, paddings and grid, a 64px avatar with its
+ * ring, name, subtitle and badge row at their real line heights, the action buttons at their real
+ * sizes (two plus "More" below xl, three plus a separate Suspend from xl) and the four-fact strip.
+ */
+function UserHeaderSkeleton() {
+  return (
+    <Panel className="overflow-hidden" aria-busy="true" aria-label="Loading profile">
+      <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+        <div className="flex min-w-0 flex-1 items-start gap-3.5 sm:gap-4">
+          <span className="block shrink-0 rounded-full ring-4 ring-surface">
+            <Skeleton className="h-16 w-16 rounded-full" />
+          </span>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <Line box="h-[25px] sm:h-[30px]" bar="h-5 w-52 max-w-full sm:h-6 sm:w-64" />
+            <Line box="mt-1 h-5" bar="h-3.5 w-72 max-w-full" />
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+              <Skeleton className="h-[22px] w-16 rounded-full" />
+              <Skeleton className="h-[22px] w-[4.5rem] rounded-full" />
+              <Skeleton className="h-[22px] w-24 rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="flex w-full min-w-0 items-center gap-2 lg:w-auto lg:shrink-0 lg:justify-end">
+          <Skeleton className="h-10 min-w-0 flex-1 rounded-xl lg:w-32 lg:flex-none" />
+          <Skeleton className="h-10 min-w-0 flex-1 rounded-xl lg:w-32 lg:flex-none" />
+          <Skeleton className="hidden h-10 w-32 shrink-0 rounded-xl xl:block" />
+          <Skeleton className="h-10 w-10 shrink-0 rounded-xl" />
+          <span className="mx-1 hidden h-6 w-px shrink-0 bg-line xl:block" aria-hidden />
+          <Skeleton className="hidden h-10 w-24 shrink-0 rounded-xl xl:block" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-line bg-surface/50 px-4 py-3.5 sm:grid-cols-2 sm:px-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.8fr)]">
+        {["w-32", "w-44", "w-24", "w-20"].map((width, i) => (
+          <div key={i} className="flex min-w-0 items-center gap-2.5">
+            <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
+            <div className="min-w-0 flex-1">
+              <Line box="h-[15px]" bar="h-2 w-12" />
+              <Line box="h-5" bar={cx("h-3.5 max-w-full", width)} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+/**
+ * The identity block at the top of a customer or rider profile. Avatar, name (wraps rather than
+ * truncating, so long names stay readable), status badges in one wrapping row, and the actions on
+ * the right from `lg`. Underneath, a strip of labelled facts: phone and email with copy buttons,
+ * join date and last seen. Stacks on phones.
+ */
 export function UserHeader({
   user,
   loading,
   badges,
   actions,
   banner,
+  subtitle,
+  online,
 }: {
   user: User | undefined;
   loading?: boolean;
   badges?: ReactNode;
   actions?: ReactNode;
   banner?: ReactNode;
+  /** A short line under the name, e.g. lifetime totals. */
+  subtitle?: ReactNode;
+  /** Riders: a presence dot on the avatar. */
+  online?: boolean;
 }) {
-  if (loading || !user) {
-    return (
-      <Panel className="p-5">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-14 w-14 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-3 w-72" />
-          </div>
-        </div>
-      </Panel>
-    );
-  }
+  if (loading || !user) return <UserHeaderSkeleton />;
   const name = fullName(user) || "Unnamed user";
-  const meta: { label: string; tone?: string }[] = [
-    { label: `Joined ${day(user.createdAt)}` },
-    { label: user.lastLoginDate ? `Last seen ${ago(user.lastLoginDate)}` : "Never signed in" },
-    ...(user.bvnVerified ? [{ label: "BVN verified", tone: "text-success" }] : []),
-    ...(user.nin ? [{ label: "NIN on file" }] : []),
-  ];
+  // Stored numbers vary (0803..., 234803..., +234803...); show and copy the international form.
+  const phone = user.phone ? normalizePhone(user.phone) ?? phoneLabel(user.phone) : "";
   return (
-    <Panel className="p-4 sm:p-5">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-          <Avatar src={user.photo} name={name} size={56} />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h1 className="max-w-full truncate text-lg font-black tracking-tight text-ink sm:text-xl">{name}</h1>
+    <Panel className="overflow-hidden">
+      <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+        <div className="flex min-w-0 flex-1 items-start gap-3.5 sm:gap-4">
+          <span className="relative shrink-0">
+            <span className="block rounded-full ring-4 ring-surface">
+              <Avatar src={user.photo} name={name} size={64} />
+            </span>
+            {online !== undefined ? (
+              <span
+                className={cx("absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-[3px] border-card", online ? "bg-success" : "bg-line-strong")}
+                title={online ? "Online now" : "Offline"}
+                aria-label={online ? "Online now" : "Offline"}
+              />
+            ) : null}
+          </span>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <h1 className="line-clamp-2 text-xl font-black leading-tight tracking-tight text-ink [overflow-wrap:anywhere] sm:text-2xl" title={name}>
+              {name}
+            </h1>
+            {subtitle ? <p className="mt-1 text-sm text-ink-muted">{subtitle}</p> : null}
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
               <Badge tone={statusTone(user.status)} dot>
                 {statusLabel(user.status)}
               </Badge>
               {badges}
             </div>
-            <div className="mt-2 flex flex-col gap-1 text-sm text-ink-muted sm:flex-row sm:flex-wrap sm:gap-x-4">
-              {user.phone ? (
-                <span className="inline-flex min-w-0 items-center gap-1.5">
-                  <Phone size={13} className="shrink-0" />
-                  <span className="truncate">{phoneLabel(user.phone)}</span>
-                  {user.phoneVerified ? <BadgeCheck size={13} className="shrink-0 text-success" aria-label="Phone verified" /> : null}
-                </span>
-              ) : null}
-              {user.email ? (
-                <span className="inline-flex min-w-0 items-center gap-1.5">
-                  <Mail size={13} className="shrink-0" />
-                  <span className="truncate">{user.email}</span>
-                  {user.emailVerified ? <BadgeCheck size={13} className="shrink-0 text-success" aria-label="Email verified" /> : null}
-                </span>
-              ) : null}
-            </div>
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
-              {meta.map((item) => (
-                <span key={item.label} className={cx("rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold", item.tone ?? "text-ink-muted")}>
-                  {item.label}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
-        {actions ? <div className="border-t border-line pt-4 xl:shrink-0 xl:border-0 xl:pt-0">{actions}</div> : null}
+        {actions ? <div className="min-w-0 lg:shrink-0">{actions}</div> : null}
       </div>
-      {banner ? <div className="mt-4">{banner}</div> : null}
+
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-line bg-surface/50 px-4 py-3.5 sm:grid-cols-2 sm:px-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.8fr)]">
+        <HeaderFact icon={Phone} label="Phone">
+          {phone ? (
+            <>
+              <a href={`tel:${phone}`} className="min-w-0 truncate tabular-nums hover:underline">
+                {phone}
+              </a>
+              {user.phoneVerified ? <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Phone verified" /> : null}
+              <CopyButton text={phone} label="Copy phone number" size="md" inline />
+            </>
+          ) : (
+            <span className="font-medium text-ink-faint">Not set</span>
+          )}
+        </HeaderFact>
+        <HeaderFact icon={Mail} label="Email">
+          {formatEmail(user.email) ? (
+            <>
+              <a href={`mailto:${formatEmail(user.email)}`} className="min-w-0 truncate hover:underline" title={formatEmail(user.email)}>
+                {formatEmail(user.email)}
+              </a>
+              {user.emailVerified ? <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Email verified" /> : null}
+              <CopyButton text={formatEmail(user.email)} label="Copy email address" size="md" inline />
+            </>
+          ) : (
+            <span className="font-medium text-ink-faint">Not set</span>
+          )}
+        </HeaderFact>
+        <HeaderFact icon={CalendarDays} label="Joined">
+          <span className="truncate font-medium">{day(user.createdAt)}</span>
+        </HeaderFact>
+        <HeaderFact icon={Clock} label="Last seen">
+          <span className="truncate font-medium" title={user.lastLoginDate ? when(user.lastLoginDate) : undefined}>
+            {user.lastLoginDate ? ago(user.lastLoginDate) : "Never signed in"}
+          </span>
+        </HeaderFact>
+        {user.bvnVerified || user.nin ? (
+          <div className="flex flex-wrap items-center gap-1.5 sm:col-span-2 lg:col-span-4">
+            {user.bvnVerified ? (
+              <Badge tone="success">
+                <ShieldCheck size={11} aria-hidden />
+                BVN verified
+              </Badge>
+            ) : null}
+            {user.nin ? (
+              <Badge tone="neutral">
+                <IdCard size={11} aria-hidden />
+                NIN on file
+              </Badge>
+            ) : null}
+          </div>
+        ) : null}
+      </dl>
+
+      {banner ? <div className="border-t border-line p-4 sm:px-5">{banner}</div> : null}
     </Panel>
   );
 }

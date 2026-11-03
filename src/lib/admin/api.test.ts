@@ -65,6 +65,8 @@ const CASES: Case[] = [
   { name: "stats.chargesByRider", call: () => api.stats.chargesByRider({ page: 2, limit: 10 }), method: "GET", path: `${P}/admins/stats/charges/riders`, params: { page: "2", limit: "10" }, paged: true },
   { name: "stats.customers", call: () => api.stats.customers({ search: "ada" }), method: "GET", path: `${P}/admins/stats/customers`, params: { search: "ada" }, paged: true },
   { name: "stats.businesses", call: () => api.stats.businesses({ page: 1 }), method: "GET", path: `${P}/admins/stats/businesses`, params: { page: "1" }, paged: true },
+  { name: "stats.providerFees", call: () => api.stats.providerFees({ from: "2026-09-01", to: "2026-09-30", bucket: "day" }), method: "GET", path: `${P}/admins/stats/provider-fees`, params: { from: "2026-09-01", to: "2026-09-30", bucket: "day" } },
+  { name: "stats.providerFeeRows", call: () => api.stats.providerFeeRows({ all: true, page: 2, limit: 20, flow: "WITHDRAWAL" }), method: "GET", path: `${P}/admins/stats/provider-fees/rows`, params: { all: "true", page: "2", limit: "20", flow: "WITHDRAWAL" }, paged: true },
   { name: "stats.userOverview", call: () => api.stats.userOverview(ID, { all: true }), method: "GET", path: `${P}/admins/stats/users/${ID}/overview`, params: { all: "true" } },
   // rider insights
   { name: "riderInsights.overview", call: () => api.riderInsights.overview(ID, { from: "2026-09-01", to: "2026-09-30" }), method: "GET", path: `${P}/admins/riders/${ID}/insights/overview`, params: { dateRange: "2026-09-01,2026-09-30" } },

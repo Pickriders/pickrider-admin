@@ -17,11 +17,13 @@ module.exports = {
         // including the previously hardcoded clash-display / montserrat /
         // faktum faces — resolves to it, so the header switcher changes the
         // font EVERYWHERE. `urbanist` stays fixed for anything that must pin it.
-        sans: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "system-ui", "sans-serif"],
-        "clash-display": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
-        montserrat: ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
-        "faktum-test": ["var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        // Digits always come first from Karla (--font-admin-digits, digits only).
+        sans: ["var(--font-admin-digits)", "var(--admin-font, var(--font-urbanist))", "Urbanist", "system-ui", "sans-serif"],
+        "clash-display": ["var(--font-admin-digits)", "var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        montserrat: ["var(--font-admin-digits)", "var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
+        "faktum-test": ["var(--font-admin-digits)", "var(--admin-font, var(--font-urbanist))", "Urbanist", "sans-serif"],
         urbanist: ["var(--font-urbanist)"],
+        mono: ["var(--font-admin-digits)", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
       },
       boxShadow: {
         card: "var(--shadow-card)",

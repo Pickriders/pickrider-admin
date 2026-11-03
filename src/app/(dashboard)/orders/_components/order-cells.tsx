@@ -1,6 +1,6 @@
 "use client";
 
-import { Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
+import { ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
@@ -9,7 +9,7 @@ import { Avatar, Badge, cx, statusTone, type Tone } from "@/components/kit";
 import type { OrderParty, OrderRow } from "@/lib/admin/api";
 import { ORDER_SOURCE_LABEL, count, fullName, orderPaymentDisplay, orderSource, statusLabel, when, type OrderSource } from "@/lib/admin/format";
 
-import { displayPhone, paymentLabel, statusAt, typeLabel } from "../lib";
+import { displayPhone, orderNumber, paymentLabel, statusAt, typeLabel } from "../lib";
 
 /**
  * Cells shared by the table, the board cards and the mobile cards, so a
@@ -21,29 +21,89 @@ export function PartyCell({
   party,
   href,
   fallback,
-  size = 30,
+  size = 28,
+  className,
 }: {
   party: OrderParty | null | undefined;
   href?: string;
   fallback: string;
   size?: number;
+  className?: string;
 }) {
-  if (!party) return <span className="text-xs text-ink-faint">{fallback}</span>;
+  if (!party) return <span className={cx("block truncate text-xs text-ink-faint", className)}>{fallback}</span>;
   const name = fullName(party) || "Unnamed";
   const body = (
-    <span className="flex min-w-0 items-center gap-2">
+    <span className="flex min-w-0 items-center gap-2.5">
       <Avatar src={party.photo} name={name} size={size} />
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-ink">{name}</span>
-        {party.phone ? <span className="block truncate text-xs text-ink-muted">{displayPhone(party.phone)}</span> : null}
+      <span className="min-w-0 flex-1 leading-tight">
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{name}</span>
+        {party.phone ? <span className="mt-0.5 block truncate text-[11px] tabular-nums text-ink-muted">{displayPhone(party.phone)}</span> : null}
       </span>
     </span>
   );
-  if (!href) return body;
+  if (!href) return <span className={cx("block min-w-0", className)}>{body}</span>;
   return (
-    <Link href={href} onClick={stop} className="block min-w-0 rounded-lg hover:underline">
+    <Link href={href} onClick={stop} className={cx("group/party block min-w-0 rounded-lg", className)}>
       {body}
     </Link>
+  );
+}
+
+/** Order number with where it came from, its type and a scheduled marker underneath. */
+export function OrderCell({
+  order,
+}: {
+  order: Pick<OrderRow, "_id" | "orderNumber" | "type" | "isScheduled" | "scheduledFor" | "channel">;
+}) {
+  return (
+    <span className="flex min-w-0 flex-col leading-tight">
+      <span className="truncate text-[13px] font-bold tabular-nums tracking-tight text-ink">{orderNumber(order)}</span>
+      <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] text-ink-muted">
+        <SourcePill channel={order.channel} />
+        <span className="truncate">{typeLabel(order.type)}</span>
+        {order.isScheduled ? (
+          <span
+            className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-brand-dark"
+            title={order.scheduledFor ? `Scheduled for ${when(order.scheduledFor)}` : "Scheduled"}
+          >
+            <CalendarClock size={11} aria-hidden />
+            Scheduled
+          </span>
+        ) : null}
+      </span>
+    </span>
+  );
+}
+
+const PAYMENT_TEXT: Record<ReturnType<typeof orderPaymentDisplay>["tone"], string> = {
+  neutral: "text-ink-muted",
+  success: "text-success",
+  warning: "text-warning",
+  danger: "text-danger",
+  info: "text-info",
+};
+
+/** The payment state as one muted line, for places with no room for a badge. */
+export function PaymentLine({ order, className }: { order: Pick<OrderRow, "channel" | "status" | "paymentStatus">; className?: string }) {
+  if (!order.paymentStatus) return null;
+  const payment = orderPaymentDisplay(order);
+  return (
+    <span className={cx("block truncate text-[11px] font-semibold", PAYMENT_TEXT[payment.tone], className)} title={payment.hint}>
+      {payment.label}
+    </span>
+  );
+}
+
+/** "Customer → courier" on one line, for cards. */
+export function PartiesLine({ order }: { order: OrderRow }) {
+  return (
+    <span className="flex min-w-0 items-center gap-2">
+      <PartyCell party={order.user} fallback="Unknown customer" size={24} className="min-w-0 flex-1" />
+      <ArrowRight size={13} aria-hidden className="shrink-0 text-ink-faint" />
+      <span className="min-w-0 flex-1">
+        <CourierCell order={order} size={24} />
+      </span>
+    </span>
   );
 }
 
@@ -82,9 +142,48 @@ const SOURCE_TONE: Record<OrderSource, Tone> = { APP: "neutral", STORE: "brand",
 const SOURCE_ICON = { APP: Smartphone, STORE: Store, WEB: Globe } as const;
 const SOURCE_HINT: Record<OrderSource, string> = {
   APP: "Placed in the customer app",
-  STORE: "Placed on a vendor storefront",
-  WEB: "Placed on the pickriders.com web flow",
+  STORE: "From a vendor storefront",
+  WEB: "Placed on pickriders.com",
 };
+
+/** Quiet tints, one per source, built on the theme tokens so they follow dark mode. */
+const SOURCE_PILL: Record<OrderSource, string> = {
+  APP: "border-line bg-surface text-ink-muted",
+  STORE: "border-transparent bg-brand-soft text-brand-dark",
+  WEB: "border-transparent bg-info-soft text-info",
+};
+
+/**
+ * The source as a small pill that sits on the 11px line under an order number (the same 14px
+ * height as the type and Scheduled marker beside it), for the list, board and scheduled views.
+ */
+export function SourcePill({
+  channel,
+  size = "line",
+  className,
+}: {
+  channel: string | undefined;
+  /** "line" sits on an 11px text line; "badge" matches a Badge beside it (22px). */
+  size?: "line" | "badge";
+  className?: string;
+}) {
+  const source = orderSource(channel);
+  const Icon = SOURCE_ICON[source];
+  return (
+    <span
+      title={SOURCE_HINT[source]}
+      className={cx(
+        "inline-flex shrink-0 items-center border font-semibold leading-none",
+        size === "badge" ? "h-[22px] gap-1 rounded-full px-2 text-[11px]" : "h-3.5 gap-0.5 rounded px-1 text-[10px]",
+        SOURCE_PILL[source],
+        className,
+      )}
+    >
+      <Icon size={size === "badge" ? 10 : 9} aria-hidden strokeWidth={2.5} />
+      {ORDER_SOURCE_LABEL[source]}
+    </span>
+  );
+}
 
 /** Where an order came from: the customer app, a vendor storefront, or the public web flow. */
 export function SourceBadge({ channel }: { channel: string | undefined }) {
@@ -180,7 +279,7 @@ export function ReleasedChip({ order }: { order: Pick<OrderRow, "_id" | "rider" 
 export function CourierCell({
   order,
   href,
-  size = 30,
+  size = 28,
 }: {
   order: Pick<OrderRow, "_id" | "rider" | "status" | "channel" | "offersCount" | "offers" | "riderReleaseCount">;
   href?: string;
@@ -235,9 +334,9 @@ export function TypeBadge({ type }: { type: string | undefined }) {
 export function StatusWithTime({ order }: { order: OrderRow }) {
   const at = statusAt(order);
   return (
-    <span className="flex flex-col items-start gap-1">
+    <span className="flex flex-col items-start gap-1 leading-tight">
       <OrderStatusBadge status={order.status} />
-      {at ? <span className="text-[11px] text-ink-faint">{when(at)}</span> : null}
+      {at ? <span className="whitespace-nowrap text-[11px] tabular-nums text-ink-faint">{when(at)}</span> : null}
     </span>
   );
 }

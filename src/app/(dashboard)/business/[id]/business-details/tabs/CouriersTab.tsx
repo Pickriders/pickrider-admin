@@ -11,6 +11,7 @@ import { useAction, useBusinessUsers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { Avatar, Badge, Button, ConfirmDialog, DataTable, statusTone, type ColumnMeta } from "@/components/kit";
 import { useCan } from "@/lib/admin/use-can";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The couriers a business has enrolled. Suspend and unsuspend hit the
@@ -50,13 +51,13 @@ export function CouriersTab({ businessId }: { businessId: string }) {
         id: "courier",
         header: "Courier",
         cell: ({ row }) => {
-          const name = fullName(row.original) || row.original.email || "Courier";
+          const name = fullName(row.original) || formatEmail(row.original.email) || "Courier";
           return (
             <div className="flex items-center gap-3">
               <Avatar src={row.original.photo} name={name} size={36} />
               <div className="min-w-0">
                 <p className="truncate font-semibold text-ink">{name}</p>
-                <p className="truncate text-xs text-ink-muted">{row.original.phone || row.original.email || ""}</p>
+                <p className="truncate text-xs text-ink-muted">{row.original.phone || formatEmail(row.original.email) || ""}</p>
               </div>
             </div>
           );
@@ -66,7 +67,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
       {
         id: "email",
         header: "Email",
-        cell: ({ row }) => <span className="text-ink-muted">{row.original.email || ""}</span>,
+        cell: ({ row }) => <span className="text-ink-muted">{formatEmail(row.original.email) || ""}</span>,
         meta: { hideBelow: "xl", csv: { key: "email", label: "Email" } } satisfies ColumnMeta,
       },
       {
@@ -132,7 +133,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
   );
 
   const target = pending?.user;
-  const targetName = target ? fullName(target) || target.email || "this courier" : "";
+  const targetName = target ? fullName(target) || formatEmail(target.email) || "this courier" : "";
 
   return (
     <>
@@ -159,7 +160,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
         defaultSort={{ sortBy: "createdAt", order: "DESC" }}
         rowHref={(row) => `/couriers/${row._id}/details`}
         mobileCard={(row) => {
-          const name = fullName(row) || row.email || "Courier";
+          const name = fullName(row) || formatEmail(row.email) || "Courier";
           const suspended = row.status === "SUSPENDED";
           return (
             <div className="flex items-start gap-3">
@@ -169,7 +170,7 @@ export function CouriersTab({ businessId }: { businessId: string }) {
                   <p className="truncate font-semibold text-ink">{name}</p>
                   <Badge tone={statusTone(row.status?.toLowerCase())}>{row.status?.toLowerCase()}</Badge>
                 </div>
-                <p className="truncate text-xs text-ink-muted">{row.phone || row.email || ""}</p>
+                <p className="truncate text-xs text-ink-muted">{row.phone || formatEmail(row.email) || ""}</p>
                 {canManage ? (
                 <div className="mt-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button size="sm" variant="outline" onClick={() => setPending({ kind: suspended ? "unsuspend" : "suspend", user: row })}>

@@ -5,6 +5,7 @@ import { Archive, ArrowUpRight, Eye, MousePointerClick, Pause, Pencil, Play, Plu
 import { useMemo, useState } from "react";
 
 import { Avatar, Badge, Button, ConfirmDialog, DataTable, Drawer, KeyValue, Pager, Skeleton, StatCard, cx, type ColumnMeta, type Tone } from "@/components/kit";
+import { ScrollRow } from "@/components/kit/scroll-row";
 import { AnnouncementActionType, AnnouncementAudience, AnnouncementStatus, announcements, type Announcement } from "@/lib/admin/api";
 import { count, fullName, percent, when } from "@/lib/admin/format";
 import { useAction, useAnnouncement, useAnnouncementReceipts, useAnnouncements, useAnnouncementsSummary } from "@/lib/admin/hooks";
@@ -211,21 +212,24 @@ export function AnnouncementsTab() {
         onRowClick={(row) => openDetail(row._id!)}
         toolbarExtra={
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {STATUS_CHIPS.map((chip) => (
-                <button
-                  key={chip.value}
-                  type="button"
-                  onClick={() => table.update({ status: chip.value || undefined })}
-                  className={cx(
-                    "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
-                    status === chip.value ? "border-transparent bg-ink text-card" : "border-line text-ink-muted hover:bg-surface",
-                  )}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
+            <ScrollRow label="Announcement status" activeKey={status}>
+              <div className="flex w-max gap-1">
+                {STATUS_CHIPS.map((chip) => (
+                  <button
+                    key={chip.value}
+                    type="button"
+                    aria-pressed={status === chip.value}
+                    onClick={() => table.update({ status: chip.value || undefined })}
+                    className={cx(
+                      "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                      status === chip.value ? "border-transparent bg-ink text-card" : "border-line text-ink-muted hover:bg-surface",
+                    )}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </ScrollRow>
             <Button icon={Plus} size="md" disabled={!canManage} onClick={() => openEditor(null)} className="w-full sm:w-auto">
               New announcement
             </Button>

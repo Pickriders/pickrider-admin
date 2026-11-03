@@ -1,3 +1,7 @@
+import { formatPersonName } from "./person";
+
+export { formatEmail, formatPersonName } from "./person";
+
 /**
  * Money on the core platform is stored in sub-units (kobo). Every formatter
  * here takes kobo and shows naira; nothing else in the admin should divide by
@@ -87,8 +91,9 @@ export function minutes(value: number | null | undefined) {
   return rest ? `${hours}h ${rest}m` : `${hours}h`;
 }
 
+/** A person's display name, cased by formatPersonName ("ADA obi" -> "Ada Obi"). */
 export function fullName(user: { firstname?: string | null; lastname?: string | null } | null | undefined) {
-  return [user?.firstname, user?.lastname].filter(Boolean).join(" ").trim();
+  return formatPersonName([user?.firstname, user?.lastname].filter(Boolean).join(" "));
 }
 
 export function initials(name: string | null | undefined) {

@@ -8,6 +8,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useAttention, useVehicles } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { Button, DataTable, PageHeader, cx } from "@/components/kit";
+import { ScrollRow } from "@/components/kit/scroll-row";
 
 import { VehicleFormDrawer } from "./VehicleFormDrawer";
 import { VEHICLE_STATUS_LABEL, VEHICLE_STATUS_OPTIONS, VehicleMobileCard, vehicleColumns } from "./vehicle-shared";
@@ -52,28 +53,31 @@ function VehiclesList() {
         }
       />
 
-      <div className="admin-scroll -mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
-        {CHIPS.map((chip) => {
-          const active = activeStatus === chip.value;
-          const count = chip.value === "PENDING" ? pending : undefined;
-          return (
-            <button
-              key={chip.value || "all"}
-              type="button"
-              onClick={() => table.setFilter("status", chip.value || undefined)}
-              className={cx(
-                "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
-                active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
-              )}
-            >
-              {chip.label}
-              {count != null && count > 0 ? (
-                <span className={cx("rounded-full px-1.5 text-[11px]", active ? "bg-card/20 text-card" : "bg-warning-soft text-warning")}>{count}</span>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
+      <ScrollRow className="-mx-1 mb-4" innerClassName="px-1 pb-1" label="Vehicle status" peekKey="vehicles-status-chips" activeKey={activeStatus}>
+        <div className="flex w-max gap-2">
+          {CHIPS.map((chip) => {
+            const active = activeStatus === chip.value;
+            const count = chip.value === "PENDING" ? pending : undefined;
+            return (
+              <button
+                key={chip.value || "all"}
+                type="button"
+                aria-pressed={active}
+                onClick={() => table.setFilter("status", chip.value || undefined)}
+                className={cx(
+                  "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                  active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
+                )}
+              >
+                {chip.label}
+                {count != null && count > 0 ? (
+                  <span className={cx("rounded-full px-1.5 text-[11px]", active ? "bg-card/20 text-card" : "bg-warning-soft text-warning")}>{count}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </ScrollRow>
 
       <DataTable<VehicleRecord>
         columns={columns}

@@ -16,6 +16,7 @@ import { RiderBids } from "./rider-bids";
 import { RiderHistory } from "./rider-history";
 import { RouteMap } from "./route-map";
 import { StopsTimeline } from "./stops-timeline";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * One order end to end: where it is on the map, each stop's state, who is
@@ -54,7 +55,7 @@ function PartyCard({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold text-ink">{name || "Unnamed"}</p>
               {party.phone ? <p className="truncate text-xs text-ink-muted">{displayPhone(party.phone)}</p> : null}
-              {party.email ? <p className="truncate text-xs text-ink-faint">{party.email}</p> : null}
+              {formatEmail(party.email) ? <p className="truncate text-xs text-ink-faint">{formatEmail(party.email)}</p> : null}
               {extra}
             </div>
             {party.phone ? (

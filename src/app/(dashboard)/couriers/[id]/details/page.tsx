@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Bike, Car, ExternalLink, Landmark, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
+import { ArrowLeft, Bike, Building2, Car, ExternalLink, Landmark, Lock, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
@@ -29,7 +29,7 @@ import { DispatchDialog, UserActions, WithdrawalRestrictionBanner } from "@/comp
 import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
 import type { Vehicle } from "@/lib/admin/api";
-import { count, fullName, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
+import { count, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
@@ -175,40 +175,58 @@ function CourierDetail({ id }: { id: string }) {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        breadcrumb={
-          <Link href="/couriers" className="inline-flex items-center gap-1 hover:text-ink">
-            <ArrowLeft size={12} /> Couriers
-          </Link>
-        }
-        title={user ? fullName(user) || "Rider" : <Skeleton className="h-8 w-56" />}
-        description={lifetime ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned` : undefined}
-        actions={
-          <>
-            <LinkButton href={`/couriers/${id}/verification`} icon={ShieldCheck}>
-              Licence
-            </LinkButton>
-            <LinkButton href={`/couriers/${id}/edit`} icon={UserRound}>
-              Profile
-            </LinkButton>
-            <RangeTabs value={range} onChange={setRange} />
-          </>
-        }
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Link
+          href="/couriers"
+          className="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={14} /> Couriers
+        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <LinkButton href={`/couriers/${id}/verification`} icon={ShieldCheck} size="sm">
+            Licence
+          </LinkButton>
+          <LinkButton href={`/couriers/${id}/edit`} icon={UserRound} size="sm">
+            Profile
+          </LinkButton>
+          <RangeTabs value={range} onChange={setRange} className="max-w-full" />
+        </div>
+      </div>
 
       <UserHeader
         user={user}
         loading={loading}
+        online={user ? Boolean(user.isOnline) : undefined}
+        subtitle={lifetime ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned` : undefined}
         badges={
           <>
             <Badge tone={user?.isOnline ? "success" : "neutral"} dot>
               {user?.isOnline ? "Online" : "Offline"}
             </Badge>
-            <Link href={`/couriers/${id}/verification`}>
-              <Badge tone={licenceTone(licence.status)}>{LICENCE_LABEL[licence.status]}</Badge>
+            <Link href={`/couriers/${id}/verification`} className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30">
+              <Badge tone={licenceTone(licence.status)}>
+                <ShieldCheck size={11} aria-hidden />
+                {LICENCE_LABEL[licence.status]}
+              </Badge>
             </Link>
-            {data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
-            {restriction?.active ? <Badge tone="warning">Withdrawals paused</Badge> : null}
+            {user?.dispatchPaused ? (
+              <Badge tone="warning">
+                <PauseCircle size={11} aria-hidden />
+                Not ringing
+              </Badge>
+            ) : null}
+            {restriction?.active ? (
+              <Badge tone="warning">
+                <Lock size={11} aria-hidden />
+                Withdrawals paused
+              </Badge>
+            ) : null}
+            {data?.business ? (
+              <Badge tone="info" className="max-w-full">
+                <Building2 size={11} aria-hidden className="shrink-0" />
+                <span className="min-w-0 truncate">Business: {data.business.name}</span>
+              </Badge>
+            ) : null}
           </>
         }
         actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showDispatch showWithdrawals /> : null}

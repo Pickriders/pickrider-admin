@@ -490,6 +490,26 @@ export type RiderChargeRow = {
   lastAt: string;
 };
 
+/**
+ * What Paystack takes (GET /admins/stats/provider-fees), per money flow, with the window before
+ * for comparison and a trend. `effectiveRate` is a percent: 1.5 means 1.5% of the gross.
+ */
+export type {
+  ProviderFeesResponseDto as ProviderFees,
+  ProviderFeeFlowDto as ProviderFeeFlowTotals,
+  ProviderFeeSeriesPointDto as ProviderFeePoint,
+  ProviderFeeTotalsDto as ProviderFeeTotals,
+} from "@/services";
+
+export type ProviderFeeFlowKey = "WALLET_DEPOSIT" | "ORDER_CARD_PAYMENT" | "WEB_ORDER_PAYMENT" | "WITHDRAWAL" | "PLATFORM_PAYOUT" | "REFUND";
+
+/** One Paystack fee row (GET /admins/stats/provider-fees/rows), with whose money it was. */
+export type ProviderFeeRow = Omit<import("@/services").ProviderFeeRowDto, "owner" | "flow"> & {
+  flow: ProviderFeeFlowKey;
+  owner: TransactionOwner | null;
+  [key: string]: unknown;
+};
+
 export const stats = {
   overview: (range: RangeQuery) => as<Overview>(apiService.overview(params(range))),
   series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) => as<Series>(apiService.series(params(range))),
@@ -502,6 +522,8 @@ export const stats = {
   customersOverview: (range: RangeQuery & { bucket?: string }) => get<CustomersOverview>("/admins/stats/customers/overview", range),
   businesses: (query: Query) => page<BusinessRow>(apiService.businesses(params(query))),
   userOverview: (userId: string, range: RangeQuery) => as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
+  providerFees: (range: RangeQuery & { bucket?: string }) => apiService.providerFees(params(range)),
+  providerFeeRows: (query: Query) => page<ProviderFeeRow>(apiService.providerFeeRows(params(query))),
 };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────

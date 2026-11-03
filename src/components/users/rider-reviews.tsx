@@ -9,6 +9,7 @@ import { ago, count, fullName, naira, statusLabel, when } from "@/lib/admin/form
 import { REVIEWS_FETCH_LIMIT, useOrderSummary, useRiderReviews, useUser } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { Avatar, Badge, Button, EmptyState, ErrorState, Panel, Select, Skeleton, cx, statusTone } from "@/components/kit/primitives";
+import { ScrollRow } from "@/components/kit/scroll-row";
 
 /**
  * Every review a rider has received: who left it, the stars, what they said
@@ -238,37 +239,41 @@ export function RiderReviews({
 
       {/* The scroll area sits inside the padding, so chips clip at the padding edge, not the card edge. */}
       <div className="mt-3 px-4">
-        <div className="admin-scroll flex gap-1.5 overflow-x-auto pb-1">
-        <button
-          type="button"
-          onClick={() => onRatingChange(undefined)}
-          className={cx(
-            "shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors",
-            !rating ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
-          )}
-        >
-          All <span className={cx("ml-1 tabular-nums", !rating ? "text-card/70" : "text-ink-faint")}>{count(all.length)}</span>
-        </button>
-        {[5, 4, 3, 2, 1].map((star) => {
-          const active = rating === star;
-          const n = perStar[star - 1];
-          return (
+        <ScrollRow innerClassName="pb-1" label="Filter by rating" peekKey="rider-review-stars" activeKey={String(rating ?? "all")}>
+          <div className="flex w-max gap-1.5">
             <button
-              key={star}
               type="button"
-              onClick={() => onRatingChange(active ? undefined : star)}
-              disabled={!n && !active}
+              aria-pressed={!rating}
+              onClick={() => onRatingChange(undefined)}
               className={cx(
-                "inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
+                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors",
+                !rating ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
               )}
             >
-              {star} <Star size={11} className={active ? "fill-card text-card" : "fill-warning text-warning"} />
-              <span className={cx("ml-0.5 tabular-nums", active ? "text-card/70" : "text-ink-faint")}>{count(n)}</span>
+              All <span className={cx("ml-1 tabular-nums", !rating ? "text-card/70" : "text-ink-faint")}>{count(all.length)}</span>
             </button>
-          );
-        })}
-        </div>
+            {[5, 4, 3, 2, 1].map((star) => {
+              const active = rating === star;
+              const n = perStar[star - 1];
+              return (
+                <button
+                  key={star}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => onRatingChange(active ? undefined : star)}
+                  disabled={!n && !active}
+                  className={cx(
+                    "inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                    active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
+                  )}
+                >
+                  {star} <Star size={11} className={active ? "fill-card text-card" : "fill-warning text-warning"} />
+                  <span className={cx("ml-0.5 tabular-nums", active ? "text-card/70" : "text-ink-faint")}>{count(n)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </ScrollRow>
       </div>
 
       <div className="px-4 pb-4 pt-3">
