@@ -37,6 +37,7 @@ import {
   StatusBadge,
   isOverdue,
 } from "../_components/shared";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * One report, end to end: what the customer said (with attachments and the order/transaction it
@@ -52,7 +53,7 @@ const NEXT: Record<IssueStatus, IssueStatus[]> = {
 
 function personName(person?: Person | string | null) {
   if (!person || typeof person === "string") return "Staff";
-  return fullName(person) || person.email || "Staff";
+  return fullName(person) || formatEmail(person.email) || "Staff";
 }
 
 function IssueDetail({ id }: { id: string }) {
@@ -329,14 +330,14 @@ function IssueDetail({ id }: { id: string }) {
                     setAssignee(next);
                     setAssignTarget({
                       adminId: next || null,
-                      label: !next ? "nobody" : member?._id === me.data?._id ? "you" : fullName(member) || member?.email || "this admin",
+                      label: !next ? "nobody" : member?._id === me.data?._id ? "you" : fullName(member) || formatEmail(member?.email) || "this admin",
                     });
                   }}
                 >
                   <option value="">Unassigned</option>
                   {(staff.data?.items ?? []).map((member) => (
                     <option key={member._id} value={member._id}>
-                      {fullName(member) || member.email}
+                      {fullName(member) || formatEmail(member.email)}
                       {member._id === me.data?._id ? " (me)" : ""}
                     </option>
                   ))}

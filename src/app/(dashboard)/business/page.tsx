@@ -11,6 +11,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useBusinesses } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { Avatar, Badge, DataTable, LinkButton, PageHeader, type ColumnMeta } from "@/components/kit";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * Businesses with their owner, wallet and activity in one page from
@@ -34,7 +35,7 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
         <Avatar src={businessLogo(row.original)} name={row.original.name} size={36} />
         <div className="min-w-0">
           <p className="truncate font-semibold text-ink">{row.original.name}</p>
-          <p className="truncate text-xs text-ink-muted">{row.original.businessHandle ? `@${row.original.businessHandle}` : row.original.email || ""}</p>
+          <p className="truncate text-xs text-ink-muted">{row.original.businessHandle ? `@${row.original.businessHandle}` : formatEmail(row.original.email) || ""}</p>
         </div>
       </div>
     ),
@@ -48,8 +49,8 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
       if (!owner) return <span className="text-ink-faint">No owner</span>;
       return (
         <Link href={`/customers/${owner._id}`} onClick={stop} className="min-w-0 hover:underline">
-          <span className="block truncate text-ink">{fullName(owner) || owner.email || "Owner"}</span>
-          <span className="block truncate text-xs text-ink-muted">{owner.phone || owner.email || ""}</span>
+          <span className="block truncate text-ink">{fullName(owner) || formatEmail(owner.email) || "Owner"}</span>
+          <span className="block truncate text-xs text-ink-muted">{owner.phone || formatEmail(owner.email) || ""}</span>
         </Link>
       );
     },
@@ -163,7 +164,7 @@ function BusinessList() {
                 <p className="truncate font-semibold text-ink">{row.name}</p>
                 {row.isActive === false ? <Badge tone="danger">Inactive</Badge> : <Badge tone="success">Active</Badge>}
               </div>
-              <p className="truncate text-xs text-ink-muted">{fullName(row.owner) || row.email || ""}</p>
+              <p className="truncate text-xs text-ink-muted">{fullName(row.owner) || formatEmail(row.email) || ""}</p>
               <p className="mt-1 text-xs text-ink-muted">
                 {count(row.ridersCount)} riders · {count(row.vehiclesCount)} vehicles · {count(row.orders)} orders
               </p>

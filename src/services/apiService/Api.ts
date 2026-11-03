@@ -172,6 +172,7 @@ import {
   GetAdminPreferencesData,
   GetAllReferralsData,
   GetAllReferralsParams,
+  GetArrivalCheckData,
   GetBanksData,
   GetBanksParams,
   GetBroadcastData,
@@ -340,6 +341,10 @@ import {
   PayRiderTripRequestDto,
   PeakHoursData,
   PeakHoursParams,
+  ProviderFeeRowsData,
+  ProviderFeeRowsParams,
+  ProviderFeesData,
+  ProviderFeesParams,
   PublicConfigData,
   QueueOrderData,
   QuoteBatchOrderData,
@@ -763,6 +768,42 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
+   * @description What Paystack took in the window, per money flow, against the window before, with a trend.
+   *
+   * @tags admins/stats
+   * @name ProviderFees
+   * @request GET:/api/v1/admins/stats/provider-fees
+   * @secure
+   * @response `200` `ProviderFeesData`
+   */
+  providerFees = (query: ProviderFeesParams, params: RequestParams = {}) =>
+    this.request<ProviderFeesData, any>({
+      path: `/api/v1/admins/stats/provider-fees`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Every Paystack fee in the window, newest first, with what it was charged on and whose money it was.
+   *
+   * @tags admins/stats
+   * @name ProviderFeeRows
+   * @request GET:/api/v1/admins/stats/provider-fees/rows
+   * @secure
+   * @response `200` `ProviderFeeRowsData`
+   */
+  providerFeeRows = (query: ProviderFeeRowsParams, params: RequestParams = {}) =>
+    this.request<ProviderFeeRowsData, any>({
+      path: `/api/v1/admins/stats/provider-fees/rows`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
    * No description
    *
    * @tags admins/stats
@@ -847,6 +888,95 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/admins/stats/users/${userId}/overview`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags transactions
+   * @name GetTransactions
+   * @request GET:/api/v1/transactions
+   * @secure
+   * @response `200` `GetTransactionsData`
+   */
+  getTransactions = (query: GetTransactionsParams, params: RequestParams = {}) =>
+    this.request<GetTransactionsData, any>({
+      path: `/api/v1/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name AdminGetTransactions
+   * @request GET:/api/v1/admins/transactions
+   * @secure
+   * @response `200` `AdminGetTransactionsData`
+   */
+  adminGetTransactions = (query: AdminGetTransactionsParams, params: RequestParams = {}) =>
+    this.request<AdminGetTransactionsData, any>({
+      path: `/api/v1/admins/transactions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   * @response `200` `GetExternalPaymentMetricsData`
+   */
+  getExternalPaymentMetrics = (query: GetExternalPaymentMetricsParams, params: RequestParams = {}) =>
+    this.request<GetExternalPaymentMetricsData, any>({
+      path: `/api/v1/admins/transactions/metrics/external-payments`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetTransactionSummary
+   * @request GET:/api/v1/admins/transactions/metrics/summary
+   * @secure
+   * @response `200` `GetTransactionSummaryData`
+   */
+  getTransactionSummary = (query: GetTransactionSummaryParams, params: RequestParams = {}) =>
+    this.request<GetTransactionSummaryData, any>({
+      path: `/api/v1/admins/transactions/metrics/summary`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/transactions
+   * @name GetTransaction
+   * @request GET:/api/v1/admins/transactions/{transactionId}
+   * @secure
+   * @response `200` `GetTransactionData`
+   */
+  getTransaction = (transactionId: string, params: RequestParams = {}) =>
+    this.request<GetTransactionData, any>({
+      path: `/api/v1/admins/transactions/${transactionId}`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,
@@ -2508,95 +2638,6 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
-   * @tags transactions
-   * @name GetTransactions
-   * @request GET:/api/v1/transactions
-   * @secure
-   * @response `200` `GetTransactionsData`
-   */
-  getTransactions = (query: GetTransactionsParams, params: RequestParams = {}) =>
-    this.request<GetTransactionsData, any>({
-      path: `/api/v1/transactions`,
-      method: "GET",
-      query: query,
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags admins/transactions
-   * @name AdminGetTransactions
-   * @request GET:/api/v1/admins/transactions
-   * @secure
-   * @response `200` `AdminGetTransactionsData`
-   */
-  adminGetTransactions = (query: AdminGetTransactionsParams, params: RequestParams = {}) =>
-    this.request<AdminGetTransactionsData, any>({
-      path: `/api/v1/admins/transactions`,
-      method: "GET",
-      query: query,
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags admins/transactions
-   * @name GetExternalPaymentMetrics
-   * @request GET:/api/v1/admins/transactions/metrics/external-payments
-   * @secure
-   * @response `200` `GetExternalPaymentMetricsData`
-   */
-  getExternalPaymentMetrics = (query: GetExternalPaymentMetricsParams, params: RequestParams = {}) =>
-    this.request<GetExternalPaymentMetricsData, any>({
-      path: `/api/v1/admins/transactions/metrics/external-payments`,
-      method: "GET",
-      query: query,
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags admins/transactions
-   * @name GetTransactionSummary
-   * @request GET:/api/v1/admins/transactions/metrics/summary
-   * @secure
-   * @response `200` `GetTransactionSummaryData`
-   */
-  getTransactionSummary = (query: GetTransactionSummaryParams, params: RequestParams = {}) =>
-    this.request<GetTransactionSummaryData, any>({
-      path: `/api/v1/admins/transactions/metrics/summary`,
-      method: "GET",
-      query: query,
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags admins/transactions
-   * @name GetTransaction
-   * @request GET:/api/v1/admins/transactions/{transactionId}
-   * @secure
-   * @response `200` `GetTransactionData`
-   */
-  getTransaction = (transactionId: string, params: RequestParams = {}) =>
-    this.request<GetTransactionData, any>({
-      path: `/api/v1/admins/transactions/${transactionId}`,
-      method: "GET",
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
-   * No description
-   *
    * @tags admins/coupons
    * @name ListCoupons
    * @summary All coupons with lifecycle, redemptions, discount given and groups
@@ -4116,6 +4157,24 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/orders/riders/nearby-count`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags orders
+   * @name GetArrivalCheck
+   * @summary The arrival check for the signed-in rider: whether it is on, and how close they must be
+   * @request GET:/api/v1/orders/riders/arrival-check
+   * @secure
+   * @response `200` `GetArrivalCheckData`
+   */
+  getArrivalCheck = (params: RequestParams = {}) =>
+    this.request<GetArrivalCheckData, any>({
+      path: `/api/v1/orders/riders/arrival-check`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

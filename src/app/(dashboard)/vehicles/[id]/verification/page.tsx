@@ -31,6 +31,7 @@ import {
 import { VehicleFormDrawer } from "@/app/(dashboard)/vehicles/VehicleFormDrawer";
 import { VEHICLE_TYPE_LABEL, VehicleStatusBadge } from "@/app/(dashboard)/vehicles/vehicle-shared";
 import { useCan } from "@/lib/admin/use-can";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * One vehicle: photos, the registration fields, the courier who rides it, and
@@ -402,7 +403,7 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                     <Avatar src={courier.data?.photo} name={courierName} size={44} />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-ink">{courierName}</p>
-                      <p className="truncate text-xs text-ink-muted">{courier.data?.phone || courier.data?.email || ""}</p>
+                      <p className="truncate text-xs text-ink-muted">{courier.data?.phone || formatEmail(courier.data?.email) || ""}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -441,7 +442,7 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                     <Avatar src={(business.data?.photo as string | undefined) ?? business.data?.logo} name={business.data?.name} size={40} />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-ink">{business.data?.name}</p>
-                      <p className="truncate text-xs text-ink-muted">{business.data?.businessHandle ? `@${business.data.businessHandle}` : business.data?.email}</p>
+                      <p className="truncate text-xs text-ink-muted">{business.data?.businessHandle ? `@${business.data.businessHandle}` : formatEmail(business.data?.email)}</p>
                     </div>
                   </div>
                   <LinkButton href={`/business/${businessId}/business-details`} size="sm" className="mt-4 w-full">

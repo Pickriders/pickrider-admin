@@ -1,6 +1,6 @@
 "use client";
 
-import { Undo2 } from "lucide-react";
+import { Store, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -60,13 +60,14 @@ const heldFor = (from: string | null | undefined, to: string | null | undefined)
 function releaseTail(release: NonNullable<OrderRiderStint["release"]>) {
   if (release.initiatedBy === "OWNER") return "Released by the store";
   if (release.initiatedBy === "ADMIN") return "Released by admin";
+  if (release.arrivedAtPickup) return "Counted: already at the store";
   return release.counted ? "Counted as a cancellation" : "Free (within 2 minutes)";
 }
 
 function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
   const name = fullName(stint.rider) || "Rider no longer on Pickriders";
   const released = stint.outcome === "RELEASED" && stint.release;
-  const counted = released && stint.release?.initiatedBy === "RIDER" && stint.release.counted;
+  const counted = released && stint.release?.initiatedBy === "RIDER" && (stint.release.counted || stint.release.arrivedAtPickup);
   const held = heldFor(stint.acceptedAt, stint.endedAt);
   const outcome = stint.outcome === "RELEASED" ? null : OUTCOME[stint.outcome];
 
@@ -121,6 +122,12 @@ function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
               counted ? "border-danger/30 bg-danger-soft text-danger" : "border-warning/40 bg-warning-soft text-warning",
             )}
           >
+            {stint.release.arrivedAtPickup ? (
+              <Badge tone="danger" className="mb-1.5 font-bold">
+                <Store size={10} aria-hidden />
+                At the store
+              </Badge>
+            ) : null}
             <p className="font-semibold">
               Released <Stamp value={stint.endedAt} /> · {capitalise(RELEASE_REASON[stint.release.reason] ?? stint.release.reason)} ·{" "}
               {releaseTail(stint.release)}

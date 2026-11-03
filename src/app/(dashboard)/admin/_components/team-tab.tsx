@@ -8,7 +8,7 @@ import { Avatar, Badge, Button, DataTable, Drawer, Field, Input, KeyValue, Selec
 import { StatusDrawer, normalizePhone, phoneLabel } from "@/components/users/user-actions";
 import { asArray, users, type Team, type User } from "@/lib/admin/api";
 import { PLATFORM_STAFF_ROLES } from "@/lib/admin-access";
-import { ago, fullName, when } from "@/lib/admin/format";
+import { ago, formatEmail, formatPersonName, fullName, when } from "@/lib/admin/format";
 import { useAction, useCountries, useMe, useTeams, useUser, useUsers } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
@@ -64,7 +64,7 @@ const STAFF_COLUMNS: ColumnDef<User, unknown>[] = [
         <Avatar src={row.original.photo} name={fullName(row.original)} size={32} />
         <span className="min-w-0">
           <span className="block truncate text-sm font-bold text-ink">{fullName(row.original) || "Unnamed"}</span>
-          <span className="block truncate text-[11px] text-ink-muted">{row.original.email}</span>
+          <span className="block truncate text-[11px] text-ink-muted">{formatEmail(row.original.email)}</span>
         </span>
       </span>
     ),
@@ -246,7 +246,7 @@ function StaffTable({ onOpen }: { onOpen: (id: string) => void }) {
           <Avatar src={row.photo} name={fullName(row)} size={36} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-bold text-ink">{fullName(row) || "Unnamed"}</p>
-            <p className="truncate text-[11px] text-ink-muted">{row.email}</p>
+            <p className="truncate text-[11px] text-ink-muted">{formatEmail(row.email)}</p>
             <p className="mt-1 flex flex-wrap gap-1">
               {staffRoles(row).map((role) => (
                 <Badge key={role} tone="brand">
@@ -320,7 +320,7 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
   const canChangeStatus = can("user.status") && !isSelf && (!targetIsOwner || iAmOwner);
 
   return (
-    <Drawer open={Boolean(userId)} onClose={onClose} title={member ? fullName(member) || "Team member" : "Team member"} subtitle={member?.email}>
+    <Drawer open={Boolean(userId)} onClose={onClose} title={member ? fullName(member) || "Team member" : "Team member"} subtitle={formatEmail(member?.email) || undefined}>
       {user.isError ? (
         <p className="text-sm font-semibold text-danger">{errorMessage(user.error)}</p>
       ) : !member ? (
@@ -352,7 +352,7 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
           </div>
           <KeyValue
             items={[
-              { label: "Email", value: member.email },
+              { label: "Email", value: formatEmail(member.email) || undefined },
               { label: "Phone", value: phoneLabel(member.phone) },
               { label: "All roles", value: (member.roles ?? []).map((r) => ROLE_LABEL[r] ?? r).join(", ") },
               { label: "Country", value: member.country ? String((member.country as { name?: string }).name ?? member.country) : undefined },
@@ -410,9 +410,9 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
     setError(null);
     const country = list.find((c) => c.code === form.countryCode);
     create.mutate({
-      firstname: form.firstname.trim(),
-      lastname: form.lastname.trim(),
-      email: form.email.trim().toLowerCase(),
+      firstname: formatPersonName(form.firstname),
+      lastname: formatPersonName(form.lastname),
+      email: formatEmail(form.email),
       phone,
       password: form.password,
       role: form.role,

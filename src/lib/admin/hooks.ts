@@ -24,6 +24,9 @@ export const useTopRiders = (range: RangeQuery & { limit?: number }) => useQuery
 export const usePeakHours = (range: RangeQuery) => useQuery({ queryKey: ["stats", "peak-hours", range], queryFn: () => stats.peakHours(range), placeholderData: keepPreviousData });
 export const useCharges = (range: RangeQuery) => useQuery({ queryKey: ["stats", "charges", range], queryFn: () => stats.charges(range), placeholderData: keepPreviousData });
 export const useRiderCharges = (query: Query) => useQuery({ queryKey: ["stats", "charges-riders", query], queryFn: () => stats.chargesByRider(query), ...keep });
+export const useProviderFees = (range: RangeQuery & { bucket?: string }) =>
+  useQuery({ queryKey: ["stats", "provider-fees", range], queryFn: () => stats.providerFees(range), placeholderData: keepPreviousData });
+export const useProviderFeeRows = (query: Query) => useQuery({ queryKey: ["stats", "provider-fee-rows", query], queryFn: () => stats.providerFeeRows(query), ...keep });
 export const useAttention = () => useQuery({ queryKey: ["stats", "attention"], queryFn: stats.attention, refetchInterval: POLL_MS });
 export const useUserOverview = (userId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["stats", "user-overview", userId, range], queryFn: () => stats.userOverview(userId, range), placeholderData: keepPreviousData, enabled: Boolean(userId) });

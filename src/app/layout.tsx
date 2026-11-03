@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { clashDisplay, faktumTest, montserrat, urbanist } from "@/styles/fonts";
+import { adminDigits, clashDisplay, faktumTest, montserrat, urbanist } from "@/styles/fonts";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 import Provider from "@/providers/provider";
@@ -23,7 +23,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(urbanist.variable, clashDisplay.variable, montserrat.variable, faktumTest.variable)}
+      className={cn(urbanist.variable, clashDisplay.variable, montserrat.variable, faktumTest.variable, adminDigits.variable)}
     >
       <head>
         {/* Storefront-matched selectable fonts for the header font switcher. */}

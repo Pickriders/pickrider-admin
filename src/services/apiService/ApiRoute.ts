@@ -156,6 +156,7 @@ import {
   GetActiveOffersData,
   GetAdminPreferencesData,
   GetAllReferralsData,
+  GetArrivalCheckData,
   GetBanksData,
   GetBroadcastData,
   GetBusinessData,
@@ -282,6 +283,9 @@ import {
   PayRiderTripData,
   PayRiderTripRequestDto,
   PeakHoursData,
+  ProviderFeeFlow,
+  ProviderFeeRowsData,
+  ProviderFeesData,
   PublicConfigData,
   QueueOrderData,
   QuoteBatchOrderData,
@@ -749,6 +753,57 @@ export namespace Api {
   }
 
   /**
+   * @description What Paystack took in the window, per money flow, against the window before, with a trend.
+   * @tags admins/stats
+   * @name ProviderFees
+   * @request GET:/api/v1/admins/stats/provider-fees
+   * @secure
+   * @response `200` `ProviderFeesData`
+   */
+  export namespace ProviderFees {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day) */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+      to?: string;
+      /** 1 = everything since the first order */
+      all?: string;
+      bucket?: "day" | "week" | "month";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderFeesData;
+  }
+
+  /**
+   * @description Every Paystack fee in the window, newest first, with what it was charged on and whose money it was.
+   * @tags admins/stats
+   * @name ProviderFeeRows
+   * @request GET:/api/v1/admins/stats/provider-fees/rows
+   * @secure
+   * @response `200` `ProviderFeeRowsData`
+   */
+  export namespace ProviderFeeRows {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day) */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+      to?: string;
+      /** 1 = everything since the first order */
+      all?: string;
+      page?: number;
+      /** At most 100, default 20 */
+      limit?: number;
+      flow?: ProviderFeeFlow;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderFeeRowsData;
+  }
+
+  /**
    * No description
    * @tags admins/stats
    * @name Attention
@@ -866,6 +921,126 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = UserOverviewData;
+  }
+
+  /**
+   * No description
+   * @tags transactions
+   * @name GetTransactions
+   * @request GET:/api/v1/transactions
+   * @secure
+   * @response `200` `GetTransactionsData`
+   */
+  export namespace GetTransactions {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+      /** transaction type filter. commap separated list of TransactionType */
+      type?: string;
+      /** transaction category filter. commap separated list of TransactionCategory */
+      category?: string;
+      /** transaction status filter. comma separated list of TransactionStatus */
+      status?: string;
+      order?: "ASC" | "DESC";
+      page?: number;
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name AdminGetTransactions
+   * @request GET:/api/v1/admins/transactions
+   * @secure
+   * @response `200` `AdminGetTransactionsData`
+   */
+  export namespace AdminGetTransactions {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Reference, description, or wallet owner name / phone / email */
+      search?: any;
+      /** provide a user (entity) id to get transactions for a user */
+      entityId?: string;
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+      /** transaction type filter. commap separated list of TransactionType */
+      type?: string;
+      /** transaction purpose filter. commap separated list of TransactionPurpose */
+      purpose?: string;
+      /** transaction category filter. commap separated list of TransactionCategory */
+      category?: string;
+      /** transaction status filter. comma separated list of TransactionStatus */
+      status?: string;
+      order?: "ASC" | "DESC";
+      page?: number;
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetTransactionsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   * @response `200` `GetExternalPaymentMetricsData`
+   */
+  export namespace GetExternalPaymentMetrics {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** provide a user (entity) id to scope metrics to a single customer */
+      entityId?: string;
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetExternalPaymentMetricsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetTransactionSummary
+   * @request GET:/api/v1/admins/transactions/metrics/summary
+   * @secure
+   * @response `200` `GetTransactionSummaryData`
+   */
+  export namespace GetTransactionSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionSummaryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetTransaction
+   * @request GET:/api/v1/admins/transactions/{transactionId}
+   * @secure
+   * @response `200` `GetTransactionData`
+   */
+  export namespace GetTransaction {
+    export type RequestParams = {
+      transactionId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionData;
   }
 
   /**
@@ -2584,126 +2759,6 @@ export namespace Api {
 
   /**
    * No description
-   * @tags transactions
-   * @name GetTransactions
-   * @request GET:/api/v1/transactions
-   * @secure
-   * @response `200` `GetTransactionsData`
-   */
-  export namespace GetTransactions {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-      /** transaction type filter. commap separated list of TransactionType */
-      type?: string;
-      /** transaction category filter. commap separated list of TransactionCategory */
-      category?: string;
-      /** transaction status filter. comma separated list of TransactionStatus */
-      status?: string;
-      order?: "ASC" | "DESC";
-      page?: number;
-      limit?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name AdminGetTransactions
-   * @request GET:/api/v1/admins/transactions
-   * @secure
-   * @response `200` `AdminGetTransactionsData`
-   */
-  export namespace AdminGetTransactions {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Reference, description, or wallet owner name / phone / email */
-      search?: any;
-      /** provide a user (entity) id to get transactions for a user */
-      entityId?: string;
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-      /** transaction type filter. commap separated list of TransactionType */
-      type?: string;
-      /** transaction purpose filter. commap separated list of TransactionPurpose */
-      purpose?: string;
-      /** transaction category filter. commap separated list of TransactionCategory */
-      category?: string;
-      /** transaction status filter. comma separated list of TransactionStatus */
-      status?: string;
-      order?: "ASC" | "DESC";
-      page?: number;
-      limit?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = AdminGetTransactionsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetExternalPaymentMetrics
-   * @request GET:/api/v1/admins/transactions/metrics/external-payments
-   * @secure
-   * @response `200` `GetExternalPaymentMetricsData`
-   */
-  export namespace GetExternalPaymentMetrics {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** provide a user (entity) id to scope metrics to a single customer */
-      entityId?: string;
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetExternalPaymentMetricsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetTransactionSummary
-   * @request GET:/api/v1/admins/transactions/metrics/summary
-   * @secure
-   * @response `200` `GetTransactionSummaryData`
-   */
-  export namespace GetTransactionSummary {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionSummaryData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetTransaction
-   * @request GET:/api/v1/admins/transactions/{transactionId}
-   * @secure
-   * @response `200` `GetTransactionData`
-   */
-  export namespace GetTransaction {
-    export type RequestParams = {
-      transactionId: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionData;
-  }
-
-  /**
-   * No description
    * @tags admins/coupons
    * @name ListCoupons
    * @summary All coupons with lifecycle, redemptions, discount given and groups
@@ -4342,6 +4397,23 @@ export namespace Api {
       "x-state-code": string;
     };
     export type ResponseBody = GetNearbyRidersCountData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetArrivalCheck
+   * @summary The arrival check for the signed-in rider: whether it is on, and how close they must be
+   * @request GET:/api/v1/orders/riders/arrival-check
+   * @secure
+   * @response `200` `GetArrivalCheckData`
+   */
+  export namespace GetArrivalCheck {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetArrivalCheckData;
   }
 
   /**

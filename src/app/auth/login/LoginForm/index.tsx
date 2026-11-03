@@ -32,6 +32,7 @@ export const LoginForm = () => {
     onSubmit: (values) => {
       loginMutation.mutate({
         password: values.password,
+        // Core matches admin emails exactly as saved, so only trim here (no lowercasing).
         identifier: values.email.trim(),
       });
     },

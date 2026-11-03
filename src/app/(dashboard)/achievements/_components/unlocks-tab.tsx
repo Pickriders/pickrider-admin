@@ -13,6 +13,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { CATEGORY_LABEL, RewardStateBadge } from "./shared";
+import { formatEmail } from "@/lib/admin/person";
 
 const meta = (value: ColumnMeta) => value;
 
@@ -22,7 +23,7 @@ const COLUMNS: ColumnDef<AchievementUnlock, unknown>[] = [
     header: "Customer",
     meta: meta({ csv: { key: "user", label: "Customer", value: (row) => fullName((row as AchievementUnlock).user) } }),
     cell: ({ row }) => {
-      const name = fullName(row.original.user) || row.original.user?.email || "Unknown";
+      const name = fullName(row.original.user) || formatEmail(row.original.user?.email) || "Unknown";
       return (
         <Link
           href={`/customers/${row.original.userId}?tab=badges`}
@@ -33,7 +34,7 @@ const COLUMNS: ColumnDef<AchievementUnlock, unknown>[] = [
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold text-ink">{name}</span>
             <span className="block truncate text-[11px] text-ink-muted">
-              {row.original.user?.phone || row.original.user?.email}
+              {row.original.user?.phone || formatEmail(row.original.user?.email)}
             </span>
           </span>
         </Link>
@@ -151,7 +152,7 @@ export function UnlocksTab() {
             <span className="text-sm font-bold text-ink">{row.title}</span>
             <RewardStateBadge state={row.rewardState} />
           </div>
-          <p className="text-sm text-ink">{fullName(row.user) || row.user?.email}</p>
+          <p className="text-sm text-ink">{fullName(row.user) || formatEmail(row.user?.email)}</p>
           <p className="text-[11px] text-ink-muted">
             {when(row.unlockedAt)}
             {row.couponCode ? ` · ${row.couponCode}` : ""}
