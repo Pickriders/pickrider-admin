@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Badge, cx, statusTone } from "@/components/kit";
 import type { OrderStop } from "@/lib/admin/api";
-import { naira, when } from "@/lib/admin/format";
+import { formatPersonName, naira, when } from "@/lib/admin/format";
 
 import { STOP_STATUS_LABEL, displayPhone, phoneHref, sortedStops, stopCodes, stopContact } from "../../lib";
 
@@ -101,7 +101,7 @@ export function StopsTimeline({ stops }: { stops: OrderStop[] }) {
                 <ul className="mt-2 space-y-1">
                   {stop.recipients.map((recipient, i) => (
                     <li key={recipient._id ?? i} className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-                      <span className="font-semibold text-ink">{recipient.name}</span>
+                      <span className="font-semibold text-ink">{formatPersonName(recipient.name)}</span>
                       {recipient.phone ? <span>{displayPhone(recipient.phone)}</span> : null}
                       <Badge tone={statusTone(recipient.status)}>{STOP_STATUS_LABEL[recipient.status] ?? recipient.status}</Badge>
                     </li>

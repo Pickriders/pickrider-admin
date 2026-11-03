@@ -24,6 +24,7 @@ import {
 } from "@/components/kit";
 import { PinDrawer } from "./finance-setup";
 import { toKobo } from "./lib";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * Moves money from the platform wallet straight into a rider's or customer's
@@ -55,7 +56,7 @@ function UserPicker({ value, onChange }: { value: User | null; onChange: (user: 
         <Avatar src={value.photo} name={fullName(value)} size={40} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-ink">{fullName(value) || value.phone || value._id}</p>
-          <p className="truncate text-xs text-ink-muted">{[value.phone, value.email].filter(Boolean).join(" · ")}</p>
+          <p className="truncate text-xs text-ink-muted">{[value.phone, formatEmail(value.email)].filter(Boolean).join(" · ")}</p>
         </div>
         <Badge tone={value.isRider ? "brand" : "neutral"}>{roleOf(value)}</Badge>
         <Button size="sm" variant="ghost" onClick={() => onChange(null)}>
@@ -92,7 +93,7 @@ function UserPicker({ value, onChange }: { value: User | null; onChange: (user: 
                   <Avatar src={user.photo} name={fullName(user)} size={32} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-ink">{fullName(user) || user.phone || user._id}</span>
-                    <span className="block truncate text-xs text-ink-muted">{[user.phone, user.email].filter(Boolean).join(" · ")}</span>
+                    <span className="block truncate text-xs text-ink-muted">{[user.phone, formatEmail(user.email)].filter(Boolean).join(" · ")}</span>
                   </span>
                   <Badge tone={user.isRider ? "brand" : "neutral"}>{roleOf(user)}</Badge>
                 </button>

@@ -11,6 +11,7 @@ import { ago, count, fullName, naira, nairaCompact, percent, statusLabel, trend 
 import { useCustomersOverview } from "@/lib/admin/hooks";
 
 import { useStatsRange } from "../../dashboard/_components/use-stats-range";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The customer base in a window: how many joined, how many actually used the
@@ -284,7 +285,7 @@ function Leaderboard({
         ) : (
           <ol className="divide-y divide-line">
             {rows.map((row, index) => {
-              const name = fullName(row.user) || row.user?.email || "Customer";
+              const name = fullName(row.user) || formatEmail(row.user?.email) || "Customer";
               return (
                 <li key={row.userId}>
                   <Link href={`/customers/${row.userId}`} className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-surface">
@@ -296,7 +297,7 @@ function Leaderboard({
                         {row.user?.status && row.user.status !== "ACTIVE" ? <Badge tone={statusTone(row.user.status)}>{statusLabel(row.user.status)}</Badge> : null}
                       </span>
                       <span className="block truncate text-[11px] text-ink-muted">
-                        {phoneLabel(row.user?.phone) || row.user?.email || ""} · {detail(row)}
+                        {phoneLabel(row.user?.phone) || formatEmail(row.user?.email) || ""} · {detail(row)}
                       </span>
                     </span>
                     <span className="shrink-0 text-right">

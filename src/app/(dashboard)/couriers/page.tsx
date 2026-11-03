@@ -1,10 +1,27 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Bike, Lock, Megaphone, PauseCircle, ShieldCheck, Wifi } from "lucide-react";
+import { Banknote, Bike, Clock, Lock, Megaphone, Package, PauseCircle, ShieldCheck, Sparkles, Trophy, Wifi } from "lucide-react";
 import { Suspense, useMemo } from "react";
 
-import { Avatar, Badge, Chip, ChipDivider, DataTable, LinkButton, PageHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  Chip,
+  ChipBarSkeleton,
+  ChipDivider,
+  DataTable,
+  DataTableSkeleton,
+  LinkButton,
+  MenuFilters,
+  MenuSelect,
+  PageHeader,
+  ProfileCardSkeleton,
+  cx,
+  statusTone,
+  type ColumnMeta,
+  type FilterSpec,
+} from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import { LICENCE_LABEL, licenceTone } from "@/components/users/user-panels";
 import type { KycStatus, User } from "@/lib/admin/api";
@@ -12,6 +29,7 @@ import { ago, count, day, fullName, naira, statusLabel } from "@/lib/admin/forma
 import { useAttention, useUsers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { errorMessage } from "@/lib/admin/http";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The rider leaderboard: GET admins/users?isRider=true with lifetime
@@ -65,11 +83,11 @@ const FILTERS: FilterSpec[] = [
 ];
 
 const SORTS = [
-  { value: "completedDeliveries", label: "Deliveries" },
-  { value: "totalEarned", label: "Earned" },
-  { value: "deliveriesAndEarnings", label: "Deliveries + earned" },
-  { value: "lastLoginDate", label: "Last seen" },
-  { value: "createdAt", label: "Newest" },
+  { value: "completedDeliveries", label: "Deliveries", icon: Package },
+  { value: "totalEarned", label: "Earned", icon: Banknote },
+  { value: "deliveriesAndEarnings", label: "Deliveries + earned", icon: Trophy },
+  { value: "lastLoginDate", label: "Last seen", icon: Clock },
+  { value: "createdAt", label: "Newest", icon: Sparkles },
 ];
 
 const MEDAL: Record<number, string> = {
@@ -91,7 +109,7 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
       const n = offset + row.index + 1;
       return <span className={cx("grid h-6 w-6 place-items-center rounded-full text-xs font-bold tabular-nums", MEDAL[n] ?? "text-ink-faint")}>{n}</span>;
     },
-    meta: { width: "48px" } satisfies ColumnMeta,
+    meta: { width: "48px", skeleton: "line" } satisfies ColumnMeta,
   },
   {
     id: "rider",
@@ -110,12 +128,12 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
           </span>
           <div className="min-w-0">
             <p className="truncate font-semibold text-ink">{name}</p>
-            <p className="truncate text-xs text-ink-muted">{phoneLabel(u.phone) || u.email}</p>
+            <p className="truncate text-xs text-ink-muted">{phoneLabel(u.phone) || formatEmail(u.email)}</p>
           </div>
         </div>
       );
     },
-    meta: { csv: { key: "name", label: "Name", value: (r) => fullName(r as User) } } satisfies ColumnMeta,
+    meta: { skeleton: "profile", csv: { key: "name", label: "Name", value: (r) => fullName(r as User) } } satisfies ColumnMeta,
   },
   {
     id: "status",
@@ -133,13 +151,13 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
         ) : null}
       </span>
     ),
-    meta: { csv: { key: "status", label: "Account" } } satisfies ColumnMeta,
+    meta: { skeleton: "pill", csv: { key: "status", label: "Account" } } satisfies ColumnMeta,
   },
   {
     id: "licence",
     header: "Licence",
     cell: ({ row }) => <Badge tone={licenceTone(row.original.driversLicenseVerified)}>{shortLicence(row.original.driversLicenseVerified)}</Badge>,
-    meta: { csv: { key: "driversLicenseVerified", label: "Licence" } } satisfies ColumnMeta,
+    meta: { skeleton: "pill", csv: { key: "driversLicenseVerified", label: "Licence" } } satisfies ColumnMeta,
   },
   {
     id: "dispatch",
@@ -152,7 +170,7 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
       ) : (
         <span className="text-xs text-ink-faint">Ringing</span>
       ),
-    meta: { hideBelow: "lg", csv: { key: "dispatchPaused", label: "Dispatch paused" } } satisfies ColumnMeta,
+    meta: { hideBelow: "lg", skeleton: "pill", csv: { key: "dispatchPaused", label: "Dispatch paused" } } satisfies ColumnMeta,
   },
   {
     id: "deliveries",
@@ -193,7 +211,7 @@ function RiderCard({ row }: { row: User }) {
           <p className="truncate font-semibold text-ink">{name}</p>
           <Badge tone={licenceTone(row.driversLicenseVerified)}>{shortLicence(row.driversLicenseVerified)}</Badge>
         </div>
-        <p className="truncate text-xs text-ink-muted">{phoneLabel(row.phone) || row.email}</p>
+        <p className="truncate text-xs text-ink-muted">{phoneLabel(row.phone) || formatEmail(row.email)}</p>
         <p className="mt-1 text-xs text-ink-faint">
           {count(row.completedDeliveries)} deliveries · {naira(row.totalEarned)} earned
           {row.dispatchPaused ? " · dispatch paused" : ""}
@@ -235,29 +253,74 @@ function CouriersList() {
   const toReview = attention.data?.licencesAwaitingReview ?? 0;
   const pausedCount = attention.data?.ridersPausedFromDispatch ?? 0;
 
+  const sortBy = (value: string) => table.update({ sortBy: value, order: "DESC" });
+  const toggleReview = () => table.setFilter("driversLicenseVerified", reviewing ? undefined : "SUBMITTED");
+  const toggleOnline = () => table.setFilter("isOnline", onlineOnly ? undefined : "true");
+  const togglePaused = () => table.setFilter("dispatchPaused", pausedOnly ? undefined : "true");
+  const toggleRestricted = () => table.setFilter("withdrawalRestricted", restrictedOnly ? undefined : "true");
+  // Clear only what the quick filters set, so a licence or dispatch filter picked in the panel survives.
+  const clearQuick = () =>
+    table.update({
+      driversLicenseVerified: reviewing ? undefined : state.filters.driversLicenseVerified,
+      isOnline: onlineOnly ? undefined : state.filters.isOnline,
+      dispatchPaused: pausedOnly ? undefined : state.filters.dispatchPaused,
+      withdrawalRestricted: restrictedOnly ? undefined : state.filters.withdrawalRestricted,
+    });
+
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Phones and small tablets: two compact menus instead of wrapping chip rows. */}
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        <MenuSelect label="Sort" title="Top by" value={state.sortBy} options={SORTS} onChange={sortBy} placeholder="Custom" />
+        <MenuFilters
+          title="Quick filters"
+          align="end"
+          onClear={clearQuick}
+          toggles={[
+            {
+              id: "review",
+              label: "Licences to review",
+              icon: ShieldCheck,
+              tone: "warning",
+              count: toReview ? count(toReview) : undefined,
+              active: reviewing,
+              onToggle: toggleReview,
+            },
+            { id: "online", label: "Online now", icon: Wifi, active: onlineOnly, onToggle: toggleOnline },
+            {
+              id: "paused",
+              label: "Paused from dispatch",
+              icon: PauseCircle,
+              tone: "warning",
+              count: pausedCount ? count(pausedCount) : undefined,
+              active: pausedOnly,
+              onToggle: togglePaused,
+            },
+            { id: "restricted", label: "Withdrawals restricted", icon: Lock, tone: "warning", active: restrictedOnly, onToggle: toggleRestricted },
+          ]}
+        />
+      </div>
+      <div className="hidden flex-wrap items-center gap-2 md:flex">
         <span className="mr-1 text-xs font-semibold text-ink-faint">Top by</span>
         {SORTS.map((s) => (
-          <Chip key={s.value} active={state.sortBy === s.value} onClick={() => table.update({ sortBy: s.value, order: "DESC" })}>
+          <Chip key={s.value} active={state.sortBy === s.value} onClick={() => sortBy(s.value)}>
             {s.label}
           </Chip>
         ))}
         <ChipDivider />
-        <Chip tone="warning" active={reviewing} onClick={() => table.setFilter("driversLicenseVerified", reviewing ? undefined : "SUBMITTED")}>
+        <Chip tone="warning" active={reviewing} onClick={toggleReview}>
           <ShieldCheck size={13} />
           Licences to review{toReview ? ` · ${count(toReview)}` : ""}
         </Chip>
-        <Chip active={onlineOnly} onClick={() => table.setFilter("isOnline", onlineOnly ? undefined : "true")}>
+        <Chip active={onlineOnly} onClick={toggleOnline}>
           <Wifi size={13} />
           Online now
         </Chip>
-        <Chip tone="warning" active={pausedOnly} onClick={() => table.setFilter("dispatchPaused", pausedOnly ? undefined : "true")}>
+        <Chip tone="warning" active={pausedOnly} onClick={togglePaused}>
           <PauseCircle size={13} />
           Paused from dispatch{pausedCount ? ` · ${count(pausedCount)}` : ""}
         </Chip>
-        <Chip tone="warning" active={restrictedOnly} onClick={() => table.setFilter("withdrawalRestricted", restrictedOnly ? undefined : "true")}>
+        <Chip tone="warning" active={restrictedOnly} onClick={toggleRestricted}>
           <Lock size={13} />
           Withdrawals restricted
         </Chip>
@@ -277,6 +340,7 @@ function CouriersList() {
         emptyDescription={table.activeFilterCount ? "Try clearing a filter or the search." : "Riders who sign up on the rider app appear here."}
         rowHref={(row) => `/couriers/${row._id}/details`}
         mobileCard={(row) => <RiderCard row={row} />}
+        mobileCardSkeleton={<ProfileCardSkeleton />}
         toolbarExtra={
           <LinkButton href="/messaging?audience=RIDERS" variant="outline" size="md" icon={Megaphone}>
             <span>Message riders</span>
@@ -287,11 +351,28 @@ function CouriersList() {
   );
 }
 
+/** Until the search params resolve: the Sort and Quick filters menus (chips from md) and the table. */
+function CouriersListFallback() {
+  const columns = buildColumns(0).map((column) => ({
+    ...(column.meta as ColumnMeta),
+    header: typeof column.header === "string" ? column.header : undefined,
+  }));
+  return (
+    <div className="space-y-3" aria-busy="true">
+      <ChipBarSkeleton chips={["w-24", "w-20", "w-36", "w-24", "w-24"]} filters={["w-36", "w-28", "w-40", "w-44"]} />
+      <DataTableSkeleton
+        columns={columns}
+        mobileCard={<ProfileCardSkeleton />}
+      />
+    </div>
+  );
+}
+
 export default function CouriersPage() {
   return (
     <div>
       <PageHeader title="Couriers" description="Riders ranked by what they deliver. Verify licences, pause dispatch and fix balances from here." />
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      <Suspense fallback={<CouriersListFallback />}>
         <CouriersList />
       </Suspense>
     </div>

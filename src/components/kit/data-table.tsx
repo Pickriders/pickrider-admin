@@ -15,6 +15,8 @@ import { downloadCsv, toCsv } from "@/lib/admin/api";
 import { useTableState } from "@/lib/admin/url-state";
 import { Button, EmptyState, ErrorState, Input, Panel, Select, Skeleton, cx } from "@/components/kit/primitives";
 import { DateRangeButton } from "@/components/kit/range-tabs";
+import { TableScroll } from "@/components/kit/scroll-row";
+import { SkeletonTableRows, type CellSkeleton } from "@/components/kit/skeletons";
 
 /**
  * The one table every admin list uses. Server-paginated, URL-driven, with the
@@ -27,8 +29,10 @@ export type ColumnMeta = {
   align?: "left" | "right" | "center";
   width?: string;
   /** Column hidden below this breakpoint; the card view shows it instead. */
-  hideBelow?: "sm" | "md" | "lg" | "xl";
+  hideBelow?: "sm" | "md" | "lg" | "xl" | "2xl";
   csv?: { key: string; label: string; value?: (row: unknown) => unknown };
+  /** The cell's loading shape, so skeleton rows are as tall as real ones (default: one line). */
+  skeleton?: CellSkeleton;
 };
 
 export type FilterSpec = {
@@ -55,11 +59,20 @@ export type DataTableProps<T> = {
   onRowClick?: (row: T) => void;
   rowHref?: (row: T) => string | undefined;
   mobileCard?: (row: T) => ReactNode;
+  /** The card's loading shape on phones; defaults to two plain lines. */
+  mobileCardSkeleton?: ReactNode;
   toolbarExtra?: ReactNode;
   defaultSort?: { sortBy: string; order: "ASC" | "DESC" };
   /** Keeps the toolbar in a Panel of its own when the table sits inside another. */
   bare?: boolean;
   liveHint?: ReactNode;
+  /** Tighter cells for dense lists (orders); the default suits most tables. */
+  density?: "default" | "compact";
+  /**
+   * Caps the table at the viewport and scrolls inside it, so the header row stays pinned while
+   * the rows move. Desktop only; phones use the cards.
+   */
+  stickyHeader?: boolean;
 };
 
 const HIDE: Record<NonNullable<ColumnMeta["hideBelow"]>, string> = {
@@ -67,6 +80,7 @@ const HIDE: Record<NonNullable<ColumnMeta["hideBelow"]>, string> = {
   md: "hidden md:table-cell",
   lg: "hidden lg:table-cell",
   xl: "hidden xl:table-cell",
+  "2xl": "hidden 2xl:table-cell",
 };
 
 export function DataTable<T extends Record<string, unknown>>({
@@ -86,11 +100,15 @@ export function DataTable<T extends Record<string, unknown>>({
   onRowClick,
   rowHref,
   mobileCard,
+  mobileCardSkeleton,
   toolbarExtra,
   defaultSort,
   bare,
   liveHint,
+  density = "default",
+  stickyHeader,
 }: DataTableProps<T>) {
+  const compact = density === "compact";
   const router = useRouter();
   const table = useTableState({ limit: 20, sortBy: defaultSort?.sortBy, order: defaultSort?.order });
   const { state } = table;
@@ -223,7 +241,10 @@ export function DataTable<T extends Record<string, unknown>>({
         key={header.id}
         style={{ width: meta.width }}
         className={cx(
-          "sticky top-0 z-10 whitespace-nowrap border-b border-line bg-card px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-ink-faint",
+          "sticky top-0 z-10 whitespace-nowrap bg-card text-[11px] font-bold uppercase tracking-wide text-ink-faint",
+          compact ? "px-3 py-2 first:pl-4 last:pr-4" : "px-4 py-2.5",
+          // border-collapse drops a sticky cell's border once it pins; an inset shadow keeps the rule.
+          stickyHeader ? "shadow-[inset_0_-1px_0_hsl(var(--border))]" : "border-b border-line",
           meta.align === "right" ? "text-right" : meta.align === "center" ? "text-center" : "text-left",
           meta.hideBelow ? HIDE[meta.hideBelow] : "",
         )}
@@ -254,7 +275,7 @@ export function DataTable<T extends Record<string, unknown>>({
           if (onRowClick) onRowClick(row.original);
           else if (href) router.push(href);
         }}
-        className={cx("border-b border-line last:border-0 transition-colors", clickable && "cursor-pointer hover:bg-surface")}
+        className={cx("border-b border-line last:border-0 transition-colors", clickable && "cursor-pointer hover:bg-surface/80")}
       >
         {row.getVisibleCells().map((cell) => {
           const meta = (cell.column.columnDef.meta ?? {}) as ColumnMeta;
@@ -262,7 +283,8 @@ export function DataTable<T extends Record<string, unknown>>({
             <td
               key={cell.id}
               className={cx(
-                "px-4 py-3 align-middle text-sm text-ink",
+                "align-middle text-sm text-ink",
+                compact ? "px-3 py-2.5 first:pl-4 last:pr-4" : "px-4 py-3",
                 meta.align === "right" ? "text-right" : meta.align === "center" ? "text-center" : "text-left",
                 meta.hideBelow ? HIDE[meta.hideBelow] : "",
               )}
@@ -276,6 +298,8 @@ export function DataTable<T extends Record<string, unknown>>({
   };
 
   const skeletonRows = Array.from({ length: Math.min(state.limit, 8) });
+  // Same widths, alignment and breakpoints as the real cells, so the first page lands in place.
+  const skeletonColumns = instance.getVisibleLeafColumns().map((column) => (column.columnDef.meta ?? {}) as ColumnMeta);
 
   const body = (
     <>
@@ -293,12 +317,18 @@ export function DataTable<T extends Record<string, unknown>>({
           {mobileCard ? (
             <div className="mt-3 divide-y divide-line md:hidden">
               {loading && !rows.length
-                ? skeletonRows.map((_, i) => (
-                    <div key={i} className="space-y-2 px-4 py-3">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-3 w-3/4" />
-                    </div>
-                  ))
+                ? skeletonRows.map((_, i) =>
+                    mobileCardSkeleton ? (
+                      <div key={i} className="px-4 py-3" aria-hidden>
+                        {mobileCardSkeleton}
+                      </div>
+                    ) : (
+                      <div key={i} className="space-y-2 px-4 py-3">
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-3 w-3/4" />
+                      </div>
+                    ),
+                  )
                 : rows.map((row, index) => {
                     const href = rowHref?.(row);
                     return (
@@ -316,7 +346,15 @@ export function DataTable<T extends Record<string, unknown>>({
                   })}
             </div>
           ) : null}
-          <div className={cx("admin-scroll mt-3 overflow-x-auto", mobileCard && "hidden md:block")}>
+          {/* Only the scroller is wrapped: the sticky header and vertical scroll are untouched, the
+              edges fade when columns are hidden sideways, and the arrows sit by the header row. */}
+          <TableScroll
+            className={cx("mt-3", mobileCard && "hidden md:block")}
+            innerClassName={cx(
+              stickyHeader && "md:max-h-[calc(100dvh-14rem)] md:overflow-y-auto md:overscroll-y-contain",
+            )}
+            arrowTop={compact ? "16px" : "19px"}
+          >
             <table className="w-full border-collapse">
               <thead>
                 {instance.getHeaderGroups().map((group) => (
@@ -324,20 +362,14 @@ export function DataTable<T extends Record<string, unknown>>({
                 ))}
               </thead>
               <tbody className={cx(loading && rows.length ? "opacity-60 transition-opacity" : "")}>
-                {loading && !rows.length
-                  ? skeletonRows.map((_, i) => (
-                      <tr key={i} className="border-b border-line">
-                        {columns.map((_, j) => (
-                          <td key={j} className="px-4 py-3">
-                            <Skeleton className="h-4 w-full max-w-[140px]" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  : instance.getRowModel().rows.map(bodyRow)}
+                {loading && !rows.length ? (
+                  <SkeletonTableRows columns={skeletonColumns} rows={skeletonRows.length} compact={compact} />
+                ) : (
+                  instance.getRowModel().rows.map(bodyRow)
+                )}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
         </>
       )}
       <div className="flex flex-col items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-ink-muted sm:flex-row">

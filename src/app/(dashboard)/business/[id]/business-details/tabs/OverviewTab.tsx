@@ -9,6 +9,7 @@ import { useBusinessOrderStatistics, useBusinessOrders, useBusinessWallets } fro
 import { Badge, Button, KeyValue, Panel, PanelHeader, Skeleton, StatCard, StatGrid, statusTone } from "@/components/kit";
 
 import { BUSINESS_TYPE_LABEL, SERVICE_TYPE_LABEL, type BusinessTab } from "../BusinessDetail";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The business at a glance: wallet, order totals, profile fields, the wallets
@@ -78,7 +79,7 @@ export function OverviewTab({
                   items={[
                     { label: "Name", value: business?.name },
                     { label: "Handle", value: business?.businessHandle ? `@${business.businessHandle}` : undefined },
-                    { label: "Email", value: business?.email },
+                    { label: "Email", value: formatEmail(business?.email) || undefined },
                     { label: "Phone", value: business?.phone },
                     { label: "Business type", value: business?.type ? BUSINESS_TYPE_LABEL[business.type] ?? business.type : undefined },
                     { label: "Service model", value: business?.businessType ? SERVICE_TYPE_LABEL[business.businessType] ?? business.businessType : undefined },

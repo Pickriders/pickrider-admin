@@ -6,7 +6,8 @@ import { useState, type MouseEvent } from "react";
 
 import { Avatar, Badge, cx, statusTone, type Tone } from "@/components/kit";
 import type { TransactionOwner, TransactionOwnerKind } from "@/lib/admin/api";
-import { statusLabel } from "@/lib/admin/format";
+import { formatEmail, statusLabel } from "@/lib/admin/format";
+import { ownerName } from "@/lib/admin/person";
 
 import { phoneLabel } from "./user-actions";
 
@@ -70,7 +71,7 @@ function KindAvatar({ person, size }: { person: TransactionOwner; size: number }
   }
   return (
     <span className="relative shrink-0">
-      <Avatar src={person.photo} name={person.name} size={size} />
+      <Avatar src={person.photo} name={ownerName(person)} size={size} />
       {person.kind === "RIDER" && person.isOnline !== undefined ? (
         <span
           className={cx("absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card", person.isOnline ? "bg-success" : "bg-line-strong")}
@@ -82,29 +83,77 @@ function KindAvatar({ person, size }: { person: TransactionOwner; size: number }
   );
 }
 
-export function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+/** Writes to the clipboard, falling back to a hidden textarea where the async API is missing (plain http). */
+async function copyText(text: string) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+  const ok = document.execCommand("copy");
+  document.body.removeChild(area);
+  if (!ok) throw new Error("copy failed");
+}
+
+/**
+ * Copies `text` without letting the click reach a surrounding link or row. `inline` adds a small
+ * "Copied" label next to the tick; either way screen readers hear "Copied".
+ */
+export function CopyButton({
+  text,
+  label = "Copy",
+  size = "sm",
+  inline = false,
+}: {
+  text: string;
+  label?: string;
+  size?: "sm" | "md";
+  inline?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
   const copy = (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    navigator.clipboard
-      ?.writeText(text)
+    copyText(text)
       .then(() => {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 1500);
       })
       .catch(() => undefined);
   };
+  const md = size === "md";
   return (
-    <button
-      type="button"
-      onClick={copy}
-      title={copied ? "Copied" : label}
-      aria-label={label}
-      className="relative z-10 grid h-6 w-6 shrink-0 place-items-center rounded-md text-ink-faint transition-colors hover:bg-card hover:text-ink"
-    >
-      {copied ? <Check size={12} className="text-success" /> : <Copy size={12} />}
-    </button>
+    <span className="relative z-10 inline-flex shrink-0 items-center">
+      <button
+        type="button"
+        onClick={copy}
+        title={copied ? "Copied" : label}
+        aria-label={label}
+        className={cx(
+          "grid shrink-0 place-items-center rounded-md text-ink-faint transition-colors hover:bg-card hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30",
+          md ? "h-7 w-7 hover:bg-surface" : "h-6 w-6",
+        )}
+      >
+        {copied ? <Check size={md ? 14 : 12} className="text-success" /> : <Copy size={md ? 13 : 12} />}
+      </button>
+      {inline ? (
+        <span
+          aria-hidden
+          className={cx(
+            "pointer-events-none whitespace-nowrap text-[11px] font-bold text-success transition-opacity duration-150",
+            copied ? "opacity-100" : "w-0 overflow-hidden opacity-0",
+          )}
+        >
+          Copied
+        </span>
+      ) : null}
+      <span role="status" aria-live="polite" className="sr-only">
+        {copied ? "Copied" : ""}
+      </span>
+    </span>
   );
 }
 
@@ -161,7 +210,7 @@ export function PersonCard({
           href={href}
           prefetch={false}
           className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-          aria-label={`View ${person.name}'s profile`}
+          aria-label={`View ${ownerName(person)}'s profile`}
         />
       ) : null}
       {label || href ? (
@@ -178,7 +227,7 @@ export function PersonCard({
         <KindAvatar person={person} size={avatarSize} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <p className={cx("max-w-full truncate font-bold text-ink", small ? "text-sm" : "text-base tracking-tight")}>{person.name}</p>
+            <p className={cx("max-w-full truncate font-bold text-ink", small ? "text-sm" : "text-base tracking-tight")}>{ownerName(person)}</p>
             <Badge tone={KIND_TONE[person.kind]}>{OWNER_KIND_LABEL[person.kind]}</Badge>
             {showStatus ? (
               <Badge tone={statusTone(person.status)} dot>
@@ -202,7 +251,7 @@ export function PersonCard({
           {person.email && !small ? (
             <p className="flex min-w-0 items-center gap-1.5 text-xs text-ink-faint">
               <Mail size={12} className="shrink-0" />
-              <span className="truncate">{person.email}</span>
+              <span className="truncate">{formatEmail(person.email)}</span>
             </p>
           ) : null}
         </div>
@@ -220,7 +269,7 @@ export function PersonInline({ person, fallback = "Wallet" }: { person: Transact
       <KindAvatar person={person} size={28} />
       <span className="min-w-0">
         <span className={cx("block truncate text-sm font-semibold", person.missing ? "text-ink-muted" : "text-ink group-hover:text-brand-dark")}>
-          {person.missing ? "Account removed" : person.name}
+          {person.missing ? "Account removed" : ownerName(person)}
         </span>
         <span className="block truncate text-[11px] text-ink-faint">{OWNER_KIND_LABEL[person.kind]}</span>
       </span>

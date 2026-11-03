@@ -1,9 +1,43 @@
 "use client";
 
-import { Ban, Check, ImageOff, Lock, LockOpen, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, Search, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
+import {
+  Ban,
+  Check,
+  ImageOff,
+  Lock,
+  LockOpen,
+  MinusCircle,
+  PauseCircle,
+  Phone,
+  PlayCircle,
+  PlusCircle,
+  Search,
+  ShieldCheck,
+  Undo2,
+  Wallet as WalletIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { Badge, Button, ConfirmDialog, Drawer, Field, Input, Select, Skeleton, Textarea, cx, useDebounced } from "@/components/kit";
+import {
+  ActionMenu,
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  Field,
+  Input,
+  Select,
+  Skeleton,
+  Textarea,
+  cx,
+  useDebounced,
+  useMediaQuery,
+  type ButtonProps,
+  type MenuItem,
+  type MenuSection,
+  type MenuTone,
+} from "@/components/kit";
 import {
   users,
   type RefundableOrder,
@@ -68,6 +102,18 @@ export function userInvalidations(userId: string) {
   return [["stats", "user-overview"], ["user", userId], ["user-wallets", userId], "customers", "users", "transactions", "orders", ["stats", "attention"]];
 }
 
+type ActionDef = {
+  id: UserActionKind;
+  label: string;
+  icon: LucideIcon;
+  tone?: MenuTone;
+  /** Button styling when the action is shown inline. */
+  variant?: ButtonProps["variant"];
+  className?: string;
+};
+
+const TONE_TEXT: Partial<Record<MenuTone, string>> = { warning: "text-warning", success: "text-success", danger: "text-danger" };
+
 export function UserActions({
   user,
   wallet,
@@ -93,67 +139,90 @@ export function UserActions({
   const paused = Boolean(user.dispatchPaused);
   const { can } = useCan();
   const restricted = Boolean((restriction ?? user.withdrawalRestriction)?.active);
+  // Desktops have room for a third inline action and a separate Suspend; phones and tablets get two plus "More".
+  const wide = useMediaQuery("(min-width: 1280px)");
+
+  // Most used first. The first two (three on a desktop) are buttons; the rest go in "More".
+  const actions: ActionDef[] = [];
+  if (showDispatch && can("user.dispatch")) {
+    actions.push(
+      paused
+        ? { id: "dispatch", label: "Resume dispatch", icon: PlayCircle, tone: "success", variant: "success" }
+        : { id: "dispatch", label: "Stop ringing", icon: PauseCircle },
+    );
+  }
+  if (showRefund && can("wallet.refund")) actions.push({ id: "refund", label: "Refund order", icon: Undo2 });
+  if (can("wallet.adjust")) actions.push({ id: "wallet", label: "Adjust wallet", icon: WalletIcon });
+  if ((showWithdrawals || restricted) && can("user.withdrawals")) {
+    actions.push(
+      restricted
+        ? { id: "withdrawals", label: "Lift withdrawal restriction", icon: LockOpen, tone: "success" }
+        : { id: "withdrawals", label: "Restrict withdrawals", icon: Lock, tone: "warning" },
+    );
+  }
+  if (can("user.phone")) actions.push({ id: "phone", label: "Change phone", icon: Phone });
+  if (user.photo && can("user.photo")) {
+    actions.push({ id: "photo", label: "Remove photo", icon: ImageOff, tone: isFailedUploadPhoto(user.photo) ? "warning" : undefined });
+  }
+  const status: ActionDef | null = can("user.status")
+    ? isActive
+      ? { id: "status", label: "Suspend", icon: Ban, tone: "danger" }
+      : { id: "status", label: "Activate", icon: ShieldCheck, tone: "success" }
+    : null;
+
+  const inlineCount = wide ? 3 : 2;
+  const inline = actions.slice(0, inlineCount);
+  const overflow = actions.slice(inlineCount);
+  const statusInline = wide && status;
+
+  const toItem = (action: ActionDef): MenuItem => ({
+    id: action.id,
+    label: action.label,
+    icon: action.icon,
+    tone: action.tone,
+    onSelect: () => setOpen(action.id),
+  });
+  const menuSections: MenuSection[] = [
+    { id: "more", items: overflow.map(toItem) },
+    { id: "account", label: "Account", items: status && !statusInline ? [toItem(status)] : [] },
+  ];
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center xl:justify-end [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*]:w-auto">
-        {showDispatch && can("user.dispatch") ? (
+      <div className="flex w-full min-w-0 items-center gap-2 lg:w-auto lg:justify-end">
+        {inline.map((action) => (
           <Button
+            key={action.id}
             size={size}
-            variant={paused ? "success" : "outline"}
-            icon={paused ? PlayCircle : PauseCircle}
-            onClick={() => setOpen("dispatch")}
+            variant={action.variant ?? "outline"}
+            icon={action.icon}
+            onClick={() => setOpen(action.id)}
+            className={cx(
+              "min-w-0 flex-1 lg:flex-none [&>span]:truncate",
+              action.variant ? undefined : action.tone ? TONE_TEXT[action.tone] : undefined,
+            )}
+            title={action.label}
           >
-            {paused ? "Resume dispatch" : "Stop ringing"}
+            <span>{action.label}</span>
           </Button>
-        ) : null}
-        {(showWithdrawals || restricted) && can("user.withdrawals") ? (
-          <Button
-            size={size}
-            variant="outline"
-            icon={restricted ? LockOpen : Lock}
-            className={restricted ? "text-success" : "text-warning"}
-            onClick={() => setOpen("withdrawals")}
-          >
-            {restricted ? "Lift withdrawal restriction" : "Restrict withdrawals"}
-          </Button>
-        ) : null}
-        {can("wallet.adjust") ? (
-          <Button size={size} variant="outline" icon={WalletIcon} onClick={() => setOpen("wallet")}>
-            Adjust wallet
-          </Button>
-        ) : null}
-        {showRefund && can("wallet.refund") ? (
-          <Button size={size} variant="outline" icon={Undo2} onClick={() => setOpen("refund")}>
-            Refund order
-          </Button>
-        ) : null}
-        {user.photo && can("user.photo") ? (
-          <Button
-            size={size}
-            variant="outline"
-            icon={ImageOff}
-            className={isFailedUploadPhoto(user.photo) ? "text-warning" : undefined}
-            onClick={() => setOpen("photo")}
-          >
-            Remove photo
-          </Button>
-        ) : null}
-        {can("user.phone") ? (
-          <Button size={size} variant="outline" icon={Phone} onClick={() => setOpen("phone")}>
-            Change phone
-          </Button>
-        ) : null}
-        {can("user.status") ? (
-          <Button
-            size={size}
-            variant="outline"
-            icon={isActive ? Ban : ShieldAlert}
-            className={isActive ? "text-danger" : "text-success"}
-            onClick={() => setOpen("status")}
-          >
-            {isActive ? "Suspend" : "Change status"}
-          </Button>
+        ))}
+        <ActionMenu sections={menuSections} iconOnly={inline.length > 0} title={`More actions for ${fullName(user) || "this user"}`} />
+        {statusInline ? (
+          <>
+            <span className="mx-1 h-6 w-px shrink-0 bg-line" aria-hidden />
+            <Button
+              size={size}
+              variant="outline"
+              icon={statusInline.icon}
+              onClick={() => setOpen("status")}
+              className={cx(
+                "shrink-0",
+                statusInline.tone === "danger" ? "border-danger/40 text-danger hover:bg-danger-soft" : "border-success/40 text-success hover:bg-success-soft",
+              )}
+            >
+              {statusInline.label}
+            </Button>
+          </>
         ) : null}
       </div>
 

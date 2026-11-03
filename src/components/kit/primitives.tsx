@@ -12,6 +12,8 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 
+import { ScrollRow } from "@/components/kit/scroll-row";
+
 /** Tiny class joiner; keeps the kit dependency-free. */
 export function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -456,36 +458,43 @@ export function Tabs<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cx("admin-scroll -mx-1 flex gap-1 overflow-x-auto px-1", className)} role="tablist">
-      {items.map((item) => {
-        const active = item.id === value;
-        return (
-          <button
-            key={item.id}
-            role="tab"
-            aria-selected={active}
-            type="button"
-            onClick={() => onChange(item.id)}
-            className={cx(
-              "flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors",
-              active ? "bg-ink text-card" : "text-ink-muted hover:bg-surface hover:text-ink",
-            )}
-          >
-            {item.label}
-            {item.count != null ? (
-              <span
-                className={cx(
-                  "rounded-full px-1.5 text-[11px]",
-                  active ? "bg-card/20 text-card" : "bg-line text-ink-muted",
-                )}
-              >
-                {item.count}
-              </span>
-            ) : null}
-          </button>
-        );
-      })}
-    </div>
+    <ScrollRow
+      className={cx("-mx-1", className)}
+      innerClassName="px-1"
+      peekKey={`tabs:${items.map((item) => item.id).join(",")}`}
+      activeKey={value}
+    >
+      <div className="flex w-max gap-1" role="tablist">
+        {items.map((item) => {
+          const active = item.id === value;
+          return (
+            <button
+              key={item.id}
+              role="tab"
+              aria-selected={active}
+              type="button"
+              onClick={() => onChange(item.id)}
+              className={cx(
+                "flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors",
+                active ? "bg-ink text-card" : "text-ink-muted hover:bg-surface hover:text-ink",
+              )}
+            >
+              {item.label}
+              {item.count != null ? (
+                <span
+                  className={cx(
+                    "rounded-full px-1.5 text-[11px]",
+                    active ? "bg-card/20 text-card" : "bg-line text-ink-muted",
+                  )}
+                >
+                  {item.count}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </ScrollRow>
   );
 }
 

@@ -4,6 +4,7 @@ import { LifeBuoy } from "lucide-react";
 import { useMemo } from "react";
 
 import { DataTable, cx } from "@/components/kit";
+import { ScrollRow } from "@/components/kit/scroll-row";
 import type { Issue, IssuesSummary, Paged } from "@/lib/admin/api";
 import { useIssues, useIssuesSummary, useMe } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
@@ -65,48 +66,51 @@ export function QueueTab() {
 
   return (
     <div>
-      <div className="admin-scroll -mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
-        {CHIPS.map((chip) => {
-          const active = view === chip.id;
-          const count = chip.count?.(summary.data);
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              onClick={() =>
-                table.update({
-                  view: chip.id === "open" ? undefined : chip.id,
-                  status: undefined,
-                  priority: undefined,
-                  assignedTo: undefined,
-                })
-              }
-              className={cx(
-                "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
-                active
-                  ? "border-transparent bg-ink text-card"
-                  : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
-              )}
-            >
-              {chip.label}
-              {count != null && count > 0 ? (
-                <span
-                  className={cx(
-                    "rounded-full px-1.5 text-[11px]",
-                    active
-                      ? "bg-card/20 text-card"
-                      : chip.id === "overdue" || chip.id === "high"
-                        ? "bg-danger-soft text-danger"
-                        : "bg-warning-soft text-warning",
-                  )}
-                >
-                  {count}
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
+      <ScrollRow className="-mx-1 mb-4" innerClassName="px-1 pb-1" label="Issue views" peekKey="support-queue-chips" activeKey={view}>
+        <div className="flex w-max gap-2">
+          {CHIPS.map((chip) => {
+            const active = view === chip.id;
+            const count = chip.count?.(summary.data);
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() =>
+                  table.update({
+                    view: chip.id === "open" ? undefined : chip.id,
+                    status: undefined,
+                    priority: undefined,
+                    assignedTo: undefined,
+                  })
+                }
+                className={cx(
+                  "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                  active
+                    ? "border-transparent bg-ink text-card"
+                    : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
+                )}
+              >
+                {chip.label}
+                {count != null && count > 0 ? (
+                  <span
+                    className={cx(
+                      "rounded-full px-1.5 text-[11px]",
+                      active
+                        ? "bg-card/20 text-card"
+                        : chip.id === "overdue" || chip.id === "high"
+                          ? "bg-danger-soft text-danger"
+                          : "bg-warning-soft text-warning",
+                    )}
+                  >
+                    {count}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </ScrollRow>
 
       <DataTable<Issue>
         columns={ISSUE_COLUMNS}

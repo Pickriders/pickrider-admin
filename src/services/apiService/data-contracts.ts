@@ -416,6 +416,154 @@ export interface PageableType {
   totalPages: number;
 }
 
+export interface ProviderFeeTotalsDto {
+  /** All Paystack fees in the window (the category FEE rows) */
+  fees: number;
+  /** Fee rows in the window */
+  feeCount: number;
+  /** Everything that went through Paystack, in and out */
+  gross: number;
+  /** Successful payments, transfers and refunds */
+  count: number;
+  /** fees / gross as a percent, 2 decimals */
+  effectiveRate: number;
+  /** Card and bank payments received: wallet deposits and order payments */
+  moneyIn: number;
+  /** Paystack fees on the money received */
+  moneyInFees: number;
+  /** moneyIn minus moneyInFees: what the platform kept of it */
+  kept: number;
+  /** Withdrawals, platform payouts and card refunds sent out */
+  moneyOut: number;
+  /** Paystack fees on the money sent out */
+  moneyOutFees: number;
+}
+
+export enum ProviderFeeFlow {
+  WALLET_DEPOSIT = "WALLET_DEPOSIT",
+  ORDER_CARD_PAYMENT = "ORDER_CARD_PAYMENT",
+  WEB_ORDER_PAYMENT = "WEB_ORDER_PAYMENT",
+  WITHDRAWAL = "WITHDRAWAL",
+  PLATFORM_PAYOUT = "PLATFORM_PAYOUT",
+  REFUND = "REFUND",
+}
+
+export interface ProviderFeeFlowDto {
+  flow: ProviderFeeFlow;
+  /** Successful payments or transfers in this flow */
+  count: number;
+  /** Money that went through Paystack in this flow */
+  gross: number;
+  /** Paystack fees booked for this flow */
+  fees: number;
+  /** Fee rows booked for this flow */
+  feeCount: number;
+  /** fees / gross as a percent, 2 decimals (0 when nothing went through) */
+  effectiveRate: number;
+  /** False when Paystack does not report a fee for this flow (refunds), so fees stay 0 by design */
+  feesReported: boolean;
+}
+
+export interface ProviderFeeWindowDto {
+  totals: ProviderFeeTotalsDto;
+  /** Every flow, always in the same order */
+  flows: ProviderFeeFlowDto[];
+}
+
+export interface ProviderFeeSeriesPointDto {
+  /** Bucket start (Lagos time) as an ISO string */
+  bucket: string;
+  fees: number;
+  /** Money that went through Paystack in the bucket */
+  gross: number;
+  /** Fee rows in the bucket */
+  feeCount: number;
+  /** Fees per ProviderFeeFlow in the bucket */
+  byFlow: object;
+}
+
+export interface ProviderFeesResponseDto {
+  range: RangeDto;
+  bucket: "day" | "week" | "month";
+  current: ProviderFeeWindowDto;
+  /** The same length of time just before the window */
+  previous: ProviderFeeWindowDto;
+  series: ProviderFeeSeriesPointDto[];
+}
+
+export enum TransactionOwnerKind {
+  CUSTOMER = "CUSTOMER",
+  RIDER = "RIDER",
+  BUSINESS = "BUSINESS",
+  PLATFORM = "PLATFORM",
+  TEAM = "TEAM",
+}
+
+export interface TransactionOwnerDto {
+  kind: TransactionOwnerKind;
+  /** User, business or team id (the transaction entityId) */
+  id: string;
+  /** Display name. "Pickriders platform" for platform wallet rows. */
+  name: string;
+  phone?: string;
+  email?: string;
+  photo?: string;
+  /** UserStatus for people, ACTIVE or INACTIVE for businesses */
+  status?: string;
+  /** Riders only: whether the rider app is online right now */
+  isOnline?: boolean;
+  /** true when the account no longer exists (deleted or never resolved) */
+  missing?: boolean;
+}
+
+export interface ProviderFeeRowDto {
+  /** The FEE transaction id */
+  _id: string;
+  /** The Paystack reference the fee was charged on */
+  reference: string;
+  flow: ProviderFeeFlow;
+  /** PROVIDER_DEPOSIT_FEE, PROVIDER_WITHDRAWAL_FEE or PROVIDER_PAYOUT_FEE */
+  purpose:
+    | "ORDER_EARNING"
+    | "WALLET_FUNDING"
+    | "WALLET_WITHDRAWAL"
+    | "REFERRAL_BONUS"
+    | "ORDER_PAYMENT"
+    | "ORDER_EXTERNAL_FUNDING"
+    | "ORDER_PAYMENT_REFUND"
+    | "ORDER_EARNING_SPLIT"
+    | "ORDER_DISCOUNT"
+    | "PROVIDER_DEPOSIT_FEE"
+    | "PROVIDER_WITHDRAWAL_FEE"
+    | "PROVIDER_PAYOUT_FEE"
+    | "ORDER_SERVICE_CHARGE"
+    | "PLATFORM_TRANSFER";
+  /** What Paystack took */
+  fee: number;
+  /** The payment or transfer amount; null if not found */
+  gross: number | null;
+  /** fee / gross as a percent, 2 decimals */
+  effectiveRate: number | null;
+  currency: string;
+  /** @format date-time */
+  createdAt: string;
+  orderId?: string | null;
+  /** The payment or transfer transaction id */
+  sourceTransactionId?: string | null;
+  /** Whose money it was: the wallet owner on the payment or transfer */
+  owner: TransactionOwnerDto | null;
+}
+
+export interface ListProviderFeeRowsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: ProviderFeeRowDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
 export interface AttentionResponseDto {
   licencesAwaitingReview: number;
   vehiclesPendingVerification: number;
@@ -537,6 +685,151 @@ export interface UserOverviewResponseDto {
   business: object | null;
   /** Same as user.withdrawalRestriction */
   withdrawalRestriction: AdminWithdrawalRestrictionViewDto;
+}
+
+export enum EntityType {
+  TEAM = "TEAM",
+  USER = "USER",
+  BUSINESS = "BUSINESS",
+}
+
+export interface Transaction {
+  entityId: string;
+  walletId?: string;
+  entityType: EntityType;
+  currency: string;
+  amount: number;
+  /** @default 0 */
+  charge?: number;
+  reference: string;
+  description?: string;
+  /** @default 0 */
+  balanceBefore: number;
+  balanceAfter: number;
+  type: "CREDIT" | "DEBIT";
+  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
+  purpose:
+    | "ORDER_EARNING"
+    | "WALLET_FUNDING"
+    | "WALLET_WITHDRAWAL"
+    | "REFERRAL_BONUS"
+    | "ORDER_PAYMENT"
+    | "ORDER_EXTERNAL_FUNDING"
+    | "ORDER_PAYMENT_REFUND"
+    | "ORDER_EARNING_SPLIT"
+    | "ORDER_DISCOUNT"
+    | "PROVIDER_DEPOSIT_FEE"
+    | "PROVIDER_WITHDRAWAL_FEE"
+    | "PROVIDER_PAYOUT_FEE"
+    | "ORDER_SERVICE_CHARGE"
+    | "PLATFORM_TRANSFER";
+  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
+  /** @default {} */
+  metadata?: object;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface ListTransactionResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: Transaction[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AdminTransactionResponseDto {
+  entityId: string;
+  walletId?: string;
+  entityType: EntityType;
+  currency: string;
+  amount: number;
+  /** @default 0 */
+  charge?: number;
+  reference: string;
+  description?: string;
+  /** @default 0 */
+  balanceBefore: number;
+  balanceAfter: number;
+  type: "CREDIT" | "DEBIT";
+  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
+  purpose:
+    | "ORDER_EARNING"
+    | "WALLET_FUNDING"
+    | "WALLET_WITHDRAWAL"
+    | "REFERRAL_BONUS"
+    | "ORDER_PAYMENT"
+    | "ORDER_EXTERNAL_FUNDING"
+    | "ORDER_PAYMENT_REFUND"
+    | "ORDER_EARNING_SPLIT"
+    | "ORDER_DISCOUNT"
+    | "PROVIDER_DEPOSIT_FEE"
+    | "PROVIDER_WITHDRAWAL_FEE"
+    | "PROVIDER_PAYOUT_FEE"
+    | "ORDER_SERVICE_CHARGE"
+    | "PLATFORM_TRANSFER";
+  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
+  /** @default {} */
+  metadata?: object;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  owner: TransactionOwnerDto;
+  /** The rider behind a business rider earning, only when the row carries metadata.riderId */
+  rider?: TransactionOwnerDto;
+}
+
+export interface ListAdminTransactionResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: AdminTransactionResponseDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface ExternalPaymentMetricsResponseDto {
+  /** Number of orders paid via a share link. */
+  count: number;
+  /** Gross amount paid through link payments. */
+  totalFunded: number;
+  /** Paystack processing fees on those payments. */
+  totalFees: number;
+  /** Cash actually received after fees (totalFunded - totalFees). */
+  netReceived: number;
+  /** Distinct customers who used the feature. */
+  uniqueCustomers: number;
+}
+
+export interface TransactionMetricsSummaryResponseDto {
+  /** Total value of successful transactions (sub-units). */
+  totalVolume: number;
+  /** Number of successful transactions. */
+  count: number;
+  /** Total credited (money in), sub-units. */
+  inflow: number;
+  /** Total debited (money out), sub-units. */
+  outflow: number;
+  /** Total deposits, sub-units. */
+  deposits: number;
+  /** Total withdrawals, sub-units. */
+  withdrawals: number;
+  /** Total fees, sub-units. */
+  fees: number;
+  /** Total refunds/reversals, sub-units. */
+  refunds: number;
+  /** Total charges, sub-units. */
+  charges: number;
+  /** Distinct wallets/entities involved. */
+  uniqueEntities: number;
 }
 
 export interface InsightsRangeDto {
@@ -1241,16 +1534,6 @@ export interface CreateUserRequestDto {
   businessName?: string;
 }
 
-export interface UpdateProfileRequestDto {
-  firstname?: string;
-  lastname?: string;
-  pushToken?: string;
-  /** Referral code of another user (e.g. for Google sign-in users who skipped registration). Same logic as registration. */
-  referralCode?: string;
-  /** Whether the user is a vendor */
-  isVendor?: boolean;
-}
-
 export interface AddressDetailDto {
   country: string;
   state: string;
@@ -1303,22 +1586,6 @@ export interface PreferenceDetailsDto {
   };
 }
 
-export interface WithdrawalRestriction {
-  active: boolean;
-  /** Required when restricted is true. */
-  reason?: WithdrawalRestrictionReason;
-  /** @maxLength 280 */
-  note?: string;
-  /** @format date-time */
-  restrictedAt?: string;
-  /** Admin who restricted. Never sent to the rider. */
-  restrictedBy?: string;
-  /** @format date-time */
-  liftedAt?: string;
-  /** Admin who lifted. Never sent to the rider. */
-  liftedBy?: string;
-}
-
 export interface BusinessDetailsSchemaDto {
   /** @format date-time */
   registeredDate: string;
@@ -1360,6 +1627,22 @@ export interface KYCDetailsSchemaDto {
   /** @default "PENDING" */
   status: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
   statusComment: string;
+}
+
+export interface WithdrawalRestriction {
+  active: boolean;
+  /** Required when restricted is true. */
+  reason?: WithdrawalRestrictionReason;
+  /** @maxLength 280 */
+  note?: string;
+  /** @format date-time */
+  restrictedAt?: string;
+  /** Admin who restricted. Never sent to the rider. */
+  restrictedBy?: string;
+  /** @format date-time */
+  liftedAt?: string;
+  /** Admin who lifted. Never sent to the rider. */
+  liftedBy?: string;
 }
 
 export interface ReviewDetailsDto {
@@ -1582,6 +1865,153 @@ export interface Business {
   updatedAt: string;
 }
 
+export interface WithdrawalRestrictionViewDto {
+  /** true while withdrawals are paused on this account. */
+  active: boolean;
+  /** Required when restricted is true. */
+  reason?: WithdrawalRestrictionReason | null;
+  /** Friendly sentence for the reason, ready to display. */
+  message?: string | null;
+  /** Optional note from the admin, shown under the message. */
+  note?: string | null;
+  /** @format date-time */
+  restrictedAt?: string | null;
+}
+
+export interface UserProfileResponseDto {
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  firstname: string;
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  lastname: string;
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  middlename?: string;
+  email: string;
+  phone: string;
+  googleId?: string;
+  businessId?: string;
+  addresses?: AddressesDetailDto;
+  /** @default false */
+  phoneVerified: boolean;
+  pendingPhone?: string;
+  /** @default false */
+  emailVerified: boolean;
+  gender?: string;
+  dob?: string;
+  nin?: string;
+  /** @default false */
+  ninVerified: boolean;
+  voterCard?: string;
+  /** @default false */
+  voterCardVerified: boolean;
+  driversLicense?: string;
+  driversLicenseDoc?: string;
+  /** @default "PENDING" */
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
+  driversLicenseVerifiedComment?: string;
+  /** @default "USER" */
+  accessType: "USER" | "ADMIN";
+  proofOfAddress?: string;
+  /** @default false */
+  proofOfAddressVerified: boolean;
+  /** @default false */
+  isOnline: boolean;
+  /** @default "ACTIVE" */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+  roles: (
+    | "USER"
+    | "ADMIN"
+    | "SUPER_ADMIN"
+    | "PLATFORM_ADMIN"
+    | "PLATFORM_RIDER"
+    | "PLATFORM_OPERATION"
+    | "PLATFORM_FINANCE"
+    | "PLATFORM_BUSINESS"
+    | "PLATFORM_MANAGER"
+    | "DEVELOPER"
+    | "BUSINESS_ADMIN"
+    | "BUSINESS_USER"
+    | "BUSINESS_RIDER"
+  )[];
+  referredBy?: string;
+  referralCode?: string;
+  preferences?: PreferenceDetailsDto;
+  achievements?: object;
+  /** @default false */
+  dispatchPaused?: boolean;
+  /** @format date-time */
+  dispatchPausedAt?: string;
+  dispatchPausedReason?: string;
+  adminPreferences?: object;
+  photo?: string;
+  country: {
+    name?: string;
+    code?: string;
+    currency?: string;
+  };
+  state: {
+    name?: string;
+    code?: string;
+  };
+  city: {
+    name?: string;
+    code?: string;
+  };
+  location: {
+    /** @default "Point" */
+    type?: string;
+    coordinates?: number[];
+  };
+  pushToken?: string;
+  /** @default 0 */
+  supportUnreadCount: number;
+  /** @default false */
+  isDeleted: boolean;
+  /** @default false */
+  isRider: boolean;
+  /** @default false */
+  isVendor: boolean;
+  /** @format date-time */
+  lastLoginDate?: string;
+  recipientCode?: string;
+  /** @format date-time */
+  emailVerifiedAt?: string;
+  /** @format date-time */
+  phoneVerifiedAt?: string;
+  /** @format date-time */
+  passwordUpdatedAt?: string;
+  business?: Business;
+  reviews?: ReviewDetailsDto;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string;
+  /** @format date-time */
+  walletTermsAcknowledgedAt?: string;
+  withdrawalRestriction?: WithdrawalRestrictionViewDto;
+}
+
+export interface UpdateProfileRequestDto {
+  firstname?: string;
+  lastname?: string;
+  pushToken?: string;
+  /** Referral code of another user (e.g. for Google sign-in users who skipped registration). Same logic as registration. */
+  referralCode?: string;
+  /** Whether the user is a vendor */
+  isVendor?: boolean;
+}
+
 export interface UpdateLocationRequestDto {
   longitude: number;
   latitude: number;
@@ -1624,12 +2054,6 @@ export interface ChangePasswordRequestDto {
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
-}
-
-export enum EntityType {
-  TEAM = "TEAM",
-  USER = "USER",
-  BUSINESS = "BUSINESS",
 }
 
 export interface Wallet {
@@ -1800,55 +2224,6 @@ export interface ListReferralsResponseDto {
   totalEarnedFromReferrals: number;
 }
 
-export interface Transaction {
-  entityId: string;
-  walletId?: string;
-  entityType: EntityType;
-  currency: string;
-  amount: number;
-  /** @default 0 */
-  charge?: number;
-  reference: string;
-  description?: string;
-  /** @default 0 */
-  balanceBefore: number;
-  balanceAfter: number;
-  type: "CREDIT" | "DEBIT";
-  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
-  purpose:
-    | "ORDER_EARNING"
-    | "WALLET_FUNDING"
-    | "WALLET_WITHDRAWAL"
-    | "REFERRAL_BONUS"
-    | "ORDER_PAYMENT"
-    | "ORDER_EXTERNAL_FUNDING"
-    | "ORDER_PAYMENT_REFUND"
-    | "ORDER_EARNING_SPLIT"
-    | "ORDER_DISCOUNT"
-    | "PROVIDER_DEPOSIT_FEE"
-    | "PROVIDER_WITHDRAWAL_FEE"
-    | "ORDER_SERVICE_CHARGE"
-    | "PLATFORM_TRANSFER";
-  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
-  /** @default {} */
-  metadata?: object;
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
-export interface ListTransactionResponseDto {
-  nextPage?: number | null;
-  previousPage?: number | null;
-  currentPage: number;
-  results: Transaction[];
-  perPageLimit: number;
-  totalRecords: number;
-  totalPages: number;
-}
-
 export interface TransactionSummaryResponseDto {
   total: number;
 }
@@ -2011,6 +2386,8 @@ export interface OrderLastRiderRelease {
   note?: string;
   /** True when it counted as the rider's cancellation */
   counted: boolean;
+  /** True when the rider released it after arriving at the pickup (always counted) */
+  arrivedAtPickup?: boolean;
   /** @format date-time */
   at: string;
 }
@@ -2112,7 +2489,7 @@ export interface Order {
   /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
   canRelease?: boolean;
   /**
-   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts, including as soon as the rider has arrived at the pickup
    * @format date-time
    */
   releaseFreeUntil?: string | null;
@@ -2199,6 +2576,130 @@ export interface UpdateWithdrawalRestrictionRequestDto {
   note?: string;
 }
 
+export interface AdminUserProfileResponseDto {
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  firstname: string;
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  lastname: string;
+  /**
+   * @minLength 3
+   * @maxLength 256
+   */
+  middlename?: string;
+  email: string;
+  phone: string;
+  googleId?: string;
+  businessId?: string;
+  addresses?: AddressesDetailDto;
+  /** @default false */
+  phoneVerified: boolean;
+  pendingPhone?: string;
+  /** @default false */
+  emailVerified: boolean;
+  gender?: string;
+  dob?: string;
+  nin?: string;
+  /** @default false */
+  ninVerified: boolean;
+  voterCard?: string;
+  /** @default false */
+  voterCardVerified: boolean;
+  driversLicense?: string;
+  driversLicenseDoc?: string;
+  /** @default "PENDING" */
+  driversLicenseVerified: "APPROVE" | "DISAPPROVE" | "SUSPENDED" | "SUBMITTED" | "PENDING";
+  driversLicenseVerifiedComment?: string;
+  /** @default "USER" */
+  accessType: "USER" | "ADMIN";
+  proofOfAddress?: string;
+  /** @default false */
+  proofOfAddressVerified: boolean;
+  /** @default false */
+  isOnline: boolean;
+  /** @default "ACTIVE" */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "BANNED";
+  roles: (
+    | "USER"
+    | "ADMIN"
+    | "SUPER_ADMIN"
+    | "PLATFORM_ADMIN"
+    | "PLATFORM_RIDER"
+    | "PLATFORM_OPERATION"
+    | "PLATFORM_FINANCE"
+    | "PLATFORM_BUSINESS"
+    | "PLATFORM_MANAGER"
+    | "DEVELOPER"
+    | "BUSINESS_ADMIN"
+    | "BUSINESS_USER"
+    | "BUSINESS_RIDER"
+  )[];
+  referredBy?: string;
+  referralCode?: string;
+  preferences?: PreferenceDetailsDto;
+  achievements?: object;
+  /** @default false */
+  dispatchPaused?: boolean;
+  /** @format date-time */
+  dispatchPausedAt?: string;
+  dispatchPausedReason?: string;
+  adminPreferences?: object;
+  photo?: string;
+  country: {
+    name?: string;
+    code?: string;
+    currency?: string;
+  };
+  state: {
+    name?: string;
+    code?: string;
+  };
+  city: {
+    name?: string;
+    code?: string;
+  };
+  location: {
+    /** @default "Point" */
+    type?: string;
+    coordinates?: number[];
+  };
+  pushToken?: string;
+  /** @default 0 */
+  supportUnreadCount: number;
+  /** @default false */
+  isDeleted: boolean;
+  /** @default false */
+  isRider: boolean;
+  /** @default false */
+  isVendor: boolean;
+  /** @format date-time */
+  lastLoginDate?: string;
+  recipientCode?: string;
+  /** @format date-time */
+  emailVerifiedAt?: string;
+  /** @format date-time */
+  phoneVerifiedAt?: string;
+  /** @format date-time */
+  passwordUpdatedAt?: string;
+  business?: Business;
+  reviews?: ReviewDetailsDto;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string;
+  /** @format date-time */
+  walletTermsAcknowledgedAt?: string;
+  withdrawalRestriction?: AdminWithdrawalRestrictionViewDto;
+}
+
 export enum UserStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -2263,119 +2764,6 @@ export interface WalletCreateRequestDto {
   countryCode: string;
   entityId: string;
   entityType: EntityType;
-}
-
-export enum TransactionOwnerKind {
-  CUSTOMER = "CUSTOMER",
-  RIDER = "RIDER",
-  BUSINESS = "BUSINESS",
-  PLATFORM = "PLATFORM",
-  TEAM = "TEAM",
-}
-
-export interface TransactionOwnerDto {
-  kind: TransactionOwnerKind;
-  /** User, business or team id (the transaction entityId) */
-  id: string;
-  /** Display name. "Pickriders platform" for platform wallet rows. */
-  name: string;
-  phone?: string;
-  email?: string;
-  photo?: string;
-  /** UserStatus for people, ACTIVE or INACTIVE for businesses */
-  status?: string;
-  /** Riders only: whether the rider app is online right now */
-  isOnline?: boolean;
-  /** true when the account no longer exists (deleted or never resolved) */
-  missing?: boolean;
-}
-
-export interface AdminTransactionResponseDto {
-  entityId: string;
-  walletId?: string;
-  entityType: EntityType;
-  currency: string;
-  amount: number;
-  /** @default 0 */
-  charge?: number;
-  reference: string;
-  description?: string;
-  /** @default 0 */
-  balanceBefore: number;
-  balanceAfter: number;
-  type: "CREDIT" | "DEBIT";
-  category: "FEE" | "DEPOSIT" | "WITHDRAWAL" | "REVERSAL" | "CHARGE";
-  purpose:
-    | "ORDER_EARNING"
-    | "WALLET_FUNDING"
-    | "WALLET_WITHDRAWAL"
-    | "REFERRAL_BONUS"
-    | "ORDER_PAYMENT"
-    | "ORDER_EXTERNAL_FUNDING"
-    | "ORDER_PAYMENT_REFUND"
-    | "ORDER_EARNING_SPLIT"
-    | "ORDER_DISCOUNT"
-    | "PROVIDER_DEPOSIT_FEE"
-    | "PROVIDER_WITHDRAWAL_FEE"
-    | "ORDER_SERVICE_CHARGE"
-    | "PLATFORM_TRANSFER";
-  status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
-  /** @default {} */
-  metadata?: object;
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-  owner: TransactionOwnerDto;
-  /** The rider behind a business rider earning, only when the row carries metadata.riderId */
-  rider?: TransactionOwnerDto;
-}
-
-export interface ListAdminTransactionResponseDto {
-  nextPage?: number | null;
-  previousPage?: number | null;
-  currentPage: number;
-  results: AdminTransactionResponseDto[];
-  perPageLimit: number;
-  totalRecords: number;
-  totalPages: number;
-}
-
-export interface ExternalPaymentMetricsResponseDto {
-  /** Number of orders paid via a share link. */
-  count: number;
-  /** Gross amount paid through link payments. */
-  totalFunded: number;
-  /** Paystack processing fees on those payments. */
-  totalFees: number;
-  /** Cash actually received after fees (totalFunded - totalFees). */
-  netReceived: number;
-  /** Distinct customers who used the feature. */
-  uniqueCustomers: number;
-}
-
-export interface TransactionMetricsSummaryResponseDto {
-  /** Total value of successful transactions (sub-units). */
-  totalVolume: number;
-  /** Number of successful transactions. */
-  count: number;
-  /** Total credited (money in), sub-units. */
-  inflow: number;
-  /** Total debited (money out), sub-units. */
-  outflow: number;
-  /** Total deposits, sub-units. */
-  deposits: number;
-  /** Total withdrawals, sub-units. */
-  withdrawals: number;
-  /** Total fees, sub-units. */
-  fees: number;
-  /** Total refunds/reversals, sub-units. */
-  refunds: number;
-  /** Total charges, sub-units. */
-  charges: number;
-  /** Distinct wallets/entities involved. */
-  uniqueEntities: number;
 }
 
 export enum CouponLifecycle {
@@ -3053,7 +3441,7 @@ export interface OrderListItemResponseDto {
   /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
   canRelease?: boolean;
   /**
-   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts, including as soon as the rider has arrived at the pickup
    * @format date-time
    */
   releaseFreeUntil?: string | null;
@@ -3454,8 +3842,10 @@ export interface RiderReleaseRequestDto {
 export interface RiderReleaseResponseDto {
   /** The order the rider released */
   orderId: string;
-  /** True when the release counted as a cancellation (it came after the free 2 minutes) */
+  /** True when the release counted as a cancellation: it came after the free 2 minutes, or after arriving at the pickup */
   counted: boolean;
+  /** True when the rider had already arrived at the pickup (always counted) */
+  arrivedAtPickup: boolean;
   /** Counted releases the rider has left today (Lagos day) */
   releasesLeftToday: number;
   /** A short line to show the rider */
@@ -3590,7 +3980,7 @@ export interface ForceAssignRiderResponseDto {
   /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
   canRelease?: boolean;
   /**
-   * Rider view: until when a release is free (2 minutes after accepting); null once it counts
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts, including as soon as the rider has arrived at the pickup
    * @format date-time
    */
   releaseFreeUntil?: string | null;
@@ -3615,6 +4005,13 @@ export interface NearbyRidersCountResponseDto {
   radiusKm: number;
   /** True when served from the 60 s cache */
   cached: boolean;
+}
+
+export interface ArrivalCheckResponseDto {
+  /** When true, a rider can only mark a stop as arrived within radiusMeters of it (admin setting) */
+  enabled: boolean;
+  /** How close, in metres, the rider must be when the check is on (the state's setting) */
+  radiusMeters: number;
 }
 
 export interface RiderListItemResponseDto {
@@ -3823,6 +4220,8 @@ export interface OrderRiderStintReleaseDto {
   note?: string;
   /** True when it counted as the rider's cancellation */
   counted: boolean;
+  /** True when the rider released it after arriving at the pickup */
+  arrivedAtPickup: boolean;
 }
 
 export interface OrderRiderStintDto {
@@ -3882,6 +4281,8 @@ export interface RiderReleaseCountsDto {
   countedLast7Days: number;
   /** Counted releases in the last 30 days */
   countedLast30Days: number;
+  /** Releases in the last 30 days made after arriving at the pickup */
+  arrivedAtPickupLast30Days: number;
 }
 
 export interface RiderReleaseItemDto {
@@ -3894,6 +4295,8 @@ export interface RiderReleaseItemDto {
   note?: string;
   /** True when it counted as the rider's cancellation */
   counted: boolean;
+  /** True when the rider released it after arriving at the pickup */
+  arrivedAtPickup: boolean;
   /** The order's channel (VENDOR_STOREFRONT, CUSTOMER_WEB, or none for the app) */
   channel?: string;
   /** @format date-time */
@@ -4685,6 +5088,33 @@ export interface ChargesByRiderParams {
 
 export type ChargesByRiderData = PageableType;
 
+export interface ProviderFeesParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  bucket?: "day" | "week" | "month";
+}
+
+export type ProviderFeesData = ProviderFeesResponseDto;
+
+export interface ProviderFeeRowsParams {
+  /** ISO date or YYYY-MM-DD (Lagos day) */
+  from?: string;
+  /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+  to?: string;
+  /** 1 = everything since the first order */
+  all?: string;
+  page?: number;
+  /** At most 100, default 20 */
+  limit?: number;
+  flow?: ProviderFeeFlow;
+}
+
+export type ProviderFeeRowsData = ListProviderFeeRowsResponseDto;
+
 export type AttentionData = AttentionResponseDto;
 
 export interface CustomersOverviewParams {
@@ -4741,6 +5171,62 @@ export interface UserOverviewParams {
 }
 
 export type UserOverviewData = UserOverviewResponseDto;
+
+export interface GetTransactionsParams {
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+  /** transaction type filter. commap separated list of TransactionType */
+  type?: string;
+  /** transaction category filter. commap separated list of TransactionCategory */
+  category?: string;
+  /** transaction status filter. comma separated list of TransactionStatus */
+  status?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type GetTransactionsData = ListTransactionResponseDto;
+
+export interface AdminGetTransactionsParams {
+  /** Reference, description, or wallet owner name / phone / email */
+  search?: any;
+  /** provide a user (entity) id to get transactions for a user */
+  entityId?: string;
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+  /** transaction type filter. commap separated list of TransactionType */
+  type?: string;
+  /** transaction purpose filter. commap separated list of TransactionPurpose */
+  purpose?: string;
+  /** transaction category filter. commap separated list of TransactionCategory */
+  category?: string;
+  /** transaction status filter. comma separated list of TransactionStatus */
+  status?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type AdminGetTransactionsData = ListAdminTransactionResponseDto;
+
+export interface GetExternalPaymentMetricsParams {
+  /** provide a user (entity) id to scope metrics to a single customer */
+  entityId?: string;
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+}
+
+export type GetExternalPaymentMetricsData = ExternalPaymentMetricsResponseDto;
+
+export interface GetTransactionSummaryParams {
+  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+  dateRange?: string;
+}
+
+export type GetTransactionSummaryData = TransactionMetricsSummaryResponseDto;
+
+export type GetTransactionData = AdminTransactionResponseDto;
 
 export interface GetInsightsOverviewParams {
   /**
@@ -4978,7 +5464,7 @@ export interface CreateUserParams {
 
 export type CreateUserData = CreateUserRequestDto;
 
-export type GetUserProfileData = object;
+export type GetUserProfileData = UserProfileResponseDto;
 
 export type UpdateUserProfileData = User;
 
@@ -5101,7 +5587,7 @@ export interface GetUsersParams {
 
 export type GetUsersData = ListUserResponseDto;
 
-export type AdminGetMyProfileData = object;
+export type AdminGetMyProfileData = UserProfileResponseDto;
 
 export type AdminUpdateMyPhotoData = UpdatedPhotoResponseDto;
 
@@ -5119,9 +5605,9 @@ export type AdminRemoveUserPhotoData = object;
 
 export type SetDispatchPausedData = object;
 
-export type AdminSetWithdrawalRestrictionData = object;
+export type AdminSetWithdrawalRestrictionData = AdminUserProfileResponseDto;
 
-export type GetUserData = object;
+export type GetUserData = AdminUserProfileResponseDto;
 
 export type AdminGetUserWalletsData = WalletListResponseDto;
 
@@ -5153,62 +5639,6 @@ export type CreateWalletData = Wallet;
 export type CreditPlatformWalletData = any;
 
 export type GetPlatformWalletData = Wallet;
-
-export interface GetTransactionsParams {
-  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-  dateRange?: string;
-  /** transaction type filter. commap separated list of TransactionType */
-  type?: string;
-  /** transaction category filter. commap separated list of TransactionCategory */
-  category?: string;
-  /** transaction status filter. comma separated list of TransactionStatus */
-  status?: string;
-  order?: "ASC" | "DESC";
-  page?: number;
-  limit?: number;
-}
-
-export type GetTransactionsData = ListTransactionResponseDto;
-
-export interface AdminGetTransactionsParams {
-  /** Reference, description, or wallet owner name / phone / email */
-  search?: any;
-  /** provide a user (entity) id to get transactions for a user */
-  entityId?: string;
-  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-  dateRange?: string;
-  /** transaction type filter. commap separated list of TransactionType */
-  type?: string;
-  /** transaction purpose filter. commap separated list of TransactionPurpose */
-  purpose?: string;
-  /** transaction category filter. commap separated list of TransactionCategory */
-  category?: string;
-  /** transaction status filter. comma separated list of TransactionStatus */
-  status?: string;
-  order?: "ASC" | "DESC";
-  page?: number;
-  limit?: number;
-}
-
-export type AdminGetTransactionsData = ListAdminTransactionResponseDto;
-
-export interface GetExternalPaymentMetricsParams {
-  /** provide a user (entity) id to scope metrics to a single customer */
-  entityId?: string;
-  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-  dateRange?: string;
-}
-
-export type GetExternalPaymentMetricsData = ExternalPaymentMetricsResponseDto;
-
-export interface GetTransactionSummaryParams {
-  /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-  dateRange?: string;
-}
-
-export type GetTransactionSummaryData = TransactionMetricsSummaryResponseDto;
-
-export type GetTransactionData = AdminTransactionResponseDto;
 
 export interface ListCouponsParams {
   /**
@@ -5591,6 +6021,8 @@ export interface GetNearbyRidersCountParams {
 }
 
 export type GetNearbyRidersCountData = NearbyRidersCountResponseDto;
+
+export type GetArrivalCheckData = ArrivalCheckResponseDto;
 
 export type GetRidersLeaderboardData = RiderListItemResponseDto[];
 

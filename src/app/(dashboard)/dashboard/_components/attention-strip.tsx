@@ -6,6 +6,7 @@ import { Car, CheckCircle2, Clock, FileBadge, LifeBuoy, MessageSquareWarning, Pa
 import { useAttention } from "@/lib/admin/hooks";
 import { count } from "@/lib/admin/format";
 import { Skeleton, cx, type Tone } from "@/components/kit/primitives";
+import { ScrollRow } from "@/components/kit/scroll-row";
 
 /**
  * One quiet row of chips for the things waiting on a person. Each chip links
@@ -52,24 +53,26 @@ export function AttentionStrip() {
   }
 
   return (
-    <div className="admin-scroll -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-      <span className="shrink-0 self-center pr-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-faint">Needs attention</span>
-      {!items.length ? (
-        <span className={cx("inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold", CHIP.success)}>
-          <CheckCircle2 size={14} /> All clear
-        </span>
-      ) : (
-        items.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link key={item.key} href={item.href} className={cx("inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors", CHIP[item.tone])}>
-              <Icon size={14} />
-              <span className="text-sm font-black tabular-nums">{count(item.n)}</span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })
-      )}
-    </div>
+    <ScrollRow className="-mx-1" innerClassName="px-1 pb-1" label="Needs attention" peekKey="dashboard-attention">
+      <div className="flex w-max gap-2">
+        <span className="shrink-0 self-center pr-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-faint">Needs attention</span>
+        {!items.length ? (
+          <span className={cx("inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold", CHIP.success)}>
+            <CheckCircle2 size={14} /> All clear
+          </span>
+        ) : (
+          items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link key={item.key} href={item.href} className={cx("inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors", CHIP[item.tone])}>
+                <Icon size={14} />
+                <span className="text-sm font-black tabular-nums">{count(item.n)}</span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })
+        )}
+      </div>
+    </ScrollRow>
   );
 }

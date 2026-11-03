@@ -1,4 +1,5 @@
 import type { Transaction } from "@/lib/admin/api";
+import { ownerName } from "@/lib/admin/person";
 import type { RangeValue } from "@/components/kit";
 
 /**
@@ -22,6 +23,7 @@ export const TX_PURPOSES: { value: string; label: string }[] = [
   { value: "ORDER_DISCOUNT", label: "Order discount" },
   { value: "PROVIDER_DEPOSIT_FEE", label: "Provider deposit fee" },
   { value: "PROVIDER_WITHDRAWAL_FEE", label: "Provider withdrawal fee" },
+  { value: "PROVIDER_PAYOUT_FEE", label: "Provider payout fee" },
   { value: "ORDER_SERVICE_CHARGE", label: "Order service charge" },
   { value: "PLATFORM_TRANSFER", label: "Platform transfer" },
 ];
@@ -64,7 +66,7 @@ export function isObjectId(value: string | null | undefined) {
  * row (`owner`); links come from `ownerHref` in components/users/person-card, keyed on its kind.
  */
 export function ownerLabel(tx: Pick<Transaction, "owner" | "entityType">) {
-  if (tx.owner) return tx.owner.missing ? "Account removed" : tx.owner.name;
+  if (tx.owner) return tx.owner.missing ? "Account removed" : ownerName(tx.owner);
   return titleCase(tx.entityType) || "Wallet";
 }
 

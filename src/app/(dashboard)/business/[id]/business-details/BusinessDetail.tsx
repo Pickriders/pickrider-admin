@@ -16,6 +16,7 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { SettingsTab } from "./tabs/SettingsTab";
 import { TransactionsTab } from "./tabs/TransactionsTab";
 import { VehiclesTab } from "./tabs/VehiclesTab";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * One page for a business. The tab lives in the URL (?tab=) so the old
@@ -112,7 +113,7 @@ function BusinessDetailInner({ businessId }: { businessId: string }) {
         }
         description={
           business
-            ? [business.businessHandle ? `@${business.businessHandle}` : null, business.email, business.phone].filter(Boolean).join(" · ")
+            ? [business.businessHandle ? `@${business.businessHandle}` : null, formatEmail(business.email), business.phone].filter(Boolean).join(" · ")
             : undefined
         }
       />

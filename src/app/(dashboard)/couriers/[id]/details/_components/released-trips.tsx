@@ -1,9 +1,9 @@
 "use client";
 
-import { Undo2 } from "lucide-react";
+import { Store, Undo2 } from "lucide-react";
 import Link from "next/link";
 
-import { Badge, EmptyState, ErrorState, Panel, PanelHeader, Skeleton, StatCard, StatGrid } from "@/components/kit";
+import { Badge, EmptyState, ErrorState, Panel, PanelHeader, Skeleton, StatCard, StatGrid, cx } from "@/components/kit";
 import type { RiderReleaseItem } from "@/lib/admin/api";
 import { count, when } from "@/lib/admin/format";
 import { useRiderReleases } from "@/lib/admin/hooks";
@@ -26,6 +26,16 @@ const BY_LABEL: Record<string, string> = {
   ADMIN: "Pickriders replaced the rider",
 };
 
+/** The rider gave the trip back after arriving at the store: always counted, worth a look. */
+export function AtStoreFlag() {
+  return (
+    <Badge tone="danger" className="font-bold">
+      <Store size={10} aria-hidden />
+      At the store
+    </Badge>
+  );
+}
+
 function ReleaseRow({ release }: { release: RiderReleaseItem }) {
   const byRider = release.initiatedBy === "RIDER";
   return (
@@ -39,6 +49,7 @@ function ReleaseRow({ release }: { release: RiderReleaseItem }) {
           {byRider ? (
             <Badge tone={release.counted ? "danger" : "success"}>{release.counted ? "Counted" : "Free"}</Badge>
           ) : null}
+          {release.arrivedAtPickup ? <AtStoreFlag /> : null}
         </div>
         <p className="mt-0.5 text-xs text-ink-muted">{BY_LABEL[release.initiatedBy] ?? release.initiatedBy}</p>
         {release.note ? <p className="mt-1 break-words text-xs text-ink">&ldquo;{release.note}&rdquo;</p> : null}
@@ -50,7 +61,8 @@ function ReleaseRow({ release }: { release: RiderReleaseItem }) {
 
 /**
  * Trips this rider was taken off before pickup. "Counted" is the rider's own release after the
- * free two minutes: it counts as a cancellation, and only three are allowed per Lagos day.
+ * free two minutes, or at any time once they had arrived at the store: it counts as a
+ * cancellation, and only three are allowed per Lagos day. Releases at the store are flagged.
  */
 export function ReleasedTrips({ riderId }: { riderId: string }) {
   const query = useRiderReleases(riderId);
@@ -62,7 +74,7 @@ export function ReleasedTrips({ riderId }: { riderId: string }) {
 
   return (
     <div className="space-y-4">
-      <StatGrid columns={3}>
+      <StatGrid columns={4}>
         <StatCard
           label="Released today"
           value={count(counts?.today)}
@@ -72,10 +84,20 @@ export function ReleasedTrips({ riderId }: { riderId: string }) {
         />
         <StatCard label="Last 7 days" value={count(counts?.last7Days)} loading={loading} hint={counts ? `${count(counts.countedLast7Days)} counted` : undefined} />
         <StatCard label="Last 30 days" value={count(counts?.last30Days)} loading={loading} hint={counts ? `${count(counts.countedLast30Days)} counted` : undefined} />
+        <StatCard
+          label="Released at the store (30d)"
+          value={<span className={cx((counts?.arrivedAtPickupLast30Days ?? 0) > 0 && "text-danger")}>{count(counts?.arrivedAtPickupLast30Days)}</span>}
+          icon={Store}
+          loading={loading}
+          hint="Gave it back after arriving, always counted"
+        />
       </StatGrid>
 
       <Panel>
-        <PanelHeader title="Released trips" subtitle="Free within 2 minutes of accepting. After that it counts as a cancellation." />
+        <PanelHeader
+          title="Released trips"
+          subtitle="Free within 2 minutes of accepting, unless the rider is already at the store. Otherwise it counts as a cancellation."
+        />
         <div className="px-5 pb-3 pt-1">
           {loading ? (
             <Skeleton className="my-3 h-24 w-full" />
