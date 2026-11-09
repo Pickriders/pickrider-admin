@@ -197,6 +197,8 @@ and destructive actions without confirmation.
 Branch off `dev`; PR into `dev`. Commit only when asked. Never commit `.next/`, `out/`, or
 `tsconfig.tsbuildinfo`.
 
+**Never add Claude, or any AI tool, as a commit author.** No `Co-Authored-By: Claude …` trailer and no "Generated with Claude Code" line, in commit messages or PR descriptions, even if your tooling suggests one. If you can't commit without it, don't commit: leave the commit to the user.
+
 ---
 
 ## 9. Branching and CI (automated)
