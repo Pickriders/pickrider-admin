@@ -8,11 +8,13 @@ import {
   Flame,
   Gauge,
   Gavel,
+  Info,
   MapPin,
   MapPinned,
   Medal,
   Route,
   Target,
+  ThumbsUp,
   Timer,
   Trophy,
 } from "lucide-react";
@@ -48,6 +50,7 @@ import {
   useRiderRank,
 } from "@/lib/admin/hooks";
 
+import { ACCEPTANCE_HELP, acceptanceHint, acceptanceValue } from "./acceptance";
 import { DeliveryMap } from "./delivery-map";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -596,7 +599,8 @@ export function RiderInsights({
     <div className="space-y-4">
       <FlagsPanel flags={flags} loading={loading || (profile.isLoading && !profile.data)} />
 
-      <StatGrid columns={6}>
+      {/* Four across with Acceptance spanning two: seven tiles fill whole rows at every breakpoint. */}
+      <StatGrid columns={4}>
         <StatCard
           label="Take-home"
           value={naira(e?.net)}
@@ -612,6 +616,20 @@ export function RiderInsights({
           icon={Gauge}
           loading={loading}
           hint={p ? `${count(p.completed)} of ${count(p.orders)} assigned` : undefined}
+        />
+        <StatCard
+          className="sm:col-span-2"
+          label={
+            <span title={ACCEPTANCE_HELP} className="inline-flex cursor-help items-center gap-1">
+              Acceptance
+              <Info size={12} aria-hidden />
+              <span className="sr-only">{ACCEPTANCE_HELP}</span>
+            </span>
+          }
+          value={acceptanceValue(o?.requests)}
+          icon={ThumbsUp}
+          loading={loading}
+          hint={acceptanceHint(o?.requests)}
         />
         <StatCard
           label="Bid win rate"

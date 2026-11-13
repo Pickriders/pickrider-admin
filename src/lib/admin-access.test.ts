@@ -26,6 +26,9 @@ describe("admin-access", () => {
     expect(can("announcement.manage", ["PLATFORM_MANAGER"])).toBe(true);
     expect(can("announcement.manage", ["PLATFORM_OPERATION"])).toBe(false);
     expect(can("settings.write", ["PLATFORM_MANAGER"])).toBe(false);
+    expect(can("handoff.manage", ["PLATFORM_OPERATION"])).toBe(true);
+    expect(can("handoff.manage", ["PLATFORM_FINANCE"])).toBe(false);
+    expect(can("alert.handle", ["PLATFORM_FINANCE"])).toBe(false);
   });
 
   it("gates sections by path, failing open for unknown sections", () => {
@@ -33,6 +36,9 @@ describe("admin-access", () => {
     expect(canAccessPath("/finances", ["PLATFORM_FINANCE"])).toBe(true);
     expect(canAccessPath("/admin", ["PLATFORM_OPERATION"])).toBe(false);
     expect(canAccessPath("/made-up", ["PLATFORM_OPERATION"])).toBe(true);
+    expect(canAccessPath("/alerts", ["PLATFORM_OPERATION"])).toBe(true);
+    expect(canAccessPath("/alerts", ["PLATFORM_FINANCE"])).toBe(false);
+    expect(canAccessPath("/handoffs", ["PLATFORM_FINANCE"])).toBe(true);
   });
 
   it("an empty role list (no token yet) does not hide buttons; the backend still guards", () => {

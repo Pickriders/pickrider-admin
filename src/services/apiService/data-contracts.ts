@@ -171,6 +171,57 @@ export interface State {
     etaEnabled?: boolean;
     /** @default 25 */
     etaAverageSpeedKmh?: number;
+    /** @default true */
+    handoffEnabled?: boolean;
+    /** @default 3 */
+    handoffRadiusKm?: number;
+    /** @default 6 */
+    handoffWidenRadiusKm?: number;
+    /** @default 180 */
+    handoffWidenAfterSec?: number;
+    /** @default 360 */
+    handoffAlertAfterSec?: number;
+    /** @default 30 */
+    handoffExpireAfterMin?: number;
+    /** @default 30 */
+    handoffRingSeconds?: number;
+    /** @default 30 */
+    handoffMinSharePct?: number;
+    /** @default 70 */
+    handoffMaxSharePct?: number;
+    /** @default 30000 */
+    handoffBonusAmount?: number;
+    /** @default 20000 */
+    handoffCancelCompensation?: number;
+    /** @default 150 */
+    handoffConfirmRadiusM?: number;
+    /** @default 2 */
+    handoffsPerOrder?: number;
+    supportWhatsappPhone?: string;
+    /** @default 2 */
+    releaseFreePerDay?: number;
+    /** @default 5 */
+    releaseAlertWeekly?: number;
+    /** @default 8 */
+    releasePauseWeekly?: number;
+    /** @default 3 */
+    releaseDeprioritizeWeekly?: number;
+    /** @default 20 */
+    releaseDeprioritizeDelaySec?: number;
+    /** @default false */
+    stackingEnabled?: boolean;
+    /** @default 2 */
+    maxStackedOrders?: number;
+    /** @default 3 */
+    stackDropoffRadiusKm?: number;
+    /** @default 1.5 */
+    stackMaxDetourKm?: number;
+    /** @default false */
+    nextNearbyEnabled?: boolean;
+    /** @default 2 */
+    nextPickupRadiusKm?: number;
+    /** @default 3 */
+    nextFinishWithinKm?: number;
   };
   _id: string;
   /** @format date-time */
@@ -286,6 +337,172 @@ export interface StateConfigDto {
    * @default 25
    */
   etaAverageSpeedKmh?: number;
+  /**
+   * Rider handoff (after pickup) on or off
+   * @default true
+   */
+  handoffEnabled?: boolean;
+  /**
+   * Handoff: first search radius (km) around the meeting point
+   * @min 0.1
+   * @max 50
+   * @default 3
+   */
+  handoffRadiusKm?: number;
+  /**
+   * Handoff: wider search radius (km) after handoffWidenAfterSec
+   * @min 0.1
+   * @max 50
+   * @default 6
+   */
+  handoffWidenRadiusKm?: number;
+  /**
+   * Handoff: seconds before the search widens
+   * @min 0
+   * @default 180
+   */
+  handoffWidenAfterSec?: number;
+  /**
+   * Handoff: seconds of searching before staff are alerted
+   * @min 0
+   * @default 360
+   */
+  handoffAlertAfterSec?: number;
+  /**
+   * Handoff: minutes before an untaken handoff expires
+   * @min 1
+   * @default 30
+   */
+  handoffExpireAfterMin?: number;
+  /**
+   * Handoff: seconds the ring shows on a candidate rider
+   * @min 5
+   * @default 30
+   */
+  handoffRingSeconds?: number;
+  /**
+   * Handoff: lowest share (%) of the fee for the handing-over rider
+   * @min 0
+   * @max 100
+   * @default 30
+   */
+  handoffMinSharePct?: number;
+  /**
+   * Handoff: highest share (%) of the fee for the handing-over rider
+   * @min 0
+   * @max 100
+   * @default 70
+   */
+  handoffMaxSharePct?: number;
+  /**
+   * Handoff: bonus (sub-units) for the rider who takes over
+   * @min 0
+   * @default 30000
+   */
+  handoffBonusAmount?: number;
+  /**
+   * Handoff: pay (sub-units) for a rider whose accepted handoff was called off
+   * @min 0
+   * @default 20000
+   */
+  handoffCancelCompensation?: number;
+  /**
+   * Handoff: metres between riders at the swap before it is flagged
+   * @min 1
+   * @default 150
+   */
+  handoffConfirmRadiusM?: number;
+  /**
+   * Handoff: completed handoffs allowed per order
+   * @min 0
+   * @default 2
+   */
+  handoffsPerOrder?: number;
+  /**
+   * Support WhatsApp number (E.164, e.g. +2348012345678) URGENT alerts escalate to. Empty clears it
+   * @pattern /^(\+[1-9]\d{7,14})?$/
+   */
+  supportWhatsappPhone?: string;
+  /**
+   * Rider releases: releases inside the free window that stay free per Lagos day (0: none)
+   * @min 0
+   * @max 10
+   * @default 2
+   */
+  releaseFreePerDay?: number;
+  /**
+   * Rider releases: counted releases in 7 days that raise a RIDER_FREQUENT_RELEASES alert
+   * @min 1
+   * @max 50
+   * @default 5
+   */
+  releaseAlertWeekly?: number;
+  /**
+   * Rider releases: counted releases in 7 days that pause the rider from dispatch for review
+   * @min 1
+   * @max 100
+   * @default 8
+   */
+  releasePauseWeekly?: number;
+  /**
+   * Rider releases: counted releases in 7 days that ring the rider after reliable riders
+   * @min 1
+   * @max 50
+   * @default 3
+   */
+  releaseDeprioritizeWeekly?: number;
+  /**
+   * Rider releases: seconds a frequent releaser waits behind reliable riders on an app or web order
+   * @min 1
+   * @max 300
+   * @default 20
+   */
+  releaseDeprioritizeDelaySec?: number;
+  /**
+   * Order stacking: let a rider at maxActiveOrders take one more order when it is on their way (already picked up, drop-offs close together, small detour)
+   * @default false
+   */
+  stackingEnabled?: boolean;
+  /**
+   * Order stacking: most orders a rider may hold when stacking
+   * @min 2
+   * @max 3
+   * @default 2
+   */
+  maxStackedOrders?: number;
+  /**
+   * Order stacking: km each new drop-off may be from a drop-off the rider still has
+   * @min 0.1
+   * @max 20
+   * @default 3
+   */
+  stackDropoffRadiusKm?: number;
+  /**
+   * Order stacking: most extra km the new pickup may add to the rider's way to their current drop-off
+   * @min 0
+   * @max 10
+   * @default 1.5
+   */
+  stackMaxDetourKm?: number;
+  /**
+   * Order stacking, next job: let a rider at maxActiveOrders take one more order whose pickup is close to where they finish (they drop what they hold first). Shares maxStackedOrders
+   * @default false
+   */
+  nextNearbyEnabled?: boolean;
+  /**
+   * Order stacking, next job: km the new pickup may be from the rider's last remaining drop-off
+   * @min 0.1
+   * @max 20
+   * @default 2
+   */
+  nextPickupRadiusKm?: number;
+  /**
+   * Order stacking, next job: km (straight line) the rider may still be from their last drop-off
+   * @min 0.1
+   * @max 30
+   * @default 3
+   */
+  nextFinishWithinKm?: number;
 }
 
 export interface UpdateStateDto {
@@ -537,7 +754,10 @@ export interface ProviderFeeRowDto {
     | "PROVIDER_WITHDRAWAL_FEE"
     | "PROVIDER_PAYOUT_FEE"
     | "ORDER_SERVICE_CHARGE"
-    | "PLATFORM_TRANSFER";
+    | "PLATFORM_TRANSFER"
+    | "TEST_FUNDING"
+    | "HANDOFF_BONUS"
+    | "HANDOFF_COMPENSATION";
   /** What Paystack took */
   fee: number;
   /** The payment or transfer amount; null if not found */
@@ -722,10 +942,16 @@ export interface Transaction {
     | "PROVIDER_WITHDRAWAL_FEE"
     | "PROVIDER_PAYOUT_FEE"
     | "ORDER_SERVICE_CHARGE"
-    | "PLATFORM_TRANSFER";
+    | "PLATFORM_TRANSFER"
+    | "TEST_FUNDING"
+    | "HANDOFF_BONUS"
+    | "HANDOFF_COMPENSATION";
   status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
   /** @default {} */
   metadata?: object;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -772,10 +998,16 @@ export interface AdminTransactionResponseDto {
     | "PROVIDER_WITHDRAWAL_FEE"
     | "PROVIDER_PAYOUT_FEE"
     | "ORDER_SERVICE_CHARGE"
-    | "PLATFORM_TRANSFER";
+    | "PLATFORM_TRANSFER"
+    | "TEST_FUNDING"
+    | "HANDOFF_BONUS"
+    | "HANDOFF_COMPENSATION";
   status: "PROCESSING" | "FAILED" | "SUCCESS" | "CANCELLED";
   /** @default {} */
   metadata?: object;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -1035,6 +1267,24 @@ export interface AchievementDto {
 export interface AchievementsResponseDto {
   results: AchievementDto[];
   unlockedCount: number;
+}
+
+export interface RiderRequestStatsDto {
+  /** Orders the rider took in the window (accepted or offer accepted): performance.orders */
+  accepted: number;
+  /** Order requests the rider passed on ("Not now") in the window */
+  passed: number;
+  /** % of decided requests the rider took, accepted / (accepted + passed), one decimal; null when both are 0 */
+  acceptanceRate: number | null;
+}
+
+export interface RiderAdminInsightsOverviewResponseDto {
+  range: InsightsRangeDto;
+  earnings: EarningsSummaryDto;
+  performance: PerformanceSummaryDto;
+  activity: ActivitySummaryDto;
+  goal: GoalSummaryDto;
+  requests: RiderRequestStatsDto;
 }
 
 export interface CancellationReasonDto {
@@ -1440,6 +1690,10 @@ export interface LoginRequestDto {
 
 export interface AuthTokenResponseDto {
   accessToken: string;
+  /**
+   * Seconds until accessToken expires.
+   * @example 2592000
+   */
   expiryDurationSeconds: number;
   refreshToken: string;
 }
@@ -1674,6 +1928,7 @@ export interface User {
   /** @default false */
   phoneVerified: boolean;
   pendingPhone?: string;
+  pendingEmail?: string;
   /** @default false */
   emailVerified: boolean;
   gender?: string;
@@ -1722,6 +1977,8 @@ export interface User {
   /** @format date-time */
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  /** @default false */
+  isTestRider?: boolean;
   withdrawalRestriction?: WithdrawalRestriction;
   adminPreferences?: object;
   photo?: string;
@@ -1743,6 +2000,9 @@ export interface User {
     type?: string;
     coordinates?: number[];
   };
+  /** @format date-time */
+  locationUpdatedAt?: string;
+  locationHeading?: number;
   pushToken?: string;
   /** @default 0 */
   supportUnreadCount: number;
@@ -1902,6 +2162,7 @@ export interface UserProfileResponseDto {
   /** @default false */
   phoneVerified: boolean;
   pendingPhone?: string;
+  pendingEmail?: string;
   /** @default false */
   emailVerified: boolean;
   gender?: string;
@@ -1950,6 +2211,8 @@ export interface UserProfileResponseDto {
   /** @format date-time */
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  /** @default false */
+  isTestRider?: boolean;
   adminPreferences?: object;
   photo?: string;
   country: {
@@ -1970,6 +2233,9 @@ export interface UserProfileResponseDto {
     type?: string;
     coordinates?: number[];
   };
+  /** @format date-time */
+  locationUpdatedAt?: string;
+  locationHeading?: number;
   pushToken?: string;
   /** @default 0 */
   supportUnreadCount: number;
@@ -2017,6 +2283,12 @@ export interface UpdateLocationRequestDto {
   latitude: number;
   state?: string;
   stateCode?: string;
+  /**
+   * Heading in degrees, 0 = north (riders, for live tracking).
+   * @min 0
+   * @max 360
+   */
+  heading?: number;
 }
 
 export interface UpdatePhotoRequestDto {
@@ -2067,6 +2339,10 @@ export interface Wallet {
   balance: number;
   /** @default false */
   isDefault: boolean;
+  /** @default 0 */
+  held: number;
+  /** @default true */
+  livemode?: boolean;
   settlement: {
     bankName?: string;
     bankCode?: string;
@@ -2294,6 +2570,8 @@ export interface OrderLocation {
   };
   packageName?: string;
   description?: string;
+  livemode?: boolean;
+  packageValue?: number;
   category?: string;
   receiverName?: string;
   receiverPhone?: string;
@@ -2311,6 +2589,7 @@ export interface OrderLocation {
   arrivedAt?: string;
   /** @format date-time */
   completedAt?: string;
+  completedPosition?: object;
   /** @format date-time */
   cancelledAt?: string;
   cancellationReason?: string;
@@ -2392,6 +2671,145 @@ export interface OrderLastRiderRelease {
   at: string;
 }
 
+export interface OrderRiderChange {
+  /** @format date-time */
+  at: string;
+  /** The new rider's first name */
+  riderFirstname: string;
+}
+
+export enum HandoffStatus {
+  AWAITING_SUPPORT = "AWAITING_SUPPORT",
+  SEARCHING = "SEARCHING",
+  ACCEPTED = "ACCEPTED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+}
+
+/** FROM: you are handing over. TO: taking */
+export enum HandoffRole {
+  FROM = "FROM",
+  TO = "TO",
+}
+
+export enum HandoffReason {
+  BIKE_PROBLEM = "BIKE_PROBLEM",
+  STOPPED_BY_OFFICIALS = "STOPPED_BY_OFFICIALS",
+  ACCIDENT = "ACCIDENT",
+  EMERGENCY = "EMERGENCY",
+  OTHER = "OTHER",
+}
+
+export enum HandoffInitiator {
+  RIDER = "RIDER",
+  ADMIN = "ADMIN",
+}
+
+export interface HandoffViewPoint {
+  latitude: number;
+  longitude: number;
+}
+
+export interface HandoffViewRider {
+  id: string;
+  firstname: string;
+  lastname: string;
+  /** Only once the handoff is accepted, and only to the two riders in it */
+  phone?: string;
+  photo?: string;
+}
+
+export interface HandoffViewStop {
+  type: "PICKUP" | "DROPOFF";
+  address: string;
+}
+
+export interface HandoffEarningEstimate {
+  /** Estimated share of the trip fee (sub-units, before commission) */
+  share: number;
+  /** Handoff bonus (sub-units, no commission) */
+  bonus: number;
+}
+
+export interface HandoffViewDto {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  status: HandoffStatus;
+  /** FROM: you are handing over. TO: taking */
+  role: HandoffRole;
+  reason: HandoffReason;
+  note?: string;
+  initiatedBy: HandoffInitiator;
+  /** The 4-digit swap code. FROM only, and only while ACCEPTED */
+  code?: string;
+  /** Where to meet: the handing-over rider's position */
+  meetPoint: HandoffViewPoint;
+  /** Metres between the two riders now (once accepted) */
+  distanceBetweenM?: number;
+  /** Ring and nearby list only: km from you to the meeting point */
+  distanceKm?: number;
+  fromRider: HandoffViewRider;
+  toRider?: HandoffViewRider;
+  searchRadiusKm: number;
+  /** @format date-time */
+  searchingSince?: string;
+  /** @format date-time */
+  expiresAt?: string;
+  /** @format date-time */
+  acceptedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** TO, while ACCEPTED: wrong codes left before the lock */
+  attemptsLeft?: number;
+  /**
+   * The swap is locked until then (too many wrong codes)
+   * @format date-time
+   */
+  lockedUntil?: string;
+  stopsRemaining: number;
+  remainingStops: HandoffViewStop[];
+  /** FROM: estimated share if the swap happened here (sub-units) */
+  fromShareEstimate?: number;
+  /** TO: estimated share and bonus */
+  toEarningEstimate?: HandoffEarningEstimate;
+  /** FROM's locked share after COMPLETED (sub-units) */
+  fromShare?: number;
+  /** TO's locked share after COMPLETED (sub-units) */
+  toShare?: number;
+  /** Bonus for the taking rider (sub-units) */
+  bonusAmount: number;
+  /** TO only (sub-units). While ACCEPTED: what you're paid for the trip if the handoff is called off before the swap. After it was called off: what you were paid. */
+  compensationAmount?: number;
+  /** FROM: nobody has taken it for a while and support was alerted; show "Chat with support" */
+  needsSupport?: boolean;
+}
+
+/** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+export enum OrderStackMode {
+  ON_THE_WAY = "ON_THE_WAY",
+  NEXT_NEARBY = "NEXT_NEARBY",
+}
+
+export interface OrderStackPosition {
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  mode?: OrderStackMode;
+  /** Deliveries the rider is finishing before this order (at least 1) */
+  stopsFirst: number;
+  /** True once every pickup of this order is done (it is on the rider's bike) */
+  pickedUp: boolean;
+}
+
+export interface OrderChatStateDto {
+  /** Messages from the other person you have not read yet */
+  unread: number;
+  /** A rider is on the order and it is not over: messages can be sent */
+  open: boolean;
+  /** You can send now (show the composer) */
+  canSend: boolean;
+}
+
 export interface Order {
   userId?: string;
   riderId?: string;
@@ -2399,6 +2817,17 @@ export interface Order {
   vehicleId?: string;
   couponId?: string;
   businessId?: string;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
+  reference?: string;
+  metadata?: object;
+  quoteId?: string;
+  developerDispatch?: "auto" | "manual";
+  /** @format date-time */
+  developerDispatchedAt?: string;
+  testOptions?: object;
+  developerBidding?: object;
   transactionIds?: string[];
   type: "SINGLE" | "BATCH" | "BULK";
   /** @default "INITIATED" */
@@ -2495,6 +2924,26 @@ export interface Order {
   releaseFreeUntil?: string | null;
   /** Rider view: counted releases the rider has left today */
   releasesLeftToday?: number;
+  handoffCount?: number;
+  /** Every time the order moved to another rider after pickup, oldest first */
+  riderChanges?: OrderRiderChange[];
+  /** Rider view: picked up and on the way, so the rider may hand it to another rider */
+  canHandoff?: boolean;
+  /** Rider view: the live (or latest) handoff on this order involving you, or null */
+  handoff?: HandoffViewDto | null;
+  /** Stacking: the orders the rider was already carrying when this order was assigned to them */
+  stackedWithOrderIds?: string[];
+  /**
+   * Stacking: when this order was assigned on top of other orders
+   * @format date-time
+   */
+  stackedAt?: string;
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  stackMode?: OrderStackMode;
+  /** Stacking: present while deliveries the rider took before this order are still under way (stopsFirst of them come first). Absent otherwise */
+  stack?: OrderStackPosition;
+  /** The order chat for you: unread count and whether it is open. Null when the order has no chat */
+  chat?: OrderChatStateDto | null;
   paymentToken?: string;
   externalPaymentReference?: string;
   externalPaymentUrl?: string;
@@ -2511,6 +2960,10 @@ export interface Offer {
   /** @default "PENDING" */
   status: "PENDING" | "REJECTED" | "ACCEPTED";
   amount: number;
+  /** @format date-time */
+  expiresAt?: string;
+  /** @format date-time */
+  expiredAt?: string;
   order?: Order;
   rider?: User;
   _id: string;
@@ -2600,6 +3053,7 @@ export interface AdminUserProfileResponseDto {
   /** @default false */
   phoneVerified: boolean;
   pendingPhone?: string;
+  pendingEmail?: string;
   /** @default false */
   emailVerified: boolean;
   gender?: string;
@@ -2648,6 +3102,8 @@ export interface AdminUserProfileResponseDto {
   /** @format date-time */
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  /** @default false */
+  isTestRider?: boolean;
   adminPreferences?: object;
   photo?: string;
   country: {
@@ -2668,6 +3124,9 @@ export interface AdminUserProfileResponseDto {
     type?: string;
     coordinates?: number[];
   };
+  /** @format date-time */
+  locationUpdatedAt?: string;
+  locationHeading?: number;
   pushToken?: string;
   /** @default 0 */
   supportUnreadCount: number;
@@ -2964,6 +3423,23 @@ export interface UpdateGroupUsersRequestDto {
   userIds: string[];
 }
 
+export interface ResolveBankAccountResponseDto {
+  /**
+   * Account holder name exactly as the bank returns it.
+   * @example "ADA OBI"
+   */
+  accountName: string;
+  /** @example "0123456789" */
+  accountNumber: string;
+  /** @example "058" */
+  bankCode: string;
+  /**
+   * Bank display name, included when the bank list is cached. Absent otherwise.
+   * @example "Guaranty Trust Bank"
+   */
+  bankName?: string;
+}
+
 export interface BankResponseDto {
   name: string;
   slug: string;
@@ -3061,6 +3537,33 @@ export interface TransferToWalletDto {
   pin: string;
   /** Why the money is being sent (audited, shown on both ledgers). */
   reason: string;
+}
+
+export type SchemaMixed = object;
+
+export interface DataLog {
+  data?: SchemaMixed;
+  /** @default "ERROR" */
+  level?: "LOG" | "INFO" | "DEBUG" | "ERROR";
+  /** @default "USER" */
+  logType?: "SYSTEM" | "USER";
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface DataLogsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: any[][];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+  count: number;
+  records: DataLog[];
 }
 
 export interface Notification {
@@ -3350,6 +3853,17 @@ export interface OrderListItemResponseDto {
   vehicleId?: string;
   couponId?: string;
   businessId?: string;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
+  reference?: string;
+  metadata?: object;
+  quoteId?: string;
+  developerDispatch?: "auto" | "manual";
+  /** @format date-time */
+  developerDispatchedAt?: string;
+  testOptions?: object;
+  developerBidding?: object;
   transactionIds?: string[];
   type: "SINGLE" | "BATCH" | "BULK";
   /** @default "INITIATED" */
@@ -3447,6 +3961,26 @@ export interface OrderListItemResponseDto {
   releaseFreeUntil?: string | null;
   /** Rider view: counted releases the rider has left today */
   releasesLeftToday?: number;
+  handoffCount?: number;
+  /** Every time the order moved to another rider after pickup, oldest first */
+  riderChanges?: OrderRiderChange[];
+  /** Rider view: picked up and on the way, so the rider may hand it to another rider */
+  canHandoff?: boolean;
+  /** Rider view: the live (or latest) handoff on this order involving you, or null */
+  handoff?: HandoffViewDto | null;
+  /** Stacking: the orders the rider was already carrying when this order was assigned to them */
+  stackedWithOrderIds?: string[];
+  /**
+   * Stacking: when this order was assigned on top of other orders
+   * @format date-time
+   */
+  stackedAt?: string;
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  stackMode?: OrderStackMode;
+  /** Stacking: present while deliveries the rider took before this order are still under way (stopsFirst of them come first). Absent otherwise */
+  stack?: OrderStackPosition;
+  /** The order chat for you: unread count and whether it is open. Null when the order has no chat */
+  chat?: OrderChatStateDto | null;
   paymentToken?: string;
   externalPaymentReference?: string;
   externalPaymentUrl?: string;
@@ -3669,6 +4203,8 @@ export interface QuoteBatchOrderResponseDto {
   totalAmount: number;
   serviceCharge: number;
   totalAmountPayable: number;
+  /** Whole route distance in kilometres, leg by leg */
+  distanceKm: number;
   minimumOfferPercentage: number;
   maxRiderSurgePercentage: number;
   /** @example "NGN" */
@@ -3698,6 +4234,8 @@ export interface QuoteBulkOrderResponseDto {
   totalAmount: number;
   serviceCharge: number;
   totalAmountPayable: number;
+  /** Whole route distance in kilometres, leg by leg */
+  distanceKm: number;
   minimumOfferPercentage: number;
   maxRiderSurgePercentage: number;
   /** @example "NGN" */
@@ -3763,6 +4301,40 @@ export interface CreateBatchOrderDto {
   userId?: string;
 }
 
+export enum DispatchTierType {
+  ELIGIBLE = "ELIGIBLE",
+  NEARBY = "NEARBY",
+}
+
+/** Echoed back on the dispatch callbacks so the caller can show which tier is ringing */
+export enum DispatchTierLabel {
+  STORE = "STORE",
+  BACKUP = "BACKUP",
+  NEARBY = "NEARBY",
+}
+
+export interface DispatchTierDto {
+  type: DispatchTierType;
+  /** Echoed back on the dispatch callbacks so the caller can show which tier is ringing */
+  label?: DispatchTierLabel;
+  /** ELIGIBLE: the riders to ring, best first */
+  riderIds?: string[];
+  /**
+   * NEARBY: how far from the pickup to look, in km (default 6)
+   * @min 0.5
+   * @max 30
+   */
+  radiusKm?: number;
+  /**
+   * NEARBY: ring at most this many riders (default 8)
+   * @min 1
+   * @max 20
+   */
+  max?: number;
+  /** How this tier orders its riders. ELIGIBLE defaults to PRIORITY (as listed), NEARBY to nearest first */
+  sortingStrategy?: "BANDS" | "SCORING" | "FAIR" | "PRIORITY";
+}
+
 export interface RidersRequestDto {
   /** @default false */
   autoAcceptOffer?: boolean;
@@ -3778,7 +4350,15 @@ export interface RidersRequestDto {
    */
   callbackUrl?: string;
   /** Rider sorting strategy for sequential dispatch */
-  sortingStrategy?: "BANDS" | "SCORING" | "FAIR";
+  sortingStrategy?: "BANDS" | "SCORING" | "FAIR" | "PRIORITY";
+  /** Tiered sequential dispatch: ring each tier in turn (for example the store riders, then backup riders, then riders nearby). Needs sequentialDispatch; when set, riderIds and sortingStrategy are ignored. */
+  tiers?: DispatchTierDto[];
+  /**
+   * Tiered dispatch: seconds each rider has to answer (default 15)
+   * @min 10
+   * @max 60
+   */
+  ringTimeoutSeconds?: number;
 }
 
 export interface ReDispatchRequestDto {
@@ -3790,7 +4370,15 @@ export interface ReDispatchRequestDto {
    */
   callbackUrl?: string;
   /** Rider sorting strategy */
-  sortingStrategy?: "BANDS" | "SCORING" | "FAIR";
+  sortingStrategy?: "BANDS" | "SCORING" | "FAIR" | "PRIORITY";
+  /** Tiered search, as on request-riders: the search starts again from the first tier. When set, riderIds and sortingStrategy are ignored. */
+  tiers?: DispatchTierDto[];
+  /**
+   * Tiered dispatch: seconds each rider has to answer (default 15)
+   * @min 10
+   * @max 60
+   */
+  ringTimeoutSeconds?: number;
 }
 
 export interface PayRiderTripRequestDto {
@@ -3890,6 +4478,17 @@ export interface ForceAssignRiderResponseDto {
   vehicleId?: string;
   couponId?: string;
   businessId?: string;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
+  reference?: string;
+  metadata?: object;
+  quoteId?: string;
+  developerDispatch?: "auto" | "manual";
+  /** @format date-time */
+  developerDispatchedAt?: string;
+  testOptions?: object;
+  developerBidding?: object;
   transactionIds?: string[];
   type: "SINGLE" | "BATCH" | "BULK";
   /** @default "INITIATED" */
@@ -3986,6 +4585,26 @@ export interface ForceAssignRiderResponseDto {
   releaseFreeUntil?: string | null;
   /** Rider view: counted releases the rider has left today */
   releasesLeftToday?: number;
+  handoffCount?: number;
+  /** Every time the order moved to another rider after pickup, oldest first */
+  riderChanges?: OrderRiderChange[];
+  /** Rider view: picked up and on the way, so the rider may hand it to another rider */
+  canHandoff?: boolean;
+  /** Rider view: the live (or latest) handoff on this order involving you, or null */
+  handoff?: HandoffViewDto | null;
+  /** Stacking: the orders the rider was already carrying when this order was assigned to them */
+  stackedWithOrderIds?: string[];
+  /**
+   * Stacking: when this order was assigned on top of other orders
+   * @format date-time
+   */
+  stackedAt?: string;
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  stackMode?: OrderStackMode;
+  /** Stacking: present while deliveries the rider took before this order are still under way (stopsFirst of them come first). Absent otherwise */
+  stack?: OrderStackPosition;
+  /** The order chat for you: unread count and whether it is open. Null when the order has no chat */
+  chat?: OrderChatStateDto | null;
   paymentToken?: string;
   externalPaymentReference?: string;
   externalPaymentUrl?: string;
@@ -4003,8 +4622,29 @@ export interface NearbyRidersCountResponseDto {
   count: number;
   /** Search radius in km (the state’s dispatch radius) */
   radiusKm: number;
+  /** Distance to the nearest of them in km; null when there are none */
+  nearestKm: number | null;
   /** True when served from the 60 s cache */
   cached: boolean;
+}
+
+export interface RiderOrderStackingDto {
+  /** True when a busy rider may still take an order that is on their way (ON_THE_WAY: stackingEnabled, and maxStackedOrders above max) */
+  enabled: boolean;
+  /** True when a busy rider finishing nearby may take their next job (NEXT_NEARBY: nextNearbyEnabled, and maxStackedOrders above max) */
+  nextNearby: boolean;
+  /** Most orders a rider may hold when stacking (maxStackedOrders: 2 or 3) */
+  maxOrders: number;
+}
+
+export interface RiderOrderCapacityResponseDto {
+  /** Orders the rider is handling now (accepted or on the way) */
+  active: number;
+  /** Most orders a rider may handle at once (the state's maxActiveOrders, at least 1) */
+  max: number;
+  /** True when active has reached max: bids are refused with RIDER_BUSY until one is done, except on an order that stacks for you (on your way, or next job) when stacking is on */
+  busy: boolean;
+  stacking: RiderOrderStackingDto;
 }
 
 export interface ArrivalCheckResponseDto {
@@ -4029,6 +4669,51 @@ export interface RiderListItemResponseDto {
   rating: number;
   /** Completed deliveries, all time */
   totalDeliveries: number;
+}
+
+export enum RiderApprovalGap {
+  ACCOUNT_NOT_ACTIVE = "ACCOUNT_NOT_ACTIVE",
+  LICENCE_NOT_APPROVED = "LICENCE_NOT_APPROVED",
+  VEHICLE_NOT_VERIFIED = "VEHICLE_NOT_VERIFIED",
+}
+
+export interface RiderLookupCardDto {
+  id: string;
+  firstName: string;
+  /** First letter of the last name, or an empty string */
+  lastInitial: string;
+  photo?: string;
+  /** Active, licence approved and vehicle verified: can take orders */
+  approved: boolean;
+  pending: RiderApprovalGap[];
+}
+
+export interface RiderLookupResponseDto {
+  found: boolean;
+  rider?: RiderLookupCardDto;
+}
+
+export interface RiderLinkCodeRequestDto {
+  /** The rider, from GET /orders/riders/lookup */
+  riderId: string;
+  /**
+   * @maxLength 60
+   * @example "Mama Joy's Kitchen"
+   */
+  storeName: string;
+  /**
+   * Six digits
+   * @pattern /^\d{6}$/
+   * @example "123456"
+   */
+  code: string;
+}
+
+export interface RiderLinkCodeResponseDto {
+  /** The code went to the rider's Pickriders app */
+  delivered: boolean;
+  /** SENT, or why not: no app signed in (NO_APP), not a rider account, or the push failed */
+  status: "SENT" | "NO_APP" | "NOT_A_RIDER" | "FAILED";
 }
 
 export interface RiderLocationsRequestDto {
@@ -4172,6 +4857,163 @@ export interface CompleteLocationRequestDto {
   recipientPhone?: string;
 }
 
+export interface QueuedOrderStackFitDto {
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  mode: OrderStackMode;
+  /** True for ON_THE_WAY (on the way to a drop-off you already carry), false for NEXT_NEARBY */
+  onTheWay: boolean;
+  /** ON_THE_WAY only: km from this order's drop-off to your nearest current drop-off */
+  dropoffGapKm?: number;
+  /** ON_THE_WAY only: extra km the pickup adds to your way to your current drop-off */
+  detourKm?: number;
+  /** NEXT_NEARBY only: km from this order's pickup to your last remaining drop-off */
+  pickupGapKm?: number;
+}
+
+export interface QueuedOrderResponseDto {
+  userId?: string;
+  riderId?: string;
+  eligibleRiderIds?: string[];
+  vehicleId?: string;
+  couponId?: string;
+  businessId?: string;
+  teamId?: string;
+  /** @default true */
+  livemode?: boolean;
+  reference?: string;
+  metadata?: object;
+  quoteId?: string;
+  developerDispatch?: "auto" | "manual";
+  /** @format date-time */
+  developerDispatchedAt?: string;
+  testOptions?: object;
+  developerBidding?: object;
+  transactionIds?: string[];
+  type: "SINGLE" | "BATCH" | "BULK";
+  /** @default "INITIATED" */
+  status: "INITIATED" | "ACCEPTED" | "ON_GOING" | "COMPLETED" | "CANCELLED";
+  /** @default "PENDING" */
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  cancelledBy?: "USER" | "RIDER" | "ADMIN";
+  /** @default 0 */
+  totalAmount?: number;
+  /** @default 0 */
+  discount?: number;
+  /** @default 0 */
+  discountAmount?: number;
+  /** @default "PERCENTAGE" */
+  discountType?: "FIXED" | "PERCENTAGE";
+  /** @default 0 */
+  serviceCharge?: number;
+  /** @default 0 */
+  totalAmountPayable?: number;
+  totalLocations: number;
+  /** @default 0 */
+  confirmedLocations?: number;
+  /** @default 0 */
+  cancelledLocations?: number;
+  /** @default 0 */
+  ongoingLocations?: number;
+  /** @format date-time */
+  startedAt?: string;
+  /** @format date-time */
+  paidDate?: string;
+  /** @format date-time */
+  acceptedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** @format date-time */
+  cancelledAt?: string;
+  cancellationReason?: string;
+  locations?: OrderLocation[];
+  orderNumber: string;
+  /** @default false */
+  isScheduled: boolean;
+  /** @default false */
+  autoAcceptOffer: boolean;
+  /** @default 0 */
+  minimumOfferPercentage: number;
+  /** @default 40 */
+  maxRiderSurgePercentage: number;
+  negotiatedAmount: number;
+  offers: Offer[];
+  locationUpdates?: OrderLocationUpdate[];
+  currency: string;
+  /** @format date-time */
+  scheduledFor?: string;
+  countryCode?: string;
+  stateCode?: string;
+  /** @format date-time */
+  scheduleDispatchedAt?: string;
+  /** @format date-time */
+  scheduleLastRungAt?: string;
+  scheduleRingCount?: number;
+  scheduleRemindersSent?: string[];
+  color?: string;
+  title?: string;
+  isQueued?: boolean;
+  /** @format date-time */
+  queuedAt?: string;
+  business?: Business;
+  user?: User;
+  vehicle?: Vehicle;
+  rider?: User;
+  coupon?: Coupon;
+  transactions?: Transaction[];
+  review?: Review;
+  channel?: string;
+  storefrontVendorId?: string;
+  /** @default 0 */
+  foodValue?: number;
+  /** @default 0 */
+  vendorCommissionRate?: number;
+  callbackUrl?: string;
+  dispatchState?: object;
+  /** @format date-time */
+  tripPaidAt?: string;
+  tripPayRiderId?: string;
+  tripPayAmount?: number;
+  riderReleaseCount?: number;
+  lastRiderRelease?: OrderLastRiderRelease;
+  /** Rider view: the order is accepted and the pickup is not done, so the rider may release it */
+  canRelease?: boolean;
+  /**
+   * Rider view: until when a release is free (2 minutes after accepting); null once it counts, including as soon as the rider has arrived at the pickup
+   * @format date-time
+   */
+  releaseFreeUntil?: string | null;
+  /** Rider view: counted releases the rider has left today */
+  releasesLeftToday?: number;
+  handoffCount?: number;
+  /** Every time the order moved to another rider after pickup, oldest first */
+  riderChanges?: OrderRiderChange[];
+  /** Rider view: picked up and on the way, so the rider may hand it to another rider */
+  canHandoff?: boolean;
+  /** Rider view: the live (or latest) handoff on this order involving you, or null */
+  handoff?: HandoffViewDto | null;
+  /** Stacking: the orders the rider was already carrying when this order was assigned to them */
+  stackedWithOrderIds?: string[];
+  /**
+   * Stacking: when this order was assigned on top of other orders
+   * @format date-time
+   */
+  stackedAt?: string;
+  /** Stacking: the mode that let the rider take this order on top of others. Unset when they held other orders but simply had room under maxActiveOrders */
+  stackMode?: OrderStackMode;
+  /** The order chat for you: unread count and whether it is open. Null when the order has no chat */
+  chat?: OrderChatStateDto | null;
+  paymentToken?: string;
+  externalPaymentReference?: string;
+  externalPaymentUrl?: string;
+  _id: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** Only for a rider at their active-order cap: present when this order stacks for them (on their way, or next job near where they finish), absent otherwise */
+  stack?: QueuedOrderStackFitDto;
+}
+
 export interface ListOrderResponseDto {
   nextPage?: number | null;
   previousPage?: number | null;
@@ -4180,6 +5022,99 @@ export interface ListOrderResponseDto {
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
+}
+
+export interface RiderRequestHandoffRequestDto {
+  reason: HandoffReason;
+  /**
+   * Optional note for support
+   * @maxLength 300
+   */
+  note?: string;
+  /**
+   * Where the rider is now (the meeting point)
+   * @example 6.4584
+   */
+  latitude: number;
+  /** @example 7.5464 */
+  longitude: number;
+}
+
+export interface RiderStartHandoffSearchRequestDto {
+  /**
+   * The rider's position now, if the app has it
+   * @example 6.4584
+   */
+  latitude?: number;
+  /** @example 7.5464 */
+  longitude?: number;
+}
+
+export interface RiderCancelHandoffRequestDto {
+  /**
+   * Optional note
+   * @maxLength 300
+   */
+  note?: string;
+}
+
+export interface RiderAcceptHandoffRequestDto {
+  /**
+   * The rider's position now, if the app has it
+   * @example 6.4584
+   */
+  latitude?: number;
+  /** @example 7.5464 */
+  longitude?: number;
+}
+
+export interface RiderDeclineHandoffRequestDto {
+  /**
+   * Optional note
+   * @maxLength 300
+   */
+  note?: string;
+}
+
+export interface RiderDeclineHandoffResponseDto {
+  handoffId: string;
+  orderId: string;
+  /** Always true: you will not be rung for this handoff again */
+  declined: boolean;
+}
+
+export interface RiderConfirmHandoffRequestDto {
+  /**
+   * The 4-digit code on the handing-over rider’s screen
+   * @pattern /^\d{4}$/
+   * @example "4821"
+   */
+  code: string;
+  /** @example 6.4584 */
+  latitude: number;
+  /** @example 7.5464 */
+  longitude: number;
+}
+
+/** Where the rider passed: the ring pop-up (RING) or their order queue (QUEUE) */
+export enum RiderPassSource {
+  RING = "RING",
+  QUEUE = "QUEUE",
+}
+
+export interface RiderPassOrderRequestDto {
+  /** Where the rider passed: the ring pop-up (RING) or their order queue (QUEUE) */
+  source?: RiderPassSource;
+}
+
+export interface RiderPassOrderResponseDto {
+  /** The order the rider passed on */
+  orderId: string;
+  /**
+   * Always true: the pass is recorded (a repeat pass changes nothing)
+   * @example true
+   */
+  passed: boolean;
 }
 
 /** Manual admin status override (audited). */
@@ -4258,6 +5193,114 @@ export interface AdminOrderRiderHistoryResponseDto {
   stints: OrderRiderStintDto[];
 }
 
+export interface AdminHandoffRiderDto {
+  id: string;
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
+  photo?: string;
+}
+
+export enum HandoffEndedBy {
+  RIDER = "RIDER",
+  ADMIN = "ADMIN",
+  SYSTEM = "SYSTEM",
+}
+
+export enum HandoffBonusStatus {
+  PENDING = "PENDING",
+  HELD = "HELD",
+  PAID = "PAID",
+  FORFEITED = "FORFEITED",
+  VOID = "VOID",
+}
+
+export enum HandoffFlag {
+  REPEAT7D = "REPEAT_7D",
+  SAME_PAIR = "SAME_PAIR",
+  GPS_FAR = "GPS_FAR",
+  CODE_ATTEMPTS = "CODE_ATTEMPTS",
+}
+
+export enum HandoffCountDecision {
+  PENDING_REVIEW = "PENDING_REVIEW",
+  RULE_WAIVED = "RULE_WAIVED",
+  RULE_COUNTED = "RULE_COUNTED",
+  COUNTED = "COUNTED",
+  WAIVED = "WAIVED",
+}
+
+export interface AdminHandoffDto {
+  id: string;
+  orderId: string;
+  orderNumber?: string;
+  /** VENDOR_STOREFRONT, CUSTOMER_WEB, or none for the app */
+  channel?: string;
+  /** 1 for the first handoff on the order, 2 for the next */
+  sequence: number;
+  status: HandoffStatus;
+  reason: HandoffReason;
+  note?: string;
+  initiatedBy: HandoffInitiator;
+  fromRider: AdminHandoffRiderDto;
+  toRider?: AdminHandoffRiderDto;
+  meetPoint?: HandoffViewPoint;
+  searchRadiusKm: number;
+  /** Riders rung so far */
+  rungCount: number;
+  declinedCount: number;
+  /** Accepted riders staff dropped as no-shows */
+  droppedRiderIds: string[];
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  searchingSince?: string;
+  /** @format date-time */
+  expiresAt?: string;
+  /** @format date-time */
+  acceptedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** @format date-time */
+  endedAt?: string;
+  endedBy?: HandoffEndedBy;
+  endNote?: string;
+  failedAttempts: number;
+  /** @format date-time */
+  lockedUntil?: string;
+  /** Metres between the riders at the swap */
+  confirmDistanceM?: number;
+  /** What the swap split (sub-units) */
+  splitBase?: number;
+  distanceCoveredKm?: number;
+  totalRouteKm?: number;
+  /** The handing-over rider's share (%), after the clamp */
+  sharePct?: number;
+  /** Sub-units, gross (commission applies when paid) */
+  fromShare?: number;
+  /** Sub-units, gross (commission applies when paid) */
+  toShare?: number;
+  /** Sub-units, no commission */
+  bonusAmount: number;
+  bonusStatus: HandoffBonusStatus;
+  /** @format date-time */
+  bonusPaidAt?: string;
+  /** Paid to the taking rider when the handoff was called off */
+  compensationAmount?: number;
+  /** @format date-time */
+  compensationPaidAt?: string;
+  flags: HandoffFlag[];
+  countRule?: HandoffCountDecision;
+  countDecision?: HandoffCountDecision;
+  /** Final: counts as the handing-over rider's cancellation */
+  counted: boolean;
+  reviewedBy?: string | null;
+  /** @format date-time */
+  reviewedAt?: string;
+  reviewResolution?: "ADMIN" | "AUTO";
+  reviewNote?: string;
+}
+
 export interface AdminCancelOrderRequestDto {
   /** Reason for cancelling the order (audited, refunds the customer). */
   reason: string;
@@ -4311,31 +5354,375 @@ export interface AdminRiderReleasesResponseDto {
   releases: RiderReleaseItemDto[];
 }
 
-export type SchemaMixed = object;
-
-export interface DataLog {
-  data?: SchemaMixed;
-  /** @default "ERROR" */
-  level?: "LOG" | "INFO" | "DEBUG" | "ERROR";
-  /** @default "USER" */
-  logType?: "SYSTEM" | "USER";
-  _id: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
-export interface DataLogsResponseDto {
+export interface AdminListHandoffsResponseDto {
   nextPage?: number | null;
   previousPage?: number | null;
   currentPage: number;
-  results: any[][];
+  results: AdminHandoffDto[];
   perPageLimit: number;
   totalRecords: number;
   totalPages: number;
-  count: number;
-  records: DataLog[];
+}
+
+export interface AdminHandoffsSummaryResponseDto {
+  /** Live searches */
+  searching: number;
+  /** Accident handoffs waiting for support to start the search */
+  awaitingSupport: number;
+  /** A rider accepted and is on the way to the swap */
+  accepted: number;
+  /** Completed handoffs waiting for a count decision */
+  pendingReview: number;
+  /** Bonuses held for review */
+  heldBonuses: number;
+  /** Swaps completed since Lagos midnight */
+  completedToday: number;
+}
+
+export interface AdminStartHandoffRequestDto {
+  /** The order (on the way, picked up) */
+  orderId: string;
+  reason: HandoffReason;
+  /** @maxLength 300 */
+  note?: string;
+}
+
+export enum HandoffReviewDecision {
+  COUNT = "COUNT",
+  WAIVE = "WAIVE",
+}
+
+/** For a HELD bonus: pay it (RELEASE) or drop it (FORFEIT). Omit to leave it held */
+export enum HandoffBonusAction {
+  RELEASE = "RELEASE",
+  FORFEIT = "FORFEIT",
+}
+
+export interface AdminBulkReviewHandoffsRequestDto {
+  decision: HandoffReviewDecision;
+  /** For a HELD bonus: pay it (RELEASE) or drop it (FORFEIT). Omit to leave it held */
+  bonus?: HandoffBonusAction;
+  /** @maxLength 300 */
+  note?: string;
+  /** @maxItems 100 */
+  ids: string[];
+}
+
+export interface AdminBulkReviewHandoffResultDto {
+  id: string;
+  ok: boolean;
+  error?: string;
+}
+
+export interface AdminBulkReviewHandoffsResponseDto {
+  updated: number;
+  results: AdminBulkReviewHandoffResultDto[];
+}
+
+export interface AdminStartHandoffSearchRequestDto {
+  /** @maxLength 300 */
+  note?: string;
+}
+
+export interface AdminAssignHandoffRiderRequestDto {
+  riderId: string;
+}
+
+export interface AdminCancelHandoffRequestDto {
+  /** @maxLength 300 */
+  note?: string;
+}
+
+export interface AdminDropHandoffRiderRequestDto {
+  /** @maxLength 300 */
+  note?: string;
+}
+
+export interface AdminRaiseHandoffBonusRequestDto {
+  /**
+   * The new bonus (sub-units). Must be higher than the current one
+   * @min 1
+   * @max 10000000
+   * @example 50000
+   */
+  amount: number;
+}
+
+export interface AdminReviewHandoffRequestDto {
+  decision: HandoffReviewDecision;
+  /** For a HELD bonus: pay it (RELEASE) or drop it (FORFEIT). Omit to leave it held */
+  bonus?: HandoffBonusAction;
+  /** @maxLength 300 */
+  note?: string;
+}
+
+export enum AdminAlertSeverity {
+  URGENT = "URGENT",
+  HIGH = "HIGH",
+}
+
+export enum AdminAlertStatus {
+  OPEN = "OPEN",
+  CLAIMED = "CLAIMED",
+  RESOLVED = "RESOLVED",
+}
+
+export enum AdminAlertResolution {
+  AUTO = "AUTO",
+  ADMIN = "ADMIN",
+}
+
+export interface AdminAlertDto {
+  id: string;
+  /** HANDOFF_ACCIDENT, HANDOFF_NO_RIDER, HANDOFF_CODE_LOCKOUT, RIDER_FREQUENT_RELEASES, RIDER_AUTO_PAUSED (open list) */
+  type: string;
+  severity: AdminAlertSeverity;
+  status: AdminAlertStatus;
+  title: string;
+  message: string;
+  /** How many times the same problem was raised while this alert was live */
+  occurrences: number;
+  /** @format date-time */
+  lastOccurredAt?: string;
+  orderId?: string;
+  orderNumber?: string;
+  handoffId?: string;
+  riderId?: string;
+  riderName?: string;
+  claimedBy?: string;
+  /** @format date-time */
+  claimedAt?: string;
+  /** Null when resolved automatically */
+  resolvedBy?: string | null;
+  /** @format date-time */
+  resolvedAt?: string;
+  resolution?: AdminAlertResolution;
+  resolutionNote?: string;
+  /**
+   * When the alert was escalated to the support WhatsApp number
+   * @format date-time
+   */
+  escalatedAt?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface AdminListAlertsResponseDto {
+  nextPage?: number | null;
+  previousPage?: number | null;
+  currentPage: number;
+  results: AdminAlertDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AdminAlertTypeCountDto {
+  type: string;
+  severity: AdminAlertSeverity;
+  open: number;
+  claimed: number;
+}
+
+export interface AdminAlertsSummaryResponseDto {
+  /** Unclaimed live alerts */
+  open: number;
+  /** Claimed, not yet resolved */
+  claimed: number;
+  /** Live URGENT alerts (open or claimed) */
+  urgent: number;
+  /** Live HIGH alerts (open or claimed) */
+  high: number;
+  byType: AdminAlertTypeCountDto[];
+}
+
+export interface AdminResolveAlertRequestDto {
+  /**
+   * What was done
+   * @maxLength 500
+   */
+  note?: string;
+}
+
+export enum ChatParticipantRole {
+  CUSTOMER = "CUSTOMER",
+  RIDER = "RIDER",
+}
+
+export enum ChatClosedReason {
+  ENDED = "ENDED",
+  NOT_ELIGIBLE = "NOT_ELIGIBLE",
+  NO_RIDER = "NO_RIDER",
+}
+
+export interface ChatParticipantDto {
+  id: string;
+  firstname: string;
+  lastname: string;
+  photo?: string;
+  role: ChatParticipantRole;
+}
+
+export interface ChatQuickReplyDto {
+  /**
+   * Send it back as quickReplyKey
+   * @example "OUTSIDE"
+   */
+  key: string;
+  /** @example "I'm outside" */
+  text: string;
+  /** Put the text in the message box for the user to finish, instead of sending it */
+  prefill?: boolean;
+}
+
+export interface ChatThreadDto {
+  orderId: string;
+  orderNumber: string;
+  me: ChatParticipantRole;
+  /** Show the message box */
+  canSend: boolean;
+  /** A rider is on the order and it is not over */
+  open: boolean;
+  /**
+   * The order ended: the chat can be read until then, and is closed after
+   * @format date-time
+   */
+  readOnlyUntil?: string;
+  closedReason?: ChatClosedReason;
+  /** The person you chat with: the current rider, or the customer. Null while there is no rider */
+  other: ChatParticipantDto | null;
+  /** The seq of the latest message (0: none yet) */
+  lastSeq: number;
+  myLastReadSeq: number;
+  /** Seen ticks: the other side has read up to this seq */
+  otherLastReadSeq: number;
+  /** Messages from the other side you have not read */
+  unread: number;
+  /** Chips for your role. Empty when you cannot send */
+  quickReplies: ChatQuickReplyDto[];
+}
+
+export enum OrderMessageKind {
+  TEXT = "TEXT",
+  SYSTEM = "SYSTEM",
+}
+
+export enum ChatSenderRole {
+  CUSTOMER = "CUSTOMER",
+  RIDER = "RIDER",
+  SYSTEM = "SYSTEM",
+}
+
+export enum ChatSystemKey {
+  RIDER_ASSIGNED = "RIDER_ASSIGNED",
+  RIDER_ARRIVED_PICKUP = "RIDER_ARRIVED_PICKUP",
+  PICKED_UP = "PICKED_UP",
+  RIDER_ARRIVED_DROPOFF = "RIDER_ARRIVED_DROPOFF",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+  RIDER_CHANGED = "RIDER_CHANGED",
+}
+
+export interface OrderMessageDto {
+  id: string;
+  orderId: string;
+  /** Per-order position: 1, 2, 3... Render by it; a gap means catch up */
+  seq: number;
+  kind: OrderMessageKind;
+  senderRole: ChatSenderRole;
+  /** Unset for SYSTEM lines */
+  senderId?: string;
+  /** You sent it. REST only: socket messages leave it out, compare senderId with your id */
+  mine: boolean;
+  body: string;
+  quickReplyKey?: string;
+  systemKey?: ChatSystemKey;
+  /** The id your app gave the message */
+  clientId?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface ListOrderMessagesResponseDto {
+  /** Ascending by seq */
+  messages: OrderMessageDto[];
+  /** More in the same direction: older for the latest page and `before`, newer for `after` */
+  hasMore: boolean;
+}
+
+export interface SendOrderMessageRequestDto {
+  /**
+   * A UUID the app makes once per message and reuses on every retry of it
+   * @example "0b8a5d2e-4c1f-4f7a-9a43-6f1e2d9c7b10"
+   */
+  clientId: string;
+  /**
+   * 1 to 500 characters after trimming. Control characters are removed and 3+ line breaks become 2
+   * @maxLength 2000
+   * @example "I'm outside"
+   */
+  body: string;
+  /**
+   * The quick reply chip this came from (analytics only; body is the text shown)
+   * @pattern /^[A-Z0-9_]{1,40}$/
+   * @example "OUTSIDE"
+   */
+  quickReplyKey?: string;
+}
+
+export interface MarkOrderMessagesReadRequestDto {
+  /**
+   * The highest seq you have seen
+   * @min 0
+   * @example 12
+   */
+  upToSeq: number;
+}
+
+export interface MarkOrderMessagesReadResponseDto {
+  /** Your read marker now (never lower than before) */
+  upToSeq: number;
+}
+
+export interface AdminChatParticipantDto {
+  id: string;
+  firstname: string;
+  lastname: string;
+  photo?: string;
+  role: ChatParticipantRole;
+  phone?: string;
+  /** The order customer, or its rider now */
+  current: boolean;
+}
+
+export interface AdminOrderChatThreadDto {
+  orderId: string;
+  orderNumber: string;
+  /** A customer-app, live order: it has a chat */
+  eligible: boolean;
+  open: boolean;
+  closedReason?: ChatClosedReason;
+  /** @format date-time */
+  readOnlyUntil?: string;
+  lastSeq: number;
+  customerLastReadSeq: number;
+  riderLastReadSeq: number;
+  /** @format date-time */
+  lastMessageAt?: string;
+  /** @format date-time */
+  closedAt?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** The customer and every rider who was on the order (oldest first) */
+  participants: AdminChatParticipantDto[];
+}
+
+export interface AdminOrderChatResponseDto {
+  thread: AdminOrderChatThreadDto;
+  /** Ascending by seq. `mine` is always false here */
+  messages: OrderMessageDto[];
+  /** Only the newest 1,000 messages are included */
+  truncated: boolean;
 }
 
 export interface AuditLog {
@@ -4350,6 +5737,12 @@ export interface AuditLog {
   ipAddress?: string;
   requestData?: string;
   responseData?: string;
+  teamId?: string;
+  event?: string;
+  actorId?: string;
+  target?: object;
+  before?: object;
+  after?: object;
   _id: string;
   /** @format date-time */
   createdAt: string;
@@ -4856,7 +6249,24 @@ export interface Team {
   handle: string;
   website: string;
   description: string;
+  /** Developer teams: the company behind the integration, if there's one. */
+  companyName: string;
+  /** Developer teams: where Pickriders support reaches the team. */
+  supportEmail: string;
+  supportPhone: string;
+  /** Developer teams: what they are building, for the live-access review. */
+  useCase: string;
+  /** Developer teams: extra addresses for operational emails (low balance, auto top-up failures, a failing webhook endpoint), on top of the members who get them. */
+  notificationEmails: string[];
+  lowBalanceThreshold?: number | null;
+  /** @format date-time */
+  lowBalanceAlertedAt?: string;
+  expectedMonthlyVolume: "UP_TO_100" | "UP_TO_1000" | "UP_TO_10000" | "OVER_10000";
   userId: string;
+  /**
+   * Unused: see the ApiKey collection.
+   * @deprecated
+   */
   apiKeys: ApiKeyDto[];
   config: {
     /** @default "" */
@@ -4870,7 +6280,25 @@ export interface Team {
   };
   /** @default "ACTIVE" */
   status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
-  allowedRoles: ("TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER")[];
+  /** @default "NOT_REQUESTED" */
+  liveStatus: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /**
+   * When the team last asked for live access.
+   * @format date-time
+   */
+  liveRequestedAt: string;
+  /**
+   * When a Pickriders admin last approved, rejected, suspended or restored it.
+   * @format date-time
+   */
+  liveReviewedAt: string;
+  /** The admin who made that decision. */
+  liveReviewedBy: string;
+  /** Why live access was rejected. The developer sees it. */
+  liveRejectionReason: string;
+  /** Why live access was suspended. The developer sees it. */
+  liveSuspensionReason: string;
+  allowedRoles: ("TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE")[];
   address: {
     country?: string;
     state?: string;
@@ -4978,6 +6406,1913 @@ export interface SupportUnreadResponseDto {
    * @example 3
    */
   count: number;
+}
+
+export interface PingResponseDto {
+  /**
+   * Always "ping".
+   * @example "ping"
+   */
+  object: string;
+  /**
+   * True when the Developer API is reachable.
+   * @example true
+   */
+  ok: boolean;
+}
+
+export interface PublicAccountDto {
+  /**
+   * Always "account".
+   * @example "account"
+   */
+  object: string;
+  /** @example "team_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "Acme Logistics" */
+  name: string;
+  company_name: string | null;
+  website: string | null;
+  support_email: string | null;
+  support_phone: string | null;
+  /** Whether the account owner's email is verified. */
+  email_verified: boolean;
+  /** Whether the account owner's phone is verified. */
+  phone_verified: boolean;
+  /** Live mode works only while this is approved. Test mode always works. */
+  live_status: "not_requested" | "pending" | "approved" | "rejected" | "suspended";
+  /** true when this request used a live key. */
+  livemode: boolean;
+  /** @example "2026-11-09T10:15:00.000Z" */
+  created: string;
+}
+
+export interface PublicWalletDto {
+  /**
+   * Always "wallet".
+   * @example "wallet"
+   */
+  object: string;
+  /** @example "NGN" */
+  currency: string;
+  /**
+   * What the team can spend now: balance minus held. Kobo.
+   * @example 100000000
+   */
+  available: number;
+  /**
+   * Reserved for orders in progress. Kobo.
+   * @example 0
+   */
+  held: number;
+  /** false for the test-mode wallet (play money). */
+  livemode: boolean;
+}
+
+export interface CreateFundingSessionRequestDto {
+  /**
+   * Kobo to add to the live wallet (₦50,000 here).
+   * @example 5000000
+   */
+  amount: number;
+  /**
+   * Where the payer lands after paying.
+   * @example "https://acme.com/billing/funded"
+   */
+  success_url: string;
+  /**
+   * Where the payer lands on cancel.
+   * @example "https://acme.com/billing"
+   */
+  cancel_url?: string;
+}
+
+export interface FundingSessionDto {
+  /** @example "funding_session" */
+  object: string;
+  /** The payment reference; the wallet transaction carries it too. */
+  reference: string;
+  /** Send the payer here to pay by card. */
+  url: string;
+  /** Kobo. */
+  amount: number;
+  /** @example "NGN" */
+  currency: string;
+  /** @example true */
+  livemode: boolean;
+  created: string;
+}
+
+export interface PublicWalletTransactionDto {
+  /** @example "transaction" */
+  object: string;
+  /** @example "txn_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  type: "credit" | "debit";
+  /**
+   * wallet_funding, test_funding, order_payment, …
+   * @example "order_payment"
+   */
+  purpose: string;
+  status: "processing" | "success" | "failed" | "cancelled";
+  /** @example 250000 */
+  amount: number;
+  /** @example "NGN" */
+  currency: string;
+  /** The balance once this transaction landed. */
+  balance_after: number | null;
+  description: string | null;
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  order: string | null;
+  livemode: boolean;
+  created: string;
+}
+
+export interface PublicFundingAccountDto {
+  /** @example "funding_account" */
+  object: string;
+  /** pending while Paystack checks the BVN. */
+  status: "pending" | "active" | "failed";
+  /** @example "Wema Bank" */
+  bank_name: string | null;
+  /** @example "9930000000" */
+  account_number: string | null;
+  account_name: string | null;
+  /**
+   * The last four digits of the BVN it was set up with.
+   * @example "5678"
+   */
+  bvn_last4: string;
+  /** Why Paystack could not issue it, when it failed. */
+  failure_reason: string | null;
+}
+
+export interface FundTestWalletRequestDto {
+  /**
+   * Kobo to add to the test wallet (₦500,000 here).
+   * @min 1
+   * @max 1000000000
+   * @example 50000000
+   */
+  amount: number;
+}
+
+export interface PublicServiceAreaDto {
+  /** @example "service_area" */
+  object: string;
+  /**
+   * Send this as service_area when you quote or order.
+   * @example "NG-LA"
+   */
+  id: string;
+  /** @example "NG" */
+  country_code: string;
+  /** @example "Nigeria" */
+  country_name: string;
+  /** @example "LA" */
+  state_code: string;
+  /** @example "Lagos" */
+  state_name: string;
+  /** @example "NGN" */
+  currency: string;
+  /**
+   * The lowest price of a delivery here, in minor units.
+   * @example 2000000
+   */
+  minimum_price: number;
+  /**
+   * How far from a pickup riders are looked for.
+   * @example 20
+   */
+  rider_search_radius_km: number;
+}
+
+export interface ServiceAreaListDto {
+  /** @example "list" */
+  object: string;
+  data: PublicServiceAreaDto[];
+}
+
+export interface StopContactDto {
+  /**
+   * @minLength 1
+   * @maxLength 80
+   * @example "Bola Ade"
+   */
+  name: string;
+  /**
+   * The person the rider calls at this stop.
+   * @minLength 7
+   * @maxLength 20
+   * @example "+2348031234567"
+   */
+  phone: string;
+}
+
+export interface StopPackageDto {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   * @example "Two pairs of shoes"
+   */
+  description: string;
+  /**
+   * What it is worth, in minor units.
+   * @min 0
+   * @example 2500000
+   */
+  value?: number;
+}
+
+export interface StopInputDto {
+  /**
+   * @min -90
+   * @max 90
+   * @example 6.4281
+   */
+  lat: number;
+  /**
+   * @min -180
+   * @max 180
+   * @example 3.4216
+   */
+  lng: number;
+  /**
+   * @minLength 3
+   * @maxLength 300
+   * @example "1 Admiralty Way, Lekki, Lagos"
+   */
+  address: string;
+  contact: StopContactDto;
+  /**
+   * @maxLength 500
+   * @example "Gate 3, ask for Bola"
+   */
+  instructions?: string;
+  package?: StopPackageDto;
+}
+
+export interface CreateQuoteRequestDto {
+  /** single: [pickup, drop-off]. batch: [pickup, drop-off, drop-off…] (up to 20). bulk: [pickup, pickup…, drop-off] (up to 20 pickups). */
+  type: "single" | "batch" | "bulk";
+  /**
+   * Where the delivery is, from GET /service-areas.
+   * @example "NG-LA"
+   */
+  service_area: string;
+  /** In the order the rider visits them. */
+  stops: StopInputDto[];
+  /**
+   * For a scheduled delivery.
+   * @example "2026-11-12T09:30:00Z"
+   */
+  scheduled_for?: string;
+}
+
+export interface QuoteBreakdownDto {
+  /** What the rider is paid for the route. */
+  delivery_fee: number;
+  /** Pickriders' service charge. */
+  service_charge: number;
+}
+
+export interface QuoteStopDto {
+  role: "pickup" | "dropoff";
+  /**
+   * The normalized address.
+   * @example "1 Admiralty Way, Lekki, Lagos, Nigeria"
+   */
+  address: string;
+  lat: number;
+  lng: number;
+  /** @example {"name":"Bola Ade","phone":"+2348031234567"} */
+  contact: object;
+  instructions: string | null;
+  /** @example {"description":"Shoes","value":2500000} */
+  package: object | null;
+}
+
+export interface PublicQuoteDto {
+  /** @example "quote" */
+  object: string;
+  /**
+   * Send it as quote_id when you create the order.
+   * @example "quo_6560f0c2a1b2c3d4e5f60718"
+   */
+  id: string;
+  type: "single" | "batch" | "bulk";
+  /** @example "NG-LA" */
+  service_area: string;
+  /** @example "NGN" */
+  currency: string;
+  /**
+   * What a fixed-price order costs.
+   * @example 350000
+   */
+  recommended_price: number;
+  /**
+   * The lowest a rider may offer, when you let riders bid.
+   * @example 280000
+   */
+  min_price: number;
+  /**
+   * The highest a rider may bid (the surge cap).
+   * @example 420000
+   */
+  max_price: number;
+  breakdown: QuoteBreakdownDto;
+  /**
+   * Road distance of the whole route, in metres.
+   * @example 8400
+   */
+  distance_m: number;
+  /**
+   * Estimated time from pickup to the last drop-off, in seconds.
+   * @example 1870
+   */
+  duration_s: number;
+  stops: QuoteStopDto[];
+  scheduled_for?: string | null;
+  /** The price holds until then. */
+  expires_at: string;
+  /** false once an order has used it, or it has expired. */
+  usable: boolean;
+  livemode: boolean;
+  created: string;
+}
+
+export interface RiderAvailabilityDto {
+  /** @example "rider_availability" */
+  object: string;
+  /** @example "NG-LA" */
+  service_area: string;
+  /**
+   * Riders an order from this point would reach now.
+   * @example 4
+   */
+  nearby_count: number;
+  /** True when the count hit the area's search cap: there may be more. */
+  at_least: boolean;
+  /**
+   * Rough time to pickup, in seconds.
+   * @example 420
+   */
+  estimated_pickup_s: number | null;
+  /** @example 20 */
+  radius_km: number;
+}
+
+export interface OrderPricingRequestDto {
+  /**
+   * fixed: the quote's price; the first rider to accept it takes the order. bidding: riders send offers (GET /orders/{id}/offers) and you accept one.
+   * @default "fixed"
+   */
+  mode: "fixed" | "bidding";
+  /**
+   * Bidding only, and required for it: the most you pay in all (the rider's fee plus the service charge), in kobo. At least the quote's price. Your wallet holds it until you accept an offer.
+   * @min 1
+   * @example 450000
+   */
+  max_amount?: number;
+  /**
+   * Bidding only: riders can't offer less than this percentage of the quoted delivery fee. Defaults to the service area's floor.
+   * @min 1
+   * @max 100
+   * @example 80
+   */
+  min_offer_percentage?: number;
+  /**
+   * Bidding only: this many seconds after riders are first rung, the lowest standing offer is accepted for you. With no offer by then, the order goes out at the quoted price, as a fixed-price order. Without it, offers wait for you.
+   * @min 15
+   * @max 3600
+   * @example 120
+   */
+  auto_accept_after_s?: number;
+}
+
+export interface TestOptionsDto {
+  /** Move the order along by itself, one step about every 15 seconds, until it is delivered. */
+  auto_advance?: boolean;
+  /** Act out a failure as the order is advanced. no_riders: no rider accepts and Pickriders cancels it (failed). rider_cancels: the first rider drops out before pickup and the search starts again. delivery_fails: the rider reaches the first drop-off and the delivery fails (failed, with the trip so far charged). */
+  scenario?: "no_riders" | "rider_cancels" | "delivery_fails";
+}
+
+export interface CreateOrderRequestDto {
+  /**
+   * A quote from POST /quotes that has not expired or been used. Its stops and price are used.
+   * @example "quo_6560f0c2a1b2c3d4e5f60718"
+   */
+  quote_id?: string;
+  /** Required without quote_id. With one, it must match the quote. */
+  type?: "single" | "batch" | "bulk";
+  /**
+   * Required without quote_id.
+   * @example "NG-LA"
+   */
+  service_area?: string;
+  /** Required without quote_id, in the order the rider visits them (see POST /quotes). */
+  stops?: StopInputDto[];
+  /**
+   * Without quote_id, for a scheduled delivery.
+   * @example "2026-11-12T09:30:00Z"
+   */
+  scheduled_for?: string;
+  /**
+   * Your own id for the order, unique per mode. Find the order by it with GET /orders?reference=.
+   * @minLength 1
+   * @maxLength 100
+   * @example "cart-981"
+   */
+  reference?: string;
+  /**
+   * Up to 20 keys of your own (keys up to 40 characters, string values up to 500), returned with the order.
+   * @example {"cart_id":"c_981"}
+   */
+  metadata?: object;
+  /**
+   * auto rings riders now (or at the scheduled time). manual waits for POST /orders/{id}/dispatch.
+   * @default "auto"
+   */
+  dispatch?: "auto" | "manual";
+  /** Fixed price unless you choose bidding. */
+  pricing?: OrderPricingRequestDto;
+  /** Test keys only. */
+  test_options?: TestOptionsDto;
+}
+
+export interface OrderPricingDto {
+  /** fixed: the quote's price. bidding: riders send offers and you accept one (GET /orders/{id}/offers). A bidding order whose auto-accept found no offer becomes fixed: it goes out at the quoted price. */
+  mode: "fixed" | "bidding";
+  /** @example "NGN" */
+  currency: string;
+  /**
+   * What the order costs you: the delivery fee plus the service charge. For bidding, the quoted price until you accept an offer, then the offer plus the service charge.
+   * @example 350000
+   */
+  amount: number;
+  /**
+   * What the rider is paid.
+   * @example 300000
+   */
+  delivery_fee: number;
+  /** @example 50000 */
+  service_charge: number;
+  /**
+   * Bidding only: the most you pay in all, held in your wallet until you accept an offer.
+   * @example 450000
+   */
+  max_amount: number | null;
+  /**
+   * Bidding only: riders can't offer less than this percentage of the quoted delivery fee.
+   * @example 80
+   */
+  min_offer_percentage: number | null;
+  /**
+   * Bidding only: seconds after riders are first rung when the lowest offer is accepted for you.
+   * @example 120
+   */
+  auto_accept_after_s: number | null;
+}
+
+export interface OrderStopContactDto {
+  /** @example "Bola Ade" */
+  name: string;
+  /** @example "+2348031234567" */
+  phone: string;
+}
+
+export interface OrderStopPackageDto {
+  /** @example "Two pairs of shoes" */
+  description: string;
+  /**
+   * In minor units.
+   * @example 2500000
+   */
+  value: number | null;
+}
+
+export interface OrderStopProofLocationDto {
+  lat: number;
+  lng: number;
+}
+
+export interface OrderStopProofDto {
+  /** confirmation_code: the recipient gave the rider the drop-off's code. rider_confirmed: the rider confirmed a pickup. */
+  method: "confirmation_code" | "rider_confirmed";
+  completed_at: string;
+  /** Where the rider was, from the rider app's last reported position. */
+  location: OrderStopProofLocationDto | null;
+  /** Who handed over or received the package. */
+  recipient_name: string | null;
+}
+
+export interface OrderStopPendingChangeDto {
+  /** @example "3 Bourdillon Road, Ikoyi, Lagos" */
+  address: string;
+  lat: number;
+  lng: number;
+  /**
+   * What the move adds to the price, held until the rider answers.
+   * @example 50000
+   */
+  extra_amount: number;
+  /** If the rider has not answered by then, the move is dropped. */
+  expires_at: string | null;
+}
+
+export interface OrderStopDto {
+  /** @example "stop_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  role: "pickup" | "dropoff";
+  status: "pending" | "en_route" | "arrived" | "completed" | "cancelled";
+  /** @example "1 Admiralty Way, Lekki, Lagos" */
+  address: string;
+  lat: number;
+  lng: number;
+  contact: OrderStopContactDto;
+  instructions: string | null;
+  package: OrderStopPackageDto | null;
+  /**
+   * Drop-offs only: the code the recipient gives the rider on delivery. Share it with the recipient.
+   * @example "4821"
+   */
+  confirmation_code: string | null;
+  arrived_at: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  /** Once the stop is completed. */
+  proof: OrderStopProofDto | null;
+  /** A move waiting for the rider to accept (PATCH /orders/{id}/stops/{stop_id}). */
+  pending_change: OrderStopPendingChangeDto | null;
+  /** Drop-offs only: a tracking page for this stop's recipient. It shows no other stop's address. */
+  tracking_url: string | null;
+}
+
+export interface OrderRiderVehicleDto {
+  /** @example "Honda" */
+  make: string | null;
+  /** @example "Ace 125" */
+  model: string | null;
+  /** @example "Red" */
+  color: string | null;
+  /** @example "LND-123-XY" */
+  plate_number: string | null;
+}
+
+export interface OrderRiderDto {
+  /**
+   * First name and last initial.
+   * @example "Tunde A."
+   */
+  name: string;
+  /** @example "+2348031234567" */
+  phone: string | null;
+  photo_url: string | null;
+  /** @example 4.8 */
+  rating: number | null;
+  vehicle: OrderRiderVehicleDto | null;
+}
+
+export interface OrderCancellationDto {
+  cancelled_by: "developer" | "pickriders";
+  reason: string | null;
+  cancelled_at: string;
+  /**
+   * What the cancellation cost you, from what was held: the service charge and the rider share once a rider is on the way.
+   * @example 50000
+   */
+  charged_amount: number | null;
+  /**
+   * What went back to your available balance.
+   * @example 300000
+   */
+  refunded_amount: number | null;
+}
+
+export interface PublicOrderDto {
+  /** @example "order" */
+  object: string;
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  type: "single" | "batch" | "bulk";
+  status:
+    | "scheduled"
+    | "awaiting_dispatch"
+    | "searching"
+    | "rider_assigned"
+    | "picking_up"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "failed";
+  /**
+   * Our order number, shown to riders and support.
+   * @example "PR-1042"
+   */
+  number: string;
+  /** Your own id for the order, unique per mode. */
+  reference: string | null;
+  /** @example {"cart_id":"c_981"} */
+  metadata: object;
+  /** @example "quo_6560f0c2a1b2c3d4e5f60718" */
+  quote_id: string | null;
+  /** @example "NG-LA" */
+  service_area: string;
+  pricing: OrderPricingDto;
+  /** Pickups first, then drop-offs, in route order. */
+  stops: OrderStopDto[];
+  /** Set once a rider accepts. */
+  rider: OrderRiderDto | null;
+  /** A tracking page for the whole order, without addresses or phones. Each drop-off has its own link too. */
+  tracking_url: string;
+  dispatch: "auto" | "manual";
+  scheduled_for?: string | null;
+  cancellation: OrderCancellationDto | null;
+  delivered_at: string | null;
+  livemode: boolean;
+  created: string;
+  updated: string;
+}
+
+export interface DeveloperCancelOrderRequestDto {
+  /**
+   * @maxLength 500
+   * @example "The customer cancelled"
+   */
+  reason?: string;
+}
+
+export interface DeveloperRescheduleOrderRequestDto {
+  /**
+   * The new pickup time: at least 1 hour away and at most 30 days ahead.
+   * @example "2026-11-12T09:30:00Z"
+   */
+  scheduled_for: string;
+}
+
+export interface UpdateStopContactDto {
+  /**
+   * @minLength 1
+   * @maxLength 80
+   * @example "Bola Ade"
+   */
+  name?: string;
+  /**
+   * @minLength 7
+   * @maxLength 20
+   * @example "+2348031234567"
+   */
+  phone?: string;
+}
+
+export interface UpdateStopPackageDto {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   * @example "Two pairs of shoes"
+   */
+  description?: string;
+  /**
+   * In minor units.
+   * @min 0
+   * @example 2500000
+   */
+  value?: number;
+}
+
+export interface UpdateStopRequestDto {
+  /**
+   * @min -90
+   * @max 90
+   * @example 6.4281
+   */
+  lat?: number;
+  /**
+   * @min -180
+   * @max 180
+   * @example 3.4216
+   */
+  lng?: number;
+  /**
+   * @minLength 3
+   * @maxLength 300
+   * @example "1 Admiralty Way, Lekki, Lagos"
+   */
+  address?: string;
+  contact?: UpdateStopContactDto;
+  /** @maxLength 500 */
+  instructions?: string;
+  package?: UpdateStopPackageDto;
+}
+
+export interface OfferRiderDto {
+  /** @example "Tunde" */
+  first_name: string;
+  /**
+   * Average rating out of 5; null before any.
+   * @example 4.8
+   */
+  rating: number | null;
+  /**
+   * Deliveries the rider has completed on Pickriders.
+   * @example 312
+   */
+  completed_trips: number;
+}
+
+export interface PublicOfferDto {
+  /** @example "offer" */
+  object: string;
+  /** @example "off_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  order: string;
+  /** pending: you can accept it until expires_at. declined: you declined it, or accepted another. expired: it lapsed unanswered. */
+  status: "pending" | "accepted" | "declined" | "expired";
+  /** @example "NGN" */
+  currency: string;
+  /**
+   * What you pay if you accept: the delivery fee plus the service charge.
+   * @example 330000
+   */
+  amount: number;
+  /**
+   * What the rider asks to be paid.
+   * @example 280000
+   */
+  delivery_fee: number;
+  rider: OfferRiderDto;
+  /**
+   * Roughly how long the rider would take to reach the pickup, from where they last were. Null when that isn't known.
+   * @example 420
+   */
+  eta_to_pickup_seconds: number | null;
+  /** @example "2026-11-12T09:35:00.000Z" */
+  expires_at: string | null;
+  /** @example "2026-11-12T09:30:00.000Z" */
+  created: string;
+}
+
+export interface TrackingLocationDto {
+  lat: number;
+  lng: number;
+  /** Degrees, 0 = north, when the rider app reports it. */
+  heading: number | null;
+  /** When the rider app last reported this position. */
+  updated_at: string | null;
+}
+
+export interface TrackingRiderDto {
+  /** @example "Tunde A." */
+  name: string;
+  photo_url: string | null;
+  vehicle: OrderRiderVehicleDto | null;
+  location: TrackingLocationDto | null;
+}
+
+export interface TrackingStopDto {
+  /** @example "stop_6560f0c2a1b2c3d4e5f60719" */
+  id: string;
+  role: "pickup" | "dropoff";
+  status: "pending" | "en_route" | "arrived" | "completed" | "cancelled";
+  address: string;
+  /**
+   * Seconds until the rider reaches it; null once it is done or while no rider position is known.
+   * @example 540
+   */
+  eta_s: number | null;
+  completed_at: string | null;
+}
+
+export interface OrderTrackingDto {
+  /** @example "order_tracking" */
+  object: string;
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  order_id: string;
+  status:
+    | "scheduled"
+    | "awaiting_dispatch"
+    | "searching"
+    | "rider_assigned"
+    | "picking_up"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "failed";
+  /** While a rider has the order and it is not done. */
+  rider: TrackingRiderDto | null;
+  stops: TrackingStopDto[];
+  /** The page your customer can open, without an API key. */
+  tracking_url: string;
+}
+
+export interface PublicTrackingDto {
+  /** @example "tracking" */
+  object: string;
+  /** @example "PR-1042" */
+  number: string;
+  status:
+    | "scheduled"
+    | "awaiting_dispatch"
+    | "searching"
+    | "rider_assigned"
+    | "picking_up"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "failed";
+  rider: TrackingRiderDto | null;
+  /** The link's drop-off; null for the order's own link, which shows no addresses. */
+  stop: TrackingStopDto | null;
+  /** Seconds until the rider reaches the link's drop-off, or the next stop for the order's link. */
+  eta_s: number | null;
+}
+
+export interface AdvanceOrderRequestDto {
+  /** Keep going until the order reaches this status. Without it, the order takes one step. */
+  to?: "rider_assigned" | "picking_up" | "in_transit" | "delivered";
+}
+
+export interface CreateWebhookEndpointRequestDto {
+  /**
+   * An https URL on the public internet.
+   * @minLength 1
+   * @example "https://api.acme.test/pickriders/webhooks"
+   */
+  url: string;
+  /**
+   * The events to send, or ["*"] for all of them, including events added later.
+   * @example ["order.delivered","order.failed"]
+   */
+  enabled_events: (
+    | "*"
+    | "order.created"
+    | "order.searching"
+    | "order.offer.created"
+    | "order.offer.expired"
+    | "order.rider_assigned"
+    | "order.rider_changed"
+    | "order.picked_up"
+    | "order.stop.arrived"
+    | "order.stop.completed"
+    | "order.delivered"
+    | "order.cancelled"
+    | "order.failed"
+    | "wallet.funded"
+    | "wallet.balance_low"
+    | "account.updated"
+  )[];
+  /**
+   * @minLength 0
+   * @example "Production order updates"
+   */
+  description?: string;
+}
+
+export interface PublicWebhookEndpointWithSecretDto {
+  /** @example "webhook_endpoint" */
+  object: string;
+  /** @example "we_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "https://api.acme.test/pickriders/webhooks" */
+  url: string;
+  description: string | null;
+  /** @example ["order.delivered"] */
+  enabled_events: string[];
+  status: "enabled" | "disabled";
+  /** Why it is disabled: manual (you turned it off) or failing (every delivery failed for 3 days). */
+  disabled_reason: "manual" | "failing" | null;
+  /** Since when every delivery has failed. At 3 days the endpoint is turned off. */
+  failing_since: string | null;
+  livemode: boolean;
+  /** After a secret roll, events are signed with the old secret too until this time. */
+  previous_secret_expires_at: string | null;
+  /** @example "2026-11-11T09:30:00.000Z" */
+  created: string;
+  /**
+   * Check each event’s Pickriders-Signature with it. Shown only now; store it safely.
+   * @example "whsec_Vd3XKqmWw0q9oD1yQm6m0pN5yJ0bX6v2a5r8cT4uHkE"
+   */
+  secret: string;
+}
+
+export interface PublicWebhookEndpointDto {
+  /** @example "webhook_endpoint" */
+  object: string;
+  /** @example "we_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "https://api.acme.test/pickriders/webhooks" */
+  url: string;
+  description: string | null;
+  /** @example ["order.delivered"] */
+  enabled_events: string[];
+  status: "enabled" | "disabled";
+  /** Why it is disabled: manual (you turned it off) or failing (every delivery failed for 3 days). */
+  disabled_reason: "manual" | "failing" | null;
+  /** Since when every delivery has failed. At 3 days the endpoint is turned off. */
+  failing_since: string | null;
+  livemode: boolean;
+  /** After a secret roll, events are signed with the old secret too until this time. */
+  previous_secret_expires_at: string | null;
+  /** @example "2026-11-11T09:30:00.000Z" */
+  created: string;
+}
+
+export interface UpdateWebhookEndpointRequestDto {
+  /**
+   * @minLength 1
+   * @example "https://api.acme.test/pickriders/webhooks"
+   */
+  url?: string;
+  enabled_events?: (
+    | "*"
+    | "order.created"
+    | "order.searching"
+    | "order.offer.created"
+    | "order.offer.expired"
+    | "order.rider_assigned"
+    | "order.rider_changed"
+    | "order.picked_up"
+    | "order.stop.arrived"
+    | "order.stop.completed"
+    | "order.delivered"
+    | "order.cancelled"
+    | "order.failed"
+    | "wallet.funded"
+    | "wallet.balance_low"
+    | "account.updated"
+  )[];
+  /**
+   * An empty string clears it.
+   * @minLength 0
+   */
+  description?: string;
+  /** true stops sending events to the endpoint; false starts again. */
+  disabled?: boolean;
+}
+
+export interface WebhookDeliveryAttemptDto {
+  /** @example "2026-11-11T09:30:01.000Z" */
+  at: string;
+  /** Null when no response came back. */
+  status_code: number | null;
+  /** @example 182 */
+  duration_ms: number;
+  /** The first 2 KB of the response. */
+  response_body: string | null;
+  /** @example "The endpoint answered 500." */
+  error: string | null;
+}
+
+export interface WebhookDeliveryDto {
+  /** @example "webhook_delivery" */
+  object: string;
+  /** @example "whd_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "we_6560f0c2a1b2c3d4e5f60718" */
+  endpoint_id: string;
+  /** @example "evt_6560f0c2a1b2c3d4e5f60718" */
+  event_id: string;
+  /** @example "order.delivered" */
+  event_type: string;
+  /** pending: waiting for its first try or a retry. failed: retries are over. */
+  status: "pending" | "delivering" | "succeeded" | "failed";
+  attempt_count: number;
+  /** When it is tried next, while pending. */
+  next_attempt_at: string | null;
+  delivered_at: string | null;
+  created: string;
+  /** The JSON body sent; null once the event is gone. */
+  request_body: string | null;
+  attempts: WebhookDeliveryAttemptDto[];
+}
+
+export interface PublicEventDataDto {
+  /** The object the event is about, as it was when the event happened: an order (order.*), a wallet (wallet.*) or your account (account.updated). */
+  object: Record<string, any>;
+  /**
+   * For order.stop.arrived, order.stop.completed and order.picked_up: the stop.
+   * @example "stop_6560f0c2a1b2c3d4e5f60719"
+   */
+  stop_id?: string;
+  /** For order.offer.created and order.offer.expired: the offer. */
+  offer?: PublicOfferDto;
+  /** For wallet.funded: the credit that funded the wallet. data.object is the wallet after it. */
+  transaction?: PublicWalletTransactionDto;
+  /**
+   * For wallet.balance_low: the threshold the available balance dropped below, in kobo.
+   * @example 500000
+   */
+  threshold?: number;
+}
+
+export interface PublicEventDto {
+  /** @example "event" */
+  object: string;
+  /** @example "evt_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "order.delivered" */
+  type: string;
+  /** @example "2026-11-11T09:30:00.000Z" */
+  created: string;
+  livemode: boolean;
+  data: PublicEventDataDto;
+}
+
+export interface ResendEventRequestDto {
+  /**
+   * Send only to this endpoint. Without it, every enabled endpoint that receives this event type.
+   * @example "we_6560f0c2a1b2c3d4e5f60718"
+   */
+  webhook_endpoint?: string;
+}
+
+export interface ResentDeliveryDto {
+  /** @example "whd_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  /** @example "we_6560f0c2a1b2c3d4e5f60718" */
+  webhook_endpoint: string;
+}
+
+export interface ResendEventResponseDto {
+  /** @example "event_resend" */
+  object: string;
+  /** @example "evt_6560f0c2a1b2c3d4e5f60718" */
+  event_id: string;
+  /** One new delivery per endpoint, sent at once and retried on failure. */
+  deliveries: ResentDeliveryDto[];
+}
+
+export interface DeveloperSignupRequestDto {
+  /**
+   * @maxLength 80
+   * @example "Ada"
+   */
+  firstname: string;
+  /**
+   * @maxLength 80
+   * @example "Obi"
+   */
+  lastname: string;
+  /**
+   * @maxLength 254
+   * @example "ada@acme.com"
+   */
+  email: string;
+  /**
+   * Verified by SMS before live access. Local or international format.
+   * @example "08031234567"
+   */
+  phone: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  password: string;
+  /**
+   * The first team's name. Defaults to "<firstname>'s team".
+   * @minLength 2
+   * @maxLength 80
+   * @example "Acme Logistics"
+   */
+  teamName?: string;
+  /**
+   * ISO 3166-1 alpha-2. Sets the currency.
+   * @default "NG"
+   * @pattern /^[A-Z]{2}$/
+   * @example "NG"
+   */
+  countryCode?: string;
+  /**
+   * From an invitation link: join that team instead of creating one. The email must be the invited one, and it counts as verified.
+   * @minLength 20
+   * @maxLength 200
+   */
+  invitationToken?: string;
+}
+
+export interface DeveloperUserDto {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  /** A new email waiting for its code (Settings). */
+  pendingEmail: string | null;
+  /** A new phone number waiting for its code (Settings). */
+  pendingPhone: string | null;
+}
+
+export interface DeveloperTeamSummaryDto {
+  /** Send this as X-Team-Id on dashboard calls. */
+  id: string;
+  name: string;
+  handle: string;
+  /** The signed-in user's role in this team. */
+  role: "TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE";
+  /** True when the signed-in user owns the team. */
+  isOwner: boolean;
+  /** True once the team owner has verified both email and phone. Live access can then be requested; it still needs a Pickriders admin's approval. */
+  canRequestLive: boolean;
+  /** Where the team is with live access. Test mode works in every status. */
+  liveStatus: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /** What the signed-in user's role allows in this team. Show or hide controls with it. */
+  permissions: (
+    | "team.read"
+    | "team.manage"
+    | "team.transfer"
+    | "live.request"
+    | "keys.read"
+    | "keys.write"
+    | "webhooks.read"
+    | "webhooks.write"
+    | "orders.read"
+    | "orders.write"
+    | "wallet.read"
+    | "wallet.fund"
+    | "billing.read"
+    | "logs.read"
+  )[];
+}
+
+export interface DeveloperSessionResponseDto {
+  user: DeveloperUserDto;
+  /** The user's active teams, oldest first. */
+  teams: DeveloperTeamSummaryDto[];
+  /** Bearer token for dashboard calls. */
+  accessToken: string;
+  /** Seconds until accessToken expires. */
+  expiresIn: number;
+}
+
+export interface DeveloperLoginRequestDto {
+  /** @example "ada@acme.com" */
+  email: string;
+  /** @maxLength 128 */
+  password: string;
+  /**
+   * From an invitation link: accept it while signing in. Lets an existing customer account become a developer account.
+   * @minLength 20
+   * @maxLength 200
+   */
+  invitationToken?: string;
+}
+
+export interface DeveloperMeResponseDto {
+  user: DeveloperUserDto;
+  /** The user's active teams, oldest first. */
+  teams: DeveloperTeamSummaryDto[];
+}
+
+export interface DeveloperSendEmailCodeRequestDto {
+  /**
+   * Corrects the address first. Only while the current one is unverified.
+   * @maxLength 254
+   * @example "ada@acme.com"
+   */
+  email?: string;
+}
+
+export interface DeveloperCodeSentResponseDto {
+  /** Where the code went: the email address or phone number. */
+  sentTo: string;
+  /** Seconds until the code stops working. */
+  expiresIn: number;
+  /** Seconds until another code can be sent. */
+  resendAfter: number;
+}
+
+export interface DeveloperVerifyCodeRequestDto {
+  /**
+   * The code from the email or SMS.
+   * @pattern /^\d{4,8}$/
+   * @example "4821"
+   */
+  code: string;
+}
+
+export interface DeveloperSendPhoneCodeRequestDto {
+  /**
+   * Corrects the number first. Only while the current one is unverified.
+   * @example "08031234567"
+   */
+  phone?: string;
+}
+
+export interface UpdateDeveloperProfileRequestDto {
+  /**
+   * @minLength 1
+   * @maxLength 60
+   * @example "Ada"
+   */
+  firstname?: string;
+  /**
+   * @minLength 1
+   * @maxLength 60
+   * @example "Obi"
+   */
+  lastname?: string;
+}
+
+export interface DeveloperChangeEmailRequestDto {
+  /**
+   * The new address. A code goes to it; nothing changes until it is entered.
+   * @maxLength 254
+   * @example "ada@newco.com"
+   */
+  email: string;
+}
+
+export interface DeveloperChangePhoneRequestDto {
+  /**
+   * The new number. A code is texted to it; nothing changes until it is entered.
+   * @example "08031234567"
+   */
+  phone: string;
+}
+
+export interface DeveloperForgotPasswordRequestDto {
+  /**
+   * @maxLength 254
+   * @example "ada@acme.com"
+   */
+  email: string;
+}
+
+export interface DeveloperResetPasswordRequestDto {
+  /**
+   * @maxLength 254
+   * @example "ada@acme.com"
+   */
+  email: string;
+  /**
+   * The code from the reset email.
+   * @pattern /^\d{4,8}$/
+   * @example "4821"
+   */
+  code: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  password: string;
+}
+
+export interface CreateDeveloperTeamRequestDto {
+  /**
+   * @minLength 2
+   * @maxLength 80
+   * @example "Acme staging"
+   */
+  name: string;
+}
+
+export interface TeamInvitationInviterDto {
+  id: string;
+  name: string;
+}
+
+export interface TeamInvitationDto {
+  id: string;
+  email: string;
+  role: "TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE";
+  status: "PENDING" | "ACCEPTED" | "DECLINED" | "REVOKED";
+  /** A PENDING invitation past expiresAt. Resend it to send a fresh link. */
+  expired: boolean;
+  /** @format date-time */
+  expiresAt: string;
+  invitedBy: TeamInvitationInviterDto;
+  /** @format date-time */
+  lastSentAt: string;
+  sendCount: number;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface CreateTeamInvitationRequestDto {
+  /** @example "bo@acme.com" */
+  email: string;
+  /** Ownership is transferred, never invited. */
+  role: "TEAM_ADMIN" | "TEAM_DEVELOPER" | "TEAM_FINANCE" | "TEAM_VIEWER";
+}
+
+export interface TeamInvitationTokenRequestDto {
+  /**
+   * @minLength 20
+   * @maxLength 200
+   */
+  token: string;
+}
+
+export interface TeamInvitationPreviewDto {
+  teamName: string;
+  /** The invited address. Sign up or sign in with this one. */
+  email: string;
+  role: "TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE";
+  invitedByName: string;
+  /** @format date-time */
+  expiresAt: string;
+  /** Whether to show sign-in (true) or sign-up (false) to accept. */
+  accountExists: boolean;
+}
+
+export interface AcceptTeamInvitationResponseDto {
+  /** The team just joined. */
+  team: DeveloperTeamSummaryDto;
+}
+
+export interface TeamMemberDto {
+  /** The member's user id. Use it in member routes. */
+  userId: string;
+  name: string;
+  email: string;
+  role: "TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE";
+  isOwner: boolean;
+  /** True for the signed-in user. */
+  isYou: boolean;
+  /** @format date-time */
+  joinedAt?: string | null;
+  /** @format date-time */
+  lastLoginAt?: string | null;
+}
+
+export interface UpdateTeamMemberRoleRequestDto {
+  /** Ownership moves with transfer-ownership instead. */
+  role: "TEAM_ADMIN" | "TEAM_DEVELOPER" | "TEAM_FINANCE" | "TEAM_VIEWER";
+}
+
+export interface TransferTeamOwnershipRequestDto {
+  /** An active member who becomes the owner. You become an admin. */
+  userId: string;
+}
+
+export interface TeamAuditActorDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface TeamAuditTargetDto {
+  /** @example "member" */
+  type: string;
+  id?: string;
+  /** A readable name for it, e.g. an email. */
+  label?: string;
+}
+
+export interface TeamAuditLogDto {
+  id: string;
+  /** @example "member.role_changed" */
+  event: string;
+  actor: TeamAuditActorDto | null;
+  target: TeamAuditTargetDto | null;
+  before: object | null;
+  after: object | null;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface TeamAuditLogListDto {
+  object: "list";
+  data: TeamAuditLogDto[];
+  has_more: boolean;
+  url: string;
+}
+
+export interface DeveloperAccountDto {
+  /** The team id (X-Team-Id). */
+  id: string;
+  /** The display name. */
+  name: string;
+  companyName: string | null;
+  website: string | null;
+  supportEmail: string | null;
+  supportPhone: string | null;
+  useCase: string | null;
+  expectedMonthlyVolume: "UP_TO_100" | "UP_TO_1000" | "UP_TO_10000" | "OVER_10000" | null;
+  /** Extra addresses for operational emails. */
+  notificationEmails: string[];
+  /** Whether the team owner's email is verified. */
+  emailVerified: boolean;
+  /** Whether the team owner's phone is verified. */
+  phoneVerified: boolean;
+  /** True once both are verified: live access can then be requested. */
+  canRequestLive: boolean;
+  liveStatus: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /** @format date-time */
+  liveRequestedAt: string | null;
+  /**
+   * When Pickriders last decided on live access.
+   * @format date-time
+   */
+  liveReviewedAt: string | null;
+  /** Set while live access is REJECTED: why, and what to fix. */
+  liveRejectionReason: string | null;
+  /** Set while live access is SUSPENDED: why. */
+  liveSuspensionReason: string | null;
+}
+
+export interface DeveloperOnboardingDto {
+  /** The team has created a test API key (sk_test_), even if it was revoked since. */
+  testKeyCreated: boolean;
+  /** The team has created a test-mode order. */
+  testOrderCreated: boolean;
+  /** The team has a webhook endpoint. */
+  webhookEndpointAdded: boolean;
+}
+
+export interface UpdateDeveloperAccountRequestDto {
+  /**
+   * The display name.
+   * @minLength 2
+   * @maxLength 80
+   * @example "Acme Logistics"
+   */
+  name?: string;
+  /**
+   * @maxLength 120
+   * @example "Acme Logistics Ltd"
+   */
+  companyName?: string | null;
+  /**
+   * @maxLength 200
+   * @example "https://acme.com"
+   */
+  website?: string | null;
+  /**
+   * @maxLength 254
+   * @example "support@acme.com"
+   */
+  supportEmail?: string | null;
+  /**
+   * @pattern /^\+?[0-9][0-9 ()-]{6,19}$/
+   * @example "+2348031234567"
+   */
+  supportPhone?: string | null;
+  /**
+   * What you are building. Pickriders reads it when you ask for live access.
+   * @maxLength 1000
+   * @example "Same-day deliveries for our online store in Lagos."
+   */
+  useCase?: string | null;
+  expectedMonthlyVolume?: "UP_TO_100" | "UP_TO_1000" | "UP_TO_10000" | "OVER_10000" | null;
+  /**
+   * Up to five more addresses for operational emails: low balance, auto top-up failures, a failing webhook endpoint. [] or null clears them.
+   * @maxItems 5
+   * @example ["ops@acme.com"]
+   */
+  notificationEmails?: string[] | null;
+}
+
+export interface DeveloperApiKeyCreatorDto {
+  id: string;
+  name: string;
+}
+
+export interface DeveloperApiKeyDto {
+  id: string;
+  label: string;
+  /**
+   * The start of the key, to tell keys apart.
+   * @example "sk_live_4fQ9"
+   */
+  prefix: string;
+  livemode: boolean;
+  /** Empty means full access. */
+  scopes: string[];
+  status: "ACTIVE" | "EXPIRING" | "EXPIRED" | "REVOKED";
+  createdBy: DeveloperApiKeyCreatorDto | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  lastUsedAt: string | null;
+  lastUsedIp: string | null;
+  /**
+   * Set on a rolled key: when it stops working.
+   * @format date-time
+   */
+  expiresAt: string | null;
+  /** @format date-time */
+  revokedAt: string | null;
+}
+
+export interface CreateDeveloperApiKeyRequestDto {
+  /**
+   * @minLength 1
+   * @maxLength 60
+   * @example "Production server"
+   */
+  label: string;
+  /** true for an sk_live_ key (needs approved live access), false for sk_test_. */
+  livemode: boolean;
+  /** Restrict the key to these scopes. Leave out (or empty) for full access. A :write scope includes :read. */
+  scopes?: (
+    | "account:read"
+    | "account:write"
+    | "wallet:read"
+    | "wallet:write"
+    | "orders:read"
+    | "orders:write"
+    | "webhooks:read"
+    | "webhooks:write"
+    | "events:read"
+  )[];
+}
+
+export interface DeveloperApiKeySecretDto {
+  id: string;
+  label: string;
+  /**
+   * The start of the key, to tell keys apart.
+   * @example "sk_live_4fQ9"
+   */
+  prefix: string;
+  livemode: boolean;
+  /** Empty means full access. */
+  scopes: string[];
+  status: "ACTIVE" | "EXPIRING" | "EXPIRED" | "REVOKED";
+  createdBy: DeveloperApiKeyCreatorDto | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  lastUsedAt: string | null;
+  lastUsedIp: string | null;
+  /**
+   * Set on a rolled key: when it stops working.
+   * @format date-time
+   */
+  expiresAt: string | null;
+  /** @format date-time */
+  revokedAt: string | null;
+  /**
+   * Shown once. Store it now: Pickriders keeps only a hash.
+   * @example "sk_test_…"
+   */
+  secret: string;
+}
+
+export interface RollDeveloperApiKeyRequestDto {
+  /** How long the old key keeps working: "now" stops it at once. */
+  expiresIn: "now" | "1h" | "24h" | "7d";
+}
+
+export interface IpAllowlistDto {
+  /**
+   * Addresses or CIDR ranges (IPv4 or IPv6) API keys may be used from. Empty allows any IP.
+   * @example ["203.0.113.9","192.0.2.0/24"]
+   */
+  allowedIps: string[];
+}
+
+export interface UpdateIpAllowlistRequestDto {
+  /**
+   * The whole list; it replaces the current one. Send [] to allow any IP.
+   * @maxItems 50
+   * @example ["203.0.113.9","192.0.2.0/24"]
+   */
+  allowedIps: string[];
+}
+
+export interface LowBalanceAlertDto {
+  /**
+   * Kobo. Owners and finance get an email when the live wallet's available money drops below it; null turns it off.
+   * @min 1
+   * @max 100000000000
+   * @example 5000000
+   */
+  threshold: number | null;
+}
+
+export interface SetUpFundingAccountRequestDto {
+  /**
+   * The Bank Verification Number: 11 digits.
+   * @pattern /^\d{11}$/
+   * @example "22212345678"
+   */
+  bvn: string;
+  /**
+   * A bank account (NUBAN) in the same name.
+   * @pattern /^\d{10}$/
+   * @example "0123456789"
+   */
+  account_number: string;
+  /**
+   * That account's bank code (from GET /payments/banks).
+   * @pattern /^\d{3,6}$/
+   * @example "058"
+   */
+  bank_code: string;
+  /**
+   * @minLength 1
+   * @maxLength 60
+   * @example "Ada"
+   */
+  first_name: string;
+  /**
+   * @minLength 1
+   * @maxLength 60
+   * @example "Obi"
+   */
+  last_name: string;
+}
+
+export interface AutoTopUpCardDto {
+  /** @example "visa" */
+  brand: string | null;
+  /** @example "4081" */
+  last4: string;
+  exp_month: string | null;
+  exp_year: string | null;
+  bank: string | null;
+}
+
+export interface AutoTopUpDto {
+  enabled: boolean;
+  threshold: number | null;
+  amount: number | null;
+  card: AutoTopUpCardDto | null;
+  last_charge_at: string | null;
+  consecutive_failures: number;
+  last_failure_reason: string | null;
+  /** Why it turned itself off, if it did. */
+  disabled_reason: string | null;
+}
+
+export interface ConfigureAutoTopUpRequestDto {
+  /** Turning it on needs a saved card. */
+  enabled: boolean;
+  /**
+   * Kobo: top up when the live wallet's available money drops below this.
+   * @min 1
+   * @max 100000000000
+   * @example 2000000
+   */
+  threshold: number;
+  /**
+   * Kobo charged to the saved card each time.
+   * @example 10000000
+   */
+  amount: number;
+}
+
+export interface DashboardCreateWebhookEndpointRequestDto {
+  /**
+   * An https URL on the public internet.
+   * @minLength 1
+   * @example "https://api.acme.test/pickriders/webhooks"
+   */
+  url: string;
+  /**
+   * The events to send, or ["*"] for all of them, including events added later.
+   * @example ["order.delivered","order.failed"]
+   */
+  enabled_events: (
+    | "*"
+    | "order.created"
+    | "order.searching"
+    | "order.offer.created"
+    | "order.offer.expired"
+    | "order.rider_assigned"
+    | "order.rider_changed"
+    | "order.picked_up"
+    | "order.stop.arrived"
+    | "order.stop.completed"
+    | "order.delivered"
+    | "order.cancelled"
+    | "order.failed"
+    | "wallet.funded"
+    | "wallet.balance_low"
+    | "account.updated"
+  )[];
+  /**
+   * @minLength 0
+   * @example "Production order updates"
+   */
+  description?: string;
+  /** true for a live endpoint (needs approved live access), false for test. */
+  livemode: boolean;
+}
+
+export interface DashboardResendEventRequestDto {
+  /** @example "evt_6560f0c2a1b2c3d4e5f60718" */
+  event_id: string;
+}
+
+export interface UsageDayDto {
+  /**
+   * The day, in Lagos time.
+   * @example "2026-11-12"
+   */
+  date: string;
+  /** Orders created that day. */
+  created: number;
+  /** Of those, how many were delivered. */
+  delivered: number;
+}
+
+export interface UsageOrdersDto {
+  created: number;
+  delivered: number;
+  /** Pickriders couldn’t deliver them (no rider found, cancelled by support). */
+  failed: number;
+  /** You cancelled them. */
+  cancelled: number;
+  /** delivered ÷ (delivered + failed), 0 to 1. Your own cancellations don’t count against it. Null with nothing finished. */
+  success_rate: number | null;
+  /** Every day of the period, oldest first, zeros included. */
+  per_day: UsageDayDto[];
+}
+
+export interface UsageSpendDto {
+  /** Order payments less refunds, in kobo. */
+  amount: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
+export interface UsageApiDto {
+  requests: number;
+  /** Answered 400 or above. */
+  errors: number;
+  /** Answered 500 or above: ours, not yours. */
+  server_errors: number;
+  /** errors ÷ requests, 0 to 1. Null with no requests. */
+  error_rate: number | null;
+}
+
+export interface UsageWebhooksDto {
+  /** Deliveries made in the period, test pings left out. */
+  deliveries: number;
+  succeeded: number;
+  /** Gave up after every retry. */
+  failed: number;
+  /** succeeded ÷ (succeeded + failed), 0 to 1. Null with nothing finished. */
+  success_rate: number | null;
+}
+
+export interface UsageDto {
+  period: "7d" | "30d" | "90d";
+  /**
+   * The period’s first moment (start of the first day, Lagos time).
+   * @format date-time
+   */
+  from: string;
+  /** @format date-time */
+  to: string;
+  livemode: boolean;
+  orders: UsageOrdersDto;
+  spend: UsageSpendDto;
+  api: UsageApiDto;
+  webhooks: UsageWebhooksDto;
+}
+
+export interface RequestLogKeyDto {
+  id: string;
+  /** The key’s name, if it still exists. */
+  label: string | null;
+  /** @example "sk_test_4fQ9" */
+  prefix: string | null;
+}
+
+export interface RequestLogDto {
+  id: string;
+  /** @example "req_kE72slxdyzWzqil0NpGahJCb" */
+  requestId: string | null;
+  /** @example "POST" */
+  method: string;
+  /** @example "/developer/api/v1/orders" */
+  path: string;
+  /** @example 201 */
+  status: number;
+  /** @example 182 */
+  durationMs: number;
+  livemode: boolean | null;
+  key: RequestLogKeyDto | null;
+  /** @example "invalid_request_error" */
+  errorType: string | null;
+  /** @example "parameter_missing" */
+  errorCode: string | null;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface RequestLogListDto {
+  object: "list";
+  data: RequestLogDto[];
+  has_more: boolean;
+  url: string;
+}
+
+export interface RequestLogDetailDto {
+  id: string;
+  /** @example "req_kE72slxdyzWzqil0NpGahJCb" */
+  requestId: string | null;
+  /** @example "POST" */
+  method: string;
+  /** @example "/developer/api/v1/orders" */
+  path: string;
+  /** @example 201 */
+  status: number;
+  /** @example 182 */
+  durationMs: number;
+  livemode: boolean | null;
+  key: RequestLogKeyDto | null;
+  /** @example "invalid_request_error" */
+  errorType: string | null;
+  /** @example "parameter_missing" */
+  errorCode: string | null;
+  /** @format date-time */
+  createdAt: string;
+  /** The query string, redacted. */
+  query: object | null;
+  ip: string | null;
+  userAgent: string | null;
+  /** The JSON body sent, redacted (secrets, phone numbers, codes); { truncated, size } when too large. */
+  requestBody?: object | null;
+  /** The JSON response, redacted the same way. */
+  responseBody?: object | null;
+}
+
+export interface AdminDeveloperOwnerDto {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+}
+
+export interface AdminDeveloperRowDto {
+  /** The team id. */
+  id: string;
+  name: string;
+  handle: string;
+  companyName: string | null;
+  /** The whole team. SUSPENDED pauses test mode too. */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  liveStatus: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /** @format date-time */
+  liveRequestedAt: string | null;
+  /** @format date-time */
+  liveReviewedAt: string | null;
+  owner: AdminDeveloperOwnerDto | null;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface ListAdminDevelopersResponseDto {
+  nextPage?: number;
+  previousPage?: number;
+  currentPage: number;
+  results: AdminDeveloperRowDto[];
+  perPageLimit: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
+export interface AdminDeveloperReviewerDto {
+  id: string;
+  name: string;
+}
+
+export interface AdminDeveloperDetailDto {
+  /** The team id. */
+  id: string;
+  name: string;
+  handle: string;
+  companyName: string | null;
+  /** The whole team. SUSPENDED pauses test mode too. */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  liveStatus: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /** @format date-time */
+  liveRequestedAt: string | null;
+  /** @format date-time */
+  liveReviewedAt: string | null;
+  owner: AdminDeveloperOwnerDto | null;
+  /** @format date-time */
+  createdAt: string;
+  website: string | null;
+  supportEmail: string | null;
+  supportPhone: string | null;
+  useCase: string | null;
+  expectedMonthlyVolume: "UP_TO_100" | "UP_TO_1000" | "UP_TO_10000" | "OVER_10000" | null;
+  liveRejectionReason: string | null;
+  liveSuspensionReason: string | null;
+  /** Who made the last decision. */
+  liveReviewedBy: AdminDeveloperReviewerDto | null;
+  /** Active members, the owner included. */
+  memberCount: number;
+}
+
+export interface DeveloperLiveDecisionRequestDto {
+  /**
+   * @minLength 5
+   * @maxLength 500
+   * @example "Add your company website and describe what you deliver."
+   */
+  reason: string;
 }
 
 export type GetHeartbeatData = any;
@@ -5304,7 +8639,7 @@ export interface AdminGetRiderInsightsOverviewParams {
   riderId: string;
 }
 
-export type AdminGetRiderInsightsOverviewData = InsightsOverviewResponseDto;
+export type AdminGetRiderInsightsOverviewData = RiderAdminInsightsOverviewResponseDto;
 
 export interface AdminGetRiderEarningsSeriesParams {
   /**
@@ -5714,6 +9049,23 @@ export type RemoveGroupUsersData = object;
 
 export type DeactivateCouponData = any;
 
+export interface ResolveBankAccountParams {
+  /**
+   * 10-digit NUBAN account number.
+   * @pattern /^\d{10}$/
+   * @example "0123456789"
+   */
+  accountNumber: string;
+  /**
+   * Bank code from GET /payments/{provider}/banks (2-10 letters or digits).
+   * @pattern /^[0-9A-Za-z]{2,10}$/
+   * @example "058"
+   */
+  bankCode: string;
+}
+
+export type ResolveBankAccountData = ResolveBankAccountResponseDto;
+
 export interface GetBanksParams {
   /** A cursor key to fetch the previous page of the list after an intial next request */
   previous?: any;
@@ -5741,6 +9093,22 @@ export type SetPinData = any;
 export type InitiatePayoutData = any;
 
 export type TransferToUserData = any;
+
+export interface GetLogsParams {
+  /** Matches inside the logged payload */
+  search?: string;
+  /** start,end (YYYY-MM-DD) */
+  dateRange?: string;
+  /** Comma separated DataLogType values */
+  logType?: string;
+  /** Comma separated DataLogLevel values */
+  level?: string;
+  order?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+export type GetLogsData = DataLogsResponseDto;
 
 export interface GetNotificationsParams {
   order?: "ASC" | "DESC";
@@ -6022,9 +9390,27 @@ export interface GetNearbyRidersCountParams {
 
 export type GetNearbyRidersCountData = NearbyRidersCountResponseDto;
 
+export type RiderOrderCapacityData = RiderOrderCapacityResponseDto;
+
 export type GetArrivalCheckData = ArrivalCheckResponseDto;
 
 export type GetRidersLeaderboardData = RiderListItemResponseDto[];
+
+export interface LookupRiderForStoreParams {
+  /**
+   * The number the store typed in
+   * @maxLength 20
+   * @pattern /^\+?[0-9 ()-]{7,20}$/
+   * @example "08031234567"
+   */
+  phone?: string;
+  /** A rider id saved from an earlier lookup */
+  riderId?: string;
+}
+
+export type LookupRiderForStoreData = RiderLookupResponseDto;
+
+export type SendRiderLinkCodeData = RiderLinkCodeResponseDto;
 
 export type ListAllRidersData = RiderListItemResponseDto[];
 
@@ -6082,7 +9468,7 @@ export type CompleteOrderData = Order;
 
 export type QueueOrderData = Order;
 
-export type GetQueuedOrdersData = Order[];
+export type GetQueuedOrdersData = QueuedOrderResponseDto[];
 
 export type GetActiveOffersData = Offer[];
 
@@ -6151,6 +9537,26 @@ export interface GetOrderTypeChartParams {
 
 export type GetOrderTypeChartData = GetOrderTypeChartResponseDto[];
 
+export type RiderNearbyHandoffsData = HandoffViewDto[];
+
+export type RiderMyHandoffsData = HandoffViewDto[];
+
+export type RiderRequestHandoffData = HandoffViewDto;
+
+export type RiderGetHandoffData = HandoffViewDto;
+
+export type RiderStartHandoffSearchData = HandoffViewDto;
+
+export type RiderCancelHandoffData = HandoffViewDto;
+
+export type RiderAcceptHandoffData = HandoffViewDto;
+
+export type RiderDeclineHandoffData = RiderDeclineHandoffResponseDto;
+
+export type RiderConfirmHandoffData = HandoffViewDto;
+
+export type RiderPassOrderData = RiderPassOrderResponseDto;
+
 export interface GetOrdersParams {
   /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
   releasedOnly?: boolean;
@@ -6185,6 +9591,8 @@ export type GetOrderOffersData = any;
 
 export type AdminOrderRiderHistoryData = AdminOrderRiderHistoryResponseDto;
 
+export type AdminListOrderHandoffsData = AdminHandoffDto[];
+
 export type RingRidersData = any;
 
 export type AdminCancelOrderData = Order;
@@ -6193,21 +9601,127 @@ export type UpdateOrderStatusData = Order;
 
 export type AdminListRiderReleasesData = AdminRiderReleasesResponseDto;
 
-export interface GetLogsParams {
-  /** Matches inside the logged payload */
-  search?: string;
-  /** start,end (YYYY-MM-DD) */
-  dateRange?: string;
-  /** Comma separated DataLogType values */
-  logType?: string;
-  /** Comma separated DataLogLevel values */
-  level?: string;
-  order?: "ASC" | "DESC";
+export interface AdminListHandoffsParams {
+  /**
+   * Comma-separated HandoffStatus values
+   * @example "SEARCHING,ACCEPTED"
+   */
+  status?: string;
+  /** true: only handoffs with review flags */
+  flagged?: "true" | "false";
+  /** pending: waiting for a count decision or holding a bonus */
+  review?: "pending";
+  /** Either rider (handing over or taking) */
+  riderId?: string;
+  /**
+   * Created on or after (ISO date)
+   * @example "2026-11-01"
+   */
+  from?: string;
+  /**
+   * Created on or before (ISO date)
+   * @example "2026-11-30"
+   */
+  to?: string;
+  /**
+   * @min 1
+   * @default 1
+   */
   page?: number;
+  /**
+   * @min 1
+   * @max 200
+   * @default 50
+   */
   limit?: number;
 }
 
-export type GetLogsData = DataLogsResponseDto;
+export type AdminListHandoffsData = AdminListHandoffsResponseDto;
+
+export type AdminHandoffsSummaryData = AdminHandoffsSummaryResponseDto;
+
+export type AdminStartHandoffData = AdminHandoffDto;
+
+export type AdminBulkReviewHandoffsData = AdminBulkReviewHandoffsResponseDto;
+
+export type AdminGetHandoffData = AdminHandoffDto;
+
+export type AdminStartHandoffSearchData = AdminHandoffDto;
+
+export type AdminAssignHandoffRiderData = AdminHandoffDto;
+
+export type AdminCancelHandoffData = AdminHandoffDto;
+
+export type AdminDropHandoffRiderData = AdminHandoffDto;
+
+export type AdminRaiseHandoffBonusData = AdminHandoffDto;
+
+export type AdminReviewHandoffData = AdminHandoffDto;
+
+export interface AdminListAlertsParams {
+  /**
+   * Comma-separated statuses (OPEN, CLAIMED, RESOLVED). Default: OPEN,CLAIMED
+   * @example "OPEN,CLAIMED"
+   */
+  status?: string;
+  /**
+   * Alert type, e.g. HANDOFF_ACCIDENT
+   * @maxLength 64
+   * @example "HANDOFF_NO_RIDER"
+   */
+  type?: string;
+  /** true: only alerts I claimed */
+  mine?: "true" | "false";
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * @min 1
+   * @max 200
+   * @default 50
+   */
+  limit?: number;
+}
+
+export type AdminListAlertsData = AdminListAlertsResponseDto;
+
+export type AdminAlertsSummaryData = AdminAlertsSummaryResponseDto;
+
+export type AdminClaimAlertData = AdminAlertDto;
+
+export type AdminResolveAlertData = AdminAlertDto;
+
+export type GetOrderChatData = ChatThreadDto;
+
+export interface ListOrderMessagesParams {
+  /**
+   * Messages after this seq (catch-up)
+   * @min 0
+   */
+  after?: number;
+  /**
+   * Messages before this seq (older page)
+   * @min 1
+   */
+  before?: number;
+  /**
+   * @min 1
+   * @max 100
+   * @default 50
+   */
+  limit?: number;
+  orderId: string;
+}
+
+export type ListOrderMessagesData = ListOrderMessagesResponseDto;
+
+export type SendOrderMessageData = OrderMessageDto;
+
+export type MarkOrderMessagesReadData = MarkOrderMessagesReadResponseDto;
+
+export type AdminListOrderMessagesData = AdminOrderChatResponseDto;
 
 export interface FindAllParams {
   order?: "ASC" | "DESC";
@@ -6384,10 +9898,6 @@ export type HandleWebhookEventsData = object;
 
 export type CreateTeamData = object;
 
-export interface GetUserTeamParams {
-  teamId: string;
-}
-
 export type GetUserTeamData = object;
 
 export type AdminCreateTeamData = object;
@@ -6440,3 +9950,390 @@ export type CancelData = any;
 export type GetUnreadCountData = SupportUnreadResponseDto;
 
 export type MarkAsReadData = SupportUnreadResponseDto;
+
+export type DeveloperSignupData = DeveloperSessionResponseDto;
+
+export type DeveloperLoginData = DeveloperSessionResponseDto;
+
+export type DeveloperMeData = DeveloperMeResponseDto;
+
+export type DeveloperSendEmailCodeData = DeveloperCodeSentResponseDto;
+
+export type DeveloperVerifyEmailData = DeveloperMeResponseDto;
+
+export type DeveloperSendPhoneCodeData = DeveloperCodeSentResponseDto;
+
+export type DeveloperVerifyPhoneData = DeveloperMeResponseDto;
+
+export type DeveloperUpdateProfileData = DeveloperMeResponseDto;
+
+export type DeveloperStartEmailChangeData = DeveloperCodeSentResponseDto;
+
+export type DeveloperCancelEmailChangeData = DeveloperMeResponseDto;
+
+export type DeveloperConfirmEmailChangeData = DeveloperMeResponseDto;
+
+export type DeveloperStartPhoneChangeData = DeveloperCodeSentResponseDto;
+
+export type DeveloperCancelPhoneChangeData = DeveloperMeResponseDto;
+
+export type DeveloperConfirmPhoneChangeData = DeveloperMeResponseDto;
+
+export type DeveloperForgotPasswordData = DeveloperCodeSentResponseDto;
+
+export type DeveloperResetPasswordData = DeveloperSessionResponseDto;
+
+export type DeveloperListTeamsData = DeveloperTeamSummaryDto[];
+
+export type DeveloperCreateTeamData = DeveloperTeamSummaryDto;
+
+export type DeveloperCurrentTeamData = DeveloperTeamSummaryDto;
+
+export type DeveloperListInvitationsData = TeamInvitationDto[];
+
+export type DeveloperCreateInvitationData = TeamInvitationDto;
+
+export type DeveloperResendInvitationData = TeamInvitationDto;
+
+export type DeveloperRevokeInvitationData = TeamInvitationDto;
+
+export type DeveloperPreviewInvitationData = TeamInvitationPreviewDto;
+
+export type DeveloperAcceptInvitationData = AcceptTeamInvitationResponseDto;
+
+export type DeveloperDeclineInvitationData = any;
+
+export type DeveloperListMembersData = TeamMemberDto[];
+
+export type DeveloperUpdateMemberRoleData = TeamMemberDto;
+
+export type DeveloperRemoveMemberData = any;
+
+export type DeveloperLeaveTeamData = any;
+
+export type DeveloperTransferOwnershipData = TeamMemberDto[];
+
+export interface DeveloperListAuditLogsParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  /**
+   * One event (`member.removed`) or an area ending in a dot (`member.`).
+   * @pattern /^[a-z_]+\.([a-z_]+)?$/
+   * @example "member."
+   */
+  event?: string;
+}
+
+export type DeveloperListAuditLogsData = TeamAuditLogListDto;
+
+export type DeveloperGetAccountData = DeveloperAccountDto;
+
+export type DeveloperUpdateAccountData = DeveloperAccountDto;
+
+export type DeveloperGetOnboardingData = DeveloperOnboardingDto;
+
+export type DeveloperRequestLiveAccessData = DeveloperAccountDto;
+
+export interface DeveloperListApiKeysParams {
+  /** Only live or only test keys. */
+  livemode?: "true" | "false";
+}
+
+export type DeveloperListApiKeysData = DeveloperApiKeyDto[];
+
+export type DeveloperCreateApiKeyData = DeveloperApiKeySecretDto;
+
+export type DeveloperRollApiKeyData = DeveloperApiKeySecretDto;
+
+export type DeveloperRevokeApiKeyData = DeveloperApiKeyDto;
+
+export type DeveloperGetIpAllowlistData = IpAllowlistDto;
+
+export type DeveloperUpdateIpAllowlistData = IpAllowlistDto;
+
+export interface DeveloperGetWalletParams {
+  livemode?: "true" | "false";
+}
+
+export type DeveloperGetWalletData = PublicWalletDto;
+
+export type DeveloperDashboardCreateFundingSessionData = FundingSessionDto;
+
+export type DeveloperAddTestFundsData = PublicWalletDto;
+
+export interface DeveloperDashboardListWalletTransactionsParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  type?: "credit" | "debit";
+  /**
+   * created[gte] and/or created[lte]: ISO 8601 dates or Unix seconds.
+   * @example {"gte":"2026-11-01T00:00:00Z"}
+   */
+  created?: object;
+  livemode?: "true" | "false";
+}
+
+export type DeveloperDashboardListWalletTransactionsData = PublicWalletTransactionDto[];
+
+export type DeveloperGetLowBalanceAlertData = LowBalanceAlertDto;
+
+export type DeveloperSetLowBalanceAlertData = LowBalanceAlertDto;
+
+export type DeveloperGetFundingAccountData = PublicFundingAccountDto;
+
+export type DeveloperSetUpFundingAccountData = PublicFundingAccountDto;
+
+export type DeveloperGetAutoTopUpData = AutoTopUpDto;
+
+export type DeveloperConfigureAutoTopUpData = AutoTopUpDto;
+
+export type DeveloperSaveAutoTopUpCardData = FundingSessionDto;
+
+export type DeveloperRemoveAutoTopUpCardData = AutoTopUpDto;
+
+export interface DashboardListWebhookEndpointsParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  /** Only live or only test. */
+  livemode?: "true" | "false";
+}
+
+export type DashboardListWebhookEndpointsData = PublicWebhookEndpointDto[];
+
+export type DashboardCreateWebhookEndpointData = PublicWebhookEndpointWithSecretDto;
+
+export type DashboardRetrieveWebhookEndpointData = PublicWebhookEndpointDto;
+
+export type DashboardUpdateWebhookEndpointData = PublicWebhookEndpointDto;
+
+export type DashboardDeleteWebhookEndpointData = any;
+
+export type DashboardRollWebhookSecretData = PublicWebhookEndpointWithSecretDto;
+
+export interface DashboardListWebhookDeliveriesParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  /** @example "we_6560f0c2a1b2c3d4e5f60718" */
+  endpointId: string;
+}
+
+export type DashboardListWebhookDeliveriesData = WebhookDeliveryDto[];
+
+export type DashboardTestWebhookEndpointData = WebhookDeliveryDto;
+
+export type DashboardResendWebhookEventData = ResendEventResponseDto;
+
+export interface DeveloperGetUsageParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+  /**
+   * The last 7, 30 or 90 days.
+   * @default "30d"
+   */
+  period?: "7d" | "30d" | "90d";
+}
+
+export type DeveloperGetUsageData = UsageDto;
+
+export type DashboardListServiceAreasData = ServiceAreaListDto;
+
+export interface DashboardListOrdersParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  status?:
+    | "scheduled"
+    | "awaiting_dispatch"
+    | "searching"
+    | "rider_assigned"
+    | "picking_up"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "failed";
+  type?: "single" | "batch" | "bulk";
+  /**
+   * Your reference for the order: returns the one order that has it.
+   * @minLength 1
+   * @maxLength 100
+   */
+  reference?: string;
+  /**
+   * created[gte] and/or created[lte]: ISO 8601 dates or Unix seconds.
+   * @example {"gte":"2026-11-01T00:00:00Z"}
+   */
+  created?: object;
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+}
+
+export type DashboardListOrdersData = PublicOrderDto[];
+
+export interface DashboardCreateOrderParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+}
+
+export type DashboardCreateOrderData = PublicOrderDto;
+
+export interface DashboardRetrieveOrderParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+}
+
+export type DashboardRetrieveOrderData = PublicOrderDto;
+
+export interface DashboardTrackOrderParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+}
+
+export type DashboardTrackOrderData = OrderTrackingDto;
+
+export interface DashboardCreateQuoteParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+}
+
+export type DashboardCreateQuoteData = PublicQuoteDto;
+
+export interface DashboardCancelOrderParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+  /** @example "ord_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+}
+
+export type DashboardCancelOrderData = PublicOrderDto;
+
+export type DashboardAdvanceTestOrderData = PublicOrderDto;
+
+export interface DeveloperListRequestLogsParams {
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
+  /** Id of the last object on the previous page; returns the objects after it. */
+  starting_after?: string;
+  /** Id of the first object on the next page; returns the objects before it. */
+  ending_before?: string;
+  /** Only live or only test requests. */
+  livemode?: "true" | "false";
+  /** succeeded (below 400), failed (400 and up), or a status class. */
+  status?: "succeeded" | "failed" | "2xx" | "4xx" | "5xx";
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+  /**
+   * Requests whose path contains this, e.g. /orders.
+   * @maxLength 200
+   * @example "/orders"
+   */
+  path?: string;
+  /** Requests made with this API key (its id). */
+  key?: string;
+  /** From this time (ISO 8601). */
+  created_gte?: string;
+  /** Up to this time (ISO 8601). */
+  created_lte?: string;
+  /**
+   * The request id from a response (Request-Id header or error.request_id). Finds it in either mode.
+   * @maxLength 64
+   * @example "req_kE72slxdyzWzqil0NpGahJCb"
+   */
+  request_id?: string;
+}
+
+export type DeveloperListRequestLogsData = RequestLogListDto;
+
+export type DeveloperGetRequestLogData = RequestLogDetailDto;
+
+export interface AdminListDevelopersParams {
+  /** PENDING lists the review queue, oldest request first. */
+  liveStatus?: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  /**
+   * Team name, handle, company or contact email.
+   * @maxLength 100
+   */
+  search?: string;
+  /** @example "1" */
+  page?: string;
+  /** @example "50" */
+  limit?: string;
+}
+
+export type AdminListDevelopersData = ListAdminDevelopersResponseDto;
+
+export type AdminGetDeveloperData = AdminDeveloperDetailDto;
+
+export type AdminApproveDeveloperLiveData = AdminDeveloperDetailDto;
+
+export type AdminRejectDeveloperLiveData = AdminDeveloperDetailDto;
+
+export type AdminSuspendDeveloperLiveData = AdminDeveloperDetailDto;
+
+export type AdminUnsuspendDeveloperLiveData = AdminDeveloperDetailDto;

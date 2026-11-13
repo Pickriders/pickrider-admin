@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  ArrowLeftRight,
   Bike,
+  Siren,
   PanelLeftClose,
   PanelLeftOpen,
   BarChart3,
@@ -23,7 +25,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
-import { useAttention } from "@/lib/admin/hooks";
+import { useAlertsSummary, useAttention, useHandoffsSummary } from "@/lib/admin/hooks";
 import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +34,18 @@ import { cn } from "@/lib/utils";
  * licences to review, vehicles to verify, orders nobody has picked up.
  */
 type NavItem = { label: string; href: string; icon: LucideIcon; badge?: (a: AttentionCounts) => number | undefined };
-type AttentionCounts = { licencesAwaitingReview?: number; vehiclesPendingVerification?: number; ordersAwaitingRiderStale?: number; withdrawalsProcessing?: number; failedNotifications24h?: number; issuesOpen?: number };
+type AttentionCounts = {
+  licencesAwaitingReview?: number;
+  vehiclesPendingVerification?: number;
+  ordersAwaitingRiderStale?: number;
+  withdrawalsProcessing?: number;
+  failedNotifications24h?: number;
+  issuesOpen?: number;
+  /** Alerts nobody has claimed yet. */
+  alertsOpen?: number;
+  /** Handoffs waiting on support or still looking for a rider. */
+  handoffsWaiting?: number;
+};
 
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
@@ -45,7 +58,9 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: "Operations",
     items: [
+      { label: "Alerts", href: "/alerts", icon: Siren, badge: (a) => a.alertsOpen },
       { label: "Orders", href: "/orders", icon: ClipboardList, badge: (a) => a.ordersAwaitingRiderStale },
+      { label: "Handoffs", href: "/handoffs", icon: ArrowLeftRight, badge: (a) => a.handoffsWaiting },
       { label: "Couriers", href: "/couriers", icon: Bike, badge: (a) => a.licencesAwaitingReview },
       { label: "Vehicles", href: "/vehicles", icon: Car, badge: (a) => a.vehiclesPendingVerification },
       { label: "Support", href: "/support", icon: LifeBuoy, badge: (a) => a.issuesOpen },
@@ -87,7 +102,13 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
   const [roles, setRoles] = React.useState<AdminRole[] | null>(null);
   React.useEffect(() => setRoles(getAdminRoles()), []);
   const attention = useAttention();
-  const counts = (attention.data ?? {}) as AttentionCounts;
+  const alerts = useAlertsSummary();
+  const handoffs = useHandoffsSummary();
+  const counts: AttentionCounts = {
+    ...((attention.data ?? {}) as AttentionCounts),
+    alertsOpen: alerts.data?.open,
+    handoffsWaiting: handoffs.data ? handoffs.data.awaitingSupport + handoffs.data.searching : undefined,
+  };
 
   const visible = (href: string) => roles === null || roles.length === 0 || canAccessSection(href, roles);
 

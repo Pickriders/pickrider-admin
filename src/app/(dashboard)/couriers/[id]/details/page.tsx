@@ -2,7 +2,8 @@
 
 import { ArrowLeft, Bike, Building2, Car, ExternalLink, Landmark, Lock, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Badge,
@@ -34,6 +35,7 @@ import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
 import { RiderInsights } from "./_components/insights";
+import { RiderHandoffs } from "./_components/rider-handoffs";
 import { ReleasedTrips } from "./_components/released-trips";
 
 /**
@@ -46,7 +48,7 @@ import { ReleasedTrips } from "./_components/released-trips";
  * not shown; the earnings tab (ORDER_EARNING transactions) is the closest
  * per-delivery record and lifetime totals come from the overview.
  */
-const TABS = ["insights", "earnings", "reviews", "releases", "transactions", "activity"] as const;
+const TABS = ["insights", "earnings", "reviews", "releases", "handoffs", "transactions", "activity"] as const;
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
@@ -162,6 +164,15 @@ function CourierDetail({ id }: { id: string }) {
   const licence = licenceOf(user);
   const settlement = data?.wallet?.settlement;
   const restriction = data?.withdrawalRestriction ?? user?.withdrawalRestriction;
+  // `?resume=dispatch` (the "Review and unpause" link on a Rider paused alert) opens the Resume
+  // dispatch dialog once the rider has loaded, if they are still paused.
+  const resumeRequested = useSearchParams()?.get("resume") === "dispatch";
+  const resumeOpened = useRef(false);
+  useEffect(() => {
+    if (!resumeRequested || resumeOpened.current || !user) return;
+    resumeOpened.current = true;
+    if (user.dispatchPaused) setDispatchOpen(true);
+  }, [resumeRequested, user]);
   const windowLabel = range.all ? "all time" : range.preset ? `last ${range.preset} days` : "this range";
 
   if (overview.error && !data) {
@@ -372,6 +383,7 @@ function CourierDetail({ id }: { id: string }) {
           { id: "earnings", label: "Earnings", count: lifetime?.completed },
           { id: "reviews", label: "Reviews", count: data?.reviews.count },
           { id: "releases", label: "Released trips" },
+          { id: "handoffs", label: "Handoffs" },
           { id: "transactions", label: "Wallet history" },
           { id: "activity", label: "Activity" },
         ]}
@@ -389,6 +401,7 @@ function CourierDetail({ id }: { id: string }) {
       ) : null}
       {tab === "reviews" ? <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} /> : null}
       {tab === "releases" ? <ReleasedTrips riderId={id} /> : null}
+      {tab === "handoffs" ? <RiderHandoffs riderId={id} /> : null}
       {tab === "transactions" ? (
         <div className="space-y-4">
           <MoneyByPurpose data={data?.transactions} loading={loading} />
