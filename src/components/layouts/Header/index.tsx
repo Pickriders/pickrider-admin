@@ -3,6 +3,8 @@ import { Suspense } from "react";
 
 import { SVG } from "@/components/svg";
 
+import { AlertBell } from "@/components/alerts/alert-bell";
+
 import { MobileNav } from "../MobileNav";
 import { LiveIndicator } from "./LiveIndicator";
 import { ThemeToggle } from "./ThemeToggle";
@@ -19,6 +21,7 @@ export const Header = () => {
       </div>
       <div className="flex items-center gap-x-2 sm:gap-x-3">
         <LiveIndicator />
+        <AlertBell />
         <ThemeToggle />
         <Suspense>
           <UserMenu />

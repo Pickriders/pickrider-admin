@@ -16,7 +16,11 @@ jest.mock("next/link", () => ({
     </a>
   ),
 }));
-jest.mock("@/lib/admin/hooks", () => ({ useAttention: () => ({ data: { ordersAwaitingRiderStale: 3 } }) }));
+jest.mock("@/lib/admin/hooks", () => ({
+  useAttention: () => ({ data: { ordersAwaitingRiderStale: 3 } }),
+  useAlertsSummary: () => ({ data: { open: 2, claimed: 1, urgent: 1, high: 1, byType: [] } }),
+  useHandoffsSummary: () => ({ data: { searching: 1, awaitingSupport: 1, accepted: 0, pendingReview: 4, heldBonuses: 0, completedToday: 0 } }),
+}));
 jest.mock("@/lib/admin-access", () => ({ getAdminRoles: () => [], canAccessSection: () => true }));
 
 /** The desktop sidebar folds to an icon rail and back, and remembers the choice. */
@@ -56,6 +60,16 @@ describe("Sidebar collapse", () => {
     expect(aside().className).toContain("w-[15.5rem]");
     expect(container.textContent).toContain("Orders");
     expect(window.localStorage.getItem("pickriders_admin_sidebar_collapsed")).toBe("0");
+  });
+
+  it("counts unclaimed alerts and handoffs still waiting for a rider", () => {
+    act(() => root.render(<Sidebar />));
+    const alerts = container.querySelector("a[href='/alerts']") as HTMLElement;
+    const handoffs = container.querySelector("a[href='/handoffs']") as HTMLElement;
+    expect(alerts.textContent).toContain("Alerts");
+    expect(alerts.textContent).toContain("2");
+    // Awaiting support (1) + searching (1); the review queue is not urgent and stays off the badge.
+    expect(handoffs.textContent).toContain("2");
   });
 
   it("opens collapsed when that was the last choice on this device", () => {

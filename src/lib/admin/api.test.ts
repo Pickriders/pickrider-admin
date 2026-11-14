@@ -105,6 +105,7 @@ const CASES: Case[] = [
   { name: "orders.list", call: () => api.orders.list({ status: "INITIATED", search: "PR", sortBy: "scheduledFor", releasedOnly: true }), method: "GET", path: `${P}/admins/orders`, params: { status: "INITIATED", search: "PR", sortBy: "scheduledFor", releasedOnly: "true" }, paged: true },
   { name: "orders.get", call: () => api.orders.get(ID), method: "GET", path: `${P}/admins/orders/${ID}` },
   { name: "orders.offers", call: () => api.orders.offers(ID), method: "GET", path: `${P}/admins/orders/${ID}/offers` },
+  { name: "orders.messages", call: () => api.orders.messages(ID), method: "GET", path: `${P}/admins/orders/${ID}/messages` },
   { name: "orders.riderHistory", call: () => api.orders.riderHistory(ID), method: "GET", path: `${P}/admins/orders/${ID}/rider-history` },
   { name: "orders.cancel", call: () => api.orders.cancel(ID, { reason: "r" }), method: "POST", path: `${P}/admins/orders/${ID}/cancel`, data: { reason: "r" } },
   { name: "orders.ringRiders", call: () => api.orders.ringRiders(ID), method: "POST", path: `${P}/admins/orders/${ID}/ring-riders` },
@@ -214,6 +215,24 @@ const CASES: Case[] = [
   { name: "announcements.update", call: () => api.announcements.update(ID, { title: "t2" }), method: "PATCH", path: `${P}/admins/announcements/${ID}`, data: { title: "t2" } },
   { name: "announcements.setStatus", call: () => api.announcements.setStatus(ID, api.AnnouncementStatus.ACTIVE), method: "PATCH", path: `${P}/admins/announcements/${ID}/status`, data: { status: "ACTIVE" } },
   { name: "announcements.remove", call: () => api.announcements.remove(ID), method: "DELETE", path: `${P}/admins/announcements/${ID}` },
+  // handoffs
+  { name: "handoffs.list", call: () => api.handoffs.list({ status: "SEARCHING,ACCEPTED", flagged: true, riderId: ID, from: "2026-11-01", page: 2, review: "" }), method: "GET", path: `${P}/admins/handoffs`, params: { status: "SEARCHING,ACCEPTED", flagged: "true", riderId: ID, from: "2026-11-01", page: "2" }, paged: true },
+  { name: "handoffs.summary", call: () => api.handoffs.summary(), method: "GET", path: `${P}/admins/handoffs/summary` },
+  { name: "handoffs.get", call: () => api.handoffs.get(ID), method: "GET", path: `${P}/admins/handoffs/${ID}` },
+  { name: "handoffs.forOrder", call: () => api.handoffs.forOrder(ID), method: "GET", path: `${P}/admins/orders/${ID}/handoffs` },
+  { name: "handoffs.start", call: () => api.handoffs.start({ orderId: ID, reason: api.HandoffReason.BIKE_PROBLEM, note: "chain" }), method: "POST", path: `${P}/admins/handoffs/start`, data: { orderId: ID, reason: "BIKE_PROBLEM", note: "chain" } },
+  { name: "handoffs.startSearch", call: () => api.handoffs.startSearch(ID), method: "POST", path: `${P}/admins/handoffs/${ID}/search`, data: {} },
+  { name: "handoffs.assign", call: () => api.handoffs.assign(ID, OTHER), method: "POST", path: `${P}/admins/handoffs/${ID}/assign`, data: { riderId: OTHER } },
+  { name: "handoffs.cancel", call: () => api.handoffs.cancel(ID, "bike fixed"), method: "POST", path: `${P}/admins/handoffs/${ID}/cancel`, data: { note: "bike fixed" } },
+  { name: "handoffs.dropRider", call: () => api.handoffs.dropRider(ID), method: "POST", path: `${P}/admins/handoffs/${ID}/drop-rider`, data: {} },
+  { name: "handoffs.raiseBonus", call: () => api.handoffs.raiseBonus(ID, 50000), method: "POST", path: `${P}/admins/handoffs/${ID}/bonus`, data: { amount: 50000 } },
+  { name: "handoffs.review", call: () => api.handoffs.review(ID, { decision: api.HandoffReviewDecision.WAIVE, bonus: api.HandoffBonusAction.RELEASE }), method: "POST", path: `${P}/admins/handoffs/${ID}/review`, data: { decision: "WAIVE", bonus: "RELEASE" } },
+  { name: "handoffs.bulkReview", call: () => api.handoffs.bulkReview({ ids: [ID, OTHER], decision: api.HandoffReviewDecision.COUNT }), method: "POST", path: `${P}/admins/handoffs/review/bulk`, data: { ids: [ID, OTHER], decision: "COUNT" } },
+  // alerts
+  { name: "alerts.list", call: () => api.alerts.list({ status: "RESOLVED", type: "HANDOFF_NO_RIDER", mine: true }), method: "GET", path: `${P}/admins/alerts`, params: { status: "RESOLVED", type: "HANDOFF_NO_RIDER", mine: "true" }, paged: true },
+  { name: "alerts.summary", call: () => api.alerts.summary(), method: "GET", path: `${P}/admins/alerts/summary` },
+  { name: "alerts.claim", call: () => api.alerts.claim(ID), method: "POST", path: `${P}/admins/alerts/${ID}/claim` },
+  { name: "alerts.resolve", call: () => api.alerts.resolve(ID, "called the rider"), method: "POST", path: `${P}/admins/alerts/${ID}/resolve`, data: { note: "called the rider" } },
 ];
 
 describe("api namespaces → generated client routes", () => {

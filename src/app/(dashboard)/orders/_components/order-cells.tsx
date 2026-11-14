@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
@@ -272,25 +272,62 @@ export function ReleasedChip({ order }: { order: Pick<OrderRow, "_id" | "rider" 
 }
 
 /**
+ * "Handed off" (or "Handed off 2x") when another rider finished the order after pickup. Opens the
+ * order's Handoff panel; a span with link semantics, like ReleasedChip, so it can sit inside a link.
+ */
+export function HandedOffChip({ order }: { order: Pick<OrderRow, "_id" | "handoffCount"> }) {
+  const router = useRouter();
+  const handoffs = order.handoffCount ?? 0;
+  if (handoffs <= 0) return null;
+  const go = (event: MouseEvent | KeyboardEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    router.push(`/orders/${order._id}#handoffs`);
+  };
+  return (
+    <span
+      role="link"
+      tabIndex={0}
+      onClick={go}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") go(event);
+      }}
+      title="Another rider took over this order after pickup. Open it to see the handoff."
+      className={cx(
+        "inline-flex w-fit cursor-pointer items-center gap-1 rounded-full border border-info/30 bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info transition-colors",
+        "hover:border-info focus:outline-none focus-visible:ring-2 focus-visible:ring-info/40",
+      )}
+    >
+      <ArrowLeftRight size={10} aria-hidden />
+      {handoffs === 1 ? "Handed off" : `Handed off ${count(handoffs)}x`}
+    </span>
+  );
+}
+
+/**
  * The courier column. Customer-app orders are bid on, so they also say how many riders offered:
  * under the courier once one won, or on their own while the order still waits. An order a rider
- * was released from carries the amber "Released" chip underneath.
+ * was released from carries the amber "Released" chip underneath; one handed to another rider after
+ * pickup carries the blue "Handed off" chip.
  */
 export function CourierCell({
   order,
   href,
   size = 28,
 }: {
-  order: Pick<OrderRow, "_id" | "rider" | "status" | "channel" | "offersCount" | "offers" | "riderReleaseCount">;
+  order: Pick<OrderRow, "_id" | "rider" | "status" | "channel" | "offersCount" | "offers" | "riderReleaseCount" | "handoffCount">;
   href?: string;
   size?: number;
 }) {
   const courier = <CourierBody order={order} href={href} size={size} />;
-  if (!((order.riderReleaseCount ?? 0) > 0)) return courier;
+  if (!((order.riderReleaseCount ?? 0) > 0) && !((order.handoffCount ?? 0) > 0)) return courier;
   return (
     <span className="flex min-w-0 flex-col items-start gap-1">
       {courier}
-      <ReleasedChip order={order} />
+      <span className="flex flex-wrap gap-1">
+        <ReleasedChip order={order} />
+        <HandedOffChip order={order} />
+      </span>
     </span>
   );
 }
