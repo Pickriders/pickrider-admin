@@ -9,6 +9,25 @@
  * ---------------------------------------------------------------
  */
 
+export interface PlatformSettingsResponseDto {
+  /** Platform-wide support inboxes for unclaimed URGENT admin alerts (fallback when a state has none) */
+  supportEmails: string[];
+  /**
+   * Last saved; absent until the settings were first saved
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface UpdatePlatformSettingsRequestDto {
+  /**
+   * Platform-wide support inboxes for an URGENT admin alert nobody claimed, used when the alert state has no supportEmails of its own (at most 5; lowercased, trimmed, deduplicated). An empty list clears it
+   * @maxItems 5
+   * @example ["support@pickriders.com"]
+   */
+  supportEmails?: string[];
+}
+
 export interface CountryConfigSchemaDto {
   exchangeRate: number;
   minimumOfferPercentage: number;
@@ -197,7 +216,7 @@ export interface State {
     handoffConfirmRadiusM?: number;
     /** @default 2 */
     handoffsPerOrder?: number;
-    supportWhatsappPhone?: string;
+    supportEmails?: string[];
     /** @default 2 */
     releaseFreePerDay?: number;
     /** @default 5 */
@@ -419,10 +438,11 @@ export interface StateConfigDto {
    */
   handoffsPerOrder?: number;
   /**
-   * Support WhatsApp number (E.164, e.g. +2348012345678) URGENT alerts escalate to. Empty clears it
-   * @pattern /^(\+[1-9]\d{7,14})?$/
+   * Support inboxes an URGENT admin alert nobody claimed is emailed to (at most 5; lowercased, trimmed, deduplicated). An empty list clears it, and the platform-wide list is used instead
+   * @maxItems 5
+   * @example ["support@pickriders.com"]
    */
-  supportWhatsappPhone?: string;
+  supportEmails?: string[];
   /**
    * Rider releases: releases inside the free window that stay free per Lagos day (0: none)
    * @min 0
@@ -5499,10 +5519,32 @@ export interface AdminAlertDto {
   resolution?: AdminAlertResolution;
   resolutionNote?: string;
   /**
-   * When the alert was escalated to the support WhatsApp number
+   * When the unclaimed URGENT alert was escalated (see emailedAt for whether an email went out)
    * @format date-time
    */
   escalatedAt?: string;
+  /**
+   * When support was emailed about this alert ("Emailed support at 10:42")
+   * @format date-time
+   */
+  emailedAt?: string;
+  /**
+   * When the one "still unclaimed" reminder email was sent
+   * @format date-time
+   */
+  emailReminderAt?: string;
+  /**
+   * When the "Resolved" follow-up email was sent
+   * @format date-time
+   */
+  emailResolvedAt?: string;
+  /** How many support inboxes the escalation email went to */
+  emailRecipientsCount?: number;
+  /**
+   * When the alert was listed in an alert-storm digest email instead of getting its own email
+   * @format date-time
+   */
+  emailDigestAt?: string;
   /** @format date-time */
   createdAt: string;
 }
@@ -5534,6 +5576,24 @@ export interface AdminAlertsSummaryResponseDto {
   /** Live HIGH alerts (open or claimed) */
   high: number;
   byType: AdminAlertTypeCountDto[];
+}
+
+export interface AdminTestAlertEmailRequestDto {
+  /**
+   * Country code of the state to test, e.g. NG. Omit both for the platform list
+   * @pattern /^[A-Za-z]{2,3}$/
+   */
+  countryCode?: string;
+  /**
+   * State code, e.g. EN. Needs countryCode
+   * @pattern /^[A-Za-z0-9-]{1,10}$/
+   */
+  stateCode?: string;
+}
+
+export interface AdminTestAlertEmailResponseDto {
+  /** The support inboxes the sample alert email went to */
+  sentTo: string[];
 }
 
 export interface AdminResolveAlertRequestDto {
@@ -6398,6 +6458,54 @@ export interface CreateWebOrderDto {
   note?: string;
   countryCode?: string;
   stateCode?: string;
+}
+
+export interface WebOrderTrackRiderDto {
+  /** The rider's id; changes when another rider takes the order */
+  id: string;
+  name: string;
+  photo: string | null;
+  phone: string | null;
+  rating: number | null;
+}
+
+export interface WebOrderTrackResponseDto {
+  orderNumber: string;
+  /** Order status (OrderStatus) */
+  status: string;
+  dispatchStatus: string | null;
+  /** Order payment status (OrderPaymentStatus) */
+  paymentStatus: string;
+  isPaid: boolean;
+  /** A rider accepted and the guest has not paid yet */
+  awaitingPayment: boolean;
+  /** Still open for bids (no rider committed yet) */
+  bidding: boolean;
+  /** What the customer pays, in naira */
+  price: number;
+  /** Fixed platform fee, in naira */
+  serviceCharge: number;
+  /** The rider's pay, in naira */
+  riderPrice: number;
+  /** Recommended rider pay the stepper scales, in naira */
+  recommendedRiderPrice: number;
+  /** Lowest rider pay allowed, in naira */
+  minRiderPrice: number;
+  minOfferPercent: number;
+  maxOfferPercent: number;
+  currency: string;
+  /** Track stepper position (0 to 6) */
+  milestone: number;
+  /** Code the guest reads to the rider at drop-off */
+  deliveryCode: string | null;
+  rider: WebOrderTrackRiderDto | null;
+  /**
+   * When another rider last took over the order (a completed rider handoff, or a new rider after the previous one was released). Null when the rider never changed. Show a "your rider changed" banner once per value
+   * @format date-time
+   */
+  riderChangedAt?: string | null;
+  pickup: string | null;
+  dropoff: string | null;
 }
 
 export interface SupportUnreadResponseDto {
@@ -8319,6 +8427,10 @@ export type GetHeartbeatData = any;
 
 export type GetDeliveryPricingData = object;
 
+export type GetPlatformSettingsData = PlatformSettingsResponseDto;
+
+export type UpdatePlatformSettingsData = PlatformSettingsResponseDto;
+
 export interface GetCountriesParams {
   order?: "ASC" | "DESC";
   page?: number;
@@ -9689,6 +9801,8 @@ export type AdminListAlertsData = AdminListAlertsResponseDto;
 
 export type AdminAlertsSummaryData = AdminAlertsSummaryResponseDto;
 
+export type AdminSendTestAlertEmailData = AdminTestAlertEmailResponseDto;
+
 export type AdminClaimAlertData = AdminAlertDto;
 
 export type AdminResolveAlertData = AdminAlertDto;
@@ -9935,13 +10049,13 @@ export type UpdateConfigData = object;
 
 export type CreateData = any;
 
-export type TrackData = any;
+export type TrackData = WebOrderTrackResponseDto;
 
 export type SearchData = any;
 
 export type OffersData = any;
 
-export type AcceptOfferData = any;
+export type AcceptOfferData = WebOrderTrackResponseDto;
 
 export type PayData = any;
 

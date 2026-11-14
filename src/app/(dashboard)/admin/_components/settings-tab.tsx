@@ -4,16 +4,18 @@ import { ChevronRight, Globe2, MapPin, Plus } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { Badge, Button, Drawer, EmptyState, ErrorState, Field, Input, KeyValue, Panel, PanelHeader, Skeleton, Switch, cx } from "@/components/kit";
-import { asArray, settings, settingsExtra, type Country, type CountryConfig, type CountryState, type StateConfig } from "@/lib/admin/api";
+import { asArray, platformSettings, settings, settingsExtra, type Country, type CountryConfig, type CountryState, type StateConfig } from "@/lib/admin/api";
 import { naira } from "@/lib/admin/format";
-import { useAction, useCountries, useCountry, useDeliveryPricing, useStates } from "@/lib/admin/hooks";
+import { useAction, useCountries, useCountry, useDeliveryPricing, usePlatformSettings, useStates } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
-import { isE164, secondsToMinutes, toE164 } from "@/lib/admin/phone";
+import { secondsToMinutes } from "@/lib/admin/phone";
+import { cleanSupportEmails, sameEmails, supportEmailErrors } from "@/lib/admin/support-emails";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { MoneyInput, NumberInput, SectionTitle } from "./fields";
 import { releaseKnobErrors, releaseKnobs } from "./release-rules";
 import { anyStackingOn, stackingKnobErrors, stackingKnobs, stackingNeverApplies } from "./stacking-rules";
+import { SupportEmailsInput, TestEmailButton } from "./support-emails";
 import { useCan } from "@/lib/admin/use-can";
 
 /**
@@ -90,6 +92,7 @@ export function SettingsTab() {
             )}
           </div>
         </Panel>
+        <PlatformSupportPanel />
         <LivePricingPanel />
       </div>
 
@@ -114,6 +117,59 @@ export function SettingsTab() {
         </>
       ) : null}
     </div>
+  );
+}
+
+// ── Platform-wide support emails ──────────────────────────────────────────────
+
+const STATE_EMAILS_HINT = "Urgent rider alerts nobody claims within 2 minutes are emailed here. Leave empty to use the platform list.";
+const PLATFORM_EMAILS_HINT = "Used for any state without its own support emails.";
+
+/** The fallback inboxes for urgent alerts, for every state that has none of its own. */
+function PlatformSupportPanel() {
+  const canWrite = useCan().can("settings.write");
+  const query = usePlatformSettings();
+  const saved = query.data?.supportEmails;
+  const [draft, setDraft] = useState<string[]>([]);
+  const stamp = `${String(query.data?.updatedAt ?? "")}:${(saved ?? []).join(",")}`;
+
+  useEffect(() => {
+    setDraft(cleanSupportEmails(saved));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stamp]);
+
+  const dirty = !query.isLoading && !sameEmails(draft, saved);
+  const errors = supportEmailErrors(draft);
+  const save = useAction(() => platformSettings.update({ supportEmails: cleanSupportEmails(draft) }), {
+    success: "Support emails saved",
+    invalidate: [["settings", "platform"]],
+  });
+
+  return (
+    <Panel>
+      <PanelHeader
+        title="Support emails"
+        subtitle="Platform-wide fallback for urgent alerts"
+        action={
+          <Button size="sm" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite} onClick={() => save.mutate(undefined)}>
+            Save
+          </Button>
+        }
+      />
+      <div className="space-y-3 p-5 pt-3">
+        {query.isError ? (
+          <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />
+        ) : query.isLoading ? (
+          <Skeleton className="h-16 w-full" />
+        ) : (
+          <>
+            <SupportEmailsInput label="Platform support emails" hint={PLATFORM_EMAILS_HINT} value={draft} onChange={setDraft} disabled={!canWrite} />
+            {errors.length ? <p className="text-xs font-semibold text-danger">{errors[0]}</p> : null}
+            <TestEmailButton body={{}} dirty={dirty} note={saved?.length ? null : "Nothing saved yet"} />
+          </>
+        )}
+      </div>
+    </Panel>
   );
 }
 
@@ -521,7 +577,7 @@ function draftFromState(state: CountryState | undefined): StateDraft {
       handoffCancelCompensation: c.handoffCancelCompensation ?? 20000,
       handoffConfirmRadiusM: c.handoffConfirmRadiusM ?? 150,
       handoffsPerOrder: c.handoffsPerOrder ?? 2,
-      supportWhatsappPhone: c.supportWhatsappPhone ?? "",
+      supportEmails: cleanSupportEmails(c.supportEmails),
       // Rider releases ("Can't make it"): the core's defaults when a state has never set them.
       ...releaseKnobs(c),
     },
@@ -531,6 +587,7 @@ function draftFromState(state: CountryState | undefined): StateDraft {
 function StateDrawer({ countryId, stateId, onClose }: { countryId: string; stateId?: string; onClose: () => void }) {
   const canWrite = useCan().can("settings.write");
   const states = useStates(countryId);
+  const country = useCountry(countryId);
   const state = useMemo(() => asArray(states.data).find((s) => s._id === stateId), [states.data, stateId]);
   const [draft, setDraft] = useState<StateDraft>(() => draftFromState(undefined));
   const [dirty, setDirty] = useState(false);
@@ -578,15 +635,16 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
     if (c.handoffConfirmRadiusM < 1) out.push("Swap distance must be at least 1 metre.");
     if (c.handoffsPerOrder < 0) out.push("Handoffs per order cannot be negative.");
     out.push(...releaseKnobErrors(c));
-    if (c.supportWhatsappPhone && !isE164(c.supportWhatsappPhone)) out.push("Support WhatsApp must be a full number like +2348012345678.");
+    out.push(...supportEmailErrors(c.supportEmails));
     return out;
   }, [draft.name, c]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (errors.length || !stateId) return;
-    save.mutate({ name: draft.name.trim(), config: draft.config });
+    save.mutate({ name: draft.name.trim(), config: { ...draft.config, supportEmails: cleanSupportEmails(draft.config.supportEmails) } });
   };
+  const savedEmails = cleanSupportEmails((state?.config as StateConfig | undefined)?.supportEmails);
 
   return (
     <Drawer
@@ -731,8 +789,15 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             <MoneyInput label="Cancel compensation" hint="Paid to a rider who accepted when the handoff is called off" kobo={c.handoffCancelCompensation} onChange={(v) => set("handoffCancelCompensation", v)} />
             <NumberInput label="Swap distance check" hint="Further apart than this, the swap is flagged and the bonus held" unit="m" min={1} step={10} value={c.handoffConfirmRadiusM} onChange={(v) => set("handoffConfirmRadiusM", Math.round(v))} />
           </div>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <SupportPhoneField value={c.supportWhatsappPhone} onChange={(v) => set("supportWhatsappPhone", v)} />
+
+          <SectionTitle title="Urgent alert emails" hint="Who hears about an urgent rider alert (an accident) that nobody on the team claims" />
+          <div className="space-y-3">
+            <SupportEmailsInput hint={STATE_EMAILS_HINT} value={c.supportEmails} onChange={(v) => set("supportEmails", v)} disabled={!canWrite} />
+            <TestEmailButton
+              body={{ countryCode: String(country.data?.code ?? ""), stateCode: String(state?.code ?? "") }}
+              dirty={dirty}
+              note={savedEmails.length ? null : "No state list saved, so the platform list gets it"}
+            />
           </div>
 
           <SectionTitle
@@ -759,38 +824,5 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
         </form>
       )}
     </Drawer>
-  );
-}
-
-// ── Support WhatsApp number ───────────────────────────────────────────────────
-
-function SupportPhoneField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  const normalised = toE164(value);
-  const invalid = Boolean(value) && !isE164(value);
-  const suggestion = invalid && isE164(normalised) ? normalised : null;
-  return (
-    <Field
-      label="Support WhatsApp number"
-      error={invalid ? (suggestion ? undefined : "Use the full number with the country code, like +2348012345678.") : undefined}
-      hint="Urgent rider alerts go here on WhatsApp when nobody claims them in 2 minutes."
-    >
-      <Input
-        type="tel"
-        inputMode="tel"
-        autoComplete="off"
-        placeholder="+2348012345678"
-        value={value}
-        onChange={(e) => onChange(e.target.value.trim())}
-        onBlur={() => {
-          if (normalised !== value && isE164(normalised)) onChange(normalised);
-        }}
-        left={<span className="text-xs font-bold">WA</span>}
-      />
-      {suggestion ? (
-        <button type="button" onClick={() => onChange(suggestion)} className="mt-1 block text-xs font-semibold text-brand-dark hover:underline">
-          Use {suggestion}
-        </button>
-      ) : null}
-    </Field>
   );
 }

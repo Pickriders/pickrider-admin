@@ -98,12 +98,14 @@ import {
   AdminResolveAlertRequestDto,
   AdminReviewHandoffData,
   AdminReviewHandoffRequestDto,
+  AdminSendTestAlertEmailData,
   AdminSetWithdrawalRestrictionData,
   AdminStartHandoffData,
   AdminStartHandoffRequestDto,
   AdminStartHandoffSearchData,
   AdminStartHandoffSearchRequestDto,
   AdminSuspendDeveloperLiveData,
+  AdminTestAlertEmailRequestDto,
   AdminUnsuspendDeveloperLiveData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
@@ -284,6 +286,7 @@ import {
   GetOrdersParams,
   GetPendingLocationUpdateData,
   GetPlatformBanksData,
+  GetPlatformSettingsData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
   GetQuoteData,
@@ -512,6 +515,8 @@ import {
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
+  UpdatePlatformSettingsData,
+  UpdatePlatformSettingsRequestDto,
   UpdatePlatformSettlementDto,
   UpdatePreferencesRequestDto,
   UpdatePriorityData,
@@ -577,6 +582,44 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<GetDeliveryPricingData, any>({
       path: `/api/v1/admin-configs/delivery-pricing`,
       method: "GET",
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admin-configs
+   * @name GetPlatformSettings
+   * @summary Platform-wide settings (not tied to a country or state), e.g. support emails
+   * @request GET:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `GetPlatformSettingsData`
+   */
+  getPlatformSettings = (params: RequestParams = {}) =>
+    this.request<GetPlatformSettingsData, any>({
+      path: `/api/v1/admin-configs/platform-settings`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admin-configs
+   * @name UpdatePlatformSettings
+   * @summary Update platform-wide settings; only the keys sent change
+   * @request PATCH:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `UpdatePlatformSettingsData`
+   */
+  updatePlatformSettings = (data: UpdatePlatformSettingsRequestDto, params: RequestParams = {}) =>
+    this.request<UpdatePlatformSettingsData, any>({
+      path: `/api/v1/admin-configs/platform-settings`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -5660,8 +5703,29 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/alerts
+   * @name AdminSendTestAlertEmail
+   * @summary Send a sample urgent alert email to the support inboxes a state resolves to (its own list, else the platform list). 400 when none are set
+   * @request POST:/api/v1/admins/alerts/test-email
+   * @secure
+   * @response `200` `AdminSendTestAlertEmailData`
+   * @response `201` `AdminTestAlertEmailResponseDto`
+   */
+  adminSendTestAlertEmail = (data: AdminTestAlertEmailRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSendTestAlertEmailData, any>({
+      path: `/api/v1/admins/alerts/test-email`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/alerts
    * @name AdminClaimAlert
-   * @summary Take an OPEN alert (stops its WhatsApp escalation)
+   * @summary Take an OPEN alert (stops its escalation and reminder emails)
    * @request POST:/api/v1/admins/alerts/{alertId}/claim
    * @secure
    * @response `200` `AdminClaimAlertData`
@@ -6536,6 +6600,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<TrackData, any>({
       path: `/api/v1/web-orders/${token}`,
       method: "GET",
+      format: "json",
       ...params,
     });
   /**
@@ -6578,6 +6643,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<AcceptOfferData, any>({
       path: `/api/v1/web-orders/${token}/offers/${offerId}`,
       method: "PATCH",
+      format: "json",
       ...params,
     });
   /**

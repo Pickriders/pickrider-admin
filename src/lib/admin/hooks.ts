@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, finance, handoffs, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, finance, handoffs, issues, me, messaging, orders, platformSettings, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -147,6 +147,7 @@ export const useCountries = () => useQuery({ queryKey: ["settings", "countries"]
 export const useCountry = (id: string) => useQuery({ queryKey: ["settings", "country", id], queryFn: () => settings.country(id), enabled: Boolean(id) });
 export const useStates = (countryId: string) => useQuery({ queryKey: ["settings", "states", countryId], queryFn: () => settings.states(countryId), enabled: Boolean(countryId) });
 export const useDeliveryPricing = () => useQuery({ queryKey: ["settings", "delivery-pricing"], queryFn: settings.deliveryPricing });
+export const usePlatformSettings = () => useQuery({ queryKey: ["settings", "platform"], queryFn: platformSettings.get });
 export const useDeliveryPriceConfig = () => useQuery({ queryKey: ["delivery-price", "config"], queryFn: deliveryPrice.config });
 export const useDeliveryPriceAnalytics = (query?: Query) => useQuery({ queryKey: ["delivery-price", "analytics", query], queryFn: () => deliveryPrice.analytics(query), placeholderData: keepPreviousData });
 

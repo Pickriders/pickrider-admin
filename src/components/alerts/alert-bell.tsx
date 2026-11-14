@@ -17,7 +17,7 @@ import { useAdminAlertEvents, type AlertEvent } from "@/lib/admin/realtime";
 import { useCan } from "@/lib/admin/use-can";
 
 import { useClaimAlert } from "./alert-actions";
-import { ClaimedBy, RiderUnpauseLink, URGENT_ALERT_TYPES, alertTypeLabel, digestTitle } from "./alert-ui";
+import { AlertEmailMeta, ClaimedBy, RiderUnpauseLink, alertHref, URGENT_ALERT_TYPES, alertTypeLabel, digestTitle } from "./alert-ui";
 import { LiveAgo } from "@/components/handoffs/handoff-ui";
 
 /**
@@ -50,7 +50,7 @@ function AlertBellButton() {
   const onEvent = useCallback(
     (event: AlertEvent) => {
       if (event.kind === "raised") {
-        showAlertToast(event.alert, { onClaim: (id) => claim.mutate(id), onOpen: () => router.push("/alerts") });
+        showAlertToast(event.alert, { onClaim: (id) => claim.mutate(id), onOpen: () => router.push(alertHref(event.alert.id)) });
         return;
       }
       if (event.kind === "updated") {
@@ -150,6 +150,7 @@ function AlertBellButton() {
                       <LiveAgo value={alert.lastOccurredAt ?? alert.createdAt} className="shrink-0 text-[11px] text-ink-faint" />
                     </div>
                     <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">{alert.message}</p>
+                    <AlertEmailMeta alert={alert} className="mt-1" />
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       {alert.status === "OPEN" ? (
                         <Button size="sm" className="h-7 px-2.5" loading={claim.isPending && claim.variables === alert.id} onClick={() => claim.mutate(alert.id)}>

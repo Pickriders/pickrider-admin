@@ -169,6 +169,8 @@ const CASES: Case[] = [
   { name: "settings.createState", call: () => api.settings.createState(ID, { name: "Lagos", code: "LA" }), method: "POST", path: `${P}/admin-configs/countries/${ID}/states`, data: [{ name: "Lagos", code: "LA" }] },
   { name: "settings.updateState", call: () => api.settings.updateState(ID, OTHER, { isActive: false }), method: "PATCH", path: `${P}/admin-configs/countries/${ID}/states/${OTHER}`, data: { isActive: false } },
   { name: "settings.deliveryPricing", call: () => api.settings.deliveryPricing(), method: "GET", path: `${P}/admin-configs/delivery-pricing` },
+  { name: "platformSettings.get", call: () => api.platformSettings.get(), method: "GET", path: `${P}/admin-configs/platform-settings` },
+  { name: "platformSettings.update", call: () => api.platformSettings.update({ supportEmails: ["ops@pickriders.com"] }), method: "PATCH", path: `${P}/admin-configs/platform-settings`, data: { supportEmails: ["ops@pickriders.com"] } },
   { name: "settingsExtra.createStates", call: () => api.settingsExtra.createStates(ID, [{ name: "Ogun", code: "OG" }]), method: "POST", path: `${P}/admin-configs/countries/${ID}/states`, data: [{ name: "Ogun", code: "OG" }] },
   // delivery price
   { name: "deliveryPrice.analytics", call: () => api.deliveryPrice.analytics({ from: "a", to: "b" }), method: "GET", path: `${P}/delivery-price/admin/analytics`, params: { from: "a", to: "b" } },
@@ -233,6 +235,7 @@ const CASES: Case[] = [
   { name: "alerts.summary", call: () => api.alerts.summary(), method: "GET", path: `${P}/admins/alerts/summary` },
   { name: "alerts.claim", call: () => api.alerts.claim(ID), method: "POST", path: `${P}/admins/alerts/${ID}/claim` },
   { name: "alerts.resolve", call: () => api.alerts.resolve(ID, "called the rider"), method: "POST", path: `${P}/admins/alerts/${ID}/resolve`, data: { note: "called the rider" } },
+  { name: "alerts.testEmail", call: () => api.alerts.testEmail({ countryCode: "NG", stateCode: "EN" }), method: "POST", path: `${P}/admins/alerts/test-email`, data: { countryCode: "NG", stateCode: "EN" } },
 ];
 
 describe("api namespaces → generated client routes", () => {

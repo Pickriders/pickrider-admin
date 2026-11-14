@@ -754,6 +754,15 @@ export const settings = {
   deliveryPricing: () => as<Record<string, unknown>>(apiService.getDeliveryPricing()),
 };
 
+/** Platform-wide settings (one document in core); today only the fallback support emails. */
+export type { PlatformSettingsResponseDto as PlatformSettings, UpdatePlatformSettingsRequestDto as PlatformSettingsUpdate } from "@/services";
+
+export const platformSettings = {
+  get: () => apiService.getPlatformSettings(),
+  /** Only the keys sent change; supportEmails: [] clears the list. */
+  update: (body: import("@/services").UpdatePlatformSettingsRequestDto) => apiService.updatePlatformSettings(body),
+};
+
 export const deliveryPrice = {
   analytics: (query?: Query) => as<Record<string, unknown>>(apiService.analytics(params(query))),
   config: () => as<Record<string, unknown>>(apiService.adminConfig()),
@@ -1063,8 +1072,8 @@ export type StateConfig = {
   handoffCancelCompensation?: number;
   handoffConfirmRadiusM?: number;
   handoffsPerOrder?: number;
-  /** E.164 (+234…). Urgent alerts nobody claims in 2 minutes go here on WhatsApp. Empty clears it. */
-  supportWhatsappPhone?: string;
+  /** Up to 5 inboxes emailed when an urgent alert goes unclaimed for 2 minutes. Empty falls back to the platform list. */
+  supportEmails?: string[];
   /** Rider releases ("Can't make it"): free early releases per Lagos day, then 7-day counted releases that ring later, alert staff, and pause. */
   releaseFreePerDay?: number;
   releaseAlertWeekly?: number;
@@ -1576,4 +1585,6 @@ export const alerts = {
   summary: () => apiService.adminAlertsSummary(),
   claim: (alertId: string) => apiService.adminClaimAlert(alertId),
   resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
+  /** Sends a sample urgent alert email: to a state's support emails, or the platform list when no codes are given. */
+  testEmail: (body: import("@/services").AdminTestAlertEmailRequestDto = {}) => apiService.adminSendTestAlertEmail(body),
 };

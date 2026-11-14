@@ -1,14 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { AlertOctagon, BellRing, CheckCircle2, Hand, Repeat2, Siren } from "lucide-react";
+import { AlertOctagon, BellRing, CheckCircle2, Hand, Repeat2, Siren, X } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 
 import { AlertActions } from "@/components/alerts/alert-actions";
-import { ALERT_TYPE_OPTIONS, ClaimedBy, ResolvedBy, RiderUnpauseLink, SeverityBadge, alertTypeLabel } from "@/components/alerts/alert-ui";
+import { ALERT_TYPE_OPTIONS, AlertEmailMeta, ClaimedBy, ResolvedBy, RiderUnpauseLink, SeverityBadge, alertTypeLabel, findAlert } from "@/components/alerts/alert-ui";
 import { LiveAgo } from "@/components/handoffs/handoff-ui";
-import { Badge, DataTable, PageHeader, StatCard, StatGrid, Tabs, type ColumnMeta } from "@/components/kit";
+import { Badge, DataTable, PageHeader, Panel, StatCard, StatGrid, Tabs, type ColumnMeta } from "@/components/kit";
 import type { AdminAlert, Paged } from "@/lib/admin/api";
 import { count, when } from "@/lib/admin/format";
 import { useAlerts, useAlertsSummary } from "@/lib/admin/hooks";
@@ -55,6 +55,7 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
           </span>
           <span className="mt-0.5 block text-xs text-ink-muted">{row.original.message}</span>
           <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">{alertTypeLabel(row.original.type)}</span>
+          <AlertEmailMeta alert={row.original} className="mt-1" />
         </span>
       ),
     },
@@ -101,11 +102,6 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
           ) : (
             <span className="mt-0.5 block whitespace-nowrap text-[11px] text-ink-faint">{when(row.original.createdAt)}</span>
           )}
-          {row.original.escalatedAt ? (
-            <span className="mt-0.5 block whitespace-nowrap text-[11px] font-semibold text-danger" title={`Sent to the support WhatsApp at ${when(row.original.escalatedAt)}`}>
-              Sent to WhatsApp
-            </span>
-          ) : null}
         </span>
       ),
     },
@@ -162,6 +158,7 @@ function AlertCard({ alert }: { alert: AdminAlert }) {
         <RiderUnpauseLink alert={alert} />
         {alert.occurrences > 1 ? <span>{`${alert.occurrences}x`}</span> : null}
       </div>
+      <AlertEmailMeta alert={alert} />
       {alert.status === "RESOLVED" ? <ResolvedBy alert={alert} /> : alert.status === "CLAIMED" ? <ClaimedBy alert={alert} /> : null}
       <div className="flex justify-start">
         <AlertActions alert={alert} />
@@ -186,6 +183,22 @@ function AlertsHub() {
   const list = useAlerts(query);
   const cols = useMemo(() => columns(tab), [tab]);
   const data = summary.data;
+
+  // ?alert=<id> (the support emails' "Open alert" button, the toast's View): pin that alert on
+  // top and highlight its row. There is no single-alert route, so when it is not on the page in
+  // view it is looked up among the latest alerts of every status.
+  const linkedId = table.state.filters.alert;
+  const onPage = findAlert(linkedId, list.data?.items);
+  const lookup = useAlerts({ status: "OPEN,CLAIMED,RESOLVED", limit: 200 }, Boolean(linkedId) && !list.isLoading && !onPage);
+  const linked = onPage ?? findAlert(linkedId, lookup.data?.items);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const scrolledTo = useRef<string | null>(null);
+  useEffect(() => {
+    if (!linked || scrolledTo.current === linked.id) return;
+    scrolledTo.current = linked.id;
+    pinRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [linked]);
+  const closeLinked = () => table.update({ alert: undefined }, { resetPage: false });
 
   return (
     <div>
@@ -223,11 +236,33 @@ function AlertsHub() {
             value={data ? <span className={data.urgent ? "text-danger" : undefined}>{count(data.urgent)}</span> : ""}
             icon={AlertOctagon}
             loading={summary.isLoading}
-            hint="Accidents, sent to WhatsApp after 2 min"
+            hint="Accidents, emailed to support after 2 min"
           />
           <StatCard label="High" value={data ? count(data.high) : ""} icon={Siren} loading={summary.isLoading} hint="No rider, code lockouts" />
         </StatGrid>
       </div>
+
+      {linkedId ? (
+        <div ref={pinRef} className="mb-4 scroll-mt-20">
+          <Panel className="ring-2 ring-brand/60">
+            <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-2.5">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-brand-dark">Linked alert</p>
+              <button type="button" onClick={closeLinked} aria-label="Close linked alert" className="grid h-6 w-6 place-items-center rounded-full text-ink-faint hover:bg-surface hover:text-ink">
+                <X size={14} />
+              </button>
+            </div>
+            <div className="p-4">
+              {linked ? (
+                <AlertCard alert={linked} />
+              ) : list.isLoading || lookup.isLoading ? (
+                <p className="text-xs text-ink-muted">Finding the alert</p>
+              ) : (
+                <p className="text-xs text-ink-muted">That alert is not among the latest 200. It may be old or the link may be wrong.</p>
+              )}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
 
       <Tabs
         value={tab}
@@ -251,6 +286,7 @@ function AlertsHub() {
         filters={[{ key: "type", label: "Type", options: ALERT_TYPE_OPTIONS }]}
         csvName={`alerts-${tab}`}
         mobileCard={(row) => <AlertCard alert={row} />}
+        rowClassName={(row) => (row.id === linkedId ? "bg-brand-soft/60" : undefined)}
         emptyIcon={CheckCircle2}
         emptyTitle={tab === "resolved" ? "Nothing resolved yet" : tab === "mine" ? "You have nothing claimed" : "All clear"}
         emptyDescription={

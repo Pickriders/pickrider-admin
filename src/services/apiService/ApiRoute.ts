@@ -85,12 +85,14 @@ import {
   AdminResolveAlertRequestDto,
   AdminReviewHandoffData,
   AdminReviewHandoffRequestDto,
+  AdminSendTestAlertEmailData,
   AdminSetWithdrawalRestrictionData,
   AdminStartHandoffData,
   AdminStartHandoffRequestDto,
   AdminStartHandoffSearchData,
   AdminStartHandoffSearchRequestDto,
   AdminSuspendDeveloperLiveData,
+  AdminTestAlertEmailRequestDto,
   AdminUnsuspendDeveloperLiveData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
@@ -241,6 +243,7 @@ import {
   GetOrdersData,
   GetPendingLocationUpdateData,
   GetPlatformBanksData,
+  GetPlatformSettingsData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
   GetQuoteData,
@@ -444,6 +447,8 @@ import {
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
+  UpdatePlatformSettingsData,
+  UpdatePlatformSettingsRequestDto,
   UpdatePlatformSettlementDto,
   UpdatePreferencesRequestDto,
   UpdatePriorityData,
@@ -513,6 +518,40 @@ export namespace Api {
       "x-state-code": string;
     };
     export type ResponseBody = GetDeliveryPricingData;
+  }
+
+  /**
+   * No description
+   * @tags admin-configs
+   * @name GetPlatformSettings
+   * @summary Platform-wide settings (not tied to a country or state), e.g. support emails
+   * @request GET:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `GetPlatformSettingsData`
+   */
+  export namespace GetPlatformSettings {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetPlatformSettingsData;
+  }
+
+  /**
+   * No description
+   * @tags admin-configs
+   * @name UpdatePlatformSettings
+   * @summary Update platform-wide settings; only the keys sent change
+   * @request PATCH:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `UpdatePlatformSettingsData`
+   */
+  export namespace UpdatePlatformSettings {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UpdatePlatformSettingsRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdatePlatformSettingsData;
   }
 
   /**
@@ -6008,8 +6047,26 @@ export namespace Api {
   /**
    * No description
    * @tags admins/alerts
+   * @name AdminSendTestAlertEmail
+   * @summary Send a sample urgent alert email to the support inboxes a state resolves to (its own list, else the platform list). 400 when none are set
+   * @request POST:/api/v1/admins/alerts/test-email
+   * @secure
+   * @response `200` `AdminSendTestAlertEmailData`
+   * @response `201` `AdminTestAlertEmailResponseDto`
+   */
+  export namespace AdminSendTestAlertEmail {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = AdminTestAlertEmailRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminSendTestAlertEmailData;
+  }
+
+  /**
+   * No description
+   * @tags admins/alerts
    * @name AdminClaimAlert
-   * @summary Take an OPEN alert (stops its WhatsApp escalation)
+   * @summary Take an OPEN alert (stops its escalation and reminder emails)
    * @request POST:/api/v1/admins/alerts/{alertId}/claim
    * @secure
    * @response `200` `AdminClaimAlertData`
