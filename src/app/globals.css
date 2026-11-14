@@ -233,6 +233,19 @@
     background: currentColor;
     animation: admin-pulse-dot 1.6s ease-in-out infinite;
   }
+  /* The top-bar bell while an urgent alert is open: a short swing every few seconds. */
+  .admin-bell-ring {
+    transform-origin: 50% 2px;
+    animation: admin-bell-ring 3.2s ease-in-out infinite;
+  }
+}
+@keyframes admin-bell-ring {
+  0%, 18%, 100% { transform: rotate(0); }
+  3% { transform: rotate(14deg); }
+  6% { transform: rotate(-12deg); }
+  9% { transform: rotate(9deg); }
+  12% { transform: rotate(-6deg); }
+  15% { transform: rotate(3deg); }
 }
 @keyframes admin-fade-up {
   from { opacity: 0; transform: translateY(6px); }
@@ -247,7 +260,7 @@
   to { opacity: 1; transform: scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .admin-fade-in, .admin-pop-in { animation: none; }
+  .admin-fade-in, .admin-pop-in, .admin-bell-ring { animation: none; }
 }
 @keyframes admin-pulse-dot {
   0%, 100% { transform: scale(1); opacity: 1; }

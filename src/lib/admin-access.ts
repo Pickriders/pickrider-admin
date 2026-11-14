@@ -45,6 +45,8 @@ const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/customers": PLATFORM_STAFF_ROLES,
   "/business": PLATFORM_STAFF_ROLES,
   "/support": OPS,
+  "/alerts": OPS,
+  "/handoffs": PLATFORM_STAFF_ROLES,
   "/finances": FINANCE_READ,
   "/messaging": PLATFORM_STAFF_ROLES,
   "/delivery-price": PLATFORM_STAFF_ROLES,
@@ -85,6 +87,9 @@ export const ACTION_ROLES = {
   "announcement.manage": GROWTH,
   // Support
   "support.handle": OPS,
+  // Live operations: rider handoffs and staff alerts
+  "handoff.manage": OPS,
+  "alert.handle": OPS,
   // Admin section
   "team.create": ADMINS,
   "settings.write": ADMINS,

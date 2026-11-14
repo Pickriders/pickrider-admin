@@ -598,11 +598,23 @@ export const orders = {
   offers: (orderId: string) => as<Record<string, unknown>>(apiService.getOrderOffers(orderId)),
   /** Every rider who held the order, oldest first, with each release and where the current rider is. */
   riderHistory: (orderId: string) => apiService.adminOrderRiderHistory(orderId),
+  /** The rider and customer chat, read-only for staff: the newest 1,000 messages ascending, plus the thread state. */
+  messages: (orderId: string) => apiService.adminListOrderMessages(orderId),
   cancel: (orderId: string, body: { reason: string }) => as<Order>(apiService.adminCancelOrder(orderId, body)),
   /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
   ringRiders: (orderId: string) => as<{ riders: number; order: Order }>(apiService.ringRiders(orderId)),
   updateStatus: (orderId: string, body: { status: OrderStatus }) => as<Order>(apiService.updateOrderStatus(orderId, body as never)),
 };
+
+// ── Order chat (admins/orders/:orderId/messages) ─────────────────────────────────
+/** Rider and customer messages on a customer-app order. Typed off the generated contract. */
+export type {
+  AdminChatParticipantDto as ChatParticipant,
+  AdminOrderChatResponseDto as OrderChat,
+  AdminOrderChatThreadDto as OrderChatThread,
+  OrderMessageDto as OrderMessage,
+} from "@/services";
+export { ChatClosedReason, ChatParticipantRole, ChatSenderRole, ChatSystemKey, OrderMessageKind } from "@/services";
 
 // ── Transactions ──────────────────────────────────────────────────────────────
 
@@ -852,6 +864,13 @@ export type OrderRow = Order & {
   /** Times an accepted rider was taken off before pickup, and the latest one. */
   riderReleaseCount?: number;
   lastRiderRelease?: import("@/services").OrderLastRiderRelease | null;
+  /** Completed rider handoffs (after pickup) on the order. */
+  handoffCount?: number;
+  /** Order stacking: the rider's other orders when this one was assigned to them, and when. */
+  stackedWithOrderIds?: import("@/services").Order["stackedWithOrderIds"];
+  stackedAt?: import("@/services").Order["stackedAt"];
+  /** The stacking mode that let the rider take this order. */
+  stackMode?: import("@/services").Order["stackMode"];
 };
 
 export type OrderBid = {
@@ -1010,6 +1029,15 @@ export type StateConfig = {
   distanceTaperBeyondRate?: number;
   maxRidersPerQuery?: number;
   maxActiveOrders?: number;
+  /** Order stacking: a rider at maxActiveOrders may take one more order that is on their way (after pickup), up to maxStackedOrders. */
+  stackingEnabled?: boolean;
+  maxStackedOrders?: number;
+  stackDropoffRadiusKm?: number;
+  stackMaxDetourKm?: number;
+  /** Order stacking, "next job": a rider finishing their run may take an order whose pickup is near their last drop-off. */
+  nextNearbyEnabled?: boolean;
+  nextPickupRadiusKm?: number;
+  nextFinishWithinKm?: number;
   maxDistanceRadius?: number;
   queueOrderByDefault?: boolean;
   locationUpdateEnabled?: boolean;
@@ -1021,6 +1049,29 @@ export type StateConfig = {
   arrivalRadiusMeters?: number;
   etaEnabled?: boolean;
   etaAverageSpeedKmh?: number;
+  /** Rider handoff after pickup. Money in kobo, distances as named, times in seconds or minutes as named. */
+  handoffEnabled?: boolean;
+  handoffRadiusKm?: number;
+  handoffWidenRadiusKm?: number;
+  handoffWidenAfterSec?: number;
+  handoffAlertAfterSec?: number;
+  handoffExpireAfterMin?: number;
+  handoffRingSeconds?: number;
+  handoffMinSharePct?: number;
+  handoffMaxSharePct?: number;
+  handoffBonusAmount?: number;
+  handoffCancelCompensation?: number;
+  handoffConfirmRadiusM?: number;
+  handoffsPerOrder?: number;
+  /** E.164 (+234…). Urgent alerts nobody claims in 2 minutes go here on WhatsApp. Empty clears it. */
+  supportWhatsappPhone?: string;
+  /** Rider releases ("Can't make it"): free early releases per Lagos day, then 7-day counted releases that ring later, alert staff, and pause. */
+  releaseFreePerDay?: number;
+  releaseAlertWeekly?: number;
+  releasePauseWeekly?: number;
+  releaseDeprioritizeWeekly?: number;
+  /** Seconds a frequent releaser waits behind reliable riders. */
+  releaseDeprioritizeDelaySec?: number;
 };
 
 export const settingsExtra = {
@@ -1422,17 +1473,19 @@ export const announcements = {
 
 // ── Rider insights (admins/riders/:riderId/insights/*) ──────────────────────────
 /**
- * The same insights a rider sees in the app, for staff, plus an admin-only `profile`. Typed off the
+ * The same insights a rider sees in the app, for staff, plus an admin-only `profile` and, on the
+ * overview, `requests` (accepted vs passed, "Not now"). Typed off the
  * generated contract. The endpoints take the rider app's `dateRange` ("from,to"); all time starts at
  * the platform's launch year.
  */
 export type {
   AchievementsResponseDto as RiderAchievements,
   EarningsSeriesResponseDto as RiderEarningsSeries,
-  InsightsOverviewResponseDto as RiderInsightsOverview,
   LeaderboardResponseDto as RiderRank,
   MyMapResponseDto as RiderDeliveryMap,
+  RiderAdminInsightsOverviewResponseDto as RiderInsightsOverview,
   RiderAdminInsightsResponseDto as RiderInsightsProfile,
+  RiderRequestStatsDto as RiderRequestStats,
 } from "@/services";
 
 // ── Rider releases (admins/riders/:riderId/releases) ─────────────────────────────
@@ -1470,4 +1523,57 @@ export const riderInsights = {
   achievements: (riderId: string) => apiService.adminGetRiderAchievements(riderId),
   profile: (riderId: string, range: RangeQuery) =>
     apiService.adminGetRiderInsightsProfile(params({ riderId, dateRange: toDateRange(range) }) as RiderParam),
+};
+
+// ── Rider handoffs (admins/handoffs, admins/orders/:orderId/handoffs) ────────────
+/**
+ * A rider who has picked up an order hands it to another rider (bike trouble, an accident, being
+ * stopped). Typed off the generated contract. Shares, bonus and compensation are kobo, gross.
+ */
+export type {
+  AdminBulkReviewHandoffsRequestDto as HandoffBulkReviewInput,
+  AdminBulkReviewHandoffsResponseDto as HandoffBulkReviewResult,
+  AdminHandoffDto as Handoff,
+  AdminHandoffRiderDto as HandoffRider,
+  AdminHandoffsSummaryResponseDto as HandoffsSummary,
+  AdminReviewHandoffRequestDto as HandoffReviewInput,
+  AdminStartHandoffRequestDto as HandoffStartInput,
+} from "@/services";
+export { HandoffBonusAction, HandoffBonusStatus, HandoffCountDecision, HandoffFlag, HandoffReason, HandoffReviewDecision, HandoffStatus } from "@/services";
+
+export const handoffs = {
+  /** status is a comma list; flagged=true; review=pending; riderId matches either rider; from/to are ISO dates. */
+  list: (query: Query) => page<import("@/services").AdminHandoffDto>(apiService.adminListHandoffs(params(query))),
+  summary: () => apiService.adminHandoffsSummary(),
+  get: (handoffId: string) => apiService.adminGetHandoff(handoffId),
+  forOrder: (orderId: string) => apiService.adminListOrderHandoffs(orderId),
+  start: (body: import("@/services").AdminStartHandoffRequestDto) => apiService.adminStartHandoff(body),
+  startSearch: (handoffId: string, note?: string) => apiService.adminStartHandoffSearch(handoffId, note ? { note } : {}),
+  assign: (handoffId: string, riderId: string) => apiService.adminAssignHandoffRider(handoffId, { riderId }),
+  cancel: (handoffId: string, note?: string) => apiService.adminCancelHandoff(handoffId, note ? { note } : {}),
+  dropRider: (handoffId: string, note?: string) => apiService.adminDropHandoffRider(handoffId, note ? { note } : {}),
+  /** The new bonus in kobo; it must be higher than the current one. */
+  raiseBonus: (handoffId: string, amount: number) => apiService.adminRaiseHandoffBonus(handoffId, { amount }),
+  review: (handoffId: string, body: import("@/services").AdminReviewHandoffRequestDto) => apiService.adminReviewHandoff(handoffId, body),
+  bulkReview: (body: import("@/services").AdminBulkReviewHandoffsRequestDto) => apiService.adminBulkReviewHandoffs(body),
+};
+
+// ── Admin alerts (admins/alerts) ─────────────────────────────────────────────────
+/**
+ * Things a person must act on now (an accident handoff, nobody taking a handoff, a code lockout).
+ * One live alert per problem; repeats bump `occurrences`. Pushed live on the orders socket.
+ */
+export type {
+  AdminAlertDto as AdminAlert,
+  AdminAlertsSummaryResponseDto as AlertsSummary,
+  AdminAlertTypeCountDto as AlertTypeCount,
+} from "@/services";
+export { AdminAlertSeverity, AdminAlertStatus } from "@/services";
+
+export const alerts = {
+  /** status is a comma list (default OPEN,CLAIMED); mine=true for alerts I claimed; type narrows. */
+  list: (query: Query) => page<import("@/services").AdminAlertDto>(apiService.adminListAlerts(params(query))),
+  summary: () => apiService.adminAlertsSummary(),
+  claim: (alertId: string) => apiService.adminClaimAlert(alertId),
+  resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
 };

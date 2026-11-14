@@ -8,9 +8,12 @@ import { asArray, settings, settingsExtra, type Country, type CountryConfig, typ
 import { naira } from "@/lib/admin/format";
 import { useAction, useCountries, useCountry, useDeliveryPricing, useStates } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
+import { isE164, secondsToMinutes, toE164 } from "@/lib/admin/phone";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { MoneyInput, NumberInput, SectionTitle } from "./fields";
+import { releaseKnobErrors, releaseKnobs } from "./release-rules";
+import { anyStackingOn, stackingKnobErrors, stackingKnobs, stackingNeverApplies } from "./stacking-rules";
 import { useCan } from "@/lib/admin/use-can";
 
 /**
@@ -360,7 +363,7 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
     <Panel>
       <PanelHeader
         title="States"
-        subtitle="Per-state pricing, dispatch, location updates and arrival rules"
+        subtitle="Per-state pricing, dispatch, location updates, arrival, handoff and release rules"
         action={
           <Button size="sm" variant="outline" icon={Plus} onClick={onAdd}>
             Add state
@@ -399,6 +402,8 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
                   </span>
                   <span className="flex flex-col items-end gap-1">
                     {config.queueOrderByDefault ? <Badge tone="info">Queue</Badge> : null}
+                    {anyStackingOn(config) ? <Badge tone="info">Stacking</Badge> : null}
+                    {config.handoffEnabled === false ? <Badge tone="neutral">No handoff</Badge> : null}
                     <ChevronRight size={14} className="text-ink-faint" />
                   </span>
                 </button>
@@ -489,6 +494,8 @@ function draftFromState(state: CountryState | undefined): StateDraft {
       distanceTaperBeyondRate: c.distanceTaperBeyondRate ?? 18000,
       maxRidersPerQuery: c.maxRidersPerQuery ?? 5,
       maxActiveOrders: c.maxActiveOrders ?? 1,
+      // Order stacking: the core's defaults when a state has never set them.
+      ...stackingKnobs(c),
       maxDistanceRadius: c.maxDistanceRadius ?? 20,
       queueOrderByDefault: c.queueOrderByDefault ?? false,
       locationUpdateEnabled: c.locationUpdateEnabled ?? false,
@@ -500,6 +507,23 @@ function draftFromState(state: CountryState | undefined): StateDraft {
       arrivalRadiusMeters: c.arrivalRadiusMeters ?? 40,
       etaEnabled: c.etaEnabled ?? true,
       etaAverageSpeedKmh: c.etaAverageSpeedKmh ?? 25,
+      // Rider handoff: the core's defaults when a state has never set them.
+      handoffEnabled: c.handoffEnabled ?? true,
+      handoffRadiusKm: c.handoffRadiusKm ?? 3,
+      handoffWidenRadiusKm: c.handoffWidenRadiusKm ?? 6,
+      handoffWidenAfterSec: c.handoffWidenAfterSec ?? 180,
+      handoffAlertAfterSec: c.handoffAlertAfterSec ?? 360,
+      handoffExpireAfterMin: c.handoffExpireAfterMin ?? 30,
+      handoffRingSeconds: c.handoffRingSeconds ?? 30,
+      handoffMinSharePct: c.handoffMinSharePct ?? 30,
+      handoffMaxSharePct: c.handoffMaxSharePct ?? 70,
+      handoffBonusAmount: c.handoffBonusAmount ?? 30000,
+      handoffCancelCompensation: c.handoffCancelCompensation ?? 20000,
+      handoffConfirmRadiusM: c.handoffConfirmRadiusM ?? 150,
+      handoffsPerOrder: c.handoffsPerOrder ?? 2,
+      supportWhatsappPhone: c.supportWhatsappPhone ?? "",
+      // Rider releases ("Can't make it"): the core's defaults when a state has never set them.
+      ...releaseKnobs(c),
     },
   };
 }
@@ -536,6 +560,7 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
     if (c.percentageCharge < 0 || c.percentageCharge > 100) out.push("Percentage charge must be between 0 and 100.");
     if (c.maxRidersPerQuery < 1) out.push("At least one rider must be searchable.");
     if (c.maxActiveOrders < 1) out.push("Riders need at least one active order slot.");
+    out.push(...stackingKnobErrors(c));
     if (c.maxDistanceRadius < 1) out.push("Search radius must be at least 1 km.");
     if (c.locationUpdateFreeRadiusMeters < 1) out.push("Free radius must be at least 1 metre.");
     if (c.locationUpdateMaxPerLocation < 1) out.push("Allow at least one location update per stop.");
@@ -543,6 +568,17 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
     if (c.locationUpdateRiderAcceptTimeoutSec < 30) out.push("Rider accept timeout must be at least 30 seconds.");
     if (c.arrivalRadiusMeters < 1) out.push("Arrival radius must be at least 1 metre.");
     if (c.etaAverageSpeedKmh < 1) out.push("Average speed must be at least 1 km/h.");
+    if (c.handoffRadiusKm < 0.1 || c.handoffRadiusKm > 50) out.push("Handoff radius must be between 0.1 and 50 km.");
+    if (c.handoffWidenRadiusKm < c.handoffRadiusKm || c.handoffWidenRadiusKm > 50) out.push("The wider handoff radius must be at least the first radius, and at most 50 km.");
+    if (c.handoffAlertAfterSec < c.handoffWidenAfterSec) out.push("Alert staff after the search widens, not before.");
+    if (c.handoffExpireAfterMin < 1) out.push("A handoff must stay open at least 1 minute.");
+    if (c.handoffExpireAfterMin * 60 <= c.handoffAlertAfterSec) out.push("A handoff must expire after staff are alerted.");
+    if (c.handoffRingSeconds < 5) out.push("Ring riders for at least 5 seconds.");
+    if (c.handoffMinSharePct < 0 || c.handoffMaxSharePct > 100 || c.handoffMinSharePct > c.handoffMaxSharePct) out.push("Handoff shares must be 0 to 100 percent, minimum below maximum.");
+    if (c.handoffConfirmRadiusM < 1) out.push("Swap distance must be at least 1 metre.");
+    if (c.handoffsPerOrder < 0) out.push("Handoffs per order cannot be negative.");
+    out.push(...releaseKnobErrors(c));
+    if (c.supportWhatsappPhone && !isE164(c.supportWhatsappPhone)) out.push("Support WhatsApp must be a full number like +2348012345678.");
     return out;
   }, [draft.name, c]);
 
@@ -557,7 +593,7 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
       open={Boolean(stateId)}
       onClose={onClose}
       title={state?.name ?? "State"}
-      subtitle={state ? `${String(state.code ?? "")} · pricing, dispatch, location updates and arrival` : undefined}
+      subtitle={state ? `${String(state.code ?? "")} · pricing, dispatch, stacking, location updates, arrival, handoff and releases` : undefined}
       width="lg"
       footer={
         <div className="flex items-center justify-between gap-2">
@@ -623,6 +659,36 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             <Switch checked={c.queueOrderByDefault} onChange={(v) => set("queueOrderByDefault", v)} label="Queue orders by default when no rider is free" />
           </div>
 
+          <SectionTitle
+            title="Stacking"
+            hint={`"Max active orders per rider" stays the normal limit; stacking lets a busy rider go past it, up to the most orders below. Both modes share that limit.`}
+          />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <NumberInput
+              label="Most orders when stacking"
+              hint={stackingNeverApplies(c) ? "Raise this above Max active orders per rider, or stacking never applies" : "2 or 3, counting the current order"}
+              min={2}
+              max={3}
+              step={1}
+              value={c.maxStackedOrders}
+              onChange={(v) => set("maxStackedOrders", Math.round(v))}
+            />
+          </div>
+          <div className="mb-3 mt-4">
+            <Switch checked={c.stackingEnabled} onChange={(v) => set("stackingEnabled", v)} label="On your way: pick up an order on the way to their drop-off" />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <NumberInput label="Drop-off within" hint="Of their current drop-off" unit="km" min={0.1} max={20} step={0.5} value={c.stackDropoffRadiusKm} onChange={(v) => set("stackDropoffRadiusKm", v)} />
+            <NumberInput label="Extra distance for the pickup" hint="Added to their way to the current drop-off" unit="km" min={0} max={10} step={0.5} value={c.stackMaxDetourKm} onChange={(v) => set("stackMaxDetourKm", v)} />
+          </div>
+          <div className="mb-3 mt-4">
+            <Switch checked={c.nextNearbyEnabled} onChange={(v) => set("nextNearbyEnabled", v)} label="Next job: give an order whose pickup is near where they finish" />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <NumberInput label="Pickup within (km) of their last drop-off" unit="km" min={0.1} max={20} step={0.5} value={c.nextPickupRadiusKm} onChange={(v) => set("nextPickupRadiusKm", v)} />
+            <NumberInput label="Rider within (km) of finishing" hint="Of their last drop-off" unit="km" min={0.1} max={30} step={0.5} value={c.nextFinishWithinKm} onChange={(v) => set("nextFinishWithinKm", v)} />
+          </div>
+
           <SectionTitle title="Mid-order location update" hint="Lets a customer move a stop mid-order for a fee; the rider must accept" />
           <div className="mb-3">
             <Switch checked={c.locationUpdateEnabled} onChange={(v) => set("locationUpdateEnabled", v)} label="Location updates on" />
@@ -644,6 +710,43 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             <NumberInput label="ETA average speed" unit="km/h" min={1} value={c.etaAverageSpeedKmh} onChange={(v) => set("etaAverageSpeedKmh", v)} />
           </div>
 
+          <SectionTitle
+            title="Rider handoff"
+            hint="A rider who has picked up an order can hand it to a nearby rider. The first rider is paid for the distance they covered, the second for the rest plus the bonus."
+          />
+          <div className="mb-3">
+            <Switch checked={c.handoffEnabled} onChange={(v) => set("handoffEnabled", v)} label="Handoffs on" />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <NumberInput label="Search radius" hint="Riders rung first, around the meeting point" unit="km" min={0.1} max={50} step={0.5} value={c.handoffRadiusKm} onChange={(v) => set("handoffRadiusKm", v)} />
+            <NumberInput label="Wider radius" hint="Rung when nobody takes it in time" unit="km" min={0.1} max={50} step={0.5} value={c.handoffWidenRadiusKm} onChange={(v) => set("handoffWidenRadiusKm", v)} />
+            <NumberInput label="Widen after" hint={`Stored as ${c.handoffWidenAfterSec} seconds`} unit="min" min={0} step={0.5} value={secondsToMinutes(c.handoffWidenAfterSec)} onChange={(v) => set("handoffWidenAfterSec", Math.round(v * 60))} />
+            <NumberInput label="Alert staff after" hint="Opens a No rider alert; the rider sees Chat with support" unit="min" min={0} step={0.5} value={secondsToMinutes(c.handoffAlertAfterSec)} onChange={(v) => set("handoffAlertAfterSec", Math.round(v * 60))} />
+            <NumberInput label="Expire after" hint="The first rider keeps the order" unit="min" min={1} step={1} value={c.handoffExpireAfterMin} onChange={(v) => set("handoffExpireAfterMin", Math.round(v))} />
+            <NumberInput label="Ring time" hint="How long the request shows on a rider's phone" unit="sec" min={5} step={1} value={c.handoffRingSeconds} onChange={(v) => set("handoffRingSeconds", Math.round(v))} />
+            <NumberInput label="Minimum share" hint="Least the first rider earns of the trip" unit="%" min={0} max={100} step={1} value={c.handoffMinSharePct} onChange={(v) => set("handoffMinSharePct", v)} />
+            <NumberInput label="Maximum share" hint="Most the first rider earns of the trip" unit="%" min={0} max={100} step={1} value={c.handoffMaxSharePct} onChange={(v) => set("handoffMaxSharePct", v)} />
+            <NumberInput label="Handoffs per order" hint="0 turns them off for every order" min={0} step={1} value={c.handoffsPerOrder} onChange={(v) => set("handoffsPerOrder", Math.round(v))} />
+            <MoneyInput label="Bonus for the new rider" hint="Paid by Pickriders, no commission" kobo={c.handoffBonusAmount} onChange={(v) => set("handoffBonusAmount", v)} />
+            <MoneyInput label="Cancel compensation" hint="Paid to a rider who accepted when the handoff is called off" kobo={c.handoffCancelCompensation} onChange={(v) => set("handoffCancelCompensation", v)} />
+            <NumberInput label="Swap distance check" hint="Further apart than this, the swap is flagged and the bonus held" unit="m" min={1} step={10} value={c.handoffConfirmRadiusM} onChange={(v) => set("handoffConfirmRadiusM", Math.round(v))} />
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <SupportPhoneField value={c.supportWhatsappPhone} onChange={(v) => set("supportWhatsappPhone", v)} />
+          </div>
+
+          <SectionTitle
+            title="Rider releases (Can't make it)"
+            hint="A rider who accepted an order can release it with Can't make it. Counted releases over 7 days ring the rider later, alert staff, then pause them until staff unpause them."
+          />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <NumberInput label="Free releases per day" hint="Releases in the first 2 minutes after accepting are free up to this many a day. 0 means none are free." min={0} max={10} step={1} value={c.releaseFreePerDay} onChange={(v) => set("releaseFreePerDay", Math.round(v))} />
+            <NumberInput label="Alert staff at" hint="counted releases in 7 days" min={1} max={50} step={1} value={c.releaseAlertWeekly} onChange={(v) => set("releaseAlertWeekly", Math.round(v))} />
+            <NumberInput label="Pause the rider at" hint="counted releases in 7 days, until staff unpause them" min={1} max={100} step={1} value={c.releasePauseWeekly} onChange={(v) => set("releasePauseWeekly", Math.round(v))} />
+            <NumberInput label="Ring later from" hint="counted releases in 7 days: these riders are rung after reliable riders" min={1} max={50} step={1} value={c.releaseDeprioritizeWeekly} onChange={(v) => set("releaseDeprioritizeWeekly", Math.round(v))} />
+            <NumberInput label="Ring them after (seconds)" min={1} max={300} step={1} value={c.releaseDeprioritizeDelaySec} onChange={(v) => set("releaseDeprioritizeDelaySec", Math.round(v))} />
+          </div>
+
           {errors.length ? (
             <ul className="mt-4 space-y-1">
               {errors.map((error) => (
@@ -656,5 +759,38 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
         </form>
       )}
     </Drawer>
+  );
+}
+
+// ── Support WhatsApp number ───────────────────────────────────────────────────
+
+function SupportPhoneField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const normalised = toE164(value);
+  const invalid = Boolean(value) && !isE164(value);
+  const suggestion = invalid && isE164(normalised) ? normalised : null;
+  return (
+    <Field
+      label="Support WhatsApp number"
+      error={invalid ? (suggestion ? undefined : "Use the full number with the country code, like +2348012345678.") : undefined}
+      hint="Urgent rider alerts go here on WhatsApp when nobody claims them in 2 minutes."
+    >
+      <Input
+        type="tel"
+        inputMode="tel"
+        autoComplete="off"
+        placeholder="+2348012345678"
+        value={value}
+        onChange={(e) => onChange(e.target.value.trim())}
+        onBlur={() => {
+          if (normalised !== value && isE164(normalised)) onChange(normalised);
+        }}
+        left={<span className="text-xs font-bold">WA</span>}
+      />
+      {suggestion ? (
+        <button type="button" onClick={() => onChange(suggestion)} className="mt-1 block text-xs font-semibold text-brand-dark hover:underline">
+          Use {suggestion}
+        </button>
+      ) : null}
+    </Field>
   );
 }
