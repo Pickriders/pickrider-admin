@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { Panel, PanelHeader, Skeleton } from "@/components/kit/primitives";
+import { TableScroll } from "@/components/kit/scroll-row";
 
 /**
  * Recharts is loaded on demand so no admin route pays for it until a chart is
@@ -113,7 +114,7 @@ export function Heatmap({
   );
   const max = Math.max(1, ...grid.flat());
   return (
-    <div className="admin-scroll overflow-x-auto">
+    <TableScroll arrowTop="50%">
       <div className="min-w-[520px]">
         <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 text-[10px] font-semibold text-ink-faint">
           <div />
@@ -140,6 +141,6 @@ export function Heatmap({
         </div>
         {maxHint ? <p className="mt-2 text-[11px] text-ink-faint">{maxHint}</p> : null}
       </div>
-    </div>
+    </TableScroll>
   );
 }

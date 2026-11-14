@@ -1,10 +1,28 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { BadgeCheck, Megaphone, Users } from "lucide-react";
+import { Ban, BadgeCheck, Banknote, CalendarCheck, Clock, Megaphone, Package, Sparkles, UserX, Users, Wallet, XCircle } from "lucide-react";
 import { Suspense, useMemo } from "react";
 
-import { Avatar, Badge, DataTable, LinkButton, PageHeader, Skeleton, Tabs, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  Chip,
+  ChipDivider,
+  DataTable,
+  LinkButton,
+  MenuFilters,
+  MenuSelect,
+  PageHeader,
+  ProfileCardSkeleton,
+  SkeletonLine,
+  Tabs,
+  TabsSkeleton,
+  cx,
+  statusTone,
+  type ColumnMeta,
+  type FilterSpec,
+} from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import type { CustomerRow } from "@/lib/admin/api";
 import { ago, count, day, fullName, naira, statusLabel } from "@/lib/admin/format";
@@ -13,10 +31,12 @@ import { useTabParam, useTableState } from "@/lib/admin/url-state";
 
 import { CustomersOverviewTab } from "./_components/overview-tab";
 import { errorMessage } from "@/lib/admin/http";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * Every customer with wallet balance and order rollups in one request
- * (GET admins/stats/customers). Bulk suspend and delete from the old page
+ * (GET admins/stats/customers), with the same "Top by" rankings and quick
+ * filter chips as the couriers page. The date picker filters on join date. Bulk suspend and delete from the old page
  * had no endpoint behind them and are gone; bulk email and push now live in
  * Messaging with a customer audience.
  */
@@ -32,9 +52,55 @@ const FILTERS: FilterSpec[] = [
       { value: "false", label: "Not verified" },
     ],
   },
+  {
+    key: "hasOrdered",
+    label: "Ordering",
+    options: [
+      { value: "true", label: "Has ordered" },
+      { value: "false", label: "Never ordered" },
+    ],
+  },
+  {
+    key: "orderedWithinDays",
+    label: "Last order",
+    options: [
+      { value: "7", label: "In the last 7 days" },
+      { value: "30", label: "In the last 30 days" },
+      { value: "90", label: "In the last 90 days" },
+    ],
+  },
 ];
 
-const columns: ColumnDef<CustomerRow, unknown>[] = [
+/** The rankings GET admins/stats/customers can sort by (its sortBy whitelist). */
+const SORTS = [
+  { value: "joined", label: "Newest", icon: Sparkles },
+  { value: "orders", label: "Most orders", icon: Package },
+  { value: "spent", label: "Top spenders", icon: Banknote },
+  { value: "lastLogin", label: "Recently active", icon: Clock },
+  { value: "cancelled", label: "Most cancellations", icon: XCircle },
+  { value: "wallet", label: "Wallet balance", icon: Wallet },
+];
+
+/** Sorting by one of these is a ranking, so the table shows each row's place. */
+const RANKED = new Set(["orders", "spent", "cancelled", "wallet"]);
+
+const MEDAL: Record<number, string> = {
+  1: "bg-warning-soft text-warning",
+  2: "bg-surface text-ink",
+  3: "bg-brand-soft text-brand-dark",
+};
+
+const rankColumn = (offset: number): ColumnDef<CustomerRow, unknown> => ({
+  id: "rank",
+  header: "#",
+  cell: ({ row }) => {
+    const n = offset + row.index + 1;
+    return <span className={cx("grid h-6 w-6 place-items-center rounded-full text-xs font-bold tabular-nums", MEDAL[n] ?? "text-ink-faint")}>{n}</span>;
+  },
+  meta: { width: "48px", skeleton: "line" } satisfies ColumnMeta,
+});
+
+const COLUMNS: ColumnDef<CustomerRow, unknown>[] = [
   {
     id: "customer",
     header: "Customer",
@@ -51,14 +117,14 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
             </p>
             <p className="truncate text-xs text-ink-muted">
               {phoneLabel(u.phone)}
-              {u.phone && u.email ? " · " : ""}
-              {u.email ?? ""}
+              {u.phone && formatEmail(u.email) ? " · " : ""}
+              {formatEmail(u.email)}
             </p>
           </div>
         </div>
       );
     },
-    meta: { sortKey: "name", csv: { key: "name", label: "Name", value: (r) => fullName(r as CustomerRow) } } satisfies ColumnMeta,
+    meta: { sortKey: "name", skeleton: "profile", csv: { key: "name", label: "Name", value: (r) => fullName(r as CustomerRow) } } satisfies ColumnMeta,
   },
   {
     id: "status",
@@ -68,23 +134,39 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
         {statusLabel(row.original.status)}
       </Badge>
     ),
-    meta: { csv: { key: "status", label: "Status" } } satisfies ColumnMeta,
+    meta: { skeleton: "pill", csv: { key: "status", label: "Status" } } satisfies ColumnMeta,
   },
   {
     id: "orders",
     header: "Orders",
     cell: ({ row }) => {
       const u = row.original;
-      return (
+      return u.orders ? (
         <div className="tabular-nums">
           <p className="font-semibold text-ink">{count(u.orders)}</p>
-          <p className="text-xs text-ink-faint">
-            {count(u.completedOrders)} done{u.cancelledOrders ? ` · ${count(u.cancelledOrders)} cancelled` : ""}
-          </p>
+          <p className="text-xs text-ink-faint">{count(u.completedOrders)} done</p>
+        </div>
+      ) : (
+        <span className="text-xs text-ink-faint">Never ordered</span>
+      );
+    },
+    meta: { sortKey: "orders", align: "right", skeleton: "stat", csv: { key: "orders", label: "Orders" } } satisfies ColumnMeta,
+  },
+  {
+    id: "cancelled",
+    header: "Cancelled",
+    cell: ({ row }) => {
+      const u = row.original;
+      if (!u.cancelledOrders) return <span className="tabular-nums text-ink-faint">0</span>;
+      const rate = u.orders ? Math.round((u.cancelledOrders / u.orders) * 100) : 0;
+      return (
+        <div className="tabular-nums">
+          <p className={cx("font-semibold", rate >= 50 ? "text-danger" : "text-ink")}>{count(u.cancelledOrders)}</p>
+          <p className="text-xs text-ink-faint">{rate}% of orders</p>
         </div>
       );
     },
-    meta: { sortKey: "orders", align: "right", csv: { key: "orders", label: "Orders" } } satisfies ColumnMeta,
+    meta: { sortKey: "cancelled", align: "right", hideBelow: "lg", skeleton: "stat", csv: { key: "cancelledOrders", label: "Cancelled" } } satisfies ColumnMeta,
   },
   {
     id: "spent",
@@ -95,8 +177,10 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
   {
     id: "wallet",
     header: "Wallet",
-    cell: ({ row }) => <span className="tabular-nums text-ink-muted">{naira(row.original.walletBalance)}</span>,
-    meta: { align: "right", hideBelow: "lg", csv: { key: "walletBalance", label: "Wallet (kobo)" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className={cx("tabular-nums", row.original.walletBalance ? "font-semibold text-ink" : "text-ink-faint")}>{naira(row.original.walletBalance)}</span>
+    ),
+    meta: { sortKey: "wallet", align: "right", hideBelow: "lg", csv: { key: "walletBalance", label: "Wallet (kobo)" } } satisfies ColumnMeta,
   },
   {
     id: "lastOrder",
@@ -118,19 +202,21 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
   },
 ];
 
-function CustomerCard({ row }: { row: CustomerRow }) {
+function CustomerCard({ row, rank }: { row: CustomerRow; rank?: number }) {
   const name = fullName(row) || "Unnamed";
   return (
     <div className="flex items-start gap-3">
+      {rank ? <span className={cx("mt-2 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold tabular-nums", MEDAL[rank] ?? "text-ink-faint")}>{rank}</span> : null}
       <Avatar src={row.photo} name={name} size={40} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <p className="truncate font-semibold text-ink">{name}</p>
           <Badge tone={statusTone(row.status)}>{statusLabel(row.status)}</Badge>
         </div>
-        <p className="truncate text-xs text-ink-muted">{phoneLabel(row.phone) || row.email}</p>
+        <p className="truncate text-xs text-ink-muted">{phoneLabel(row.phone) || formatEmail(row.email)}</p>
         <p className="mt-1 text-xs text-ink-faint">
-          {count(row.orders)} orders · {naira(row.spent)} spent · wallet {naira(row.walletBalance)}
+          {row.orders ? `${count(row.orders)} orders` : "Never ordered"}
+          {row.cancelledOrders ? ` · ${count(row.cancelledOrders)} cancelled` : ""} · {naira(row.spent)} spent · wallet {naira(row.walletBalance)}
         </p>
       </div>
     </div>
@@ -149,34 +235,106 @@ function CustomersList() {
       search: state.search,
       status: state.filters.status,
       phoneVerified: state.filters.phoneVerified,
+      hasOrdered: state.filters.hasOrdered,
+      orderedWithinDays: state.filters.orderedWithinDays,
+      // The date picker filters on the join date.
+      dateRange: table.query.dateRange,
     }),
-    [state],
+    [state, table.query.dateRange],
   );
   const customers = useCustomers(query);
+  const ranked = RANKED.has(state.sortBy ?? "");
+  const offset = (state.page - 1) * state.limit;
+  const columns = useMemo(() => (ranked ? [rankColumn(offset), ...COLUMNS] : COLUMNS), [ranked, offset]);
+
+  const neverOrdered = state.filters.hasOrdered === "false";
+  const recent = state.filters.orderedWithinDays === "30";
+  const suspended = state.filters.status === "SUSPENDED";
+  const sortBy = (value: string) => table.update({ sortBy: value, order: "DESC" });
+  // "Never ordered" and "ordered recently" contradict each other, so each clears the other.
+  const toggleNeverOrdered = () => table.update({ hasOrdered: neverOrdered ? undefined : "false", orderedWithinDays: undefined });
+  const toggleRecent = () => table.update({ orderedWithinDays: recent ? undefined : "30", hasOrdered: undefined });
+  const toggleSuspended = () => table.setFilter("status", suspended ? undefined : "SUSPENDED");
 
   return (
-    <DataTable
-      columns={columns}
-      data={customers.data}
-      loading={customers.isLoading}
-      error={customers.error ? errorMessage(customers.error, "Could not load customers.") : null}
-      onRetry={() => customers.refetch()}
-      filters={FILTERS}
-      dateFilter={false}
-      searchPlaceholder="Name, phone, email or NIN"
-      csvName="customers"
-      defaultSort={{ sortBy: "joined", order: "DESC" }}
-      emptyIcon={Users}
-      emptyTitle={table.activeFilterCount ? "No customers match" : "No customers yet"}
-      emptyDescription={table.activeFilterCount ? "Try clearing a filter or the search." : "People who sign up on the customer app appear here."}
-      rowHref={(row) => `/customers/${row._id}`}
-      mobileCard={(row) => <CustomerCard row={row} />}
-      toolbarExtra={
-        <LinkButton href="/messaging?audience=CUSTOMERS" variant="outline" size="md" icon={Megaphone}>
-          <span>Message customers</span>
-        </LinkButton>
-      }
-    />
+    <div className="space-y-3">
+      {/* Phones and small tablets: two compact menus instead of wrapping chip rows. */}
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        <MenuSelect label="Sort" title="Top by" value={state.sortBy} options={SORTS} onChange={sortBy} placeholder="Custom" />
+        <MenuFilters
+          title="Quick filters"
+          align="end"
+          onClear={() =>
+            // Clear only what the quick filters set, so a value picked in the filter panel survives.
+            table.update({
+              hasOrdered: neverOrdered ? undefined : state.filters.hasOrdered,
+              orderedWithinDays: recent ? undefined : state.filters.orderedWithinDays,
+              status: suspended ? undefined : state.filters.status,
+            })
+          }
+          toggles={[
+            { id: "never", label: "Never ordered", icon: UserX, active: neverOrdered, onToggle: toggleNeverOrdered },
+            { id: "recent", label: "Ordered in last 30 days", icon: CalendarCheck, active: recent, onToggle: toggleRecent },
+            { id: "suspended", label: "Suspended", icon: Ban, tone: "warning", active: suspended, onToggle: toggleSuspended },
+          ]}
+        />
+      </div>
+      <div className="hidden flex-wrap items-center gap-2 md:flex">
+        <span className="mr-1 text-xs font-semibold text-ink-faint">Top by</span>
+        {SORTS.map((s) => (
+          <Chip key={s.value} active={state.sortBy === s.value} onClick={() => sortBy(s.value)}>
+            {s.label}
+          </Chip>
+        ))}
+        <ChipDivider />
+        <Chip active={neverOrdered} onClick={toggleNeverOrdered}>
+          <UserX size={13} />
+          Never ordered
+        </Chip>
+        <Chip active={recent} onClick={toggleRecent}>
+          <CalendarCheck size={13} />
+          Ordered in last 30 days
+        </Chip>
+        <Chip tone="warning" active={suspended} onClick={toggleSuspended}>
+          <Ban size={13} />
+          Suspended
+        </Chip>
+      </div>
+      {state.from || state.to ? (
+        <p className="text-xs text-ink-muted">
+          Showing customers who joined {state.from ? `from ${day(state.from)}` : ""}
+          {state.from && state.to ? " " : ""}
+          {state.to ? `up to ${day(state.to)}` : ""}.
+        </p>
+      ) : null}
+      <DataTable
+        columns={columns}
+        data={customers.data}
+        loading={customers.isLoading}
+        error={customers.error ? errorMessage(customers.error, "Could not load customers.") : null}
+        onRetry={() => customers.refetch()}
+        filters={FILTERS}
+        searchPlaceholder="Name, phone, email or NIN"
+        csvName="customers"
+        defaultSort={{ sortBy: "joined", order: "DESC" }}
+        emptyIcon={Users}
+        emptyTitle={table.activeFilterCount ? "No customers match" : "No customers yet"}
+        emptyDescription={
+          table.activeFilterCount ? "Try clearing a filter, the join dates or the search." : "People who sign up on the customer app appear here."
+        }
+        rowHref={(row) => `/customers/${row._id}`}
+        mobileCard={(row) => {
+          const index = customers.data?.items.indexOf(row) ?? -1;
+          return <CustomerCard row={row} rank={ranked && index >= 0 ? offset + index + 1 : undefined} />;
+        }}
+        mobileCardSkeleton={<ProfileCardSkeleton />}
+        toolbarExtra={
+          <LinkButton href="/messaging?audience=CUSTOMERS" variant="outline" size="md" icon={Megaphone}>
+            <span>Message customers</span>
+          </LinkButton>
+        }
+      />
+    </div>
   );
 }
 
@@ -207,9 +365,19 @@ function CustomersHub() {
   );
 }
 
+/** Until the search params resolve: the real title, the description line and the two tabs. */
+function CustomersFallback() {
+  return (
+    <div aria-busy="true">
+      <PageHeader title="Customers" description={<SkeletonLine box="h-5" bar="h-3.5 w-96 max-w-full" />} />
+      <TabsSkeleton widths={["w-24", "w-28"]} className="mb-4" />
+    </div>
+  );
+}
+
 export default function CustomersPage() {
   return (
-    <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+    <Suspense fallback={<CustomersFallback />}>
       <CustomersHub />
     </Suspense>
   );

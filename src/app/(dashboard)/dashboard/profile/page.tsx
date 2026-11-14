@@ -12,6 +12,7 @@ import { day, fullName, when } from "@/lib/admin/format";
 import { FONTS, type FontId } from "@/lib/admin/fonts";
 import { useAdminPrefs } from "@/components/kit/prefs";
 import { Avatar, Badge, Button, ErrorState, Field, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Select, Skeleton, cx } from "@/components/kit/primitives";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The signed-in admin: who they are, what they can do, and how the admin
@@ -71,7 +72,7 @@ export default function ProfilePage() {
                     columns={1}
                     items={[
                       { label: "Name", value: name || undefined },
-                      { label: "Email", value: user?.email },
+                      { label: "Email", value: formatEmail(user?.email) || undefined },
                       { label: "Phone", value: user?.phone },
                       { label: "Status", value: user?.status ? <Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>{roleLabel(user.status)}</Badge> : undefined },
                       { label: "Last sign in", value: user?.lastLoginDate ? when(user.lastLoginDate) : undefined },

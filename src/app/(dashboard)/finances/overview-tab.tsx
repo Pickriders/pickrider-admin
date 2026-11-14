@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDownLeft, ArrowUpRight, Banknote, Coins, Landmark, Link2, Receipt, Undo2, Users, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Banknote, Coins, Landmark, Link2, Percent, Receipt, Undo2, Users, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useExternalPayments, useFinanceStatus, useOverview, usePlatformWallet, useSeries, useTransactionSummary } from "@/lib/admin/hooks";
@@ -36,7 +36,7 @@ function shortDay(value: string) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 }
 
-export function OverviewTab() {
+export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } = {}) {
   const [range, setRange] = useState<RangeValue>(() => presetRange(30));
   const [drawer, setDrawer] = useState<null | "bank" | "pin">(null);
 
@@ -99,13 +99,27 @@ export function OverviewTab() {
         <StatCard label="Money in" value={naira(tx.moneyIn)} icon={ArrowDownLeft} hint="Credits to wallets" loading={overview.isLoading} />
         <StatCard label="Money out" value={naira(tx.moneyOut)} icon={ArrowUpRight} hint="Debits from wallets" loading={overview.isLoading} />
         <StatCard label="Transactions" value={count(tx.count)} icon={Receipt} hint={`${naira(tx.volume)} total volume`} loading={overview.isLoading} />
-        <StatCard label="Provider fees" value={naira(tx.fees)} icon={Coins} hint="Charges taken by Paystack and co" loading={overview.isLoading} />
+        <StatCard
+          label="Paystack fees"
+          value={naira(tx.fees)}
+          icon={Coins}
+          hint="What Paystack took on payments and payouts"
+          loading={overview.isLoading}
+          onClick={onProviderFees}
+        />
       </StatGrid>
 
-      <StatGrid columns={4}>
+      <StatGrid columns={5}>
         <StatCard label="Deposits" value={naira(tx.deposits)} icon={Banknote} loading={overview.isLoading} />
         <StatCard label="Withdrawals" value={naira(tx.withdrawals)} icon={Landmark} loading={overview.isLoading} />
         <StatCard label="Reversals" value={naira(tx.reversals)} icon={Undo2} loading={overview.isLoading} />
+        <StatCard
+          label="Platform commission"
+          value={naira(tx.commission)}
+          icon={Percent}
+          hint="Taken from rider earnings, kept by Pickriders"
+          loading={overview.isLoading}
+        />
         <StatCard
           label="Net flow"
           value={naira((tx.moneyIn ?? 0) - (tx.moneyOut ?? 0))}

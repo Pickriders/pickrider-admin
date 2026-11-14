@@ -30,6 +30,7 @@ import { useTableState } from "@/lib/admin/url-state";
 
 import { CouponFormDrawer } from "../_components/coupon-form-drawer";
 import { LifecycleBadge, UsageBar, discountLabel } from "../_components/shared";
+import { formatEmail } from "@/lib/admin/person";
 
 /** One coupon: its terms, how it has performed, and every redemption (who, which order, how much). */
 const meta = (value: ColumnMeta) => value;
@@ -52,9 +53,9 @@ const USAGE_COLUMNS: ColumnDef<CouponUsage, unknown>[] = [
         className="block hover:underline"
       >
         <span className="block text-sm font-semibold text-ink">
-          {fullName(row.original.user) || row.original.user?.email || "Unknown"}
+          {fullName(row.original.user) || formatEmail(row.original.user?.email) || "Unknown"}
         </span>
-        <span className="block text-[11px] text-ink-muted">{row.original.user?.phone || row.original.user?.email}</span>
+        <span className="block text-[11px] text-ink-muted">{row.original.user?.phone || formatEmail(row.original.user?.email)}</span>
       </Link>
     ),
   },

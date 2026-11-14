@@ -44,14 +44,16 @@ changes the risk profile of ordinary-looking work:
 ```
 src/
 ├── app/
-│   ├── (dashboard)/      achievements, admin, analytics, business, coupons, couriers,
-│   │                     customers, dashboard, delivery-price, finances, messaging,
+│   ├── (dashboard)/      achievements, admin, alerts, analytics, business, coupons, couriers,
+│   │                     customers, dashboard, delivery-price, finances, handoffs, messaging,
 │   │                     orders, support, vehicles — each with `_components/` tabs
 │   ├── auth/             login etc. (unauthenticated)
 │   ├── layout.tsx        root layout
 │   └── globals.css
 ├── services/apiService/  GENERATED swagger client (`apiService`) + hand-written index.ts
 ├── lib/admin/
+│   ├── realtime.ts       the core `/orders` socket: admin:order_updated invalidation and staff
+│   │                     alerts (admin:alert / _updated / _digest via useAdminAlertEvents)
 │   ├── api.ts            typed namespaces (users, orders, coupons, announcements, …) —
 │   │                     every function delegates to a generated apiService method
 │   ├── api.test.ts       route contract: verb + path + query + body per namespace function

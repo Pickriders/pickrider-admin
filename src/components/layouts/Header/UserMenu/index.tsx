@@ -1,6 +1,7 @@
 "use client";
 
 import { useMe } from "@/lib/admin/hooks";
+import { formatEmail, formatPersonName } from "@/lib/admin/person";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
@@ -24,7 +25,7 @@ export const UserMenu = () => {
   }
 
   const initials = `${data?.firstname?.charAt(0) ?? ""}${data?.lastname?.charAt(0) ?? ""}`;
-  const fullName = `${data?.firstname ?? ""} ${data?.lastname ?? ""}`.trim();
+  const fullName = formatPersonName(`${data?.firstname ?? ""} ${data?.lastname ?? ""}`);
 
   return (
     <UI.DropdownMenu>
@@ -40,7 +41,7 @@ export const UserMenu = () => {
             <span className="block truncate font-semibold text-sm leading-tight">
               {fullName}
             </span>
-            <p className="truncate text-xs text-ink-muted leading-tight">{data?.email}</p>
+            <p className="truncate text-xs text-ink-muted leading-tight">{formatEmail(data?.email)}</p>
           </div>
           <span className="hidden text-ink-muted md:inline">
             <SVG.ChevronDown />
@@ -63,7 +64,7 @@ export const UserMenu = () => {
             <p className="truncate font-semibold text-sm text-foreground">
               {fullName || "Admin"}
             </p>
-            <p className="truncate text-xs text-ink-muted">{data?.email}</p>
+            <p className="truncate text-xs text-ink-muted">{formatEmail(data?.email)}</p>
           </div>
         </div>
 

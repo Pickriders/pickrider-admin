@@ -5,16 +5,18 @@ import { PageHeader, Tabs } from "@/components/kit";
 import { OverviewTab } from "./overview-tab";
 import { PayoutTab } from "./payout-tab";
 import { ChargesTab } from "./charges-tab";
+import { ProviderFeesTab } from "./provider-fees-tab";
 import { TransactionsTab } from "./transactions-tab";
 import { TransferTab } from "./transfer-tab";
 import { useCan } from "@/lib/admin/use-can";
 
-const TABS = ["overview", "charges", "payout", "transfer", "transactions", "withdrawals"] as const;
+const TABS = ["overview", "charges", "provider-fees", "payout", "transfer", "transactions", "withdrawals"] as const;
 type Tab = (typeof TABS)[number];
 
 const ITEMS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "charges", label: "Charges" },
+  { id: "provider-fees", label: "Provider fees" },
   { id: "payout", label: "Payout" },
   { id: "transfer", label: "Transfer to wallet" },
   { id: "transactions", label: "Transactions" },
@@ -33,8 +35,9 @@ export function FinancesClient() {
     <div>
       <PageHeader title="Finances" description="The platform wallet, what moved through it, and every transaction on the platform." />
       <Tabs value={active} onChange={setTab} items={items} className="mb-5" />
-      {active === "overview" ? <OverviewTab /> : null}
+      {active === "overview" ? <OverviewTab onProviderFees={() => setTab("provider-fees")} /> : null}
       {active === "charges" ? <ChargesTab /> : null}
+      {active === "provider-fees" ? <ProviderFeesTab /> : null}
       {active === "payout" && treasury ? <PayoutTab /> : null}
       {active === "transfer" && treasury ? <TransferTab /> : null}
       {active === "transactions" ? <TransactionsTab preset="all" /> : null}

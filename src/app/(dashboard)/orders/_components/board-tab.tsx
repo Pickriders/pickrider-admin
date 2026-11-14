@@ -4,14 +4,28 @@ import { Bike, CheckCircle2, Clock, PackageSearch, Truck, XCircle } from "lucide
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { Badge, EmptyState, ErrorState, Panel, Skeleton, StatCard, StatGrid, cx, presetRange, rangeToQuery } from "@/components/kit";
+import {
+  Badge,
+  EmptyState,
+  ErrorState,
+  Panel,
+  Skeleton,
+  SkeletonLine,
+  SkeletonOrder,
+  SkeletonPerson,
+  StatCard,
+  StatGrid,
+  cx,
+  presetRange,
+  rangeToQuery,
+} from "@/components/kit";
 import type { OrderRow, OrderStatus } from "@/lib/admin/api";
-import { ago, count, naira } from "@/lib/admin/format";
+import { ago, count, naira, orderSource, when } from "@/lib/admin/format";
 import { useOrders, useOverview } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
-import { STALE_AFTER_MINUTES, isStale, orderNumber, typeLabel } from "../lib";
-import { PartyCell, TypeBadge } from "./order-cells";
+import { STALE_AFTER_MINUTES, isStale, typeLabel } from "../lib";
+import { CourierCell, OrderCell, OrderPaymentBadge, PartyCell } from "./order-cells";
 
 /**
  * The live board: every order that is not finished, in three columns by
@@ -88,11 +102,15 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
                       <p className="text-[11px] text-ink-muted">{column.hint}</p>
                     </div>
                   </div>
-                  <Badge tone={column.tone}>{count(items.length)}</Badge>
+                  {orders.isLoading && !items.length ? (
+                    <Skeleton className="h-[22px] w-8 rounded-full" />
+                  ) : (
+                    <Badge tone={column.tone}>{count(items.length)}</Badge>
+                  )}
                 </div>
                 <div className="admin-scroll mt-3 flex-1 space-y-2 overflow-y-auto px-3 pb-3 lg:max-h-[70vh]">
                   {orders.isLoading && !items.length ? (
-                    Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-24 w-full" />)
+                    Array.from({ length: 3 }).map((_, index) => <BoardCardSkeleton key={index} />)
                   ) : items.length ? (
                     items.map((order) => <BoardCard key={order._id} order={order} />)
                   ) : (
@@ -116,6 +134,30 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
   );
 }
 
+/** BoardCard while the board loads: number and amount, the customer and courier box, the drop-off line. */
+function BoardCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-line bg-card p-3" aria-hidden>
+      <div className="flex items-start justify-between gap-3">
+        <SkeletonOrder />
+        <span className="block shrink-0">
+          <SkeletonLine box="h-[18px] justify-end" bar="h-3.5 w-16" />
+          <SkeletonLine box="mt-1 h-3.5 justify-end" bar="h-2.5 w-12" />
+        </span>
+      </div>
+      <div className="mt-3 grid grid-cols-1 gap-2.5 rounded-lg bg-surface/70 px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+        {["Customer", "Courier"].map((label) => (
+          <div key={label} className="min-w-0">
+            <SkeletonLine box="mb-1 h-[15px]" bar="h-2 w-14" />
+            <SkeletonPerson size={24} name="w-24" />
+          </div>
+        ))}
+      </div>
+      <SkeletonLine box="mt-2 h-4" bar="h-2.5 w-3/4" />
+    </div>
+  );
+}
+
 function BoardCard({ order }: { order: OrderRow }) {
   const stale = isStale(order);
   const dropoffs = (order.locations ?? []).filter((stop) => stop.type === "DROPOFF");
@@ -128,30 +170,34 @@ function BoardCard({ order }: { order: OrderRow }) {
         stale ? "border-warning/60 bg-warning-soft/40" : "border-line",
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-ink">{orderNumber(order)}</p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-muted">
-            <TypeBadge type={order.type} />
-            {order.isScheduled ? <Badge tone="brand">Scheduled</Badge> : null}
-            <span>{ago(order.createdAt)}</span>
-          </p>
-        </div>
-        <span className="shrink-0 text-sm font-bold text-ink">{naira(order.totalAmountPayable)}</span>
+      <div className="flex items-start justify-between gap-3">
+        <OrderCell order={order} />
+        <span className="flex shrink-0 flex-col items-end leading-tight tabular-nums">
+          <span className="text-sm font-bold text-ink">{naira(order.totalAmountPayable)}</span>
+          <span className="mt-1 text-[11px] text-ink-faint" title={when(order.createdAt)}>
+            {ago(order.createdAt)}
+          </span>
+        </span>
       </div>
+      {/* Storefront orders are prepaid off-platform; say so, since "Paid" alone would mislead. */}
+      {orderSource(order.channel) === "STORE" ? (
+        <div className="mt-2">
+          <OrderPaymentBadge order={order} />
+        </div>
+      ) : null}
       {stale ? (
         <p className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-warning">
           <Clock size={12} /> Waiting {Math.round((Date.now() - new Date(order.scheduleDispatchedAt ?? order.createdAt).getTime()) / 60_000)} min for a rider
         </p>
       ) : null}
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-faint">Customer</p>
+      <div className="mt-3 grid grid-cols-1 gap-2.5 rounded-lg bg-surface/70 px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+        <div className="min-w-0">
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-faint">Customer</p>
           <PartyCell party={order.user} fallback="Unknown" size={24} />
         </div>
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-faint">Courier</p>
-          <PartyCell party={order.rider} fallback={order.status === "INITIATED" ? `${count((order.offers ?? []).length)} bids so far` : "No rider"} size={24} />
+        <div className="min-w-0">
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-faint">Courier</p>
+          <CourierCell order={order} size={24} />
         </div>
       </div>
       {firstDrop ? (

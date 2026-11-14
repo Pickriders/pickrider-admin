@@ -3,7 +3,7 @@
 import { Bike, Calculator, Fuel, MapPin, Share2 } from "lucide-react";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
-import { BarsChart, Button, ChartCard, EmptyState, Field, Input, KeyValue, PageHeader, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
+import { BarsChart, Button, ChartCard, EmptyState, Field, Input, KeyValue, PageHeader, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TableScroll, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
 import { deliveryPrice } from "@/lib/admin/api";
 import { count, percent } from "@/lib/admin/format";
 import { useAction, useDeliveryPriceAnalytics, useDeliveryPriceConfig } from "@/lib/admin/hooks";
@@ -227,30 +227,32 @@ function Verdict({ label, value, tone }: { label: string; value: number; tone: s
 
 function FairnessTable({ caption, head, rows }: { caption: string; head: string[]; rows: string[][] }) {
   return (
-    <div className="admin-scroll overflow-x-auto">
+    <div>
       <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">{caption}</p>
-      <table className="w-full min-w-[420px] border-collapse text-left text-sm">
-        <thead>
-          <tr>
-            {head.map((h, i) => (
-              <th key={h} className={`border-b border-line py-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint ${i ? "text-right" : ""}`}>
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row[0]} className="border-b border-line last:border-0">
-              {row.map((cell, i) => (
-                <td key={i} className={`py-2 text-ink ${i ? "text-right" : "font-semibold"} ${i === row.length - 1 ? "font-semibold" : ""}`}>
-                  {cell}
-                </td>
+      <TableScroll arrowTop="17px">
+        <table className="w-full min-w-[420px] border-collapse text-left text-sm">
+          <thead>
+            <tr>
+              {head.map((h, i) => (
+                <th key={h} className={`border-b border-line py-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint ${i ? "text-right" : ""}`}>
+                  {h}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row[0]} className="border-b border-line last:border-0">
+                {row.map((cell, i) => (
+                  <td key={i} className={`py-2 text-ink ${i ? "text-right" : "font-semibold"} ${i === row.length - 1 ? "font-semibold" : ""}`}>
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </TableScroll>
     </div>
   );
 }

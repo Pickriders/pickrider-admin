@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { clashDisplay, faktumTest, montserrat, urbanist } from "@/styles/fonts";
+import { adminDigits, clashDisplay, faktumTest, montserrat } from "@/styles/fonts";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 import Provider from "@/providers/provider";
@@ -23,9 +23,11 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(urbanist.variable, clashDisplay.variable, montserrat.variable, faktumTest.variable)}
+      className={cn(clashDisplay.variable, montserrat.variable, faktumTest.variable, adminDigits.variable)}
     >
       <head>
+        {/* The default interface font is self-hosted (globals.css); preload its latin file. */}
+        <link rel="preload" href="/assets/fonts/urbanist/urbanist-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Storefront-matched selectable fonts for the header font switcher. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

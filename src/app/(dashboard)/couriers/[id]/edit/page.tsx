@@ -10,6 +10,7 @@ import { LICENCE_LABEL, licenceOf, licenceTone } from "@/components/users/user-p
 import { day, fullName, statusLabel, when } from "@/lib/admin/format";
 import { useUser, useUserWallets } from "@/lib/admin/hooks";
 import { asArray } from "@/lib/admin/api";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * The rider's profile as the API holds it. Riders edit their own names,
@@ -83,7 +84,7 @@ function CourierProfile({ id }: { id: string }) {
                   { label: "Last name", value: u.lastname },
                   { label: "Middle name", value: u.middlename },
                   { label: "Phone", value: u.phone ? `${phoneLabel(u.phone)}${u.phoneVerified ? " (verified)" : ""}` : undefined },
-                  { label: "Email", value: u.email ? `${u.email}${u.emailVerified ? " (verified)" : ""}` : undefined },
+                  { label: "Email", value: formatEmail(u.email) ? `${formatEmail(u.email)}${u.emailVerified ? " (verified)" : ""}` : undefined },
                   { label: "Gender", value: u.gender ? statusLabel(u.gender) : undefined },
                   { label: "Date of birth", value: typeof raw.dob === "string" && raw.dob ? day(raw.dob) : undefined },
                   { label: "NIN", value: u.nin },

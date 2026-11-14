@@ -32,16 +32,29 @@ import {
   AddVehiclesDto,
   AdjustUserWalletData,
   AdjustWalletRequestDto,
+  AdminAlertsSummaryData,
   AdminAnnouncementsSummaryData,
+  AdminApproveDeveloperLiveData,
+  AdminAssignHandoffRiderData,
+  AdminAssignHandoffRiderRequestDto,
+  AdminBulkReviewHandoffsData,
+  AdminBulkReviewHandoffsRequestDto,
+  AdminCancelHandoffData,
+  AdminCancelHandoffRequestDto,
   AdminCancelOrderData,
   AdminCancelOrderRequestDto,
   AdminChangeMyPasswordData,
+  AdminClaimAlertData,
   AdminConfigData,
   AdminCreateAnnouncementData,
   AdminCreateTeamData,
   AdminCreateUserData,
   AdminDeleteAnnouncementData,
+  AdminDropHandoffRiderData,
+  AdminDropHandoffRiderRequestDto,
   AdminGetAnnouncementData,
+  AdminGetDeveloperData,
+  AdminGetHandoffData,
   AdminGetMyProfileData,
   AdminGetRiderAchievementsData,
   AdminGetRiderDeliveryMapData,
@@ -52,11 +65,33 @@ import {
   AdminGetTransactionsData,
   AdminGetUserWalletsData,
   AdminGetVehicleData,
+  AdminHandoffsSummaryData,
+  AdminListAlertsData,
   AdminListAnnouncementReceiptsData,
   AdminListAnnouncementScreensData,
   AdminListAnnouncementsData,
+  AdminListDevelopersData,
+  AdminListHandoffsData,
+  AdminListOrderHandoffsData,
+  AdminListOrderMessagesData,
+  AdminListRiderReleasesData,
   AdminListTeamsData,
+  AdminOrderRiderHistoryData,
+  AdminRaiseHandoffBonusData,
+  AdminRaiseHandoffBonusRequestDto,
+  AdminRejectDeveloperLiveData,
   AdminRemoveUserPhotoData,
+  AdminResolveAlertData,
+  AdminResolveAlertRequestDto,
+  AdminReviewHandoffData,
+  AdminReviewHandoffRequestDto,
+  AdminSetWithdrawalRestrictionData,
+  AdminStartHandoffData,
+  AdminStartHandoffRequestDto,
+  AdminStartHandoffSearchData,
+  AdminStartHandoffSearchRequestDto,
+  AdminSuspendDeveloperLiveData,
+  AdminUnsuspendDeveloperLiveData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
   AdminUpdateMyAddressesData,
@@ -139,18 +174,22 @@ import {
   DeleteUserVehicleData,
   DeleteVehicleData,
   DeliveryPriceEventDto,
+  DeveloperLiveDecisionRequestDto,
   EstimateBroadcastData,
   EventData,
   FeedbackData,
   FeedbackDto,
   FindAllData,
   ForUserData,
+  ForceAssignRiderData,
+  ForceAssignRiderDto,
   FundWalletRequestDto,
   GetAchievementsData,
   GetActiveCouponsData,
   GetActiveOffersData,
   GetAdminPreferencesData,
   GetAllReferralsData,
+  GetArrivalCheckData,
   GetBanksData,
   GetBroadcastData,
   GetBusinessData,
@@ -192,6 +231,7 @@ import {
   GetMyMapData,
   GetNearbyRidersCountData,
   GetNotificationsData,
+  GetOrderChatData,
   GetOrderData,
   GetOrderEtaData,
   GetOrderOffersData,
@@ -257,6 +297,7 @@ import {
   ListGroupsData,
   ListIssuesData,
   ListMyIssuesData,
+  ListOrderMessagesData,
   ListPendingAnnouncementsData,
   ListUserIssuesData,
   LogData,
@@ -264,16 +305,25 @@ import {
   LoginBusinessData,
   LoginData,
   LoginRequestDto,
+  LookupRiderForStoreData,
   MakeOfferRequestDto,
   MakeOrderOfferData,
   MarkAsReadData,
+  MarkOrderMessagesReadData,
+  MarkOrderMessagesReadRequestDto,
   Object,
   OffersData,
   OverviewData,
   PasswordResetData,
   PasswordResetRequestData,
   PayData,
+  PayOrderRequestDto,
+  PayRiderTripData,
+  PayRiderTripRequestDto,
   PeakHoursData,
+  ProviderFeeFlow,
+  ProviderFeeRowsData,
+  ProviderFeesData,
   PublicConfigData,
   QueueOrderData,
   QuoteBatchOrderData,
@@ -295,6 +345,8 @@ import {
   RefundOrderRequestDto,
   RefundableOrdersData,
   RejectVehicleData,
+  ReleaseOrderRiderData,
+  ReleaseRiderRequestDto,
   RemoveGroupUsersData,
   RemoveOrderCouponData,
   RemoveUserFromBusinessData,
@@ -303,13 +355,38 @@ import {
   RescheduleOrderRequestDto,
   ResendTokenData,
   ResetPasswordRequestDto,
+  ResolveBankAccountData,
   RespondToLocationUpdateData,
   RevokeData,
+  RiderAcceptHandoffData,
+  RiderAcceptHandoffRequestDto,
+  RiderCancelHandoffData,
+  RiderCancelHandoffRequestDto,
+  RiderConfirmHandoffData,
+  RiderConfirmHandoffRequestDto,
+  RiderDeclineHandoffData,
+  RiderDeclineHandoffRequestDto,
+  RiderGetHandoffData,
+  RiderLinkCodeRequestDto,
   RiderLocationsRequestDto,
+  RiderMyHandoffsData,
+  RiderNearbyHandoffsData,
+  RiderOrderCapacityData,
+  RiderPassOrderData,
+  RiderPassOrderRequestDto,
+  RiderReleaseOrderData,
+  RiderReleaseRequestDto,
+  RiderRequestHandoffData,
+  RiderRequestHandoffRequestDto,
+  RiderStartHandoffSearchData,
+  RiderStartHandoffSearchRequestDto,
   RidersRequestDto,
   RingRidersData,
   RunData,
   SearchData,
+  SendOrderMessageData,
+  SendOrderMessageRequestDto,
+  SendRiderLinkCodeData,
   SeriesData,
   SetDispatchPausedData,
   SetPinData,
@@ -388,6 +465,7 @@ import {
   UpdateUserVehicleData,
   UpdateVehicleRequestDto,
   UpdateVehicleStatusRequestDto,
+  UpdateWithdrawalRestrictionRequestDto,
   UsagesData,
   UserKYCDetailDto,
   UserKycVerificationData,
@@ -736,6 +814,57 @@ export namespace Api {
   }
 
   /**
+   * @description What Paystack took in the window, per money flow, against the window before, with a trend.
+   * @tags admins/stats
+   * @name ProviderFees
+   * @request GET:/api/v1/admins/stats/provider-fees
+   * @secure
+   * @response `200` `ProviderFeesData`
+   */
+  export namespace ProviderFees {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day) */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+      to?: string;
+      /** 1 = everything since the first order */
+      all?: string;
+      bucket?: "day" | "week" | "month";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderFeesData;
+  }
+
+  /**
+   * @description Every Paystack fee in the window, newest first, with what it was charged on and whose money it was.
+   * @tags admins/stats
+   * @name ProviderFeeRows
+   * @request GET:/api/v1/admins/stats/provider-fees/rows
+   * @secure
+   * @response `200` `ProviderFeeRowsData`
+   */
+  export namespace ProviderFeeRows {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** ISO date or YYYY-MM-DD (Lagos day) */
+      from?: string;
+      /** ISO date or YYYY-MM-DD (Lagos day, inclusive) */
+      to?: string;
+      /** 1 = everything since the first order */
+      all?: string;
+      page?: number;
+      /** At most 100, default 20 */
+      limit?: number;
+      flow?: ProviderFeeFlow;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderFeeRowsData;
+  }
+
+  /**
    * No description
    * @tags admins/stats
    * @name Attention
@@ -786,11 +915,18 @@ export namespace Api {
   export namespace Customers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** Joined between, on createdAt: comma-separated start and end date (e.g. 2026-09-01,2026-09-30) */
+      dateRange?: string;
+      /** Only customers who placed an order in the last N days (whole number, 1 or more) */
+      orderedWithinDays?: number;
+      /** true = customers with at least one order, false = customers who never ordered */
+      hasOrdered?: "true" | "false";
       search?: any;
       phoneVerified?: any;
       /** Comma separated UserStatus */
       status?: any;
-      sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent";
+      /** cancelled = cancelledOrders, wallet = walletBalance */
+      sortBy?: "joined" | "lastLogin" | "name" | "orders" | "spent" | "cancelled" | "wallet";
       order?: "ASC" | "DESC";
       limit?: any;
       page?: any;
@@ -846,6 +982,126 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = UserOverviewData;
+  }
+
+  /**
+   * No description
+   * @tags transactions
+   * @name GetTransactions
+   * @request GET:/api/v1/transactions
+   * @secure
+   * @response `200` `GetTransactionsData`
+   */
+  export namespace GetTransactions {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+      /** transaction type filter. commap separated list of TransactionType */
+      type?: string;
+      /** transaction category filter. commap separated list of TransactionCategory */
+      category?: string;
+      /** transaction status filter. comma separated list of TransactionStatus */
+      status?: string;
+      order?: "ASC" | "DESC";
+      page?: number;
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name AdminGetTransactions
+   * @request GET:/api/v1/admins/transactions
+   * @secure
+   * @response `200` `AdminGetTransactionsData`
+   */
+  export namespace AdminGetTransactions {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Reference, description, or wallet owner name / phone / email */
+      search?: any;
+      /** provide a user (entity) id to get transactions for a user */
+      entityId?: string;
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+      /** transaction type filter. commap separated list of TransactionType */
+      type?: string;
+      /** transaction purpose filter. commap separated list of TransactionPurpose */
+      purpose?: string;
+      /** transaction category filter. commap separated list of TransactionCategory */
+      category?: string;
+      /** transaction status filter. comma separated list of TransactionStatus */
+      status?: string;
+      order?: "ASC" | "DESC";
+      page?: number;
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetTransactionsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetExternalPaymentMetrics
+   * @request GET:/api/v1/admins/transactions/metrics/external-payments
+   * @secure
+   * @response `200` `GetExternalPaymentMetricsData`
+   */
+  export namespace GetExternalPaymentMetrics {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** provide a user (entity) id to scope metrics to a single customer */
+      entityId?: string;
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetExternalPaymentMetricsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetTransactionSummary
+   * @request GET:/api/v1/admins/transactions/metrics/summary
+   * @secure
+   * @response `200` `GetTransactionSummaryData`
+   */
+  export namespace GetTransactionSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
+      dateRange?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionSummaryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/transactions
+   * @name GetTransaction
+   * @request GET:/api/v1/admins/transactions/{transactionId}
+   * @secure
+   * @response `200` `GetTransactionData`
+   */
+  export namespace GetTransaction {
+    export type RequestParams = {
+      transactionId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetTransactionData;
   }
 
   /**
@@ -1030,7 +1286,7 @@ export namespace Api {
    * No description
    * @tags admins/riders/insights
    * @name AdminGetRiderInsightsOverview
-   * @summary A rider's earnings, performance, activity and goal for the window (default: last 7 days)
+   * @summary A rider's earnings, performance, activity and goal for the window (default: last 7 days), plus how many order requests they accepted and passed on
    * @request GET:/api/v1/admins/riders/{riderId}/insights/overview
    * @secure
    * @response `200` `AdminGetRiderInsightsOverviewData`
@@ -2125,6 +2381,8 @@ export namespace Api {
   export namespace GetUsers {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** true = accounts an admin paused withdrawals on, false = accounts that can withdraw */
+      withdrawalRestricted?: "0" | "1" | "false" | "true";
       /** For the rider list (isRider=true), sort by this field. completedDeliveries and totalEarned are lifetime rider metrics returned on each row. Combine with order=DESC for a leaderboard. */
       sortBy?: "createdAt" | "lastLoginDate" | "completedDeliveries" | "totalEarned";
       /** Filter riders by licence KYC status. APPROVE = licence-approved (verified) riders. */
@@ -2306,6 +2564,25 @@ export namespace Api {
     export type RequestBody = UpdateDispatchPauseRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = SetDispatchPausedData;
+  }
+
+  /**
+   * No description
+   * @tags admins/users
+   * @name AdminSetWithdrawalRestriction
+   * @summary Pause or resume wallet withdrawals for a user. reason is required when restricted is true.
+   * @request PATCH:/api/v1/admins/users/{userId}/withdrawal-restriction
+   * @secure
+   * @response `200` `AdminSetWithdrawalRestrictionData`
+   */
+  export namespace AdminSetWithdrawalRestriction {
+    export type RequestParams = {
+      userId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateWithdrawalRestrictionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminSetWithdrawalRestrictionData;
   }
 
   /**
@@ -2539,126 +2816,6 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetPlatformWalletData;
-  }
-
-  /**
-   * No description
-   * @tags transactions
-   * @name GetTransactions
-   * @request GET:/api/v1/transactions
-   * @secure
-   * @response `200` `GetTransactionsData`
-   */
-  export namespace GetTransactions {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-      /** transaction type filter. commap separated list of TransactionType */
-      type?: string;
-      /** transaction category filter. commap separated list of TransactionCategory */
-      category?: string;
-      /** transaction status filter. comma separated list of TransactionStatus */
-      status?: string;
-      order?: "ASC" | "DESC";
-      page?: number;
-      limit?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name AdminGetTransactions
-   * @request GET:/api/v1/admins/transactions
-   * @secure
-   * @response `200` `AdminGetTransactionsData`
-   */
-  export namespace AdminGetTransactions {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Reference, description, or wallet owner name / phone / email */
-      search?: any;
-      /** provide a user (entity) id to get transactions for a user */
-      entityId?: string;
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-      /** transaction type filter. commap separated list of TransactionType */
-      type?: string;
-      /** transaction purpose filter. commap separated list of TransactionPurpose */
-      purpose?: string;
-      /** transaction category filter. commap separated list of TransactionCategory */
-      category?: string;
-      /** transaction status filter. comma separated list of TransactionStatus */
-      status?: string;
-      order?: "ASC" | "DESC";
-      page?: number;
-      limit?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = AdminGetTransactionsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetExternalPaymentMetrics
-   * @request GET:/api/v1/admins/transactions/metrics/external-payments
-   * @secure
-   * @response `200` `GetExternalPaymentMetricsData`
-   */
-  export namespace GetExternalPaymentMetrics {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** provide a user (entity) id to scope metrics to a single customer */
-      entityId?: string;
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetExternalPaymentMetricsData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetTransactionSummary
-   * @request GET:/api/v1/admins/transactions/metrics/summary
-   * @secure
-   * @response `200` `GetTransactionSummaryData`
-   */
-  export namespace GetTransactionSummary {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** Comma-separated start and end date filter (e.g., 2023-09-01,2023-09-30) */
-      dateRange?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionSummaryData;
-  }
-
-  /**
-   * No description
-   * @tags admins/transactions
-   * @name GetTransaction
-   * @request GET:/api/v1/admins/transactions/{transactionId}
-   * @secure
-   * @response `200` `GetTransactionData`
-   */
-  export namespace GetTransaction {
-    export type RequestParams = {
-      transactionId: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetTransactionData;
   }
 
   /**
@@ -2933,6 +3090,38 @@ export namespace Api {
   }
 
   /**
+   * @description Look up the holder's name for a Nigerian (NUBAN) account before saving it, so the user can confirm it is theirs. Not audited on purpose: audit logs would keep the full account number and name.
+   * @tags payments
+   * @name ResolveBankAccount
+   * @request GET:/api/v1/payments/banks/resolve
+   * @secure
+   * @response `200` `ResolveBankAccountData`
+   * @response `400` `any` Validation failed (BAD_REQUEST), no such account (ACCOUNT_NOT_FOUND), or unknown bank code (INVALID_BANK).
+   * @response `429` `any` RATE_LIMITED: more than 20 lookups a minute or 200 a day.
+   * @response `503` `any` PROVIDER_UNAVAILABLE: the bank lookup is busy. Retryable.
+   */
+  export namespace ResolveBankAccount {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /**
+       * 10-digit NUBAN account number.
+       * @pattern /^\d{10}$/
+       * @example "0123456789"
+       */
+      accountNumber: string;
+      /**
+       * Bank code from GET /payments/{provider}/banks (2-10 letters or digits).
+       * @pattern /^[0-9A-Za-z]{2,10}$/
+       * @example "058"
+       */
+      bankCode: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResolveBankAccountData;
+  }
+
+  /**
    * No description
    * @tags payments
    * @name GetBanks
@@ -3071,6 +3260,34 @@ export namespace Api {
     export type RequestBody = TransferToWalletDto;
     export type RequestHeaders = {};
     export type ResponseBody = TransferToUserData;
+  }
+
+  /**
+   * No description
+   * @tags datalogs
+   * @name GetLogs
+   * @request GET:/api/v1/datalogs
+   * @secure
+   * @response `200` `GetLogsData`
+   */
+  export namespace GetLogs {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Matches inside the logged payload */
+      search?: string;
+      /** start,end (YYYY-MM-DD) */
+      dateRange?: string;
+      /** Comma separated DataLogType values */
+      logType?: string;
+      /** Comma separated DataLogLevel values */
+      level?: string;
+      order?: "ASC" | "DESC";
+      page?: number;
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetLogsData;
   }
 
   /**
@@ -4181,6 +4398,68 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name PayRiderTrip
+   * @summary Pay the rider half the agreed price for a trip to the store on a called-off storefront delivery
+   * @request POST:/api/v1/orders/{orderId}/trip-pay
+   * @secure
+   * @response `201` `PayRiderTripData`
+   */
+  export namespace PayRiderTrip {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PayRiderTripRequestDto;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = PayRiderTripData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ReleaseOrderRider
+   * @summary Take the accepted rider off an order before pickup and ring the other eligible riders
+   * @request POST:/api/v1/orders/{orderId}/release-rider
+   * @secure
+   * @response `200` `ReleaseOrderRiderData`
+   * @response `201` `ReleaseRiderResponseDto`
+   */
+  export namespace ReleaseOrderRider {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ReleaseRiderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ReleaseOrderRiderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderReleaseOrder
+   * @summary Rider: "Can't make it". Give an accepted order back before pickup. Free for 2 minutes after accepting, then it counts as a cancellation (3 counted per Lagos day; the 4th is refused with RELEASE_LIMIT_REACHED)
+   * @request POST:/api/v1/orders/{orderId}/rider-release
+   * @secure
+   * @response `200` `RiderReleaseOrderData`
+   * @response `201` `RiderReleaseResponseDto`
+   */
+  export namespace RiderReleaseOrder {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderReleaseRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderReleaseOrderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name ReassignRider
    * @request POST:/api/v1/orders/{orderId}/reassign
    * @secure
@@ -4194,6 +4473,26 @@ export namespace Api {
     export type RequestBody = ReassignRiderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = ReassignRiderData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ForceAssignRider
+   * @summary Hand the order straight to a chosen rider without ringing them (rider must be online and free)
+   * @request POST:/api/v1/orders/{orderId}/force-assign
+   * @secure
+   * @response `200` `ForceAssignRiderData`
+   * @response `201` `ForceAssignRiderResponseDto`
+   */
+  export namespace ForceAssignRider {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ForceAssignRiderDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ForceAssignRiderData;
   }
 
   /**
@@ -4224,6 +4523,43 @@ export namespace Api {
   /**
    * No description
    * @tags orders
+   * @name RiderOrderCapacity
+   * @summary The signed-in rider's active orders against their region's cap. While busy, bids are refused with RIDER_BUSY
+   * @request GET:/api/v1/orders/riders/capacity
+   * @secure
+   * @response `200` `RiderOrderCapacityData`
+   */
+  export namespace RiderOrderCapacity {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {
+      "x-country-code": string;
+      "x-state-code": string;
+    };
+    export type ResponseBody = RiderOrderCapacityData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetArrivalCheck
+   * @summary The arrival check for the signed-in rider: whether it is on, and how close they must be
+   * @request GET:/api/v1/orders/riders/arrival-check
+   * @secure
+   * @response `200` `GetArrivalCheckData`
+   */
+  export namespace GetArrivalCheck {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetArrivalCheckData;
+  }
+
+  /**
+   * No description
+   * @tags orders
    * @name GetRidersLeaderboard
    * @request GET:/api/v1/orders/riders/leaderboard
    * @secure
@@ -4235,6 +4571,56 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetRidersLeaderboardData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name LookupRiderForStore
+   * @summary Storefront service only: find a rider by phone or id, as a minimal card (no contact details)
+   * @request GET:/api/v1/orders/riders/lookup
+   * @secure
+   * @response `200` `LookupRiderForStoreData`
+   */
+  export namespace LookupRiderForStore {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /**
+       * The number the store typed in
+       * @maxLength 20
+       * @pattern /^\+?[0-9 ()-]{7,20}$/
+       * @example "08031234567"
+       */
+      phone?: string;
+      /** A rider id saved from an earlier lookup */
+      riderId?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {
+      /** The shared dispatch secret */
+      "x-dispatch-secret": string;
+    };
+    export type ResponseBody = LookupRiderForStoreData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name SendRiderLinkCode
+   * @summary Storefront service only: deliver a store's rider consent code to the rider's Pickriders app
+   * @request POST:/api/v1/orders/riders/link-code
+   * @secure
+   * @response `200` `SendRiderLinkCodeData`
+   */
+  export namespace SendRiderLinkCode {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = RiderLinkCodeRequestDto;
+    export type RequestHeaders = {
+      /** The shared dispatch secret */
+      "x-dispatch-secret": string;
+    };
+    export type ResponseBody = SendRiderLinkCodeData;
   }
 
   /**
@@ -4361,7 +4747,7 @@ export namespace Api {
       walletId: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = PayOrderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = InitiateOrderPaymentData;
   }
@@ -4380,7 +4766,7 @@ export namespace Api {
       orderId: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = PayOrderRequestDto;
     export type RequestHeaders = {};
     export type ResponseBody = CreateOrderPaymentLinkData;
   }
@@ -4732,6 +5118,7 @@ export namespace Api {
    * No description
    * @tags orders
    * @name GetQueuedOrders
+   * @summary Open orders listed to the signed-in rider. A rider at their active-order cap sees `stack` on each order that stacks for them (order stacking: ON_THE_WAY or NEXT_NEARBY)
    * @request GET:/api/v1/orders/queued-orders
    * @secure
    * @response `200` `GetQueuedOrdersData`
@@ -4941,6 +5328,198 @@ export namespace Api {
 
   /**
    * No description
+   * @tags orders
+   * @name RiderNearbyHandoffs
+   * @summary Open handoffs near you that you can take now, nearest first
+   * @request GET:/api/v1/orders/handoffs/nearby
+   * @secure
+   * @response `200` `RiderNearbyHandoffsData`
+   */
+  export namespace RiderNearbyHandoffs {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderNearbyHandoffsData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderMyHandoffs
+   * @summary TO: handoffs you accepted that aren't swapped yet (the order isn't yours until the code swap, so it isn't in your active orders)
+   * @request GET:/api/v1/orders/handoffs/mine
+   * @secure
+   * @response `200` `RiderMyHandoffsData`
+   */
+  export namespace RiderMyHandoffs {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderMyHandoffsData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderRequestHandoff
+   * @summary FROM: hand a picked-up order to another rider. Rings riders near you (ACCIDENT waits for support). HANDOFF_NOT_ALLOWED when not picked up, not yours, turned off, or the per-order limit is reached
+   * @request POST:/api/v1/orders/{orderId}/handoff
+   * @secure
+   * @response `200` `RiderRequestHandoffData`
+   * @response `201` `HandoffViewDto`
+   */
+  export namespace RiderRequestHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderRequestHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderRequestHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderGetHandoff
+   * @summary The handoff on this order as you see it (FROM, TO, or a rider rung for it)
+   * @request GET:/api/v1/orders/{orderId}/handoff
+   * @secure
+   * @response `200` `RiderGetHandoffData`
+   */
+  export namespace RiderGetHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderGetHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderStartHandoffSearch
+   * @summary FROM, after an ACCIDENT: I'm safe, find a rider
+   * @request POST:/api/v1/orders/{orderId}/handoff/search
+   * @secure
+   * @response `200` `RiderStartHandoffSearchData`
+   * @response `201` `HandoffViewDto`
+   */
+  export namespace RiderStartHandoffSearch {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderStartHandoffSearchRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderStartHandoffSearchData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderCancelHandoff
+   * @summary FROM: call the handoff off and keep the order (a rider who accepted is compensated)
+   * @request POST:/api/v1/orders/{orderId}/handoff/cancel
+   * @secure
+   * @response `200` `RiderCancelHandoffData`
+   * @response `201` `HandoffViewDto`
+   */
+  export namespace RiderCancelHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderCancelHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderCancelHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderAcceptHandoff
+   * @summary TO: take the handoff. First accept wins; later ones get 409 HANDOFF_TAKEN
+   * @request POST:/api/v1/orders/{orderId}/handoff/accept
+   * @secure
+   * @response `200` `RiderAcceptHandoffData`
+   * @response `201` `HandoffViewDto`
+   */
+  export namespace RiderAcceptHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderAcceptHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderAcceptHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderDeclineHandoff
+   * @summary TO: pass on the handoff; you are not rung for it again
+   * @request POST:/api/v1/orders/{orderId}/handoff/decline
+   * @secure
+   * @response `200` `RiderDeclineHandoffData`
+   * @response `201` `RiderDeclineHandoffResponseDto`
+   */
+  export namespace RiderDeclineHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderDeclineHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderDeclineHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderConfirmHandoff
+   * @summary TO: enter FROM's 4-digit code where you stand; the order becomes yours. HANDOFF_CODE_INVALID (details.attemptsLeft) on a wrong code, 429 HANDOFF_LOCKED (details.lockedUntil) after 5
+   * @request POST:/api/v1/orders/{orderId}/handoff/confirm
+   * @secure
+   * @response `200` `RiderConfirmHandoffData`
+   * @response `201` `HandoffViewDto`
+   */
+  export namespace RiderConfirmHandoff {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderConfirmHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderConfirmHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name RiderPassOrder
+   * @summary Rider: "Not now" on an order request. Ends your ring at once (the search moves on to the next rider) and hides the order from you unless its price goes up. No penalty. A repeat pass changes nothing. NOT_ALLOWED when you already have the order (release it instead) or it is no longer looking for a rider
+   * @request POST:/api/v1/orders/{orderId}/pass
+   * @secure
+   * @response `200` `RiderPassOrderData`
+   */
+  export namespace RiderPassOrder {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RiderPassOrderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = RiderPassOrderData;
+  }
+
+  /**
+   * No description
    * @tags admins/orders
    * @name GetOrders
    * @request GET:/api/v1/admins/orders
@@ -4950,6 +5529,8 @@ export namespace Api {
   export namespace GetOrders {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
+      releasedOnly?: boolean;
       /** date filter for scheduled orders - provide this if filtering for scheduled orders */
       scheduledFor?: any;
       /** filter for orders by user id */
@@ -5016,6 +5597,44 @@ export namespace Api {
   /**
    * No description
    * @tags admins/orders
+   * @name AdminOrderRiderHistory
+   * @summary Every rider who held the order, oldest first: who accepted when, who released and why, and where it is now
+   * @request GET:/api/v1/admins/orders/{orderId}/rider-history
+   * @secure
+   * @response `200` `AdminOrderRiderHistoryData`
+   */
+  export namespace AdminOrderRiderHistory {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminOrderRiderHistoryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
+   * @name AdminListOrderHandoffs
+   * @summary Every rider handoff on the order, oldest first
+   * @request GET:/api/v1/admins/orders/{orderId}/handoffs
+   * @secure
+   * @response `200` `AdminListOrderHandoffsData`
+   */
+  export namespace AdminListOrderHandoffs {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListOrderHandoffsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
    * @name RingRiders
    * @request POST:/api/v1/admins/orders/{orderId}/ring-riders
    * @secure
@@ -5069,30 +5688,473 @@ export namespace Api {
 
   /**
    * No description
-   * @tags datalogs
-   * @name GetLogs
-   * @request GET:/api/v1/datalogs
+   * @tags admins/riders
+   * @name AdminListRiderReleases
+   * @summary A rider's released trips (newest first) with counts for today (Lagos), 7 days and 30 days
+   * @request GET:/api/v1/admins/riders/{riderId}/releases
    * @secure
-   * @response `200` `GetLogsData`
+   * @response `200` `AdminListRiderReleasesData`
    */
-  export namespace GetLogs {
+  export namespace AdminListRiderReleases {
+    export type RequestParams = {
+      riderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListRiderReleasesData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminListHandoffs
+   * @summary Rider handoffs, newest first, with both riders, the split, bonus and review state
+   * @request GET:/api/v1/admins/handoffs
+   * @secure
+   * @response `200` `AdminListHandoffsData`
+   */
+  export namespace AdminListHandoffs {
     export type RequestParams = {};
     export type RequestQuery = {
-      /** Matches inside the logged payload */
-      search?: string;
-      /** start,end (YYYY-MM-DD) */
-      dateRange?: string;
-      /** Comma separated DataLogType values */
-      logType?: string;
-      /** Comma separated DataLogLevel values */
-      level?: string;
-      order?: "ASC" | "DESC";
+      /**
+       * Comma-separated HandoffStatus values
+       * @example "SEARCHING,ACCEPTED"
+       */
+      status?: string;
+      /** true: only handoffs with review flags */
+      flagged?: "true" | "false";
+      /** pending: waiting for a count decision or holding a bonus */
+      review?: "pending";
+      /** Either rider (handing over or taking) */
+      riderId?: string;
+      /**
+       * Created on or after (ISO date)
+       * @example "2026-11-01"
+       */
+      from?: string;
+      /**
+       * Created on or before (ISO date)
+       * @example "2026-11-30"
+       */
+      to?: string;
+      /**
+       * @min 1
+       * @default 1
+       */
       page?: number;
+      /**
+       * @min 1
+       * @max 200
+       * @default 50
+       */
       limit?: number;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = GetLogsData;
+    export type ResponseBody = AdminListHandoffsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminHandoffsSummary
+   * @summary Live searches, accidents awaiting support, reviews pending, swaps today
+   * @request GET:/api/v1/admins/handoffs/summary
+   * @secure
+   * @response `200` `AdminHandoffsSummaryData`
+   */
+  export namespace AdminHandoffsSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminHandoffsSummaryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminStartHandoff
+   * @summary Start a handoff for an order's rider (meeting point: the rider's last known position)
+   * @request POST:/api/v1/admins/handoffs/start
+   * @secure
+   * @response `200` `AdminStartHandoffData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminStartHandoff {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = AdminStartHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminStartHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminBulkReviewHandoffs
+   * @summary Apply one review decision (and bonus action) to up to 100 completed handoffs
+   * @request POST:/api/v1/admins/handoffs/review/bulk
+   * @secure
+   * @response `200` `AdminBulkReviewHandoffsData`
+   * @response `201` `AdminBulkReviewHandoffsResponseDto`
+   */
+  export namespace AdminBulkReviewHandoffs {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = AdminBulkReviewHandoffsRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminBulkReviewHandoffsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminGetHandoff
+   * @request GET:/api/v1/admins/handoffs/{handoffId}
+   * @secure
+   * @response `200` `AdminGetHandoffData`
+   */
+  export namespace AdminGetHandoff {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminStartHandoffSearch
+   * @summary Start ringing riders for a handoff waiting for support (ACCIDENT)
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/search
+   * @secure
+   * @response `200` `AdminStartHandoffSearchData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminStartHandoffSearch {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminStartHandoffSearchRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminStartHandoffSearchData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminAssignHandoffRider
+   * @summary Give the handoff straight to a chosen rider (the code swap still applies)
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/assign
+   * @secure
+   * @response `200` `AdminAssignHandoffRiderData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminAssignHandoffRider {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminAssignHandoffRiderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminAssignHandoffRiderData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminCancelHandoff
+   * @summary Call a live handoff off; a rider who accepted is compensated
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/cancel
+   * @secure
+   * @response `200` `AdminCancelHandoffData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminCancelHandoff {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminCancelHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminCancelHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminDropHandoffRider
+   * @summary The accepted rider is a no-show: search again without them
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/drop-rider
+   * @secure
+   * @response `200` `AdminDropHandoffRiderData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminDropHandoffRider {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminDropHandoffRiderRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminDropHandoffRiderData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminRaiseHandoffBonus
+   * @summary Raise a live handoff's bonus (sub-units)
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/bonus
+   * @secure
+   * @response `200` `AdminRaiseHandoffBonusData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminRaiseHandoffBonus {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminRaiseHandoffBonusRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminRaiseHandoffBonusData;
+  }
+
+  /**
+   * No description
+   * @tags admins/handoffs
+   * @name AdminReviewHandoff
+   * @summary COUNT or WAIVE a completed handoff, and RELEASE or FORFEIT a held bonus
+   * @request POST:/api/v1/admins/handoffs/{handoffId}/review
+   * @secure
+   * @response `200` `AdminReviewHandoffData`
+   * @response `201` `AdminHandoffDto`
+   */
+  export namespace AdminReviewHandoff {
+    export type RequestParams = {
+      handoffId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminReviewHandoffRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminReviewHandoffData;
+  }
+
+  /**
+   * No description
+   * @tags admins/alerts
+   * @name AdminListAlerts
+   * @summary Admin alerts, newest first. Default: the live ones (OPEN and CLAIMED)
+   * @request GET:/api/v1/admins/alerts
+   * @secure
+   * @response `200` `AdminListAlertsData`
+   */
+  export namespace AdminListAlerts {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /**
+       * Comma-separated statuses (OPEN, CLAIMED, RESOLVED). Default: OPEN,CLAIMED
+       * @example "OPEN,CLAIMED"
+       */
+      status?: string;
+      /**
+       * Alert type, e.g. HANDOFF_ACCIDENT
+       * @maxLength 64
+       * @example "HANDOFF_NO_RIDER"
+       */
+      type?: string;
+      /** true: only alerts I claimed */
+      mine?: "true" | "false";
+      /**
+       * @min 1
+       * @default 1
+       */
+      page?: number;
+      /**
+       * @min 1
+       * @max 200
+       * @default 50
+       */
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListAlertsData;
+  }
+
+  /**
+   * No description
+   * @tags admins/alerts
+   * @name AdminAlertsSummary
+   * @summary Live alert counts: open, claimed, by severity and by type
+   * @request GET:/api/v1/admins/alerts/summary
+   * @secure
+   * @response `200` `AdminAlertsSummaryData`
+   */
+  export namespace AdminAlertsSummary {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminAlertsSummaryData;
+  }
+
+  /**
+   * No description
+   * @tags admins/alerts
+   * @name AdminClaimAlert
+   * @summary Take an OPEN alert (stops its WhatsApp escalation)
+   * @request POST:/api/v1/admins/alerts/{alertId}/claim
+   * @secure
+   * @response `200` `AdminClaimAlertData`
+   * @response `201` `AdminAlertDto`
+   */
+  export namespace AdminClaimAlert {
+    export type RequestParams = {
+      alertId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminClaimAlertData;
+  }
+
+  /**
+   * No description
+   * @tags admins/alerts
+   * @name AdminResolveAlert
+   * @summary Close a live alert, with an optional note
+   * @request POST:/api/v1/admins/alerts/{alertId}/resolve
+   * @secure
+   * @response `200` `AdminResolveAlertData`
+   * @response `201` `AdminAlertDto`
+   */
+  export namespace AdminResolveAlert {
+    export type RequestParams = {
+      alertId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AdminResolveAlertRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminResolveAlertData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name GetOrderChat
+   * @summary The order chat as you see it: who you chat with, whether you can send, unread count, read markers and quick replies. closedReason NOT_ELIGIBLE when the order has no chat
+   * @request GET:/api/v1/orders/{orderId}/chat
+   * @secure
+   * @response `200` `GetOrderChatData`
+   */
+  export namespace GetOrderChat {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GetOrderChatData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name ListOrderMessages
+   * @summary Messages, ascending by seq. No cursor: the latest page. before=seq: the older page. after=seq: everything newer (catch up on reconnect, foreground and screen open). limit 1 to 100, default 50
+   * @request GET:/api/v1/orders/{orderId}/messages
+   * @secure
+   * @response `200` `ListOrderMessagesData`
+   */
+  export namespace ListOrderMessages {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {
+      /**
+       * Messages after this seq (catch-up)
+       * @min 0
+       */
+      after?: number;
+      /**
+       * Messages before this seq (older page)
+       * @min 1
+       */
+      before?: number;
+      /**
+       * @min 1
+       * @max 100
+       * @default 50
+       */
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ListOrderMessagesData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name SendOrderMessage
+   * @summary Send a message. Idempotent: a retry with the same clientId returns the stored message. CHAT_RATE_LIMITED (429, details.retryAfterMs) when sending too fast
+   * @request POST:/api/v1/orders/{orderId}/messages
+   * @secure
+   * @response `200` `SendOrderMessageData`
+   */
+  export namespace SendOrderMessage {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SendOrderMessageRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = SendOrderMessageData;
+  }
+
+  /**
+   * No description
+   * @tags orders
+   * @name MarkOrderMessagesRead
+   * @summary Mark messages read up to a seq. The marker never moves back
+   * @request POST:/api/v1/orders/{orderId}/messages/read
+   * @secure
+   * @response `200` `MarkOrderMessagesReadData`
+   */
+  export namespace MarkOrderMessagesRead {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = MarkOrderMessagesReadRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = MarkOrderMessagesReadData;
+  }
+
+  /**
+   * No description
+   * @tags admins/orders
+   * @name AdminListOrderMessages
+   * @summary An order's chat for support: thread summary, everyone who was in it, and its messages ascending
+   * @request GET:/api/v1/admins/orders/{orderId}/messages
+   * @secure
+   * @response `200` `AdminListOrderMessagesData`
+   */
+  export namespace AdminListOrderMessages {
+    export type RequestParams = {
+      orderId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListOrderMessagesData;
   }
 
   /**
@@ -5692,15 +6754,14 @@ export namespace Api {
    * @tags teams
    * @name GetUserTeam
    * @request GET:/api/v1/teams/{teamId}
+   * @secure
    * @response `200` `GetUserTeamData`
    */
   export namespace GetUserTeam {
     export type RequestParams = {
       teamId: string;
     };
-    export type RequestQuery = {
-      teamId: string;
-    };
+    export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = GetUserTeamData;
@@ -6037,5 +7098,123 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = MarkAsReadData;
+  }
+
+  /**
+   * @description Every developer team. `liveStatus=PENDING` is the review queue, oldest request first.
+   * @tags admins/developers
+   * @name AdminListDevelopers
+   * @request GET:/api/v1/admins/developers
+   * @secure
+   * @response `200` `AdminListDevelopersData`
+   */
+  export namespace AdminListDevelopers {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** PENDING lists the review queue, oldest request first. */
+      liveStatus?: "NOT_REQUESTED" | "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+      /**
+       * Team name, handle, company or contact email.
+       * @maxLength 100
+       */
+      search?: string;
+      /** @example "1" */
+      page?: string;
+      /** @example "50" */
+      limit?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminListDevelopersData;
+  }
+
+  /**
+   * @description The profile, owner verification and live-access history an admin decides on.
+   * @tags admins/developers
+   * @name AdminGetDeveloper
+   * @request GET:/api/v1/admins/developers/{teamId}
+   * @secure
+   * @response `200` `AdminGetDeveloperData`
+   */
+  export namespace AdminGetDeveloper {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetDeveloperData;
+  }
+
+  /**
+   * @description PENDING → APPROVED. The team can then use live mode.
+   * @tags admins/developers
+   * @name AdminApproveDeveloperLive
+   * @request POST:/api/v1/admins/developers/{teamId}/approve
+   * @secure
+   * @response `200` `AdminApproveDeveloperLiveData`
+   */
+  export namespace AdminApproveDeveloperLive {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminApproveDeveloperLiveData;
+  }
+
+  /**
+   * @description PENDING → REJECTED. The developer sees the reason and can fix their profile and ask again.
+   * @tags admins/developers
+   * @name AdminRejectDeveloperLive
+   * @request POST:/api/v1/admins/developers/{teamId}/reject
+   * @secure
+   * @response `200` `AdminRejectDeveloperLiveData`
+   */
+  export namespace AdminRejectDeveloperLive {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = DeveloperLiveDecisionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminRejectDeveloperLiveData;
+  }
+
+  /**
+   * @description APPROVED → SUSPENDED. Live mode stops at once; test mode keeps working.
+   * @tags admins/developers
+   * @name AdminSuspendDeveloperLive
+   * @request POST:/api/v1/admins/developers/{teamId}/suspend
+   * @secure
+   * @response `200` `AdminSuspendDeveloperLiveData`
+   */
+  export namespace AdminSuspendDeveloperLive {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = DeveloperLiveDecisionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminSuspendDeveloperLiveData;
+  }
+
+  /**
+   * @description SUSPENDED → APPROVED.
+   * @tags admins/developers
+   * @name AdminUnsuspendDeveloperLive
+   * @request POST:/api/v1/admins/developers/{teamId}/unsuspend
+   * @secure
+   * @response `200` `AdminUnsuspendDeveloperLiveData`
+   */
+  export namespace AdminUnsuspendDeveloperLive {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminUnsuspendDeveloperLiveData;
   }
 }

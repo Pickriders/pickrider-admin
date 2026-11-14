@@ -3,23 +3,53 @@
 import { ExternalLink, Phone, Star } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton, statusTone } from "@/components/kit";
+import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton } from "@/components/kit";
 import type { OrderParty, OrderRow } from "@/lib/admin/api";
-import { ago, count, fullName, naira, percent, when } from "@/lib/admin/format";
+import type { OrderStackMode } from "@/services";
+import { ago, count, fullName, naira, orderPaymentDisplay, orderSource, percent, when } from "@/lib/admin/format";
 import { useOrder } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
-import { displayPhone, isStale, orderNumber, paymentLabel, phoneHref, totalDistanceKm, typeLabel } from "../../lib";
-import { OrderStatusBadge, PaymentBadge, TypeBadge } from "../../_components/order-cells";
+import { displayPhone, isStale, orderNumber, phoneHref, totalDistanceKm, typeLabel } from "../../lib";
+import { OrderPaymentBadge, OrderStatusBadge, SourceBadge, TypeBadge, bidsOf } from "../../_components/order-cells";
+import { HandoffPanel } from "./handoff-panel";
 import { OrderActions } from "./order-actions";
+import { OrderChatPanel } from "./order-chat";
 import { RiderBids } from "./rider-bids";
+import { RiderHistory } from "./rider-history";
 import { RouteMap } from "./route-map";
 import { StopsTimeline } from "./stops-timeline";
+import { formatEmail } from "@/lib/admin/person";
 
 /**
  * One order end to end: where it is on the map, each stop's state, who is
  * involved, what was paid, and the levers ops have.
  */
+/** Order stacking: the mode that let the rider take the order, as ops call it. */
+const STACK_MODE_LABEL: Record<`${OrderStackMode}`, string> = { ON_THE_WAY: "On your way", NEXT_NEARBY: "Next job" };
+
+/** Order stacking: the orders the rider was already carrying when this one was assigned to them. */
+function StackedWith({ ids, stackedAt, mode }: { ids?: string[]; stackedAt?: string; mode?: OrderStackMode }) {
+  if (!ids?.length) return null;
+  const modeLabel = mode ? STACK_MODE_LABEL[mode] : null;
+  return (
+    <div className="mt-4 rounded-xl border border-line bg-surface px-3 py-2 text-xs">
+      <p className="font-semibold text-ink">
+        Stacked with
+        {modeLabel ? <span className="ml-1.5 rounded-full border border-line bg-card px-2 py-0.5 font-bold text-ink-muted">{modeLabel}</span> : null}
+      </p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+        {ids.map((id) => (
+          <Link key={id} href={`/orders/${id}`} className="rounded-full border border-line bg-card px-2 py-0.5 font-bold tabular-nums text-brand-dark hover:underline">
+            {orderNumber({ _id: id })}
+          </Link>
+        ))}
+      </div>
+      {stackedAt ? <p className="mt-1.5 text-ink-muted">Given to the rider on top of these, {ago(stackedAt)}.</p> : null}
+    </div>
+  );
+}
+
 function PartyCard({
   title,
   party,
@@ -53,7 +83,7 @@ function PartyCard({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold text-ink">{name || "Unnamed"}</p>
               {party.phone ? <p className="truncate text-xs text-ink-muted">{displayPhone(party.phone)}</p> : null}
-              {party.email ? <p className="truncate text-xs text-ink-faint">{party.email}</p> : null}
+              {formatEmail(party.email) ? <p className="truncate text-xs text-ink-faint">{formatEmail(party.email)}</p> : null}
               {extra}
             </div>
             {party.phone ? (
@@ -107,7 +137,9 @@ export function OrderDetail({ orderId }: { orderId: string }) {
   const stops = order.locations ?? [];
   const stale = isStale(order);
   const rider = order.rider;
-  const bids = (order.offers ?? []).length;
+  const bids = bidsOf(order);
+  const payment = orderPaymentDisplay(order);
+  const storefront = orderSource(order.channel) === "STORE";
   const distance = totalDistanceKm(order);
 
   return (
@@ -125,10 +157,10 @@ export function OrderDetail({ orderId }: { orderId: string }) {
         description={
           <span className="flex flex-wrap items-center gap-1.5">
             <OrderStatusBadge status={order.status} />
-            <PaymentBadge status={order.paymentStatus} />
+            <OrderPaymentBadge order={order} />
+            <SourceBadge channel={order.channel} />
             <TypeBadge type={order.type} />
             {order.isScheduled ? <Badge tone="brand">Scheduled {order.scheduledFor ? when(order.scheduledFor) : ""}</Badge> : null}
-            {order.channel ? <Badge tone="neutral">{order.channel.replace(/_/g, " ").toLowerCase()}</Badge> : null}
             <span className="text-ink-muted">Placed {when(order.createdAt)}, {ago(order.createdAt)}</span>
           </span>
         }
@@ -156,7 +188,10 @@ export function OrderDetail({ orderId }: { orderId: string }) {
               <StopsTimeline stops={stops} />
             </div>
           </Panel>
+          <HandoffPanel order={order} />
+          <RiderHistory orderId={order._id} enabled={(order.riderReleaseCount ?? 0) > 0} />
           <RiderBids orderId={order._id} askingPrice={order.totalAmount} />
+          <OrderChatPanel order={order} />
         </div>
 
         <div className="space-y-4">
@@ -196,12 +231,26 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                       label: "Discount",
                       value: order.discountAmount ? `${naira(order.discountAmount)}${order.discount && order.discountType === "PERCENTAGE" ? ` (${percent(order.discount, 0)})` : ""}` : "None",
                     },
-                    { label: "Payment", value: <Badge tone={statusTone(order.paymentStatus)}>{paymentLabel(order.paymentStatus)}</Badge> },
+                    { label: "Payment", value: order.paymentStatus ? <OrderPaymentBadge order={order} /> : undefined },
                     { label: "Paid on", value: order.paidDate ? when(order.paidDate) : undefined },
-                    { label: "Method", value: typeof order.paymentMethod === "string" ? order.paymentMethod : order.channel ? order.channel.replace(/_/g, " ").toLowerCase() : "Wallet" },
+                    {
+                      label: "Method",
+                      value: storefront
+                        ? "Storefront (Paystack)"
+                        : typeof order.paymentMethod === "string"
+                          ? order.paymentMethod
+                          : order.channel
+                            ? order.channel.replace(/_/g, " ").toLowerCase()
+                            : "Wallet",
+                    },
                     { label: "Coupon", value: order.coupon?.code ?? undefined },
                   ]}
                 />
+                {payment.hint ? (
+                  <p className="mt-4 rounded-xl border border-info/30 bg-info-soft px-3 py-2 text-xs text-info">
+                    <span className="font-semibold">{payment.label}.</span> {payment.hint}
+                  </p>
+                ) : null}
               </div>
             </div>
           </Panel>
@@ -215,6 +264,7 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                   { label: "Placed", value: when(order.createdAt) },
                   { label: "Scheduled for", value: order.isScheduled && order.scheduledFor ? when(order.scheduledFor) : undefined },
                   { label: "Rider accepted", value: order.acceptedAt ? when(order.acceptedAt) : undefined },
+                  { label: "Stacked", value: order.stackedWithOrderIds?.length && order.stackedAt ? when(order.stackedAt) : undefined },
                   { label: "Started", value: order.startedAt ? when(order.startedAt) : undefined },
                   { label: "Completed", value: order.completedAt ? when(order.completedAt) : undefined },
                   { label: "Cancelled", value: order.cancelledAt ? `${when(order.cancelledAt)}${order.cancelledBy ? ` by ${order.cancelledBy.toLowerCase()}` : ""}` : undefined },
@@ -225,6 +275,7 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                   },
                 ]}
               />
+              <StackedWith ids={order.stackedWithOrderIds} stackedAt={order.stackedAt} mode={order.stackMode} />
               {order.cancellationReason ? (
                 <p className="mt-4 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2 text-xs text-danger">
                   <span className="font-semibold">Cancellation reason:</span> {order.cancellationReason}

@@ -1,7 +1,11 @@
 "use client";
 
 import {
+  ArrowLeftRight,
   Bike,
+  Siren,
+  PanelLeftClose,
+  PanelLeftOpen,
   BarChart3,
   Building2,
   Calculator,
@@ -21,7 +25,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
-import { useAttention } from "@/lib/admin/hooks";
+import { useAlertsSummary, useAttention, useHandoffsSummary } from "@/lib/admin/hooks";
 import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +34,18 @@ import { cn } from "@/lib/utils";
  * licences to review, vehicles to verify, orders nobody has picked up.
  */
 type NavItem = { label: string; href: string; icon: LucideIcon; badge?: (a: AttentionCounts) => number | undefined };
-type AttentionCounts = { licencesAwaitingReview?: number; vehiclesPendingVerification?: number; ordersAwaitingRiderStale?: number; withdrawalsProcessing?: number; failedNotifications24h?: number; issuesOpen?: number };
+type AttentionCounts = {
+  licencesAwaitingReview?: number;
+  vehiclesPendingVerification?: number;
+  ordersAwaitingRiderStale?: number;
+  withdrawalsProcessing?: number;
+  failedNotifications24h?: number;
+  issuesOpen?: number;
+  /** Alerts nobody has claimed yet. */
+  alertsOpen?: number;
+  /** Handoffs waiting on support or still looking for a rider. */
+  handoffsWaiting?: number;
+};
 
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
@@ -43,7 +58,9 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: "Operations",
     items: [
+      { label: "Alerts", href: "/alerts", icon: Siren, badge: (a) => a.alertsOpen },
       { label: "Orders", href: "/orders", icon: ClipboardList, badge: (a) => a.ordersAwaitingRiderStale },
+      { label: "Handoffs", href: "/handoffs", icon: ArrowLeftRight, badge: (a) => a.handoffsWaiting },
       { label: "Couriers", href: "/couriers", icon: Bike, badge: (a) => a.licencesAwaitingReview },
       { label: "Vehicles", href: "/vehicles", icon: Car, badge: (a) => a.vehiclesPendingVerification },
       { label: "Support", href: "/support", icon: LifeBuoy, badge: (a) => a.issuesOpen },
@@ -75,23 +92,38 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 /** Flat list, kept for anything that still expects the old shape. */
 export const SIDEBAR_LINKS = NAV_GROUPS.flatMap((group) => group.items);
 
-export const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => {
+/**
+ * `collapsed`: the icon-only rail (desktop). Labels move to a hover tooltip, group
+ * titles become a thin divider, and counts shrink to a dot on the icon. The mobile
+ * drawer always uses the full list.
+ */
+export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () => void; collapsed?: boolean }) => {
   const pathname = usePathname();
   const [roles, setRoles] = React.useState<AdminRole[] | null>(null);
   React.useEffect(() => setRoles(getAdminRoles()), []);
   const attention = useAttention();
-  const counts = (attention.data ?? {}) as AttentionCounts;
+  const alerts = useAlertsSummary();
+  const handoffs = useHandoffsSummary();
+  const counts: AttentionCounts = {
+    ...((attention.data ?? {}) as AttentionCounts),
+    alertsOpen: alerts.data?.open,
+    handoffsWaiting: handoffs.data ? handoffs.data.awaitingSupport + handoffs.data.searching : undefined,
+  };
 
   const visible = (href: string) => roles === null || roles.length === 0 || canAccessSection(href, roles);
 
   return (
-    <nav className="space-y-5 px-3">
-      {NAV_GROUPS.map((group) => {
+    <nav className={cn(collapsed ? "space-y-3 px-2.5" : "space-y-5 px-3")}>
+      {NAV_GROUPS.map((group, groupIndex) => {
         const items = group.items.filter((item) => visible(item.href));
         if (!items.length) return null;
         return (
           <div key={group.title}>
-            <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">{group.title}</p>
+            {collapsed ? (
+              groupIndex > 0 ? <span aria-hidden className="mx-auto mb-3 block h-px w-6 bg-line" /> : null
+            ) : (
+              <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">{group.title}</p>
+            )}
             <ul className="space-y-0.5">
               {items.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -103,14 +135,26 @@ export const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => {
                       href={item.href}
                       prefetch
                       onClick={onNavigate}
+                      title={collapsed ? (badge ? `${item.label} (${badge})` : item.label) : undefined}
+                      aria-label={collapsed ? item.label : undefined}
                       className={cn(
-                        "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                        "group relative flex items-center rounded-xl text-sm font-semibold transition-colors",
+                        collapsed ? "mx-auto h-11 w-11 justify-center" : "gap-3 px-3 py-2.5",
                         active ? "bg-ink text-card shadow-card" : "text-ink-muted hover:bg-surface hover:text-ink",
                       )}
                     >
                       <Icon size={18} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
-                      <span className="flex-1 truncate">{item.label}</span>
-                      {badge ? (
+                      {collapsed ? (
+                        badge ? (
+                          <span
+                            aria-hidden
+                            className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-warning ring-2 ring-card"
+                          />
+                        ) : null
+                      ) : (
+                        <span className="flex-1 truncate">{item.label}</span>
+                      )}
+                      {!collapsed && badge ? (
                         <span
                           className={cn(
                             "rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none",
@@ -132,10 +176,54 @@ export const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => {
   );
 };
 
+const COLLAPSE_KEY = "pickriders_admin_sidebar_collapsed";
+
+/**
+ * Desktop sidebar that folds to an icon rail, like the storefront admin. The choice is
+ * remembered on this device. The toggle lives inside the sidebar, at the top, so the
+ * page content can never sit over it. The list scrolls without a visible scrollbar.
+ */
 export const Sidebar = () => {
+  const [collapsed, setCollapsed] = React.useState(false);
+  React.useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "1");
+    } catch {
+      /* storage blocked: start expanded */
+    }
+  }, []);
+  const toggle = () =>
+    setCollapsed((value) => {
+      try {
+        window.localStorage.setItem(COLLAPSE_KEY, value ? "0" : "1");
+      } catch {
+        /* ignore */
+      }
+      return !value;
+    });
+
   return (
-    <aside className="admin-scroll sticky left-0 top-[4.5rem] h-[calc(100vh-4.5rem)] w-[15.5rem] overflow-y-auto border-r border-line bg-card py-5">
-      <SidebarNav />
+    <aside
+      className={cn(
+        "sticky left-0 top-[4.5rem] flex h-[calc(100vh-4.5rem)] flex-col border-r border-line bg-card transition-[width] duration-200",
+        collapsed ? "w-[4.5rem]" : "w-[15.5rem]",
+      )}
+    >
+      <div className={cn("flex shrink-0 pb-2 pt-4", collapsed ? "justify-center px-2.5" : "justify-end px-3")}>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="grid h-9 w-9 place-items-center rounded-xl text-ink-faint transition-colors hover:bg-surface hover:text-ink"
+        >
+          {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <SidebarNav collapsed={collapsed} />
+      </div>
     </aside>
   );
 };

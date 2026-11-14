@@ -22,6 +22,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { GroupFormDrawer } from "./group-form-drawer";
+import { formatEmail } from "@/lib/admin/person";
 
 const meta = (value: ColumnMeta) => value;
 
@@ -217,10 +218,10 @@ function GroupDrawer({ id, canManage, onClose }: { id: string; canManage: boolea
                     <li key={member._id} className="flex items-center gap-3 px-3 py-2">
                       <a href={`/customers/${member._id}`} className="min-w-0 flex-1 hover:underline">
                         <span className="block truncate text-sm font-semibold text-ink">
-                          {fullName(member) || member.email || member._id}
+                          {fullName(member) || formatEmail(member.email) || member._id}
                         </span>
                         <span className="block truncate text-[11px] text-ink-muted">
-                          {member.phone || member.email}
+                          {member.phone || formatEmail(member.email)}
                         </span>
                       </a>
                       {canManage ? (
@@ -228,7 +229,7 @@ function GroupDrawer({ id, canManage, onClose }: { id: string; canManage: boolea
                           type="button"
                           aria-label="Remove member"
                           onClick={() =>
-                            setRemoving({ _id: member._id, name: fullName(member) || member.email || member._id })
+                            setRemoving({ _id: member._id, name: fullName(member) || formatEmail(member.email) || member._id })
                           }
                           className="grid h-8 w-8 place-items-center rounded-lg text-ink-faint hover:bg-surface hover:text-danger"
                         >

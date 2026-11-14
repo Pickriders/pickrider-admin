@@ -4,16 +4,28 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { BellRing, CalendarClock } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Badge, Button, ConfirmDialog, DataTable, cx, type ColumnMeta } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  DataTable,
+  Skeleton,
+  SkeletonLine,
+  SkeletonOrder,
+  SkeletonPerson,
+  cx,
+  type ColumnMeta,
+} from "@/components/kit";
+import { ScrollRow } from "@/components/kit/scroll-row";
 import { orders as ordersApi, type OrderRow, type Paged } from "@/lib/admin/api";
-import { ago, count, naira, when } from "@/lib/admin/format";
+import { ORDER_SOURCE_LABEL, ago, count, naira, orderSource, when } from "@/lib/admin/format";
 import { useAction, useOrders } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useCan } from "@/lib/admin/use-can";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { orderNumber } from "../lib";
-import { PartyCell, PaymentBadge, TypeBadge } from "./order-cells";
+import { OrderPaymentBadge, PartyCell, ReleasedChip, SourcePill, TypeBadge, bidsOf } from "./order-cells";
 
 /**
  * Scheduled orders that have not found a rider yet. The dispatcher rings riders 30 minutes before
@@ -143,15 +155,23 @@ export function ScheduledTab() {
       {
         id: "order",
         header: "Order",
-        meta: meta({ csv: { key: "orderNumber", label: "Order" } }),
+        meta: meta({
+          skeleton: "lines",
+          csv: {
+            key: "orderNumber",
+            label: "Order (source)",
+            value: (r) => `${orderNumber(r as OrderRow)} (${ORDER_SOURCE_LABEL[orderSource((r as OrderRow).channel)]})`,
+          },
+        }),
         cell: ({ row }) => (
-          <span className="block">
+          <span className="block min-w-0 max-w-[220px] leading-tight">
             <span className="flex items-center gap-2">
-              <span className="text-sm font-bold text-ink">{orderNumber(row.original)}</span>
+              <span className="text-[13px] font-bold tabular-nums tracking-tight text-ink">{orderNumber(row.original)}</span>
+              <SourcePill channel={row.original.channel} size="badge" />
               <TypeBadge type={row.original.type} />
             </span>
             {row.original.title ? (
-              <span className="block truncate text-[11px] text-ink-muted">{String(row.original.title)}</span>
+              <span className="mt-1 block truncate text-[11px] text-ink-muted">{String(row.original.title)}</span>
             ) : null}
           </span>
         ),
@@ -159,13 +179,13 @@ export function ScheduledTab() {
       {
         id: "customer",
         header: "Customer",
-        meta: meta({ hideBelow: "md", csv: { key: "user", label: "Customer" } }),
-        cell: ({ row }) => <PartyCell party={row.original.user} fallback="Unknown" size={28} />,
+        meta: meta({ hideBelow: "md", skeleton: "person", csv: { key: "user", label: "Customer" } }),
+        cell: ({ row }) => <PartyCell party={row.original.user} fallback="Unknown" size={28} className="max-w-[200px]" />,
       },
       {
         id: "scheduledFor",
         header: "Booked for",
-        meta: meta({ sortKey: "scheduledFor", csv: { key: "scheduledFor", label: "Booked for" } }),
+        meta: meta({ sortKey: "scheduledFor", skeleton: "lines", csv: { key: "scheduledFor", label: "Booked for" } }),
         cell: ({ row }) => {
           const at = row.original.scheduledFor;
           const soon = at && new Date(at).getTime() - Date.now() < LEAD_MS && new Date(at).getTime() > Date.now();
@@ -182,18 +202,18 @@ export function ScheduledTab() {
       {
         id: "amount",
         header: "Paid",
-        meta: meta({ align: "right", hideBelow: "lg", csv: { key: "totalAmountPayable", label: "Amount (kobo)" } }),
+        meta: meta({ align: "right", hideBelow: "lg", skeleton: "lines", csv: { key: "totalAmountPayable", label: "Amount (kobo)" } }),
         cell: ({ row }) => (
           <span className="block text-right">
             <span className="block text-sm font-semibold text-ink">{naira(row.original.totalAmountPayable)}</span>
-            <PaymentBadge status={row.original.paymentStatus} />
+            <OrderPaymentBadge order={row.original} />
           </span>
         ),
       },
       {
         id: "phase",
         header: "Rider search",
-        meta: meta({ csv: { key: "phase", label: "Rider search", value: (r) => PHASE_LABEL[phaseOf(r as OrderRow)] } }),
+        meta: meta({ skeleton: "badge", csv: { key: "phase", label: "Rider search", value: (r) => PHASE_LABEL[phaseOf(r as OrderRow)] } }),
         cell: ({ row }) => {
           const p = phaseOf(row.original);
           const o = row.original;
@@ -207,7 +227,12 @@ export function ScheduledTab() {
                   Since {ago(o.scheduleDispatchedAt)} · {count(o.scheduleRingCount ?? 1)} ring
                   {(o.scheduleRingCount ?? 1) === 1 ? "" : "s"}
                   {o.scheduleLastRungAt ? ` · last ${ago(o.scheduleLastRungAt)}` : ""} ·{" "}
-                  {count((o.offers ?? []).length)} offers
+                  {count(bidsOf(o))} bids
+                </span>
+              ) : null}
+              {(o.riderReleaseCount ?? 0) > 0 ? (
+                <span className="mt-1 block">
+                  <ReleasedChip order={o} />
                 </span>
               ) : null}
             </span>
@@ -217,7 +242,7 @@ export function ScheduledTab() {
       {
         id: "actions",
         header: "",
-        meta: meta({ align: "right" }),
+        meta: meta({ align: "right", skeleton: can("order.cancel") ? "button" : "none" }),
         cell: ({ row }) =>
           can("order.cancel") ? (
             <span onClick={(e) => e.stopPropagation()}>
@@ -231,41 +256,44 @@ export function ScheduledTab() {
 
   return (
     <div className="space-y-4">
-      <div className="admin-scroll -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        {(["all", "ringing", "waiting", "unpaid", "overdue"] as const).map((id) => {
-          const active = phase === id;
-          const n = id === "all" ? undefined : counts[id];
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setPhase(id)}
-              className={cx(
-                "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
-                active
-                  ? "border-transparent bg-ink text-card"
-                  : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
-              )}
-            >
-              {id === "all" ? "All scheduled" : PHASE_LABEL[id]}
-              {n ? (
-                <span
-                  className={cx(
-                    "rounded-full px-1.5 text-[11px]",
-                    active
-                      ? "bg-card/20 text-card"
-                      : id === "ringing" || id === "overdue"
-                        ? "bg-danger-soft text-danger"
-                        : "bg-line text-ink-muted",
-                  )}
-                >
-                  {n}
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
+      <ScrollRow className="-mx-1" innerClassName="px-1 pb-1" label="Scheduled phase" peekKey="scheduled-phase-chips" activeKey={phase}>
+        <div className="flex w-max gap-2">
+          {(["all", "ringing", "waiting", "unpaid", "overdue"] as const).map((id) => {
+            const active = phase === id;
+            const n = id === "all" ? undefined : counts[id];
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setPhase(id)}
+                className={cx(
+                  "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                  active
+                    ? "border-transparent bg-ink text-card"
+                    : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
+                )}
+              >
+                {id === "all" ? "All scheduled" : PHASE_LABEL[id]}
+                {n ? (
+                  <span
+                    className={cx(
+                      "rounded-full px-1.5 text-[11px]",
+                      active
+                        ? "bg-card/20 text-card"
+                        : id === "ringing" || id === "overdue"
+                          ? "bg-danger-soft text-danger"
+                          : "bg-line text-ink-muted",
+                    )}
+                  >
+                    {n}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </ScrollRow>
 
       <DataTable<OrderRow>
         columns={columns}
@@ -278,17 +306,55 @@ export function ScheduledTab() {
         csvName="scheduled-orders"
         defaultSort={{ sortBy: "scheduledFor", order: "ASC" }}
         rowHref={(row) => `/orders/${row._id}`}
+        density="compact"
         mobileCard={(row) => (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-bold text-ink">{orderNumber(row)}</span>
-              <Badge tone={PHASE_TONE[phaseOf(row)]}>{PHASE_LABEL[phaseOf(row)]}</Badge>
+          <div className="space-y-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 leading-tight">
+                <span className="block text-[13px] font-bold tabular-nums tracking-tight text-ink">{orderNumber(row)}</span>
+                <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] text-ink-muted">
+                  <SourcePill channel={row.channel} />
+                  <span className="truncate">
+                    For {when(row.scheduledFor)}
+                    {row.scheduledFor ? ` · ${untilLabel(row.scheduledFor)}` : ""}
+                  </span>
+                </span>
+              </span>
+              <span className="shrink-0 text-sm font-bold tabular-nums text-ink">{naira(row.totalAmountPayable)}</span>
             </div>
-            <p className="text-sm text-ink">Booked for {when(row.scheduledFor)}</p>
-            <PartyCell party={row.user} fallback="Unknown" size={24} />
-            {can("order.cancel") ? <RingButton order={row} size="md" /> : null}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge tone={PHASE_TONE[phaseOf(row)]} dot>
+                {PHASE_LABEL[phaseOf(row)]}
+              </Badge>
+              <OrderPaymentBadge order={row} />
+              <ReleasedChip order={row} />
+            </div>
+            <div className="rounded-xl bg-surface/70 px-2.5 py-2">
+              <PartyCell party={row.user} fallback="Unknown customer" size={24} />
+            </div>
+            {can("order.cancel") ? (
+              <div onClick={(e) => e.stopPropagation()} className="[&_button]:w-full">
+                <RingButton order={row} size="md" />
+              </div>
+            ) : null}
           </div>
         )}
+        mobileCardSkeleton={
+          <div className="space-y-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <SkeletonOrder type="w-36" />
+              <SkeletonLine box="h-5" bar="h-3.5 w-16" />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Skeleton className="h-[22px] w-28 rounded-full" />
+              <Skeleton className="h-[22px] w-14 rounded-full" />
+            </div>
+            <div className="rounded-xl bg-surface/70 px-2.5 py-2">
+              <SkeletonPerson size={24} />
+            </div>
+            {can("order.cancel") ? <Skeleton className="h-10 w-full rounded-xl" /> : null}
+          </div>
+        }
         emptyIcon={CalendarClock}
         emptyTitle={phase === "all" ? "No scheduled orders waiting" : `Nothing ${PHASE_LABEL[phase].toLowerCase()}`}
         emptyDescription="Customers' prepaid bookings show here until a rider accepts them."

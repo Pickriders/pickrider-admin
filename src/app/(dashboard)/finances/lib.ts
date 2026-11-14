@@ -1,4 +1,5 @@
 import type { Transaction } from "@/lib/admin/api";
+import { ownerName } from "@/lib/admin/person";
 import type { RangeValue } from "@/components/kit";
 
 /**
@@ -22,6 +23,7 @@ export const TX_PURPOSES: { value: string; label: string }[] = [
   { value: "ORDER_DISCOUNT", label: "Order discount" },
   { value: "PROVIDER_DEPOSIT_FEE", label: "Provider deposit fee" },
   { value: "PROVIDER_WITHDRAWAL_FEE", label: "Provider withdrawal fee" },
+  { value: "PROVIDER_PAYOUT_FEE", label: "Provider payout fee" },
   { value: "ORDER_SERVICE_CHARGE", label: "Order service charge" },
   { value: "PLATFORM_TRANSFER", label: "Platform transfer" },
 ];
@@ -59,25 +61,19 @@ export function isObjectId(value: string | null | undefined) {
   return /^[a-f\d]{24}$/i.test(value ?? "");
 }
 
-/** Purposes only a rider's wallet ever carries; used to pick the detail page. */
-const RIDER_PURPOSES = new Set(["ORDER_EARNING", "ORDER_EARNING_SPLIT", "WALLET_WITHDRAWAL"]);
-
 /**
- * The list endpoint does not populate the wallet owner, so the link is a best
- * guess from entityType and purpose. The platform's own wallet gets no link.
+ * The wallet owner's display name. The admin transactions endpoints resolve the owner on every
+ * row (`owner`); links come from `ownerHref` in components/users/person-card, keyed on its kind.
  */
-export function entityHref(tx: Pick<Transaction, "entityId" | "entityType" | "purpose">, platformEntityId?: string) {
-  if (!tx.entityId || tx.entityId === platformEntityId) return undefined;
-  if (tx.entityType === "BUSINESS") return `/business/${tx.entityId}`;
-  if (tx.entityType === "USER") {
-    return RIDER_PURPOSES.has(tx.purpose) ? `/couriers/${tx.entityId}/details` : `/customers/${tx.entityId}`;
-  }
-  return undefined;
+export function ownerLabel(tx: Pick<Transaction, "owner" | "entityType">) {
+  if (tx.owner) return tx.owner.missing ? "Account removed" : ownerName(tx.owner);
+  return titleCase(tx.entityType) || "Wallet";
 }
 
-export function entityLabel(tx: Pick<Transaction, "entityId" | "entityType">, platformEntityId?: string) {
-  if (tx.entityId && tx.entityId === platformEntityId) return "Platform wallet";
-  return titleCase(tx.entityType) || "Wallet";
+/** The order a wallet row belongs to, when the API recorded one in its metadata. */
+export function orderIdOf(tx: Pick<Transaction, "metadata">) {
+  const id = (tx.metadata as { orderId?: unknown } | undefined)?.orderId;
+  return typeof id === "string" ? id : id != null ? String(id) : undefined;
 }
 
 /** Where a withdrawal went, read from the provider metadata when present. */

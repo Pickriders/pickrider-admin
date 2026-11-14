@@ -1,17 +1,17 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ExternalLink, Receipt, X } from "lucide-react";
-import Link from "next/link";
+import { ExternalLink, Package, Receipt, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { Transaction } from "@/lib/admin/api";
-import { useMarkSeen, usePlatformWallet, useTransaction, useTransactions } from "@/lib/admin/hooks";
+import { useMarkSeen, useTransaction, useTransactions } from "@/lib/admin/hooks";
 import { naira, when } from "@/lib/admin/format";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 import { Badge, DataTable, Drawer, ErrorState, KeyValue, LinkButton, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
-import { TX_CATEGORIES, TX_PURPOSES, TX_STATUSES, TX_TYPES, destinationOf, entityHref, entityLabel, purposeLabel, titleCase } from "./lib";
+import { PersonCard, PersonInline, ownerHref } from "@/components/users/person-card";
+import { TX_CATEGORIES, TX_PURPOSES, TX_STATUSES, TX_TYPES, destinationOf, orderIdOf, ownerLabel, purposeLabel, titleCase } from "./lib";
 
 /**
  * The transactions ledger. Every filter lives in the URL so the dashboard can
@@ -32,34 +32,9 @@ function SignedAmount({ tx, digits = 2 }: { tx: Transaction; digits?: number }) 
   );
 }
 
-function EntityCell({ tx, platformEntityId }: { tx: Transaction; platformEntityId?: string }) {
-  const href = entityHref(tx, platformEntityId);
-  const label = entityLabel(tx, platformEntityId);
-  const short = tx.entityId ? `…${tx.entityId.slice(-6)}` : "";
-  if (!href) {
-    return (
-      <span className="block min-w-0">
-        <span className="block text-sm font-medium text-ink">{label}</span>
-        {short && label !== "Platform wallet" ? <span className="block font-mono text-[11px] text-ink-faint">{short}</span> : null}
-      </span>
-    );
-  }
-  return (
-    <Link href={href} onClick={(e) => e.stopPropagation()} className="group block min-w-0" prefetch={false}>
-      <span className="flex items-center gap-1 text-sm font-medium text-ink group-hover:text-brand-dark">
-        {label}
-        <ExternalLink size={11} className="text-ink-faint" />
-      </span>
-      <span className="block font-mono text-[11px] text-ink-faint">{short}</span>
-    </Link>
-  );
-}
-
 export function TransactionsTab({ preset }: { preset: Preset }) {
   const table = useTableState({ limit: 20 });
   useMarkSeen("transactionFailures", table.state.filters.status === "FAILED");
-  const wallet = usePlatformWallet();
-  const platformEntityId = wallet.data?.entityId;
   const [selected, setSelected] = useState<string | null>(null);
 
   const search = table.state.search;
@@ -105,10 +80,10 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
     const entity: ColumnDef<Transaction, unknown> = {
       id: "entity",
       header: "Wallet",
-      cell: ({ row }) => <EntityCell tx={row.original} platformEntityId={platformEntityId} />,
+      cell: ({ row }) => <PersonInline person={row.original.owner} fallback={ownerLabel(row.original)} />,
       meta: meta({
         hideBelow: "md",
-        csv: { key: "entity", label: "Wallet", value: (r) => `${(r as Transaction).entityType ?? ""} ${(r as Transaction).entityId ?? ""}`.trim() },
+        csv: { key: "entity", label: "Wallet owner", value: (r) => ownerLabel(r as Transaction) },
       }),
     };
     const amount: ColumnDef<Transaction, unknown> = {
@@ -191,7 +166,7 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
         meta: meta({ align: "right", hideBelow: "lg", csv: { key: "balanceAfter", label: "Balance after (kobo)" } }),
       },
     ];
-  }, [preset, platformEntityId]);
+  }, [preset]);
 
   const toolbarExtra = (
     <>
@@ -235,7 +210,7 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
               <p className="truncate text-sm font-semibold text-ink">{purposeLabel(row.purpose)}</p>
               <p className="truncate font-mono text-[11px] text-ink-faint">{row.reference || row._id}</p>
               <p className="mt-1 text-xs text-ink-muted">
-                {when(row.createdAt)} · {entityLabel(row, platformEntityId)}
+                {when(row.createdAt)} · {ownerLabel(row)}
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1">
@@ -247,15 +222,16 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
           </div>
         )}
       />
-      <TransactionDrawer id={selected} onClose={() => setSelected(null)} platformEntityId={platformEntityId} />
+      <TransactionDrawer id={selected} onClose={() => setSelected(null)} />
     </>
   );
 }
 
-function TransactionDrawer({ id, onClose, platformEntityId }: { id: string | null; onClose: () => void; platformEntityId?: string }) {
+function TransactionDrawer({ id, onClose }: { id: string | null; onClose: () => void }) {
   const tx = useTransaction(id ?? "");
   const t = tx.data;
-  const href = t ? entityHref(t, platformEntityId) : undefined;
+  const href = ownerHref(t?.owner);
+  const orderId = t ? orderIdOf(t) : undefined;
   const metadata = t?.metadata && Object.keys(t.metadata).length ? JSON.stringify(t.metadata, null, 2) : null;
 
   return (
@@ -266,11 +242,18 @@ function TransactionDrawer({ id, onClose, platformEntityId }: { id: string | nul
       title={t ? purposeLabel(t.purpose) : "Transaction"}
       subtitle={t ? <span className="font-mono">{t.reference || t._id}</span> : undefined}
       footer={
-        href ? (
-          <div className="flex justify-end">
-            <LinkButton href={href} size="sm" icon={ExternalLink}>
-              Open wallet owner
-            </LinkButton>
+        href || orderId ? (
+          <div className="flex flex-wrap justify-end gap-2">
+            {orderId ? (
+              <LinkButton href={`/orders/${orderId}`} size="sm" variant="outline" icon={Package}>
+                View order
+              </LinkButton>
+            ) : null}
+            {href ? (
+              <LinkButton href={href} size="sm" icon={ExternalLink}>
+                Open profile
+              </LinkButton>
+            ) : null}
           </div>
         ) : undefined
       }
@@ -286,6 +269,8 @@ function TransactionDrawer({ id, onClose, platformEntityId }: { id: string | nul
         <ErrorState message={tx.isError ? errorMessage(tx.error) : "This transaction could not be found."} onRetry={() => void tx.refetch()} />
       ) : (
         <div className="space-y-5">
+          {t.owner ? <PersonCard person={t.owner} label="Wallet owner" /> : null}
+          {t.rider ? <PersonCard person={t.rider} label="Rider on this trip" size="sm" /> : null}
           <div className="flex items-end justify-between gap-3 rounded-2xl border border-line bg-surface p-4">
             <div>
               <p className="text-xs font-semibold text-ink-muted">{titleCase(t.type)}</p>
@@ -307,7 +292,7 @@ function TransactionDrawer({ id, onClose, platformEntityId }: { id: string | nul
               { label: "Currency", value: t.currency ? String(t.currency) : undefined },
               { label: "Balance before", value: naira(t.balanceBefore, 2) },
               { label: "Balance after", value: naira(t.balanceAfter, 2) },
-              { label: "Wallet", value: entityLabel(t, platformEntityId) },
+              { label: "Wallet", value: ownerLabel(t) },
               { label: "Wallet owner id", value: <span className="font-mono text-xs">{t.entityId}</span> },
               { label: "Provider", value: t.provider },
               { label: "Created", value: when(t.createdAt) },

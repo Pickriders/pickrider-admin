@@ -1,15 +1,15 @@
 "use client";
 
-import { ArrowLeft, CheckCircle2, Package, Receipt, Wallet } from "lucide-react";
+import { ArrowLeft, Building2, CheckCircle2, Lock, Package, Receipt, Wallet } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
 import { Badge, ChartCard, ErrorState, PageHeader, RangeTabs, Skeleton, StatCard, StatGrid, Tabs, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
 import { CustomerBadges } from "@/components/users/customer-badges";
 import { CustomerReports } from "@/components/users/customer-reports";
-import { UserActions } from "@/components/users/user-actions";
+import { UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, MoneyByPurpose, UserHeader, UserOrdersTable, UserTransactionsTable, bucketLabel } from "@/components/users/user-panels";
-import { fullName, naira, count, percent, trend } from "@/lib/admin/format";
+import { naira, count, percent, trend } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTabParam } from "@/lib/admin/url-state";
 
@@ -33,6 +33,7 @@ function CustomerDetail({ id }: { id: string }) {
   const previous = data?.asCustomer.previous;
   const lifetime = data?.asCustomer.lifetime;
   const loading = overview.isLoading;
+  const restriction = data?.withdrawalRestriction ?? user?.withdrawalRestriction;
   const windowLabel = range.all ? "all time" : range.preset ? `last ${range.preset} days` : "this range";
 
   if (overview.error && !data) {
@@ -46,22 +47,38 @@ function CustomerDetail({ id }: { id: string }) {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        breadcrumb={
-          <Link href="/customers" className="inline-flex items-center gap-1 hover:text-ink">
-            <ArrowLeft size={12} /> Customers
-          </Link>
-        }
-        title={user ? fullName(user) || "Customer" : <Skeleton className="h-8 w-56" />}
-        description={lifetime ? `${count(lifetime.orders)} orders lifetime · ${naira(lifetime.completedVolume)} spent on completed orders` : undefined}
-        actions={<RangeTabs value={range} onChange={setRange} />}
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Link
+          href="/customers"
+          className="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={14} /> Customers
+        </Link>
+        <RangeTabs value={range} onChange={setRange} className="max-w-full" />
+      </div>
 
       <UserHeader
         user={user}
         loading={loading}
-        badges={data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
-        actions={user ? <UserActions user={user} wallet={data?.wallet} showRefund /> : null}
+        subtitle={lifetime ? `${count(lifetime.orders)} orders lifetime · ${naira(lifetime.completedVolume)} spent on completed orders` : undefined}
+        badges={
+          <>
+            {restriction?.active ? (
+              <Badge tone="warning">
+                <Lock size={11} aria-hidden />
+                Withdrawals paused
+              </Badge>
+            ) : null}
+            {data?.business ? (
+              <Badge tone="info" className="max-w-full">
+                <Building2 size={11} aria-hidden className="shrink-0" />
+                <span className="min-w-0 truncate">Business: {data.business.name}</span>
+              </Badge>
+            ) : null}
+          </>
+        }
+        actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showRefund /> : null}
+        banner={user && restriction?.active ? <WithdrawalRestrictionBanner user={user} restriction={restriction} /> : null}
       />
 
       <StatGrid columns={5}>

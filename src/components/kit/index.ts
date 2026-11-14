@@ -5,3 +5,7 @@ export * from "./charts";
 export * from "./drawer";
 export * from "./data-table";
 export * from "./user-picker";
+export * from "./chip";
+export * from "./menu";
+export * from "./scroll-row";
+export * from "./skeletons";

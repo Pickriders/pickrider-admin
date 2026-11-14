@@ -1,10 +1,54 @@
 "use client";
 
-import { Ban, ImageOff, MinusCircle, PauseCircle, Phone, PlayCircle, PlusCircle, Search, ShieldAlert, Undo2, Wallet as WalletIcon } from "lucide-react";
+import {
+  Ban,
+  Check,
+  ImageOff,
+  Lock,
+  LockOpen,
+  MinusCircle,
+  PauseCircle,
+  Phone,
+  PlayCircle,
+  PlusCircle,
+  Search,
+  ShieldCheck,
+  Undo2,
+  Wallet as WalletIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { Badge, Button, ConfirmDialog, Drawer, Field, Input, Select, Skeleton, Textarea, cx, useDebounced } from "@/components/kit";
-import { users, type RefundableOrder, type TransactionType, type User, type UserStatus, type Wallet } from "@/lib/admin/api";
+import {
+  ActionMenu,
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  Field,
+  Input,
+  Select,
+  Skeleton,
+  Textarea,
+  cx,
+  useDebounced,
+  useMediaQuery,
+  type ButtonProps,
+  type MenuItem,
+  type MenuSection,
+  type MenuTone,
+} from "@/components/kit";
+import {
+  users,
+  type RefundableOrder,
+  type TransactionType,
+  type User,
+  type UserStatus,
+  type Wallet,
+  type WithdrawalRestrictionInput,
+  type WithdrawalRestrictionReason,
+  type WithdrawalRestrictionView,
+} from "@/lib/admin/api";
 import { fullName, naira, when } from "@/lib/admin/format";
 import { useAction, useRefundableOrders } from "@/lib/admin/hooks";
 import { useCan } from "@/lib/admin/use-can";
@@ -15,7 +59,7 @@ import { useCan } from "@/lib/admin/use-can";
  * pause. Each one is a small form in a drawer or a confirm dialog and
  * refreshes the queries it touches.
  */
-export type UserActionKind = "status" | "wallet" | "refund" | "phone" | "dispatch" | "photo";
+export type UserActionKind = "status" | "wallet" | "refund" | "phone" | "dispatch" | "photo" | "withdrawals";
 
 /** The plain orange image the backend saved when a photo upload failed — not a real photo. */
 const FAILED_UPLOAD_PLACEHOLDER = "/defaults/fvnk7afjcvjyjwvvcoty";
@@ -58,17 +102,35 @@ export function userInvalidations(userId: string) {
   return [["stats", "user-overview"], ["user", userId], ["user-wallets", userId], "customers", "users", "transactions", "orders", ["stats", "attention"]];
 }
 
+type ActionDef = {
+  id: UserActionKind;
+  label: string;
+  icon: LucideIcon;
+  tone?: MenuTone;
+  /** Button styling when the action is shown inline. */
+  variant?: ButtonProps["variant"];
+  className?: string;
+};
+
+const TONE_TEXT: Partial<Record<MenuTone, string>> = { warning: "text-warning", success: "text-success", danger: "text-danger" };
+
 export function UserActions({
   user,
   wallet,
   showRefund,
   showDispatch,
+  showWithdrawals,
+  restriction,
   size = "md",
 }: {
   user: User;
   wallet?: Wallet | null;
   showRefund?: boolean;
   showDispatch?: boolean;
+  /** Offer "Restrict withdrawals" (riders). Lifting is offered whenever a restriction is active. */
+  showWithdrawals?: boolean;
+  /** The overview's restriction view; falls back to the one on the user record. */
+  restriction?: WithdrawalRestrictionView | null;
   size?: "sm" | "md";
 }) {
   const [open, setOpen] = useState<UserActionKind | null>(null);
@@ -76,56 +138,91 @@ export function UserActions({
   const isActive = user.status === "ACTIVE";
   const paused = Boolean(user.dispatchPaused);
   const { can } = useCan();
+  const restricted = Boolean((restriction ?? user.withdrawalRestriction)?.active);
+  // Desktops have room for a third inline action and a separate Suspend; phones and tablets get two plus "More".
+  const wide = useMediaQuery("(min-width: 1280px)");
+
+  // Most used first. The first two (three on a desktop) are buttons; the rest go in "More".
+  const actions: ActionDef[] = [];
+  if (showDispatch && can("user.dispatch")) {
+    actions.push(
+      paused
+        ? { id: "dispatch", label: "Resume dispatch", icon: PlayCircle, tone: "success", variant: "success" }
+        : { id: "dispatch", label: "Stop ringing", icon: PauseCircle },
+    );
+  }
+  if (showRefund && can("wallet.refund")) actions.push({ id: "refund", label: "Refund order", icon: Undo2 });
+  if (can("wallet.adjust")) actions.push({ id: "wallet", label: "Adjust wallet", icon: WalletIcon });
+  if ((showWithdrawals || restricted) && can("user.withdrawals")) {
+    actions.push(
+      restricted
+        ? { id: "withdrawals", label: "Lift withdrawal restriction", icon: LockOpen, tone: "success" }
+        : { id: "withdrawals", label: "Restrict withdrawals", icon: Lock, tone: "warning" },
+    );
+  }
+  if (can("user.phone")) actions.push({ id: "phone", label: "Change phone", icon: Phone });
+  if (user.photo && can("user.photo")) {
+    actions.push({ id: "photo", label: "Remove photo", icon: ImageOff, tone: isFailedUploadPhoto(user.photo) ? "warning" : undefined });
+  }
+  const status: ActionDef | null = can("user.status")
+    ? isActive
+      ? { id: "status", label: "Suspend", icon: Ban, tone: "danger" }
+      : { id: "status", label: "Activate", icon: ShieldCheck, tone: "success" }
+    : null;
+
+  const inlineCount = wide ? 3 : 2;
+  const inline = actions.slice(0, inlineCount);
+  const overflow = actions.slice(inlineCount);
+  const statusInline = wide && status;
+
+  const toItem = (action: ActionDef): MenuItem => ({
+    id: action.id,
+    label: action.label,
+    icon: action.icon,
+    tone: action.tone,
+    onSelect: () => setOpen(action.id),
+  });
+  const menuSections: MenuSection[] = [
+    { id: "more", items: overflow.map(toItem) },
+    { id: "account", label: "Account", items: status && !statusInline ? [toItem(status)] : [] },
+  ];
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center xl:justify-end [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*]:w-auto">
-        {showDispatch && can("user.dispatch") ? (
+      <div className="flex w-full min-w-0 items-center gap-2 lg:w-auto lg:justify-end">
+        {inline.map((action) => (
           <Button
+            key={action.id}
             size={size}
-            variant={paused ? "success" : "outline"}
-            icon={paused ? PlayCircle : PauseCircle}
-            onClick={() => setOpen("dispatch")}
+            variant={action.variant ?? "outline"}
+            icon={action.icon}
+            onClick={() => setOpen(action.id)}
+            className={cx(
+              "min-w-0 flex-1 lg:flex-none [&>span]:truncate",
+              action.variant ? undefined : action.tone ? TONE_TEXT[action.tone] : undefined,
+            )}
+            title={action.label}
           >
-            {paused ? "Resume dispatch" : "Stop ringing"}
+            <span>{action.label}</span>
           </Button>
-        ) : null}
-        {can("wallet.adjust") ? (
-          <Button size={size} variant="outline" icon={WalletIcon} onClick={() => setOpen("wallet")}>
-            Adjust wallet
-          </Button>
-        ) : null}
-        {showRefund && can("wallet.refund") ? (
-          <Button size={size} variant="outline" icon={Undo2} onClick={() => setOpen("refund")}>
-            Refund order
-          </Button>
-        ) : null}
-        {user.photo && can("user.photo") ? (
-          <Button
-            size={size}
-            variant="outline"
-            icon={ImageOff}
-            className={isFailedUploadPhoto(user.photo) ? "text-warning" : undefined}
-            onClick={() => setOpen("photo")}
-          >
-            Remove photo
-          </Button>
-        ) : null}
-        {can("user.phone") ? (
-          <Button size={size} variant="outline" icon={Phone} onClick={() => setOpen("phone")}>
-            Change phone
-          </Button>
-        ) : null}
-        {can("user.status") ? (
-          <Button
-            size={size}
-            variant="outline"
-            icon={isActive ? Ban : ShieldAlert}
-            className={isActive ? "text-danger" : "text-success"}
-            onClick={() => setOpen("status")}
-          >
-            {isActive ? "Suspend" : "Change status"}
-          </Button>
+        ))}
+        <ActionMenu sections={menuSections} iconOnly={inline.length > 0} title={`More actions for ${fullName(user) || "this user"}`} />
+        {statusInline ? (
+          <>
+            <span className="mx-1 h-6 w-px shrink-0 bg-line" aria-hidden />
+            <Button
+              size={size}
+              variant="outline"
+              icon={statusInline.icon}
+              onClick={() => setOpen("status")}
+              className={cx(
+                "shrink-0",
+                statusInline.tone === "danger" ? "border-danger/40 text-danger hover:bg-danger-soft" : "border-success/40 text-success hover:bg-success-soft",
+              )}
+            >
+              {statusInline.label}
+            </Button>
+          </>
         ) : null}
       </div>
 
@@ -135,6 +232,11 @@ export function UserActions({
       <PhoneDrawer user={user} open={open === "phone"} onClose={close} />
       {showDispatch ? <DispatchDialog user={user} open={open === "dispatch"} onClose={close} /> : null}
       <RemovePhotoDialog user={user} open={open === "photo"} onClose={close} />
+      {restricted ? (
+        <LiftWithdrawalsDialog user={user} restriction={restriction ?? user.withdrawalRestriction} open={open === "withdrawals"} onClose={close} />
+      ) : showWithdrawals ? (
+        <RestrictWithdrawalsDrawer user={user} open={open === "withdrawals"} onClose={close} />
+      ) : null}
     </>
   );
 }
@@ -581,5 +683,242 @@ export function RemovePhotoDialog({ user, open, onClose }: { user: User; open: b
         </div>
       ) : null}
     </ConfirmDialog>
+  );
+}
+
+// ── Withdrawal restriction ────────────────────────────────────────────────────
+
+/**
+ * Each reason with the exact sentence the rider app shows for it. The backend owns the copy (it
+ * sends `message` back on the restriction); these mirror it so the admin can preview before saving.
+ */
+export const WITHDRAWAL_REASONS: { value: WithdrawalRestrictionReason; label: string; hint: string; message: string }[] = [
+  {
+    value: "KYC_REVIEW",
+    label: "KYC review",
+    hint: "Documents or identity need checking.",
+    message: "Withdrawals are paused while we review your documents.",
+  },
+  {
+    value: "DISPUTE",
+    label: "Dispute",
+    hint: "A customer or order dispute is open.",
+    message: "Withdrawals are paused while we resolve a dispute on your account.",
+  },
+  {
+    value: "UNDER_INVESTIGATION",
+    label: "Under investigation",
+    hint: "Suspicious activity or a fraud check.",
+    message: "Withdrawals are paused while we look into recent activity on your account.",
+  },
+  {
+    value: "OTHER",
+    label: "Other",
+    hint: "Anything else. Add a note to explain.",
+    message: "Withdrawals are paused on your account.",
+  },
+];
+
+export const WITHDRAWAL_REASON_LABEL: Record<WithdrawalRestrictionReason, string> = Object.fromEntries(
+  WITHDRAWAL_REASONS.map((r) => [r.value, r.label]),
+) as Record<WithdrawalRestrictionReason, string>;
+
+const NOTE_MAX = 280;
+
+/** What the rider sees in the app while withdrawals are paused. */
+function RiderPreview({ message, note }: { message: string; note?: string }) {
+  return (
+    <div className="rounded-2xl border border-line bg-surface p-3">
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">What the rider sees</p>
+      <div className="mx-auto max-w-xs rounded-2xl border border-line bg-card p-4 shadow-card">
+        <div className="flex items-start gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-warning-soft text-warning">
+            <Lock size={16} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-ink">Withdrawals paused</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">{message}</p>
+            {note ? <p className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ink">{note}</p> : null}
+          </div>
+        </div>
+        <div className="mt-3 h-9 rounded-xl bg-line/60 text-center text-xs font-semibold leading-9 text-ink-faint">Withdraw</div>
+      </div>
+    </div>
+  );
+}
+
+export function RestrictWithdrawalsDrawer({ user, open, onClose }: { user: User; open: boolean; onClose: () => void }) {
+  const [reason, setReason] = useState<WithdrawalRestrictionReason | null>(null);
+  const [note, setNote] = useState("");
+  useEffect(() => {
+    if (open) {
+      setReason(null);
+      setNote("");
+    }
+  }, [open]);
+
+  const action = useAction((body: WithdrawalRestrictionInput) => users.setWithdrawalRestriction(user._id, body), {
+    success: () => "Withdrawals restricted. The rider sees why in the app.",
+    invalidate: userInvalidations(user._id),
+    onSuccess: onClose,
+  });
+  const picked = WITHDRAWAL_REASONS.find((r) => r.value === reason);
+  const trimmed = note.trim();
+  const name = fullName(user) || "This rider";
+
+  return (
+    <Drawer
+      open={open}
+      onClose={onClose}
+      width="sm"
+      title="Restrict withdrawals"
+      subtitle={`${name} keeps earning and can still take orders, but cannot move money out of their wallet until you lift this. Audited.`}
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            icon={Lock}
+            loading={action.isPending}
+            disabled={!reason}
+            onClick={() => reason && action.mutate({ restricted: true, reason, note: trimmed || undefined })}
+          >
+            Restrict withdrawals
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <div role="radiogroup" aria-label="Reason" className="space-y-2">
+          <p className="text-xs font-semibold text-ink-muted">Reason</p>
+          {WITHDRAWAL_REASONS.map((r) => {
+            const active = reason === r.value;
+            return (
+              <button
+                key={r.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setReason(r.value)}
+                className={cx(
+                  "flex w-full items-start gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors",
+                  active ? "border-warning bg-warning-soft" : "border-line hover:bg-surface",
+                )}
+              >
+                <span
+                  className={cx(
+                    "mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full border",
+                    active ? "border-warning bg-warning text-white" : "border-line-strong",
+                  )}
+                >
+                  {active ? <Check size={10} strokeWidth={3} /> : null}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-ink">{r.label}</span>
+                  <span className="block text-xs text-ink-muted">{r.hint}</span>
+                  <span className="mt-1 block text-xs italic text-ink-faint">&ldquo;{r.message}&rdquo;</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <Field
+          label="The rider will see this"
+          hint={
+            <span className="flex justify-between gap-2">
+              <span>Optional note under the reason. Keep it factual.</span>
+              <span className={cx("tabular-nums", note.length >= NOTE_MAX ? "text-warning" : "")}>
+                {note.length}/{NOTE_MAX}
+              </span>
+            </span>
+          }
+        >
+          <Textarea
+            value={note}
+            maxLength={NOTE_MAX}
+            onChange={(e) => setNote(e.target.value.slice(0, NOTE_MAX))}
+            placeholder="Please upload a clearer photo of your licence."
+          />
+        </Field>
+        {picked ? (
+          <RiderPreview message={picked.message} note={trimmed || undefined} />
+        ) : (
+          <p className="rounded-xl bg-surface px-4 py-3 text-xs text-ink-muted">Pick a reason to preview what the rider will see.</p>
+        )}
+      </div>
+    </Drawer>
+  );
+}
+
+export function LiftWithdrawalsDialog({
+  user,
+  restriction,
+  open,
+  onClose,
+}: {
+  user: User;
+  restriction?: WithdrawalRestrictionView | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const action = useAction((_: undefined) => users.setWithdrawalRestriction(user._id, { restricted: false }), {
+    success: () => "Withdrawal restriction lifted",
+    invalidate: userInvalidations(user._id),
+    onSuccess: onClose,
+  });
+  return (
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      loading={action.isPending}
+      tone="primary"
+      icon={LockOpen}
+      title="Lift withdrawal restriction"
+      description={`${fullName(user) || "This user"} will be able to withdraw from their wallet again straight away.`}
+      confirmLabel="Lift restriction"
+      onConfirm={() => action.mutate(undefined)}
+    >
+      {restriction?.active ? (
+        <div className="rounded-xl border border-line bg-surface px-4 py-3 text-xs text-ink-muted">
+          Restricted {restriction.restrictedAt ? when(restriction.restrictedAt) : ""}
+          {restriction.reason ? ` for ${WITHDRAWAL_REASON_LABEL[restriction.reason].toLowerCase()}` : ""}
+          {restriction.note ? <span className="mt-1 block text-ink">{restriction.note}</span> : null}
+        </div>
+      ) : null}
+    </ConfirmDialog>
+  );
+}
+
+/** The amber banner on a profile while withdrawals are paused, with the lift action for those allowed. */
+export function WithdrawalRestrictionBanner({ user, restriction }: { user: User; restriction?: WithdrawalRestrictionView | null }) {
+  const [open, setOpen] = useState(false);
+  const { can } = useCan();
+  const view = restriction ?? user.withdrawalRestriction;
+  if (!view?.active) return null;
+  const reasonLabel = view.reason ? WITHDRAWAL_REASON_LABEL[view.reason] : "No reason recorded";
+  const message = view.message ?? WITHDRAWAL_REASONS.find((r) => r.value === view.reason)?.message;
+  return (
+    <>
+      <div className="flex flex-col gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <Lock size={18} className="mt-0.5 shrink-0 text-warning" />
+          <div className="min-w-0 text-sm">
+            <p className="font-bold text-ink">
+              Withdrawals restricted{view.restrictedAt ? ` since ${when(view.restrictedAt)}` : ""}: {reasonLabel}
+            </p>
+            {view.note ? <p className="break-words text-ink">Note: {view.note}</p> : null}
+            {message ? <p className="text-xs text-ink-muted">The rider sees: &ldquo;{message}&rdquo;</p> : null}
+          </div>
+        </div>
+        {can("user.withdrawals") ? (
+          <button type="button" onClick={() => setOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
+            Lift restriction
+          </button>
+        ) : null}
+      </div>
+      <LiftWithdrawalsDialog user={user} restriction={view} open={open} onClose={() => setOpen(false)} />
+    </>
   );
 }

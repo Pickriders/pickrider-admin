@@ -95,6 +95,8 @@ export type User = {
   dispatchPaused?: boolean;
   dispatchPausedAt?: string;
   dispatchPausedReason?: string;
+  /** Withdrawals paused on this account by an admin (riders mostly); `active` false or absent means none. */
+  withdrawalRestriction?: WithdrawalRestrictionView | null;
   businessId?: string;
   country?: string;
   state?: string;
@@ -108,6 +110,23 @@ export type User = {
   totalEarned?: number;
   [key: string]: unknown;
 };
+
+export type WithdrawalRestrictionReason = "KYC_REVIEW" | "DISPUTE" | "UNDER_INVESTIGATION" | "OTHER";
+
+/** GET admins/users/:id and the user overview: the restriction as the admin sees it (the rider never sees the admin ids). */
+export type WithdrawalRestrictionView = {
+  active: boolean;
+  reason?: WithdrawalRestrictionReason | null;
+  /** The rider-facing sentence for the reason. */
+  message?: string | null;
+  note?: string | null;
+  restrictedAt?: string | null;
+  restrictedBy?: string | null;
+  liftedAt?: string | null;
+  liftedBy?: string | null;
+};
+
+export type WithdrawalRestrictionInput = { restricted: boolean; reason?: WithdrawalRestrictionReason; note?: string };
 
 export type AdminPreferences = { theme?: "light" | "dark" | "system"; font?: string; seen?: Record<string, string> };
 
@@ -188,7 +207,26 @@ export type Transaction = {
   balanceAfter?: number;
   metadata?: Record<string, unknown>;
   createdAt: string;
+  /** Admin list and detail: who the wallet belongs to, resolved by the API. */
+  owner?: TransactionOwner;
+  /** Admin list and detail: the rider behind a business rider earning (rows with metadata.riderId). */
+  rider?: TransactionOwner;
   [key: string]: unknown;
+};
+
+export type TransactionOwnerKind = "CUSTOMER" | "RIDER" | "BUSINESS" | "PLATFORM" | "TEAM";
+
+/** Mirrors TransactionOwnerDto; `kind` as a string union so pages can compare it to literals. */
+export type TransactionOwner = {
+  kind: TransactionOwnerKind;
+  id: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  photo?: string;
+  status?: string;
+  isOnline?: boolean;
+  missing?: boolean;
 };
 
 export type Vehicle = {
@@ -361,6 +399,7 @@ export type UserOverview = {
   reviews: { average: number | null; count: number; distribution: number[] };
   vehicles: Vehicle[];
   business: Business | null;
+  withdrawalRestriction?: WithdrawalRestrictionView | null;
 };
 
 export type CustomerWindow = {
@@ -403,7 +442,9 @@ export type CustomersOverview = {
 };
 
 export type CustomerRow = User & {
+  /** Sum of the customer's wallets, kobo. */
   walletBalance: number;
+  walletCurrency?: string;
   orders: number;
   completedOrders: number;
   cancelledOrders: number;
@@ -449,6 +490,26 @@ export type RiderChargeRow = {
   lastAt: string;
 };
 
+/**
+ * What Paystack takes (GET /admins/stats/provider-fees), per money flow, with the window before
+ * for comparison and a trend. `effectiveRate` is a percent: 1.5 means 1.5% of the gross.
+ */
+export type {
+  ProviderFeesResponseDto as ProviderFees,
+  ProviderFeeFlowDto as ProviderFeeFlowTotals,
+  ProviderFeeSeriesPointDto as ProviderFeePoint,
+  ProviderFeeTotalsDto as ProviderFeeTotals,
+} from "@/services";
+
+export type ProviderFeeFlowKey = "WALLET_DEPOSIT" | "ORDER_CARD_PAYMENT" | "WEB_ORDER_PAYMENT" | "WITHDRAWAL" | "PLATFORM_PAYOUT" | "REFUND";
+
+/** One Paystack fee row (GET /admins/stats/provider-fees/rows), with whose money it was. */
+export type ProviderFeeRow = Omit<import("@/services").ProviderFeeRowDto, "owner" | "flow"> & {
+  flow: ProviderFeeFlowKey;
+  owner: TransactionOwner | null;
+  [key: string]: unknown;
+};
+
 export const stats = {
   overview: (range: RangeQuery) => as<Overview>(apiService.overview(params(range))),
   series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) => as<Series>(apiService.series(params(range))),
@@ -461,6 +522,8 @@ export const stats = {
   customersOverview: (range: RangeQuery & { bucket?: string }) => get<CustomersOverview>("/admins/stats/customers/overview", range),
   businesses: (query: Query) => page<BusinessRow>(apiService.businesses(params(query))),
   userOverview: (userId: string, range: RangeQuery) => as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
+  providerFees: (range: RangeQuery & { bucket?: string }) => apiService.providerFees(params(range)),
+  providerFeeRows: (query: Query) => page<ProviderFeeRow>(apiService.providerFeeRows(params(query))),
 };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -509,6 +572,9 @@ export const users = {
   licenceUpdate: (userId: string, body: Record<string, unknown>) => as<User>(apiService.updateDriversLicense(userId, body as never)),
   settlementAccount: (userId: string, walletId: string, body: Record<string, unknown>) =>
     as<Wallet>(apiService.adminUpdateSettlementAccount(userId, walletId, body as never)),
+  /** Pause (reason required) or lift wallet withdrawals; the note is shown to the rider. */
+  setWithdrawalRestriction: (userId: string, body: WithdrawalRestrictionInput) =>
+    as<User>(apiService.adminSetWithdrawalRestriction(userId, body as never)),
 };
 
 export type RefundableOrder = {
@@ -530,11 +596,25 @@ export const orders = {
   list: (query: Query) => page<Order>(apiService.getOrders(params(query))),
   get: (orderId: string) => as<Order>(apiService.getOrder(orderId)),
   offers: (orderId: string) => as<Record<string, unknown>>(apiService.getOrderOffers(orderId)),
+  /** Every rider who held the order, oldest first, with each release and where the current rider is. */
+  riderHistory: (orderId: string) => apiService.adminOrderRiderHistory(orderId),
+  /** The rider and customer chat, read-only for staff: the newest 1,000 messages ascending, plus the thread state. */
+  messages: (orderId: string) => apiService.adminListOrderMessages(orderId),
   cancel: (orderId: string, body: { reason: string }) => as<Order>(apiService.adminCancelOrder(orderId, body)),
   /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
   ringRiders: (orderId: string) => as<{ riders: number; order: Order }>(apiService.ringRiders(orderId)),
   updateStatus: (orderId: string, body: { status: OrderStatus }) => as<Order>(apiService.updateOrderStatus(orderId, body as never)),
 };
+
+// ── Order chat (admins/orders/:orderId/messages) ─────────────────────────────────
+/** Rider and customer messages on a customer-app order. Typed off the generated contract. */
+export type {
+  AdminChatParticipantDto as ChatParticipant,
+  AdminOrderChatResponseDto as OrderChat,
+  AdminOrderChatThreadDto as OrderChatThread,
+  OrderMessageDto as OrderMessage,
+} from "@/services";
+export { ChatClosedReason, ChatParticipantRole, ChatSenderRole, ChatSystemKey, OrderMessageKind } from "@/services";
 
 // ── Transactions ──────────────────────────────────────────────────────────────
 
@@ -765,8 +845,11 @@ export type OrderRow = Order & {
   currency?: string;
   paidDate?: string;
   cancelledBy?: string;
+  /** VENDOR_STOREFRONT = storefront, CUSTOMER_WEB = web, absent = customer app. */
   channel?: string;
   offers?: unknown[];
+  /** Admin list: how many rider offers the order has had, any status. */
+  offersCount?: number;
   totalLocations?: number;
   confirmedLocations?: number;
   cancelledLocations?: number;
@@ -778,6 +861,16 @@ export type OrderRow = Order & {
   vehicleId?: string;
   coupon?: { code?: string; name?: string } | null;
   review?: { rating?: number; comment?: string; createdAt?: string } | null;
+  /** Times an accepted rider was taken off before pickup, and the latest one. */
+  riderReleaseCount?: number;
+  lastRiderRelease?: import("@/services").OrderLastRiderRelease | null;
+  /** Completed rider handoffs (after pickup) on the order. */
+  handoffCount?: number;
+  /** Order stacking: the rider's other orders when this one was assigned to them, and when. */
+  stackedWithOrderIds?: import("@/services").Order["stackedWithOrderIds"];
+  stackedAt?: import("@/services").Order["stackedAt"];
+  /** The stacking mode that let the rider take this order. */
+  stackMode?: import("@/services").Order["stackMode"];
 };
 
 export type OrderBid = {
@@ -936,6 +1029,15 @@ export type StateConfig = {
   distanceTaperBeyondRate?: number;
   maxRidersPerQuery?: number;
   maxActiveOrders?: number;
+  /** Order stacking: a rider at maxActiveOrders may take one more order that is on their way (after pickup), up to maxStackedOrders. */
+  stackingEnabled?: boolean;
+  maxStackedOrders?: number;
+  stackDropoffRadiusKm?: number;
+  stackMaxDetourKm?: number;
+  /** Order stacking, "next job": a rider finishing their run may take an order whose pickup is near their last drop-off. */
+  nextNearbyEnabled?: boolean;
+  nextPickupRadiusKm?: number;
+  nextFinishWithinKm?: number;
   maxDistanceRadius?: number;
   queueOrderByDefault?: boolean;
   locationUpdateEnabled?: boolean;
@@ -947,6 +1049,29 @@ export type StateConfig = {
   arrivalRadiusMeters?: number;
   etaEnabled?: boolean;
   etaAverageSpeedKmh?: number;
+  /** Rider handoff after pickup. Money in kobo, distances as named, times in seconds or minutes as named. */
+  handoffEnabled?: boolean;
+  handoffRadiusKm?: number;
+  handoffWidenRadiusKm?: number;
+  handoffWidenAfterSec?: number;
+  handoffAlertAfterSec?: number;
+  handoffExpireAfterMin?: number;
+  handoffRingSeconds?: number;
+  handoffMinSharePct?: number;
+  handoffMaxSharePct?: number;
+  handoffBonusAmount?: number;
+  handoffCancelCompensation?: number;
+  handoffConfirmRadiusM?: number;
+  handoffsPerOrder?: number;
+  /** E.164 (+234…). Urgent alerts nobody claims in 2 minutes go here on WhatsApp. Empty clears it. */
+  supportWhatsappPhone?: string;
+  /** Rider releases ("Can't make it"): free early releases per Lagos day, then 7-day counted releases that ring later, alert staff, and pause. */
+  releaseFreePerDay?: number;
+  releaseAlertWeekly?: number;
+  releasePauseWeekly?: number;
+  releaseDeprioritizeWeekly?: number;
+  /** Seconds a frequent releaser waits behind reliable riders. */
+  releaseDeprioritizeDelaySec?: number;
 };
 
 export const settingsExtra = {
@@ -1348,17 +1473,37 @@ export const announcements = {
 
 // ── Rider insights (admins/riders/:riderId/insights/*) ──────────────────────────
 /**
- * The same insights a rider sees in the app, for staff, plus an admin-only `profile`. Typed off the
+ * The same insights a rider sees in the app, for staff, plus an admin-only `profile` and, on the
+ * overview, `requests` (accepted vs passed, "Not now"). Typed off the
  * generated contract. The endpoints take the rider app's `dateRange` ("from,to"); all time starts at
  * the platform's launch year.
  */
 export type {
   AchievementsResponseDto as RiderAchievements,
   EarningsSeriesResponseDto as RiderEarningsSeries,
-  InsightsOverviewResponseDto as RiderInsightsOverview,
   LeaderboardResponseDto as RiderRank,
   MyMapResponseDto as RiderDeliveryMap,
+  RiderAdminInsightsOverviewResponseDto as RiderInsightsOverview,
   RiderAdminInsightsResponseDto as RiderInsightsProfile,
+  RiderRequestStatsDto as RiderRequestStats,
+} from "@/services";
+
+// ── Rider releases (admins/riders/:riderId/releases) ─────────────────────────────
+/**
+ * Trips the rider was taken off before pickup: their own "Can't make it" (free in the first two
+ * minutes, counted as a cancellation after), or the store's "Find another rider".
+ */
+export type { AdminRiderReleasesResponseDto as RiderReleases, RiderReleaseItemDto as RiderReleaseItem } from "@/services";
+
+export const riderReleases = {
+  list: (riderId: string) => apiService.adminListRiderReleases(riderId),
+};
+
+/** GET /admins/orders/:orderId/rider-history: one stint per rider who held the order, oldest first. */
+export type {
+  AdminOrderRiderHistoryResponseDto as OrderRiderHistory,
+  OrderRiderStintDto as OrderRiderStint,
+  RiderStintOutcome,
 } from "@/services";
 
 export const toDateRange = (range: RangeQuery) =>
@@ -1378,4 +1523,57 @@ export const riderInsights = {
   achievements: (riderId: string) => apiService.adminGetRiderAchievements(riderId),
   profile: (riderId: string, range: RangeQuery) =>
     apiService.adminGetRiderInsightsProfile(params({ riderId, dateRange: toDateRange(range) }) as RiderParam),
+};
+
+// ── Rider handoffs (admins/handoffs, admins/orders/:orderId/handoffs) ────────────
+/**
+ * A rider who has picked up an order hands it to another rider (bike trouble, an accident, being
+ * stopped). Typed off the generated contract. Shares, bonus and compensation are kobo, gross.
+ */
+export type {
+  AdminBulkReviewHandoffsRequestDto as HandoffBulkReviewInput,
+  AdminBulkReviewHandoffsResponseDto as HandoffBulkReviewResult,
+  AdminHandoffDto as Handoff,
+  AdminHandoffRiderDto as HandoffRider,
+  AdminHandoffsSummaryResponseDto as HandoffsSummary,
+  AdminReviewHandoffRequestDto as HandoffReviewInput,
+  AdminStartHandoffRequestDto as HandoffStartInput,
+} from "@/services";
+export { HandoffBonusAction, HandoffBonusStatus, HandoffCountDecision, HandoffFlag, HandoffReason, HandoffReviewDecision, HandoffStatus } from "@/services";
+
+export const handoffs = {
+  /** status is a comma list; flagged=true; review=pending; riderId matches either rider; from/to are ISO dates. */
+  list: (query: Query) => page<import("@/services").AdminHandoffDto>(apiService.adminListHandoffs(params(query))),
+  summary: () => apiService.adminHandoffsSummary(),
+  get: (handoffId: string) => apiService.adminGetHandoff(handoffId),
+  forOrder: (orderId: string) => apiService.adminListOrderHandoffs(orderId),
+  start: (body: import("@/services").AdminStartHandoffRequestDto) => apiService.adminStartHandoff(body),
+  startSearch: (handoffId: string, note?: string) => apiService.adminStartHandoffSearch(handoffId, note ? { note } : {}),
+  assign: (handoffId: string, riderId: string) => apiService.adminAssignHandoffRider(handoffId, { riderId }),
+  cancel: (handoffId: string, note?: string) => apiService.adminCancelHandoff(handoffId, note ? { note } : {}),
+  dropRider: (handoffId: string, note?: string) => apiService.adminDropHandoffRider(handoffId, note ? { note } : {}),
+  /** The new bonus in kobo; it must be higher than the current one. */
+  raiseBonus: (handoffId: string, amount: number) => apiService.adminRaiseHandoffBonus(handoffId, { amount }),
+  review: (handoffId: string, body: import("@/services").AdminReviewHandoffRequestDto) => apiService.adminReviewHandoff(handoffId, body),
+  bulkReview: (body: import("@/services").AdminBulkReviewHandoffsRequestDto) => apiService.adminBulkReviewHandoffs(body),
+};
+
+// ── Admin alerts (admins/alerts) ─────────────────────────────────────────────────
+/**
+ * Things a person must act on now (an accident handoff, nobody taking a handoff, a code lockout).
+ * One live alert per problem; repeats bump `occurrences`. Pushed live on the orders socket.
+ */
+export type {
+  AdminAlertDto as AdminAlert,
+  AdminAlertsSummaryResponseDto as AlertsSummary,
+  AdminAlertTypeCountDto as AlertTypeCount,
+} from "@/services";
+export { AdminAlertSeverity, AdminAlertStatus } from "@/services";
+
+export const alerts = {
+  /** status is a comma list (default OPEN,CLAIMED); mine=true for alerts I claimed; type narrows. */
+  list: (query: Query) => page<import("@/services").AdminAlertDto>(apiService.adminListAlerts(params(query))),
+  summary: () => apiService.adminAlertsSummary(),
+  claim: (alertId: string) => apiService.adminClaimAlert(alertId),
+  resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
 };

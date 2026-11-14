@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, announcements, businesses, coupons, deliveryPrice, finance, issues, me, messaging, orders, reviews, riderInsights, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, finance, handoffs, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -24,6 +24,9 @@ export const useTopRiders = (range: RangeQuery & { limit?: number }) => useQuery
 export const usePeakHours = (range: RangeQuery) => useQuery({ queryKey: ["stats", "peak-hours", range], queryFn: () => stats.peakHours(range), placeholderData: keepPreviousData });
 export const useCharges = (range: RangeQuery) => useQuery({ queryKey: ["stats", "charges", range], queryFn: () => stats.charges(range), placeholderData: keepPreviousData });
 export const useRiderCharges = (query: Query) => useQuery({ queryKey: ["stats", "charges-riders", query], queryFn: () => stats.chargesByRider(query), ...keep });
+export const useProviderFees = (range: RangeQuery & { bucket?: string }) =>
+  useQuery({ queryKey: ["stats", "provider-fees", range], queryFn: () => stats.providerFees(range), placeholderData: keepPreviousData });
+export const useProviderFeeRows = (query: Query) => useQuery({ queryKey: ["stats", "provider-fee-rows", query], queryFn: () => stats.providerFeeRows(query), ...keep });
 export const useAttention = () => useQuery({ queryKey: ["stats", "attention"], queryFn: stats.attention, refetchInterval: POLL_MS });
 export const useUserOverview = (userId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["stats", "user-overview", userId, range], queryFn: () => stats.userOverview(userId, range), placeholderData: keepPreviousData, enabled: Boolean(userId) });
@@ -41,6 +44,9 @@ export const useRiderAchievements = (riderId: string) =>
   useQuery({ queryKey: ["rider-insights", riderId, "achievements"], queryFn: () => riderInsights.achievements(riderId), enabled: Boolean(riderId) });
 export const useRiderInsightsProfile = (riderId: string, range: RangeQuery) =>
   useQuery({ queryKey: ["rider-insights", riderId, "profile", range], queryFn: () => riderInsights.profile(riderId, range), placeholderData: keepPreviousData, enabled: Boolean(riderId) });
+
+export const useRiderReleases = (riderId: string, enabled = true) =>
+  useQuery({ queryKey: ["rider-releases", riderId], queryFn: () => riderReleases.list(riderId), enabled: Boolean(riderId) && enabled });
 
 // Me
 /**
@@ -78,6 +84,20 @@ export const useOrders = (query: Query, options?: { poll?: boolean; enabled?: bo
   useQuery({ queryKey: ["orders", query], queryFn: () => orders.list(query), ...keep, refetchInterval: options?.poll ? POLL_MS : false, enabled: options?.enabled ?? true });
 export const useOrder = (orderId: string) => useQuery({ queryKey: ["order", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), refetchInterval: POLL_MS });
 export const useOrderOffers = (orderId: string) => useQuery({ queryKey: ["order-offers", orderId], queryFn: () => orders.offers(orderId), enabled: Boolean(orderId) });
+/** Keyed under ["order", id] so the socket's order invalidation (e.g. a rider_released change) refetches it too. */
+export const useOrderRiderHistory = (orderId: string, enabled = true) =>
+  useQuery({ queryKey: ["order", orderId, "rider-history"], queryFn: () => orders.riderHistory(orderId), enabled: Boolean(orderId) && enabled, refetchInterval: POLL_MS });
+/**
+ * The order chat, read-only. Keyed under ["order", id] so the socket's order invalidation refetches it;
+ * polls only while the chat is open (messages can still arrive).
+ */
+export const useOrderMessages = (orderId: string, enabled = true) =>
+  useQuery({
+    queryKey: ["order", orderId, "messages"],
+    queryFn: () => orders.messages(orderId),
+    enabled: Boolean(orderId) && enabled,
+    refetchInterval: (query) => (query.state.data?.thread.open ? POLL_MS : false),
+  });
 /** One order for a summary chip; no polling, unlike useOrder on the detail page. */
 export const useOrderSummary = (orderId: string) =>
   useQuery({ queryKey: ["order-summary", orderId], queryFn: () => orders.get(orderId), enabled: Boolean(orderId), staleTime: 5 * 60_000 });
@@ -200,3 +220,20 @@ export const useAnnouncementsSummary = () => useQuery({ queryKey: ["announcement
 export const useAnnouncementScreens = () => useQuery({ queryKey: ["announcements", "screens"], queryFn: announcements.screens, staleTime: 60 * 60_000 });
 export const useAnnouncementReceipts = (announcementId: string, query: Query) =>
   useQuery({ queryKey: ["announcement", announcementId, "receipts", query], queryFn: () => announcements.receipts(announcementId, query), enabled: Boolean(announcementId), ...keep });
+
+// Rider handoffs. Keyed under ["handoffs"] so the socket's order and alert events refresh them.
+export const useHandoffs = (query: Query, enabled = true) =>
+  useQuery({ queryKey: ["handoffs", "list", query], queryFn: () => handoffs.list(query), ...keep, refetchInterval: POLL_MS, enabled });
+export const useHandoffsSummary = () => useQuery({ queryKey: ["handoffs", "summary"], queryFn: handoffs.summary, refetchInterval: POLL_MS });
+/** Under ["order", id] too, so an admin:order_updated for this order refetches it. */
+export const useOrderHandoffs = (orderId: string, enabled = true) =>
+  useQuery({ queryKey: ["order", orderId, "handoffs"], queryFn: () => handoffs.forOrder(orderId), enabled: Boolean(orderId) && enabled, refetchInterval: POLL_MS });
+
+// Admin alerts. The summary polls every 20s as the fallback for the socket.
+export const useAlerts = (query: Query, enabled = true) =>
+  useQuery({ queryKey: ["alerts", "list", query], queryFn: () => alerts.list(query), ...keep, refetchInterval: POLL_MS, enabled });
+export const useAlertsSummary = (enabled = true) =>
+  useQuery({ queryKey: ["alerts", "summary"], queryFn: alerts.summary, refetchInterval: POLL_MS, enabled });
+/** A staff member's name for "{name} is handling this"; the alert carries the admin id only. */
+export const useStaffName = (adminId: string | null | undefined) =>
+  useQuery({ queryKey: ["user", adminId ?? ""], queryFn: () => users.get(adminId ?? ""), enabled: Boolean(adminId), staleTime: 30 * 60_000, retry: false });

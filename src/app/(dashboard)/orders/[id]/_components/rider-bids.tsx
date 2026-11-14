@@ -2,6 +2,7 @@
 
 import { Gavel } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 import { Avatar, Badge, EmptyState, ErrorState, Panel, PanelHeader, Skeleton, cx, statusTone } from "@/components/kit";
 import type { OrderBid, OrderOffers } from "@/lib/admin/api";
@@ -59,8 +60,14 @@ export function RiderBids({ orderId, askingPrice }: { orderId: string; askingPri
   const data = offers.data as OrderOffers | undefined;
   const total = data?.totalBids ?? 0;
 
+  // The "7 bids" chips on the order lists link here with #bids; the page renders after the order
+  // loads, so the browser's own jump to the anchor has already missed by then.
+  useEffect(() => {
+    if (window.location.hash === "#bids") document.getElementById("bids")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   return (
-    <Panel>
+    <Panel id="bids" className="scroll-mt-24">
       <PanelHeader
         title="Rider bids"
         subtitle={askingPrice ? `Every offer on this order, cheapest first. Customer asked ${naira(askingPrice)}.` : "Every offer on this order, cheapest first."}

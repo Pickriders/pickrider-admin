@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Avatar, Badge, type ColumnMeta, type Tone } from "@/components/kit";
 import type { Issue, IssueCategory, IssuePriority, IssueStatus, Person } from "@/lib/admin/api";
 import { ago, fullName, when } from "@/lib/admin/format";
+import { formatEmail } from "@/lib/admin/person";
 
 /** Labels, tones and table columns shared by the support queue, detail page and customer tab. */
 export const STATUS_LABEL: Record<IssueStatus, string> = {
@@ -69,13 +70,13 @@ export function PriorityBadge({ priority }: { priority: IssuePriority }) {
 
 export function PersonCell({ person, fallback = "Unknown" }: { person?: Person | null; fallback?: string }) {
   if (!person) return <span className="text-sm text-ink-faint">{fallback}</span>;
-  const name = fullName(person) || person.email || fallback;
+  const name = fullName(person) || formatEmail(person.email) || fallback;
   return (
     <span className="flex min-w-0 items-center gap-2">
       <Avatar src={person.photo} name={name} size={28} />
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold text-ink">{name}</span>
-        <span className="block truncate text-[11px] text-ink-muted">{person.phone || person.email}</span>
+        <span className="block truncate text-[11px] text-ink-muted">{person.phone || formatEmail(person.email)}</span>
       </span>
     </span>
   );

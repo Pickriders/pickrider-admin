@@ -5,8 +5,8 @@ import { ArrowDownWideNarrow, Bike, CircleDollarSign, ExternalLink, Percent, Rec
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import type { RiderChargeRow, Transaction } from "@/lib/admin/api";
-import { useCharges, useRiderCharges, useTransactions } from "@/lib/admin/hooks";
+import type { OrderParty, OrderRow, RiderChargeRow, Transaction, TransactionOwner } from "@/lib/admin/api";
+import { useCharges, useOrderSummary, useRiderCharges, useTransactions } from "@/lib/admin/hooks";
 import { ago, count, fullName, naira, nairaCompact, percent, trend, when } from "@/lib/admin/format";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
@@ -16,6 +16,8 @@ import {
   Button,
   DataTable,
   Drawer,
+  KeyValue,
+  LinkButton,
   Pager,
   RangeTabs,
   Select,
@@ -26,10 +28,12 @@ import {
   cx,
   presetRange,
   rangeToQuery,
+  statusTone,
   type ColumnMeta,
   type RangeValue,
 } from "@/components/kit";
-import { purposeLabel } from "./lib";
+import { PersonCard } from "@/components/users/person-card";
+import { orderIdOf, purposeLabel, titleCase } from "./lib";
 
 /**
  * What the platform keeps from trips. Two legs land in the platform wallet on
@@ -44,14 +48,47 @@ function riderName(row: RiderChargeRow) {
   return fullName(row.rider) || "Rider";
 }
 
-function riderHref(row: RiderChargeRow) {
-  return row.entityType === "BUSINESS" ? `/business/${row.entityId}` : `/couriers/${row.entityId}/details`;
+/** The charges row as a wallet owner, so the drawer can use the shared PersonCard (and its routing). */
+function rowOwner(row: RiderChargeRow): TransactionOwner {
+  if (row.entityType === "BUSINESS") {
+    return row.business
+      ? {
+          kind: "BUSINESS",
+          id: row.entityId,
+          name: row.business.name,
+          phone: row.business.phone,
+          photo: row.business.logo,
+        }
+      : { kind: "BUSINESS", id: row.entityId, name: "Business", missing: true };
+  }
+  if (!row.rider) return { kind: "RIDER", id: row.entityId, name: "Rider", missing: true };
+  return {
+    kind: "RIDER",
+    id: row.entityId,
+    name: fullName(row.rider) || "Rider",
+    phone: row.rider.phone,
+    photo: row.rider.photo,
+    status: row.rider.status,
+    isOnline: row.rider.isOnline,
+  };
 }
 
-function orderIdOf(tx: Transaction) {
-  const id = (tx.metadata as { orderId?: unknown } | undefined)?.orderId;
-  return typeof id === "string" ? id : id != null ? String(id) : undefined;
+/** An order party (customer or rider from the order aggregation) as a PersonCard person. */
+function partyOwner(party: OrderParty, kind: "CUSTOMER" | "RIDER"): TransactionOwner {
+  return {
+    kind,
+    id: party._id,
+    name: fullName(party) || (kind === "RIDER" ? "Rider" : "Customer"),
+    phone: party.phone,
+    email: party.email,
+    photo: party.photo,
+  };
 }
+
+const CHARGE_LABEL: Record<string, string> = {
+  ORDER_SERVICE_CHARGE: "Customer service charge",
+  ORDER_EARNING_SPLIT: "Rider commission",
+};
 
 export function ChargesTab() {
   const [range, setRange] = useState<RangeValue>(() => presetRange(30));
@@ -294,11 +331,8 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
       subtitle={row ? `${count(row.trips)} paid trips, ${naira(row.charges)} commission taken in this window` : ""}
       width="md"
       footer={
-        row ? (
-          <div className="flex items-center justify-between gap-3">
-            <Link href={riderHref(row)} className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
-              Open profile <ExternalLink size={12} />
-            </Link>
+        row && (history.data?.totalPages ?? 1) > 1 ? (
+          <div className="flex items-center justify-end gap-3">
             <Pager page={page} totalPages={history.data?.totalPages ?? 1} onPage={setPage} />
           </div>
         ) : null
@@ -306,6 +340,7 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
     >
       {row ? (
         <div className="space-y-4">
+          <PersonCard person={rowOwner(row)} label={row.entityType === "BUSINESS" ? "Paid through this business" : "Rider"} />
           <div className="grid grid-cols-3 gap-2">
             <Figure label="Earned" value={nairaCompact(row.earned)} />
             <Figure label="Commission" value={nairaCompact(row.charges)} tone="text-brand-dark" />
@@ -372,6 +407,7 @@ function HistoryTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
   const dateRange = "all" in query ? undefined : [query.from, query.to].filter(Boolean).join(",") || undefined;
   const purpose = table.state.filters.purpose || "ORDER_EARNING_SPLIT,ORDER_SERVICE_CHARGE";
   const data = useTransactions({ ...table.query, dateRange, purpose, status: "SUCCESS" });
+  const [selected, setSelected] = useState<Transaction | null>(null);
 
   const columns = useMemo<ColumnDef<Transaction, unknown>[]>(
     () => [
@@ -386,7 +422,7 @@ function HistoryTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
         header: "Charge",
         cell: ({ row }) => (
           <Badge tone={row.original.purpose === "ORDER_SERVICE_CHARGE" ? "info" : "brand"}>
-            {row.original.purpose === "ORDER_SERVICE_CHARGE" ? "Customer service charge" : "Rider commission"}
+            {CHARGE_LABEL[row.original.purpose] ?? purposeLabel(row.original.purpose)}
           </Badge>
         ),
         meta: meta({ csv: { key: "purpose", label: "Purpose", value: (row) => purposeLabel((row as Transaction).purpose) } }),
@@ -423,42 +459,153 @@ function HistoryTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={data.data}
-      loading={data.isLoading || data.isFetching}
-      error={data.error ? errorMessage(data.error) : null}
-      onRetry={() => void data.refetch()}
-      searchPlaceholder="Search is not available on this ledger"
-      dateFilter={false}
-      csvName="platform-charges"
-      filters={[
-        {
-          key: "purpose",
-          label: "Charge type",
-          options: [
-            { value: "ORDER_EARNING_SPLIT", label: "Rider commission" },
-            { value: "ORDER_SERVICE_CHARGE", label: "Customer service charge" },
-          ],
-        },
-      ]}
-      emptyIcon={Receipt}
-      emptyTitle="No charges in this window"
-      emptyDescription="Charges land here as trips complete and pay out."
-      toolbarExtra={
-        <Button variant="ghost" size="sm" onClick={() => table.clear()} disabled={!table.activeFilterCount}>
-          Reset
-        </Button>
-      }
-      mobileCard={(row) => (
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-ink">{row.purpose === "ORDER_SERVICE_CHARGE" ? "Customer service charge" : "Rider commission"}</p>
-            <p className="text-xs text-ink-muted">{when(row.createdAt)}</p>
+    <>
+      <DataTable
+        columns={columns}
+        data={data.data}
+        loading={data.isLoading || data.isFetching}
+        error={data.error ? errorMessage(data.error) : null}
+        onRetry={() => void data.refetch()}
+        onRowClick={(row) => setSelected(row)}
+        searchPlaceholder="Search is not available on this ledger"
+        dateFilter={false}
+        csvName="platform-charges"
+        filters={[
+          {
+            key: "purpose",
+            label: "Charge type",
+            options: [
+              { value: "ORDER_EARNING_SPLIT", label: "Rider commission" },
+              { value: "ORDER_SERVICE_CHARGE", label: "Customer service charge" },
+            ],
+          },
+        ]}
+        emptyIcon={Receipt}
+        emptyTitle="No charges in this window"
+        emptyDescription="Charges land here as trips complete and pay out."
+        toolbarExtra={
+          <Button variant="ghost" size="sm" onClick={() => table.clear()} disabled={!table.activeFilterCount}>
+            Reset
+          </Button>
+        }
+        mobileCard={(row) => (
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-ink">{CHARGE_LABEL[row.purpose] ?? purposeLabel(row.purpose)}</p>
+              <p className="text-xs text-ink-muted">{when(row.createdAt)}</p>
+            </div>
+            <p className="text-sm font-black text-success">+{naira(row.amount)}</p>
           </div>
-          <p className="text-sm font-black text-success">+{naira(row.amount)}</p>
+        )}
+      />
+      <ChargeDrawer tx={selected} onClose={() => setSelected(null)} />
+    </>
+  );
+}
+
+/**
+ * One platform charge: what it was, the platform wallet it landed in, and the order it came from.
+ * The ledger row only carries the order id, so the customer and rider are read off that order.
+ */
+function ChargeDrawer({ tx, onClose }: { tx: Transaction | null; onClose: () => void }) {
+  const orderId = tx ? orderIdOf(tx) : undefined;
+  const orderQuery = useOrderSummary(orderId ?? "");
+  const order = orderQuery.data as OrderRow | undefined;
+  const label = tx ? (CHARGE_LABEL[tx.purpose] ?? purposeLabel(tx.purpose)) : "Charge";
+  const service = tx?.purpose === "ORDER_SERVICE_CHARGE";
+
+  return (
+    <Drawer
+      open={Boolean(tx)}
+      onClose={onClose}
+      width="md"
+      title={label}
+      subtitle={tx ? <span className="font-mono">{tx.reference || tx._id}</span> : undefined}
+      footer={
+        orderId ? (
+          <div className="flex justify-end">
+            <LinkButton href={`/orders/${orderId}`} size="sm" icon={ExternalLink}>
+              Open order{order?.orderNumber ? ` #${order.orderNumber}` : ""}
+            </LinkButton>
+          </div>
+        ) : undefined
+      }
+    >
+      {tx ? (
+        <div className="space-y-5">
+          <div className="flex items-end justify-between gap-3 rounded-2xl border border-line bg-surface p-4">
+            <div>
+              <p className="text-xs font-semibold text-ink-muted">
+                {service ? "Paid by the customer on top of the trip" : "Taken from the rider's earning"}
+              </p>
+              <p className="mt-1 text-2xl font-black tracking-tight tabular-nums text-success">
+                +{naira(tx.amount, 2)}
+              </p>
+            </div>
+            <Badge tone={service ? "info" : "brand"}>{label}</Badge>
+          </div>
+
+          {tx.owner ? <PersonCard person={tx.owner} label="Credited to" /> : null}
+
+          <div>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">From order</p>
+            {!orderId ? (
+              <p className="rounded-xl bg-surface px-4 py-4 text-xs text-ink-muted">
+                This charge was recorded without an order.
+              </p>
+            ) : orderQuery.isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : !order ? (
+              <p className="rounded-xl bg-surface px-4 py-4 text-xs text-ink-muted">
+                The order could not be loaded. It may have been removed.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                <Link
+                  href={`/orders/${order._id}`}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-line px-4 py-3 transition-colors hover:border-line-strong hover:bg-surface"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold text-ink">
+                      #{order.orderNumber ?? order._id.slice(-6).toUpperCase()}
+                    </span>
+                    <span className="block text-xs text-ink-muted">
+                      {naira(order.totalAmountPayable)} total · rider fee {naira(order.negotiatedAmount)} · service
+                      charge {naira(order.serviceCharge)}
+                    </span>
+                  </span>
+                  <Badge tone={statusTone(order.status)} dot>
+                    {titleCase(order.status)}
+                  </Badge>
+                </Link>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {order.user ? (
+                    <PersonCard person={partyOwner(order.user, "CUSTOMER")} label="Customer" size="sm" />
+                  ) : null}
+                  {order.rider ? (
+                    <PersonCard person={partyOwner(order.rider, "RIDER")} label="Rider" size="sm" />
+                  ) : null}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <KeyValue
+            columns={2}
+            items={[
+              { label: "When", value: when(tx.createdAt) },
+              { label: "Status", value: titleCase(tx.status) },
+              { label: "Balance before", value: naira(tx.balanceBefore, 2) },
+              { label: "Balance after", value: naira(tx.balanceAfter, 2) },
+              { label: "Transaction id", value: <span className="font-mono text-xs">{tx._id}</span> },
+              { label: "Category", value: titleCase(tx.category) },
+            ]}
+          />
         </div>
-      )}
-    />
+      ) : null}
+    </Drawer>
   );
 }

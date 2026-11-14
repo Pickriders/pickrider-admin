@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowLeft, Bike, Car, ExternalLink, Landmark, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
+import { ArrowLeft, Bike, Building2, Car, ExternalLink, Landmark, Lock, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Badge,
@@ -25,15 +26,17 @@ import {
   statusTone,
   type RangeValue,
 } from "@/components/kit";
-import { DispatchDialog, UserActions } from "@/components/users/user-actions";
+import { DispatchDialog, UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
 import type { Vehicle } from "@/lib/admin/api";
-import { count, fullName, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
+import { count, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTableState, useTabParam } from "@/lib/admin/url-state";
 
 import { RiderInsights } from "./_components/insights";
+import { RiderHandoffs } from "./_components/rider-handoffs";
+import { ReleasedTrips } from "./_components/released-trips";
 
 /**
  * One rider: insights (the rider app's own numbers plus staff-only reliability
@@ -45,7 +48,7 @@ import { RiderInsights } from "./_components/insights";
  * not shown; the earnings tab (ORDER_EARNING transactions) is the closest
  * per-delivery record and lifetime totals come from the overview.
  */
-const TABS = ["insights", "earnings", "reviews", "transactions", "activity"] as const;
+const TABS = ["insights", "earnings", "reviews", "releases", "handoffs", "transactions", "activity"] as const;
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
@@ -160,6 +163,16 @@ function CourierDetail({ id }: { id: string }) {
   const loading = overview.isLoading;
   const licence = licenceOf(user);
   const settlement = data?.wallet?.settlement;
+  const restriction = data?.withdrawalRestriction ?? user?.withdrawalRestriction;
+  // `?resume=dispatch` (the "Review and unpause" link on a Rider paused alert) opens the Resume
+  // dispatch dialog once the rider has loaded, if they are still paused.
+  const resumeRequested = useSearchParams()?.get("resume") === "dispatch";
+  const resumeOpened = useRef(false);
+  useEffect(() => {
+    if (!resumeRequested || resumeOpened.current || !user) return;
+    resumeOpened.current = true;
+    if (user.dispatchPaused) setDispatchOpen(true);
+  }, [resumeRequested, user]);
   const windowLabel = range.all ? "all time" : range.preset ? `last ${range.preset} days` : "this range";
 
   if (overview.error && !data) {
@@ -173,58 +186,82 @@ function CourierDetail({ id }: { id: string }) {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        breadcrumb={
-          <Link href="/couriers" className="inline-flex items-center gap-1 hover:text-ink">
-            <ArrowLeft size={12} /> Couriers
-          </Link>
-        }
-        title={user ? fullName(user) || "Rider" : <Skeleton className="h-8 w-56" />}
-        description={lifetime ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned` : undefined}
-        actions={
-          <>
-            <LinkButton href={`/couriers/${id}/verification`} icon={ShieldCheck}>
-              Licence
-            </LinkButton>
-            <LinkButton href={`/couriers/${id}/edit`} icon={UserRound}>
-              Profile
-            </LinkButton>
-            <RangeTabs value={range} onChange={setRange} />
-          </>
-        }
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Link
+          href="/couriers"
+          className="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={14} /> Couriers
+        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <LinkButton href={`/couriers/${id}/verification`} icon={ShieldCheck} size="sm">
+            Licence
+          </LinkButton>
+          <LinkButton href={`/couriers/${id}/edit`} icon={UserRound} size="sm">
+            Profile
+          </LinkButton>
+          <RangeTabs value={range} onChange={setRange} className="max-w-full" />
+        </div>
+      </div>
 
       <UserHeader
         user={user}
         loading={loading}
+        online={user ? Boolean(user.isOnline) : undefined}
+        subtitle={lifetime ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned` : undefined}
         badges={
           <>
             <Badge tone={user?.isOnline ? "success" : "neutral"} dot>
               {user?.isOnline ? "Online" : "Offline"}
             </Badge>
-            <Link href={`/couriers/${id}/verification`}>
-              <Badge tone={licenceTone(licence.status)}>{LICENCE_LABEL[licence.status]}</Badge>
+            <Link href={`/couriers/${id}/verification`} className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30">
+              <Badge tone={licenceTone(licence.status)}>
+                <ShieldCheck size={11} aria-hidden />
+                {LICENCE_LABEL[licence.status]}
+              </Badge>
             </Link>
-            {data?.business ? <Badge tone="info">Business: {data.business.name}</Badge> : null}
+            {user?.dispatchPaused ? (
+              <Badge tone="warning">
+                <PauseCircle size={11} aria-hidden />
+                Not ringing
+              </Badge>
+            ) : null}
+            {restriction?.active ? (
+              <Badge tone="warning">
+                <Lock size={11} aria-hidden />
+                Withdrawals paused
+              </Badge>
+            ) : null}
+            {data?.business ? (
+              <Badge tone="info" className="max-w-full">
+                <Building2 size={11} aria-hidden className="shrink-0" />
+                <span className="min-w-0 truncate">Business: {data.business.name}</span>
+              </Badge>
+            ) : null}
           </>
         }
-        actions={user ? <UserActions user={user} wallet={data?.wallet} showDispatch /> : null}
+        actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showDispatch showWithdrawals /> : null}
         banner={
-          user?.dispatchPaused ? (
-            <div className="flex flex-col gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <PauseCircle size={18} className="mt-0.5 shrink-0 text-warning" />
-                <div className="text-sm">
-                  <p className="font-bold text-ink">Not receiving new orders</p>
-                  <p className="text-ink-muted">
-                    Dispatch paused {when(user.dispatchPausedAt)}
-                    {user.dispatchPausedReason ? `: ${user.dispatchPausedReason}` : ""}
-                  </p>
+          user && (user.dispatchPaused || restriction?.active) ? (
+            <div className="space-y-2">
+              <WithdrawalRestrictionBanner user={user} restriction={restriction} />
+              {user.dispatchPaused ? (
+                <div className="flex flex-col gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <PauseCircle size={18} className="mt-0.5 shrink-0 text-warning" />
+                    <div className="text-sm">
+                      <p className="font-bold text-ink">Not receiving new orders</p>
+                      <p className="text-ink-muted">
+                        Dispatch paused {when(user.dispatchPausedAt)}
+                        {user.dispatchPausedReason ? `: ${user.dispatchPausedReason}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setDispatchOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
+                    Resume dispatch
+                  </button>
                 </div>
-              </div>
-              <button type="button" onClick={() => setDispatchOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
-                Resume dispatch
-              </button>
+              ) : null}
             </div>
           ) : null
         }
@@ -345,6 +382,8 @@ function CourierDetail({ id }: { id: string }) {
           { id: "insights", label: "Insights" },
           { id: "earnings", label: "Earnings", count: lifetime?.completed },
           { id: "reviews", label: "Reviews", count: data?.reviews.count },
+          { id: "releases", label: "Released trips" },
+          { id: "handoffs", label: "Handoffs" },
           { id: "transactions", label: "Wallet history" },
           { id: "activity", label: "Activity" },
         ]}
@@ -361,6 +400,8 @@ function CourierDetail({ id }: { id: string }) {
         />
       ) : null}
       {tab === "reviews" ? <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} /> : null}
+      {tab === "releases" ? <ReleasedTrips riderId={id} /> : null}
+      {tab === "handoffs" ? <RiderHandoffs riderId={id} /> : null}
       {tab === "transactions" ? (
         <div className="space-y-4">
           <MoneyByPurpose data={data?.transactions} loading={loading} />

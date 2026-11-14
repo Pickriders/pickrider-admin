@@ -1,4 +1,5 @@
 import type { OrderRow, OrderStatus, OrderStop, OrderType } from "@/lib/admin/api";
+import { formatPersonName } from "@/lib/admin/person";
 
 /**
  * Small helpers shared by the orders list, board and detail pages. Everything
@@ -17,6 +18,7 @@ export const PAYMENT_LABEL: Record<string, string> = {
   PENDING: "Payment pending",
   PAID: "Paid",
   FAILED: "Payment failed",
+  REFUNDED: "Refunded",
 };
 
 export const STOP_STATUS_LABEL: Record<string, string> = {
@@ -90,7 +92,7 @@ export function totalDistanceKm(order: Pick<OrderRow, "locations"> | undefined) 
 export function stopContact(stop: OrderStop) {
   const pickup = stop.type === "PICKUP";
   return {
-    name: pickup ? stop.senderName : stop.receiverName,
+    name: formatPersonName(pickup ? stop.senderName : stop.receiverName) || undefined,
     phone: pickup ? stop.senderPhone : stop.receiverPhone,
   };
 }
@@ -100,7 +102,7 @@ export function stopCodes(stop: OrderStop): { code: string; name?: string; statu
   if (stop.recipients?.length) {
     return stop.recipients
       .filter((recipient) => recipient.confirmationCode)
-      .map((recipient) => ({ code: recipient.confirmationCode, name: recipient.name, status: recipient.status }));
+      .map((recipient) => ({ code: recipient.confirmationCode, name: formatPersonName(recipient.name) || undefined, status: recipient.status }));
   }
   return stop.confirmationCode ? [{ code: stop.confirmationCode }] : [];
 }
