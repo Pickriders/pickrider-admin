@@ -312,6 +312,17 @@ const CASES: Case[] = [
     path: `${P}/admins/email-templates/controls/pause-non-essential`,
     data: { active: false, reason: "Provider recovered" },
   },
+  // developers
+  { name: "developers.list", call: () => api.developers.list({ liveStatus: "PENDING", search: "acme", page: 2, limit: 1 }), method: "GET", path: `${P}/admins/developers`, params: { liveStatus: "PENDING", search: "acme", page: "2", limit: "1" }, paged: true },
+  { name: "developers.get", call: () => api.developers.get(ID), method: "GET", path: `${P}/admins/developers/${ID}` },
+  { name: "developers.approve", call: () => api.developers.approve(ID), method: "POST", path: `${P}/admins/developers/${ID}/approve` },
+  { name: "developers.reject", call: () => api.developers.reject(ID, "Add your website."), method: "POST", path: `${P}/admins/developers/${ID}/reject`, data: { reason: "Add your website." } },
+  { name: "developers.suspendLive", call: () => api.developers.suspendLive(ID, "Chargebacks."), method: "POST", path: `${P}/admins/developers/${ID}/suspend`, data: { reason: "Chargebacks." } },
+  { name: "developers.unsuspendLive", call: () => api.developers.unsuspendLive(ID), method: "POST", path: `${P}/admins/developers/${ID}/unsuspend` },
+  { name: "developers.suspendTeam", call: () => api.developers.suspendTeam(ID, "Fraud review."), method: "POST", path: `${P}/admins/developers/${ID}/team/suspend`, data: { reason: "Fraud review." } },
+  { name: "developers.restoreTeam", call: () => api.developers.restoreTeam(ID), method: "POST", path: `${P}/admins/developers/${ID}/team/restore` },
+  { name: "developers.revokeKey", call: () => api.developers.revokeKey(ID, "key1", "Leaked."), method: "POST", path: `${P}/admins/developers/${ID}/keys/key1/revoke`, data: { reason: "Leaked." } },
+  { name: "developers.monitoring", call: () => api.developers.monitoring(), method: "GET", path: `${P}/admins/developer-monitoring` },
 ];
 
 describe("api namespaces → generated client routes", () => {

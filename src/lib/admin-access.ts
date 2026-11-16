@@ -47,6 +47,7 @@ const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/support": OPS,
   "/alerts": OPS,
   "/handoffs": PLATFORM_STAFF_ROLES,
+  "/developers": PLATFORM_STAFF_ROLES,
   "/finances": FINANCE_READ,
   "/messaging": PLATFORM_STAFF_ROLES,
   // The SMS and email log, and the email template gallery: PlatformReadRoles on the core.
@@ -93,6 +94,8 @@ export const ACTION_ROLES = {
   // Live operations: rider handoffs and staff alerts
   "handoff.manage": OPS,
   "alert.handle": OPS,
+  // Developer API teams: live-access decisions, suspensions and key revokes (finance can only look)
+  "developer.manage": OPS,
   // Admin section
   "team.create": ADMINS,
   "settings.write": ADMINS,

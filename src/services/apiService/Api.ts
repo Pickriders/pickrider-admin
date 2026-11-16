@@ -57,6 +57,7 @@ import {
   AdminErasureBlockersData,
   AdminGetAnnouncementData,
   AdminGetDeveloperData,
+  AdminGetDeveloperMonitoringData,
   AdminGetEmailControlsData,
   AdminGetHandoffData,
   AdminGetMessageData,
@@ -122,8 +123,10 @@ import {
   AdminRemoveUserPhotoData,
   AdminResolveAlertData,
   AdminResolveAlertRequestDto,
+  AdminRestoreDeveloperTeamData,
   AdminReviewHandoffData,
   AdminReviewHandoffRequestDto,
+  AdminRevokeDeveloperKeyData,
   AdminRevokeOtherSessionsData,
   AdminRevokeSessionData,
   AdminSecurityConfirmData,
@@ -138,6 +141,7 @@ import {
   AdminStartHandoffSearchData,
   AdminStartHandoffSearchRequestDto,
   AdminSuspendDeveloperLiveData,
+  AdminSuspendDeveloperTeamData,
   AdminTestAlertEmailRequestDto,
   AdminUnlockLoginData,
   AdminUnsuspendDeveloperLiveData,
@@ -7449,6 +7453,66 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
+   * @description Suspends the whole team: every key, test and live, stops on its next request. Reason required.
+   *
+   * @tags admins/developers
+   * @name AdminSuspendDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/suspend
+   * @secure
+   * @response `200` `AdminSuspendDeveloperTeamData`
+   */
+  adminSuspendDeveloperTeam = (teamId: string, data: DeveloperLiveDecisionRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSuspendDeveloperTeamData, any>({
+      path: `/api/v1/admins/developers/${teamId}/team/suspend`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Lifts a team suspension.
+   *
+   * @tags admins/developers
+   * @name AdminRestoreDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/restore
+   * @secure
+   * @response `200` `AdminRestoreDeveloperTeamData`
+   */
+  adminRestoreDeveloperTeam = (teamId: string, params: RequestParams = {}) =>
+    this.request<AdminRestoreDeveloperTeamData, any>({
+      path: `/api/v1/admins/developers/${teamId}/team/restore`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Revokes one of the team's API keys at once. Reason required; the key stores it.
+   *
+   * @tags admins/developers
+   * @name AdminRevokeDeveloperKey
+   * @request POST:/api/v1/admins/developers/{teamId}/keys/{keyId}/revoke
+   * @secure
+   * @response `200` `AdminRevokeDeveloperKeyData`
+   */
+  adminRevokeDeveloperKey = (
+    teamId: string,
+    keyId: string,
+    data: DeveloperLiveDecisionRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminRevokeDeveloperKeyData, any>({
+      path: `/api/v1/admins/developers/${teamId}/keys/${keyId}/revoke`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * @description SUSPENDED → APPROVED.
    *
    * @tags admins/developers
@@ -7461,6 +7525,23 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<AdminUnsuspendDeveloperLiveData, any>({
       path: `/api/v1/admins/developers/${teamId}/unsuspend`,
       method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Error, latency, 429 and webhook rates for the alert window, the last hour and day, and the webhook queue.
+   *
+   * @tags admins/developers
+   * @name AdminGetDeveloperMonitoring
+   * @request GET:/api/v1/admins/developer-monitoring
+   * @secure
+   * @response `200` `AdminGetDeveloperMonitoringData`
+   */
+  adminGetDeveloperMonitoring = (params: RequestParams = {}) =>
+    this.request<AdminGetDeveloperMonitoringData, any>({
+      path: `/api/v1/admins/developer-monitoring`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

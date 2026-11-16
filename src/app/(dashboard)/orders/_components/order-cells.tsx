@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2, UserRoundX } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, CalendarClock, Code2, Gavel, Globe, Info, Smartphone, Store, Undo2, UserRoundX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
@@ -62,6 +62,26 @@ export function PartyCell({
   );
 }
 
+/**
+ * Who the order is for: the customer, or for a Developer API order the team whose key created it,
+ * linking to that team on the Developers page (its "customer" is a system account).
+ */
+export function CustomerCell({ order, href, fallback = "Unknown", size = 28, className }: { order: Pick<OrderRow, "user" | "developerTeam">; href?: string; fallback?: string; size?: number; className?: string }) {
+  const team = order.developerTeam;
+  if (!team) return <PartyCell party={order.user} href={href} fallback={fallback} size={size} className={className} />;
+  return (
+    <Link href={`/developers?tab=all&open=${team.id}`} onClick={stop} title="Created with this developer team's API key" className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}>
+      <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-warning-soft text-warning">
+        <Code2 size={Math.round(size * 0.5)} aria-hidden strokeWidth={2.5} />
+      </span>
+      <span className="min-w-0 flex-1 leading-tight">
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{team.name}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-ink-muted">Developer API</span>
+      </span>
+    </Link>
+  );
+}
+
 /** Order number with where it came from, its type and a scheduled marker underneath. */
 export function OrderCell({
   order,
@@ -111,7 +131,7 @@ export function PaymentLine({ order, className }: { order: Pick<OrderRow, "chann
 export function PartiesLine({ order }: { order: OrderRow }) {
   return (
     <span className="flex min-w-0 items-center gap-2">
-      <PartyCell party={order.user} fallback="Unknown customer" size={24} className="min-w-0 flex-1" />
+      <CustomerCell order={order} fallback="Unknown customer" size={24} className="min-w-0 flex-1" />
       <ArrowRight size={13} aria-hidden className="shrink-0 text-ink-faint" />
       <span className="min-w-0 flex-1">
         <CourierCell order={order} size={24} />
@@ -151,12 +171,13 @@ export function OrderPaymentBadge({ order }: { order: Pick<OrderRow, "channel" |
   );
 }
 
-const SOURCE_TONE: Record<OrderSource, Tone> = { APP: "neutral", STORE: "brand", WEB: "info" };
-const SOURCE_ICON = { APP: Smartphone, STORE: Store, WEB: Globe } as const;
+const SOURCE_TONE: Record<OrderSource, Tone> = { APP: "neutral", STORE: "brand", WEB: "info", API: "warning" };
+const SOURCE_ICON = { APP: Smartphone, STORE: Store, WEB: Globe, API: Code2 } as const;
 const SOURCE_HINT: Record<OrderSource, string> = {
   APP: "Placed in the customer app",
   STORE: "From a vendor storefront",
   WEB: "Placed on pickriders.com",
+  API: "Created by a developer team with an API key",
 };
 
 /** Quiet tints, one per source, built on the theme tokens so they follow dark mode. */
@@ -164,6 +185,7 @@ const SOURCE_PILL: Record<OrderSource, string> = {
   APP: "border-line bg-surface text-ink-muted",
   STORE: "border-transparent bg-brand-soft text-brand-dark",
   WEB: "border-transparent bg-info-soft text-info",
+  API: "border-transparent bg-warning-soft text-warning",
 };
 
 /**

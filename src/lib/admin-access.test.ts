@@ -63,6 +63,13 @@ describe("admin-access", () => {
     expect(canAccessPath("/alerts", ["PLATFORM_OPERATION"])).toBe(true);
     expect(canAccessPath("/alerts", ["PLATFORM_FINANCE"])).toBe(false);
     expect(canAccessPath("/handoffs", ["PLATFORM_FINANCE"])).toBe(true);
+    expect(canAccessPath("/developers", ["PLATFORM_FINANCE"])).toBe(true);
+  });
+
+  it("lets finance look at developer teams but leaves the decisions to operations, as the backend does", () => {
+    expect(can("developer.manage", ["PLATFORM_FINANCE"])).toBe(false);
+    expect(can("developer.manage", ["PLATFORM_OPERATION"])).toBe(true);
+    expect(can("developer.manage", ["PLATFORM_MANAGER"])).toBe(true);
   });
 
   it("an empty role list (no token yet) does not hide buttons; the backend still guards", () => {
