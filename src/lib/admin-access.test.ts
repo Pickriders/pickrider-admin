@@ -29,6 +29,30 @@ describe("admin-access", () => {
     expect(can("handoff.manage", ["PLATFORM_OPERATION"])).toBe(true);
     expect(can("handoff.manage", ["PLATFORM_FINANCE"])).toBe(false);
     expect(can("alert.handle", ["PLATFORM_FINANCE"])).toBe(false);
+    // Email test sends: PlatformAdminRoles on the core, the same roles as settings.write.
+    expect(can("email.testSend", ["PLATFORM_ADMIN"])).toBe(true);
+    expect(can("email.testSend", ["PLATFORM_MANAGER"])).toBe(false);
+    expect(can("email.testSend", ["PLATFORM_OPERATION"])).toBe(false);
+    // Account erasure and clearing a sign-in lockout are the owner's alone; looking a lockout up is for admins.
+    expect(can("user.erase", ["ADMIN"])).toBe(false);
+    expect(can("user.erase", ["PLATFORM_ADMIN"])).toBe(false);
+    expect(can("security.unlock", ["ADMIN"])).toBe(false);
+    expect(can("security.lockouts", ["PLATFORM_ADMIN"])).toBe(true);
+    expect(can("security.lockouts", ["PLATFORM_MANAGER"])).toBe(false);
+    expect(can("withdrawals.freeze", ["PLATFORM_ADMIN"])).toBe(true);
+    expect(can("withdrawals.freeze", ["PLATFORM_FINANCE"])).toBe(false);
+    // Email switches and pauses: the owner changes them, every staff role sees them.
+    for (const role of ["ADMIN", "PLATFORM_ADMIN", "PLATFORM_MANAGER", "PLATFORM_FINANCE"] as const) {
+      expect(can("email.controls", [role])).toBe(false);
+      expect(can("email.controlsRead", [role])).toBe(true);
+    }
+  });
+
+  it("opens the message log and the email gallery to every staff role (PlatformReadRoles)", () => {
+    for (const role of ["PLATFORM_FINANCE", "PLATFORM_OPERATION", "PLATFORM_MANAGER", "ADMIN"] as const) {
+      expect(canAccessPath("/messages", [role])).toBe(true);
+      expect(canAccessPath("/emails", [role])).toBe(true);
+    }
   });
 
   it("gates sections by path, failing open for unknown sections", () => {

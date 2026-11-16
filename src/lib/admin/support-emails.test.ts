@@ -38,6 +38,11 @@ describe("support emails", () => {
     expect(out.error).toBe("Up to 5 support emails.");
   });
 
+  it("names the list in the limit message when told what it holds", () => {
+    const five = ["a@x.com", "b@x.com", "c@x.com", "d@x.com", "e@x.com"];
+    expect(addSupportEmails(five, "f@x.com", "test recipients").error).toBe("Up to 5 test recipients.");
+  });
+
   it("flags lists that cannot be saved", () => {
     expect(supportEmailErrors([])).toEqual([]);
     expect(supportEmailErrors(["a@x.com"])).toEqual([]);

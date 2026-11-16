@@ -27,7 +27,12 @@ export function splitEmails(text: string) {
  * Adds what was typed to the list: lowercased, without repeats, at most five. Anything that is not
  * an address, or does not fit, comes back in `rejected` with the reason so the input can keep it.
  */
-export function addSupportEmails(current: string[], text: string): { list: string[]; rejected: string[]; error: string | null } {
+export function addSupportEmails(
+  current: string[],
+  text: string,
+  /** What the list holds, for the "Up to five …" message ("test recipients" on the Emails page). */
+  noun = "support emails",
+): { list: string[]; rejected: string[]; error: string | null } {
   const list = [...current];
   const rejected: string[] = [];
   let error: string | null = null;
@@ -40,7 +45,7 @@ export function addSupportEmails(current: string[], text: string): { list: strin
     }
     if (list.length >= SUPPORT_EMAILS_MAX) {
       rejected.push(email);
-      error ??= `Up to ${SUPPORT_EMAILS_MAX} support emails.`;
+      error ??= `Up to ${SUPPORT_EMAILS_MAX} ${noun}.`;
       continue;
     }
     list.push(email);

@@ -7,5 +7,8 @@ export * from "./data-table";
 export * from "./user-picker";
 export * from "./chip";
 export * from "./menu";
+export * from "./popover";
 export * from "./scroll-row";
 export * from "./skeletons";
+export * from "./code-input";
+export * from "./qr-code";
