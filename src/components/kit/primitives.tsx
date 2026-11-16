@@ -322,31 +322,44 @@ export function Switch({
   onChange,
   label,
   disabled,
+  ariaLabel,
+  title,
+  size = "md",
 }: {
   checked: boolean;
   onChange: (next: boolean) => void;
   label?: ReactNode;
   disabled?: boolean;
+  /** Accessible name when there is no visible label. */
+  ariaLabel?: string;
+  /** Hover text, e.g. why a disabled switch is locked. */
+  title?: string;
+  size?: "sm" | "md";
 }) {
+  const small = size === "sm";
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-label={ariaLabel}
+      title={title}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="inline-flex items-center gap-3 disabled:opacity-60"
+      className="inline-flex items-center gap-3 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span
         className={cx(
-          "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+          "relative shrink-0 rounded-full transition-colors",
+          small ? "h-5 w-9" : "h-6 w-11",
           checked ? "bg-brand" : "bg-line-strong",
         )}
       >
         <span
           className={cx(
-            "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
-            checked ? "left-[22px]" : "left-0.5",
+            "absolute top-0.5 rounded-full bg-white shadow transition-transform",
+            small ? "h-4 w-4" : "h-5 w-5",
+            checked ? (small ? "left-[18px]" : "left-[22px]") : "left-0.5",
           )}
         />
       </span>

@@ -6,6 +6,7 @@ import { ArrowRight, Bike, Building2, Car, Users, type LucideIcon } from "lucide
 import type { Overview } from "@/lib/admin/api";
 import { count } from "@/lib/admin/format";
 import { Panel, PanelHeader, Skeleton, cx } from "@/components/kit/primitives";
+import { settingsHref } from "@/lib/admin/settings-tabs";
 
 /**
  * Everyone on the platform, one row per group: the headline count, a
@@ -61,7 +62,7 @@ export function Community({ users, vehicles, loading, windowLabel }: { users?: O
       segments: [{ label: "Businesses", value: u.businesses ?? 0, className: "bg-chart-2" }],
       facts: [
         { label: "Owners", value: u.businessOwners ?? 0 },
-        { label: "Platform staff", value: u.staff ?? 0, href: "/admin?tab=team" },
+        { label: "Platform staff", value: u.staff ?? 0, href: settingsHref("team") },
       ],
     },
     {

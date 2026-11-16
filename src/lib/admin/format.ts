@@ -92,9 +92,13 @@ export function minutes(value: number | null | undefined) {
 }
 
 /** A person's display name, cased by formatPersonName ("ADA obi" -> "Ada Obi"). */
-export function fullName(user: { firstname?: string | null; lastname?: string | null } | null | undefined) {
+export function fullName(user: { firstname?: string | null; lastname?: string | null; isErased?: boolean } | null | undefined) {
+  // The core sends `{ firstname: "Erased user", lastname: "", isErased: true }` for a tombstone; keep its casing.
+  if (user?.isErased) return ERASED_USER_LABEL;
   return formatPersonName([user?.firstname, user?.lastname].filter(Boolean).join(" "));
 }
+
+export const ERASED_USER_LABEL = "Erased user";
 
 export function initials(name: string | null | undefined) {
   return (name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");

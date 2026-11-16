@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Banknote, Bike, Clock, Lock, Megaphone, Package, PauseCircle, ShieldCheck, Sparkles, Trophy, Wifi } from "lucide-react";
+import { Banknote, Bike, Clock, Lock, Megaphone, Package, PauseCircle, ShieldCheck, Sparkles, Star, Trophy, Wifi } from "lucide-react";
 import { Suspense, useMemo } from "react";
 
 import {
@@ -30,6 +30,8 @@ import { useAttention, useUsers } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
 import { errorMessage } from "@/lib/admin/http";
 import { formatEmail } from "@/lib/admin/person";
+
+import { ratingDisplay } from "./lib";
 
 /**
  * The rider leaderboard: GET admins/users?isRider=true with lifetime
@@ -86,9 +88,23 @@ const SORTS = [
   { value: "completedDeliveries", label: "Deliveries", icon: Package },
   { value: "totalEarned", label: "Earned", icon: Banknote },
   { value: "deliveriesAndEarnings", label: "Deliveries + earned", icon: Trophy },
+  { value: "rating", label: "Rating", icon: Star },
   { value: "lastLoginDate", label: "Last seen", icon: Clock },
   { value: "createdAt", label: "Newest", icon: Sparkles },
 ];
+
+/** Star, average to one decimal and the review count; "No ratings" until the rider has one. */
+function RatingCell({ rating, className }: { rating: User["rating"]; className?: string }) {
+  const shown = ratingDisplay(rating);
+  if (!shown) return <span className={cx("text-xs text-ink-faint", className)}>No ratings</span>;
+  return (
+    <span className={cx("inline-flex items-center gap-1 whitespace-nowrap tabular-nums", className)} title={shown.caption}>
+      <Star size={13} aria-hidden className="shrink-0 fill-warning text-warning" />
+      <span className="font-semibold text-ink">{shown.average}</span>
+      <span className="text-xs text-ink-muted">({shown.reviews})</span>
+    </span>
+  );
+}
 
 const MEDAL: Record<number, string> = {
   1: "bg-warning-soft text-warning",
@@ -185,6 +201,16 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
     meta: { sortKey: "totalEarned", align: "right", csv: { key: "totalEarned", label: "Earned (kobo)" } } satisfies ColumnMeta,
   },
   {
+    id: "rating",
+    header: "Rating",
+    cell: ({ row }) => <RatingCell rating={row.original.rating} />,
+    meta: {
+      sortKey: "rating",
+      hideBelow: "lg",
+      csv: { key: "rating", label: "Rating", value: (r) => ratingDisplay((r as User).rating)?.average ?? "" },
+    } satisfies ColumnMeta,
+  },
+  {
     id: "lastLogin",
     header: "Last seen",
     cell: ({ row }) => <span className="whitespace-nowrap text-ink-muted">{row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}</span>,
@@ -217,6 +243,7 @@ function RiderCard({ row }: { row: User }) {
           {row.dispatchPaused ? " · dispatch paused" : ""}
           {row.withdrawalRestriction?.active ? " · withdrawals paused" : ""}
         </p>
+        {ratingDisplay(row.rating) ? <RatingCell rating={row.rating} className="mt-1 text-xs" /> : null}
       </div>
     </div>
   );
@@ -359,7 +386,7 @@ function CouriersListFallback() {
   }));
   return (
     <div className="space-y-3" aria-busy="true">
-      <ChipBarSkeleton chips={["w-24", "w-20", "w-36", "w-24", "w-24"]} filters={["w-36", "w-28", "w-40", "w-44"]} />
+      <ChipBarSkeleton chips={["w-24", "w-20", "w-36", "w-20", "w-24", "w-24"]} filters={["w-36", "w-28", "w-40", "w-44"]} />
       <DataTableSkeleton
         columns={columns}
         mobileCard={<ProfileCardSkeleton />}

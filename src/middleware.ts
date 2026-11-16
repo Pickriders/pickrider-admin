@@ -6,8 +6,16 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get(STORAGE.accessToken)?.value;
   const pathname = request.nextUrl.pathname;
 
-  // Skip middleware for public assets and API routes
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname.startsWith("/assets/") || pathname === "/") {
+  // Skip middleware for public assets and API routes. `/security/*` is reachable with or without a
+  // session: the confirm page is opened from an email (often signed out), and the MFA setup-only
+  // screen is where a restricted session is sent.
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/security") ||
+    pathname === "/"
+  ) {
     return NextResponse.next();
   }
 

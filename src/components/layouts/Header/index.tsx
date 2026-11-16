@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 
 import { SVG } from "@/components/svg";
 
@@ -8,7 +7,6 @@ import { AlertBell } from "@/components/alerts/alert-bell";
 import { MobileNav } from "../MobileNav";
 import { LiveIndicator } from "./LiveIndicator";
 import { ThemeToggle } from "./ThemeToggle";
-import { UserMenu } from "./UserMenu";
 
 export const Header = () => {
   return (
@@ -23,9 +21,6 @@ export const Header = () => {
         <LiveIndicator />
         <AlertBell />
         <ThemeToggle />
-        <Suspense>
-          <UserMenu />
-        </Suspense>
       </div>
     </header>
   );
