@@ -20,12 +20,17 @@ export function SupportEmailsInput({
   value,
   onChange,
   disabled,
+  noun,
+  placeholder = "support@pickriders.com",
 }: {
   label?: string;
   hint: string;
   value: string[];
   onChange: (value: string[]) => void;
   disabled?: boolean;
+  /** What the list holds, for the "Up to five …" message (default "support emails"). */
+  noun?: string;
+  placeholder?: string;
 }) {
   const id = useId();
   const [text, setText] = useState("");
@@ -37,7 +42,7 @@ export function SupportEmailsInput({
       setError(null);
       return;
     }
-    const next = addSupportEmails(value, raw);
+    const next = addSupportEmails(value, raw, noun);
     if (next.list.length !== value.length) onChange(next.list);
     setText(next.rejected.join(", "));
     setError(next.error);
@@ -84,7 +89,7 @@ export function SupportEmailsInput({
           inputMode="email"
           autoComplete="off"
           disabled={disabled || (full && !text)}
-          placeholder={full ? "Remove one to add another" : value.length ? "Add another" : "support@pickriders.com"}
+          placeholder={full ? "Remove one to add another" : value.length ? "Add another" : placeholder}
           value={text}
           onChange={(e) => {
             setText(e.target.value);

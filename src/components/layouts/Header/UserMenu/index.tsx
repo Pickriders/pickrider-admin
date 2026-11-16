@@ -5,8 +5,15 @@ import { formatEmail, formatPersonName } from "@/lib/admin/person";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useQueryModal } from "@/hooks";
-import { LogOut, UserRound, KeyRound } from "lucide-react";
+import { settingsHref } from "@/lib/admin/settings-tabs";
+import { LogOut, UserRound, ShieldCheck, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+
+/** Account shortcuts: each opens a tab of the Settings page. */
+export const ACCOUNT_LINKS: { label: string; href: string; icon: LucideIcon }[] = [
+  { label: "Profile", href: settingsHref("profile"), icon: UserRound },
+  { label: "Security", href: settingsHref("security"), icon: ShieldCheck },
+];
 
 export const UserMenu = () => {
   const { setParam } = useQueryModal();
@@ -70,29 +77,22 @@ export const UserMenu = () => {
 
         {/* Items */}
         <div className="p-1.5">
-          <UI.DropdownMenuItem asChild>
-            <Link
-              href="/dashboard/profile"
-              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-ink-muted focus:bg-muted focus:text-foreground cursor-pointer"
-            >
-              <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground">
-                <UserRound size={16} />
-              </span>
-              Profile and appearance
-            </Link>
-          </UI.DropdownMenuItem>
-
-          <UI.DropdownMenuItem asChild>
-            <Link
-              href="/dashboard/change-password"
-              className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-ink-muted focus:bg-muted focus:text-foreground cursor-pointer"
-            >
-              <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground">
-                <KeyRound size={16} />
-              </span>
-              Change password
-            </Link>
-          </UI.DropdownMenuItem>
+          {ACCOUNT_LINKS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <UI.DropdownMenuItem key={item.label} asChild>
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold text-ink-muted focus:bg-muted focus:text-foreground cursor-pointer"
+                >
+                  <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground">
+                    <Icon size={16} />
+                  </span>
+                  {item.label}
+                </Link>
+              </UI.DropdownMenuItem>
+            );
+          })}
 
           <div className="my-1 h-px bg-border" />
 
@@ -103,7 +103,7 @@ export const UserMenu = () => {
             <span className="grid size-8 place-items-center rounded-lg bg-danger-soft text-danger">
               <LogOut size={16} />
             </span>
-            Logout
+            Log out
           </UI.DropdownMenuItem>
         </div>
       </UI.DropdownMenuContent>

@@ -9,34 +9,52 @@ export const buttonVariant: Record<Variant, string> = {
   outline: "hover:bg-gray-100 dark:hover:bg-gray-600/30 border text-primary-gray bg-transparent",
 };
 
+/**
+ * The auth-screen button. While `loading`, the label stays in the flow (invisible) so the button
+ * keeps its exact width and height, and the spinner is laid over the centre: nothing jumps when a
+ * form submits. Screen readers get `aria-busy` plus `loadingText`.
+ */
 export const PrimaryButton = ({
   children,
   variant = "default",
   className,
   asChild = false,
+  loading,
   isLoading,
-  loadingText,
+  loadingText = "Loading",
+  disabled,
   ...props
 }: PrimaryButtonProps) => {
   const Comp = asChild ? Slot : "button";
+  const busy = Boolean(loading ?? isLoading);
+  const classes = cn(
+    "relative w-full h-[2.4rem] px-4 inline-flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-45 py-2 rounded-lg font-clash-display font-semibold text-sm",
+    buttonVariant[variant],
+    className,
+  );
+
+  // Slot needs exactly one child, and a link is never "loading": pass it through untouched.
+  if (asChild) {
+    return (
+      <Comp className={classes} {...props}>
+        {children}
+      </Comp>
+    );
+  }
 
   return (
-    <Comp
-      className={cn(
-        "w-full h-[2.4rem] px-4 inline-flex justify-center disabled:cursor-not-allowed disabled:opacity-45  py-2  rounded-lg font-clash-display font-semibold text-sm",
-        buttonVariant[variant],
-        className,
-      )}
-      disabled={props.disabled || isLoading}
-      {...props}
-    >
-      {isLoading ? (
-        <div className="flex items-center gap-x-1">
-          <LoaderCircle size={15} className="animate-spin" /> {loadingText ?? "Loading..."}
-        </div>
-      ) : (
-        children
-      )}
-    </Comp>
+    <button className={classes} disabled={disabled || busy} aria-busy={busy || undefined} aria-disabled={disabled || busy || undefined} {...props}>
+      <span aria-hidden={busy || undefined} className={cn("inline-flex items-center justify-center gap-2", busy && "invisible")}>
+        {children}
+      </span>
+      {busy ? (
+        <span className="absolute inset-0 flex items-center justify-center" data-testid="button-spinner">
+          <LoaderCircle size={18} className="animate-spin" aria-hidden />
+          <span className="sr-only" role="status">
+            {loadingText}
+          </span>
+        </span>
+      ) : null}
+    </button>
   );
 };

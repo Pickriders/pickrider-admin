@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2, UserRoundX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
@@ -31,12 +31,25 @@ export function PartyCell({
   className?: string;
 }) {
   if (!party) return <span className={cx("block truncate text-xs text-ink-faint", className)}>{fallback}</span>;
+  // An erased account: a tombstone stands in for the person, so there is no profile to open.
+  if (party.isErased) {
+    return (
+      <span className={cx("flex min-w-0 items-center gap-2.5", className)} title="This account was erased">
+        <span className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint" style={{ width: size, height: size }}>
+          <UserRoundX size={Math.round(size * 0.5)} />
+        </span>
+        <span className="truncate text-[13px] font-semibold italic text-ink-faint">{fullName(party)}</span>
+      </span>
+    );
+  }
   const name = fullName(party) || "Unnamed";
   const body = (
     <span className="flex min-w-0 items-center gap-2.5">
       <Avatar src={party.photo} name={name} size={size} />
       <span className="min-w-0 flex-1 leading-tight">
-        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{name}</span>
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark" title={name}>
+          {name}
+        </span>
         {party.phone ? <span className="mt-0.5 block truncate text-[11px] tabular-nums text-ink-muted">{displayPhone(party.phone)}</span> : null}
       </span>
     </span>
@@ -261,7 +274,7 @@ export function ReleasedChip({ order }: { order: Pick<OrderRow, "_id" | "rider" 
       }}
       title="A rider released this order. Open it to see the rider history."
       className={cx(
-        "inline-flex w-fit cursor-pointer items-center gap-1 rounded-full border border-warning/40 bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning transition-colors",
+        "inline-flex w-fit shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border border-warning/40 bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning transition-colors",
         "hover:border-warning focus:outline-none focus-visible:ring-2 focus-visible:ring-warning/40",
       )}
     >
@@ -294,7 +307,7 @@ export function HandedOffChip({ order }: { order: Pick<OrderRow, "_id" | "handof
       }}
       title="Another rider took over this order after pickup. Open it to see the handoff."
       className={cx(
-        "inline-flex w-fit cursor-pointer items-center gap-1 rounded-full border border-info/30 bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info transition-colors",
+        "inline-flex w-fit shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border border-info/30 bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info transition-colors",
         "hover:border-info focus:outline-none focus-visible:ring-2 focus-visible:ring-info/40",
       )}
     >
@@ -307,8 +320,9 @@ export function HandedOffChip({ order }: { order: Pick<OrderRow, "_id" | "handof
 /**
  * The courier column. Customer-app orders are bid on, so they also say how many riders offered:
  * under the courier once one won, or on their own while the order still waits. An order a rider
- * was released from carries the amber "Released" chip underneath; one handed to another rider after
- * pickup carries the blue "Handed off" chip.
+ * was released from carries the amber "Released" chip; one handed to another rider after pickup
+ * carries the blue "Handed off" chip. The chips sit on the courier's line and never shrink: the
+ * name truncates instead (its full text is on the title), so a narrow card never overflows.
  */
 export function CourierCell({
   order,
@@ -322,9 +336,9 @@ export function CourierCell({
   const courier = <CourierBody order={order} href={href} size={size} />;
   if (!((order.riderReleaseCount ?? 0) > 0) && !((order.handoffCount ?? 0) > 0)) return courier;
   return (
-    <span className="flex min-w-0 flex-col items-start gap-1">
-      {courier}
-      <span className="flex flex-wrap gap-1">
+    <span className="flex min-w-0 items-center gap-1.5" data-testid="courier-cell">
+      <span className="min-w-0 flex-1">{courier}</span>
+      <span className="flex shrink-0 items-center gap-1">
         <ReleasedChip order={order} />
         <HandedOffChip order={order} />
       </span>
