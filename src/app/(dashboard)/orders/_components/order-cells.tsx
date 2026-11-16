@@ -57,7 +57,7 @@ export function CustomerCell({ order, href, fallback = "Unknown", size = 28, cla
   const team = order.developerTeam;
   if (!team) return <PartyCell party={order.user} href={href} fallback={fallback} size={size} className={className} />;
   return (
-    <Link href={`/developers?tab=all&open=${team.id}`} onClick={stop} title="Created with this developer team's API key" className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}>
+    <Link href={`/developers/${team.id}`} onClick={stop} title="Created with this developer team's API key" className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}>
       <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-warning-soft text-warning">
         <Code2 size={Math.round(size * 0.5)} aria-hidden strokeWidth={2.5} />
       </span>

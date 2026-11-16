@@ -56,6 +56,9 @@ import {
   AdminGetAnnouncementData,
   AdminGetDeveloperData,
   AdminGetDeveloperMonitoringData,
+  AdminGetDeveloperRequestLogData,
+  AdminGetDeveloperUsageData,
+  AdminGetDeveloperUsageParams,
   AdminGetHandoffData,
   AdminGetMyProfileData,
   AdminGetRiderAchievementsData,
@@ -81,6 +84,16 @@ import {
   AdminListAnnouncementScreensData,
   AdminListAnnouncementsData,
   AdminListAnnouncementsParams,
+  AdminListDeveloperActivityData,
+  AdminListDeveloperActivityParams,
+  AdminListDeveloperRequestLogsData,
+  AdminListDeveloperRequestLogsParams,
+  AdminListDeveloperTransactionsData,
+  AdminListDeveloperTransactionsParams,
+  AdminListDeveloperWebhookDeliveriesData,
+  AdminListDeveloperWebhookDeliveriesParams,
+  AdminListDeveloperWebhookEndpointsData,
+  AdminListDeveloperWebhookEndpointsParams,
   AdminListDevelopersData,
   AdminListDevelopersParams,
   AdminListHandoffsData,
@@ -6812,6 +6825,143 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<AdminUnsuspendDeveloperLiveData, any>({
       path: `/api/v1/admins/developers/${teamId}/unsuspend`,
       method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description The team's audit trail, newest first, with the staff member behind each staff action.
+   *
+   * @tags admins/developers
+   * @name AdminListDeveloperActivity
+   * @request GET:/api/v1/admins/developers/{teamId}/activity
+   * @secure
+   * @response `200` `AdminListDeveloperActivityData`
+   */
+  adminListDeveloperActivity = ({ teamId, ...query }: AdminListDeveloperActivityParams, params: RequestParams = {}) =>
+    this.request<AdminListDeveloperActivityData, any>({
+      path: `/api/v1/admins/developers/${teamId}/activity`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Orders per day and how they ended, spend, API errors and webhook success, for one mode.
+   *
+   * @tags admins/developers
+   * @name AdminGetDeveloperUsage
+   * @request GET:/api/v1/admins/developers/{teamId}/usage
+   * @secure
+   * @response `200` `AdminGetDeveloperUsageData`
+   */
+  adminGetDeveloperUsage = ({ teamId, ...query }: AdminGetDeveloperUsageParams, params: RequestParams = {}) =>
+    this.request<AdminGetDeveloperUsageData, any>({
+      path: `/api/v1/admins/developers/${teamId}/usage`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Every API request the team's keys made in the last 30 days, newest first, with filters.
+   *
+   * @tags admins/developers
+   * @name AdminListDeveloperRequestLogs
+   * @request GET:/api/v1/admins/developers/{teamId}/request-logs
+   * @secure
+   * @response `200` `AdminListDeveloperRequestLogsData`
+   */
+  adminListDeveloperRequestLogs = (
+    { teamId, ...query }: AdminListDeveloperRequestLogsParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminListDeveloperRequestLogsData, any>({
+      path: `/api/v1/admins/developers/${teamId}/request-logs`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description One request in full: query, IP, user agent and the (redacted) bodies.
+   *
+   * @tags admins/developers
+   * @name AdminGetDeveloperRequestLog
+   * @request GET:/api/v1/admins/developers/{teamId}/request-logs/{logId}
+   * @secure
+   * @response `200` `AdminGetDeveloperRequestLogData`
+   */
+  adminGetDeveloperRequestLog = (teamId: string, logId: string, params: RequestParams = {}) =>
+    this.request<AdminGetDeveloperRequestLogData, any>({
+      path: `/api/v1/admins/developers/${teamId}/request-logs/${logId}`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Webhook endpoints, newest first, each with a week of delivery counts. Both modes without `livemode`.
+   *
+   * @tags admins/developers
+   * @name AdminListDeveloperWebhookEndpoints
+   * @request GET:/api/v1/admins/developers/{teamId}/webhook-endpoints
+   * @secure
+   * @response `200` `AdminListDeveloperWebhookEndpointsData`
+   */
+  adminListDeveloperWebhookEndpoints = (
+    { teamId, ...query }: AdminListDeveloperWebhookEndpointsParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminListDeveloperWebhookEndpointsData, any>({
+      path: `/api/v1/admins/developers/${teamId}/webhook-endpoints`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description One endpoint's deliveries, newest first, each with the body sent and every attempt.
+   *
+   * @tags admins/developers
+   * @name AdminListDeveloperWebhookDeliveries
+   * @request GET:/api/v1/admins/developers/{teamId}/webhook-endpoints/{endpointId}/deliveries
+   * @secure
+   * @response `200` `AdminListDeveloperWebhookDeliveriesData`
+   */
+  adminListDeveloperWebhookDeliveries = (
+    { teamId, endpointId, ...query }: AdminListDeveloperWebhookDeliveriesParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminListDeveloperWebhookDeliveriesData, any>({
+      path: `/api/v1/admins/developers/${teamId}/webhook-endpoints/${endpointId}/deliveries`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description The wallet's transactions in one mode (test without `livemode=true`), newest first.
+   *
+   * @tags admins/developers
+   * @name AdminListDeveloperTransactions
+   * @request GET:/api/v1/admins/developers/{teamId}/wallet/transactions
+   * @secure
+   * @response `200` `AdminListDeveloperTransactionsData`
+   */
+  adminListDeveloperTransactions = (
+    { teamId, ...query }: AdminListDeveloperTransactionsParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminListDeveloperTransactionsData, any>({
+      path: `/api/v1/admins/developers/${teamId}/wallet/transactions`,
+      method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,

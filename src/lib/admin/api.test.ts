@@ -244,6 +244,13 @@ const CASES: Case[] = [
   { name: "developers.restoreTeam", call: () => api.developers.restoreTeam(ID), method: "POST", path: `${P}/admins/developers/${ID}/team/restore` },
   { name: "developers.revokeKey", call: () => api.developers.revokeKey(ID, "key1", "Leaked."), method: "POST", path: `${P}/admins/developers/${ID}/keys/key1/revoke`, data: { reason: "Leaked." } },
   { name: "developers.monitoring", call: () => api.developers.monitoring(), method: "GET", path: `${P}/admins/developer-monitoring` },
+  { name: "developers.activity", call: () => api.developers.activity(ID, { event: "key.", starting_after: "a1", limit: 20 }), method: "GET", path: `${P}/admins/developers/${ID}/activity`, params: { event: "key.", starting_after: "a1", limit: "20" } },
+  { name: "developers.usage", call: () => api.developers.usage(ID, true, "7d"), method: "GET", path: `${P}/admins/developers/${ID}/usage`, params: { livemode: "true", period: "7d" } },
+  { name: "developers.requestLogs", call: () => api.developers.requestLogs(ID, { status: "failed", livemode: "false", path: "" }), method: "GET", path: `${P}/admins/developers/${ID}/request-logs`, params: { status: "failed", livemode: "false" } },
+  { name: "developers.requestLog", call: () => api.developers.requestLog(ID, "log1"), method: "GET", path: `${P}/admins/developers/${ID}/request-logs/log1` },
+  { name: "developers.webhookEndpoints", call: () => api.developers.webhookEndpoints(ID, { livemode: "true" }), method: "GET", path: `${P}/admins/developers/${ID}/webhook-endpoints`, params: { livemode: "true" } },
+  { name: "developers.webhookDeliveries", call: () => api.developers.webhookDeliveries(ID, "we_1", { limit: 10 }), method: "GET", path: `${P}/admins/developers/${ID}/webhook-endpoints/we_1/deliveries`, params: { limit: "10" } },
+  { name: "developers.transactions", call: () => api.developers.transactions(ID, { livemode: "true", type: "debit" }), method: "GET", path: `${P}/admins/developers/${ID}/wallet/transactions`, params: { livemode: "true", type: "debit" } },
 ];
 
 describe("api namespaces → generated client routes", () => {
