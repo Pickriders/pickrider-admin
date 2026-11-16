@@ -50,6 +50,9 @@ const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/developers": PLATFORM_STAFF_ROLES,
   "/finances": FINANCE_READ,
   "/messaging": PLATFORM_STAFF_ROLES,
+  // The SMS and email log, and the email template gallery: PlatformReadRoles on the core.
+  "/messages": PLATFORM_STAFF_ROLES,
+  "/emails": PLATFORM_STAFF_ROLES,
   "/delivery-price": PLATFORM_STAFF_ROLES,
   "/coupons": PLATFORM_STAFF_ROLES,
   "/achievements": PLATFORM_STAFF_ROLES,
@@ -96,6 +99,19 @@ export const ACTION_ROLES = {
   // Admin section
   "team.create": ADMINS,
   "settings.write": ADMINS,
+  /** Sign-in lockouts: look one up (PlatformAdminRoles on the core) and clear it (SUPER_ADMIN only). */
+  "security.lockouts": ADMINS,
+  "security.unlock": ["SUPER_ADMIN"],
+  /** Erase a customer or courier account for good (SUPER_ADMIN + step-up on the core). */
+  "user.erase": ["SUPER_ADMIN"],
+  /** Pause every wallet withdrawal on the platform (PATCH platform-settings: PlatformAdminRoles + step-up). */
+  "withdrawals.freeze": ADMINS,
+  /** Test sends from the Emails page (PlatformAdminRoles on the core, 10 a minute per admin). */
+  "email.testSend": ADMINS,
+  /** Read the email switches and pauses (PlatformReadRoles on the core: every staff role). */
+  "email.controlsRead": PLATFORM_STAFF_ROLES,
+  /** Turn an email off or pause emails (SUPER_ADMIN + step-up on the core). */
+  "email.controls": ["SUPER_ADMIN"],
   "logs.read": GROWTH,
 } satisfies Record<string, AdminRole[]>;
 

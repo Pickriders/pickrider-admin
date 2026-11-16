@@ -26,6 +26,7 @@ import {
   statusTone,
   type RangeValue,
 } from "@/components/kit";
+import { DangerZone } from "@/components/users/danger-zone";
 import { DispatchDialog, UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
@@ -409,6 +410,8 @@ function CourierDetail({ id }: { id: string }) {
         </div>
       ) : null}
       {tab === "activity" ? <ActivityFeed user={user} includeOrders={false} enabled={tab === "activity"} /> : null}
+
+      {user ? <DangerZone user={user} listHref="/couriers" kind="courier" /> : null}
     </div>
   );
 }

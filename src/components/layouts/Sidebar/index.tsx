@@ -14,8 +14,11 @@ import {
   Code2,
   LayoutDashboard,
   LifeBuoy,
+  Mail,
   Medal,
   Megaphone,
+  MessagesSquare,
+  Settings,
   ShieldCheck,
   Ticket,
   Users,
@@ -27,8 +30,10 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 
 import { useAlertsSummary, useAttention, useDeveloperQueueCount, useHandoffsSummary } from "@/lib/admin/hooks";
+import { SETTINGS_PATH } from "@/lib/admin/settings-tabs";
 import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
 import { cn } from "@/lib/utils";
+import { SidebarAccount } from "./account";
 
 /**
  * Grouped navigation. Counts on the right are the things that need a person:
@@ -67,6 +72,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       { label: "Couriers", href: "/couriers", icon: Bike, badge: (a) => a.licencesAwaitingReview },
       { label: "Vehicles", href: "/vehicles", icon: Car, badge: (a) => a.vehiclesPendingVerification },
       { label: "Support", href: "/support", icon: LifeBuoy, badge: (a) => a.issuesOpen },
+      { label: "Messages", href: "/messages", icon: MessagesSquare },
     ],
   },
   {
@@ -89,12 +95,26 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   },
   {
     title: "System",
-    items: [{ label: "Admin", href: "/admin", icon: ShieldCheck }],
+    items: [
+      { label: "Emails", href: "/emails", icon: Mail },
+      // Your own account: profile, appearance, password and security tabs.
+      { label: "Settings", href: SETTINGS_PATH, icon: Settings },
+    ],
   },
 ];
 
 /** Flat list, kept for anything that still expects the old shape. */
 export const SIDEBAR_LINKS = NAV_GROUPS.flatMap((group) => group.items);
+
+/**
+ * The one nav item to highlight: the longest href the path sits under, so
+ * /dashboard/settings lights up Settings and not Dashboard as well.
+ */
+export function activeNavHref(pathname: string, hrefs: string[] = SIDEBAR_LINKS.map((item) => item.href)): string | undefined {
+  return hrefs
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0];
+}
 
 /**
  * `collapsed`: the icon-only rail (desktop). Labels move to a hover tooltip, group
@@ -117,6 +137,7 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
   };
 
   const visible = (href: string) => roles === null || roles.length === 0 || canAccessSection(href, roles);
+  const activeHref = activeNavHref(pathname);
 
   return (
     <nav className={cn(collapsed ? "space-y-3 px-2.5" : "space-y-5 px-3")}>
@@ -132,7 +153,7 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
             )}
             <ul className="space-y-0.5">
               {items.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const active = item.href === activeHref;
                 const badge = item.badge?.(counts);
                 const Icon = item.icon;
                 return (
@@ -141,6 +162,7 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
                       href={item.href}
                       prefetch
                       onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
                       title={collapsed ? (badge ? `${item.label} (${badge})` : item.label) : undefined}
                       aria-label={collapsed ? item.label : undefined}
                       className={cn(
@@ -230,6 +252,7 @@ export const Sidebar = () => {
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <SidebarNav collapsed={collapsed} />
       </div>
+      <SidebarAccount collapsed={collapsed} />
     </aside>
   );
 };

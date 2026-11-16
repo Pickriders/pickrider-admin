@@ -14,7 +14,9 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { pageFilter } from "./fields";
+import { LockoutsPanel } from "./lockouts";
 import { useCan } from "@/lib/admin/use-can";
+import { ROLE_LABEL } from "@/lib/admin/roles";
 
 /**
  * Team: the platform staff (users holding a staff role), plus the business and
@@ -24,17 +26,6 @@ import { useCan } from "@/lib/admin/use-can";
 const STAFF = PLATFORM_STAFF_ROLES as readonly string[];
 
 const STATUS_TONE: Record<string, Tone> = { ACTIVE: "success", INACTIVE: "neutral", SUSPENDED: "warning", BANNED: "danger" };
-const ROLE_LABEL: Record<string, string> = {
-  SUPER_ADMIN: "Super admin",
-  ADMIN: "Admin",
-  PLATFORM_ADMIN: "Platform admin",
-  PLATFORM_MANAGER: "Manager",
-  PLATFORM_OPERATION: "Operations",
-  PLATFORM_FINANCE: "Finance",
-  USER: "User",
-  PLATFORM_RIDER: "Platform rider",
-  DEVELOPER: "Developer",
-};
 
 /** Non-staff accounts the console can create; staff roles come from PLATFORM_STAFF_ROLES. */
 const CREATABLE_ROLES = ["USER", "PLATFORM_RIDER", "DEVELOPER"] as const;
@@ -206,6 +197,7 @@ export function TeamTab() {
       </div>
 
       {view === "staff" ? <StaffTable onOpen={(id) => table.update({ member: id }, { resetPage: false })} /> : <TeamsTable />}
+      {view === "staff" ? <LockoutsPanel /> : null}
 
       <MemberDrawer userId={memberId} onClose={() => table.update({ member: undefined }, { resetPage: false })} />
       <AddMemberDrawer open={adding} onClose={() => table.update({ add: undefined }, { resetPage: false })} />

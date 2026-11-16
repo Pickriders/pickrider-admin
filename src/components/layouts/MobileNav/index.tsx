@@ -9,6 +9,7 @@ import { SVG } from "@/components/svg";
 import { cn } from "@/lib/utils";
 
 import { SidebarNav } from "../Sidebar";
+import { SidebarAccount } from "../Sidebar/account";
 
 /**
  * Hamburger + slide-in drawer for < xl screens, same nav as the sidebar. The
@@ -70,6 +71,7 @@ export const MobileNav = () => {
         <nav className="flex-1 overflow-y-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <SidebarNav onNavigate={() => setOpen(false)} />
         </nav>
+        <SidebarAccount onNavigate={() => setOpen(false)} />
       </div>
     </div>
   );

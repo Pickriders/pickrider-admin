@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, developers, finance, handoffs, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type DeveloperUsagePeriod, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, alerts, announcements, auth, businesses, coupons, deliveryPrice, developers, emailControls, emailTemplates, finance, handoffs, issues, me, messages, messaging, orders, platformSettings, reviews, riderInsights, riderReleases, security, settings, stats, transactions, users, vehicles, type DeveloperUsagePeriod, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -69,6 +69,16 @@ export function useMarkSeen(key: "messagingFailures" | "transactionFailures", en
   }, [key, enabled, client]);
 }
 export const useMe = () => useQuery({ queryKey: ["me"], queryFn: me.get, staleTime: 5 * 60_000 });
+
+// Settings, Security tab: the authenticator and the sessions of the signed-in admin.
+export const useMfaStatus = (enabled = true) => useQuery({ queryKey: ["me", "mfa"], queryFn: auth.mfaStatus, enabled, staleTime: 60_000 });
+export const useSessions = (enabled = true) => useQuery({ queryKey: ["me", "sessions"], queryFn: auth.sessions, enabled, refetchInterval: POLL_MS });
+/** A sign-in lockout by email; off until an email is typed. Not retried: a 403 means the role may not look. */
+export const useLockoutStatus = (email: string) =>
+  useQuery({ queryKey: ["security", "lockout", email], queryFn: () => security.lockout(email), enabled: Boolean(email), retry: false, staleTime: 0 });
+/** What stands in the way of erasing a user; fetched only while the erase flow is open. */
+export const useErasureBlockers = (userId: string, enabled = true) =>
+  useQuery({ queryKey: ["user", userId, "erasure-blockers"], queryFn: () => users.erasureBlockers(userId), enabled: Boolean(userId) && enabled, staleTime: 0, retry: false });
 
 // Lists
 export const useCustomersOverview = (range: RangeQuery & { bucket?: string }) =>
@@ -147,6 +157,8 @@ export const useCountries = () => useQuery({ queryKey: ["settings", "countries"]
 export const useCountry = (id: string) => useQuery({ queryKey: ["settings", "country", id], queryFn: () => settings.country(id), enabled: Boolean(id) });
 export const useStates = (countryId: string) => useQuery({ queryKey: ["settings", "states", countryId], queryFn: () => settings.states(countryId), enabled: Boolean(countryId) });
 export const useDeliveryPricing = () => useQuery({ queryKey: ["settings", "delivery-pricing"], queryFn: settings.deliveryPricing });
+/** Polls so the withdrawal-freeze banner in the shell notices a freeze set elsewhere (or the cron lifting it). */
+export const usePlatformSettings = () => useQuery({ queryKey: ["settings", "platform"], queryFn: platformSettings.get, refetchInterval: POLL_MS });
 export const useDeliveryPriceConfig = () => useQuery({ queryKey: ["delivery-price", "config"], queryFn: deliveryPrice.config });
 export const useDeliveryPriceAnalytics = (query?: Query) => useQuery({ queryKey: ["delivery-price", "analytics", query], queryFn: () => deliveryPrice.analytics(query), placeholderData: keepPreviousData });
 
@@ -157,7 +169,13 @@ export const useDeliveryPriceAnalytics = (query?: Query) => useQuery({ queryKey:
  */
 export function useAction<TVars, TData = unknown>(
   fn: (vars: TVars) => Promise<TData>,
-  options: { success?: string | ((data: TData, vars: TVars) => string); invalidate?: (string | unknown[])[]; onSuccess?: (data: TData, vars: TVars) => void } = {},
+  options: {
+    success?: string | ((data: TData, vars: TVars) => string);
+    invalidate?: (string | unknown[])[];
+    onSuccess?: (data: TData, vars: TVars) => void;
+    /** Error copy for this action when the default (the API's message) would read badly, e.g. a 429. */
+    error?: (error: unknown) => string;
+  } = {},
 ) {
   const client = useQueryClient();
   return useMutation({
@@ -168,7 +186,7 @@ export function useAction<TVars, TData = unknown>(
       for (const key of options.invalidate ?? []) void client.invalidateQueries({ queryKey: Array.isArray(key) ? key : [key] });
       options.onSuccess?.(data, vars);
     },
-    onError: (error) => toast.error(errorMessage(error)),
+    onError: (error) => toast.error(options.error ? options.error(error) : errorMessage(error)),
   });
 }
 
@@ -237,6 +255,34 @@ export const useAlertsSummary = (enabled = true) =>
 /** A staff member's name for "{name} is handling this"; the alert carries the admin id only. */
 export const useStaffName = (adminId: string | null | undefined) =>
   useQuery({ queryKey: ["user", adminId ?? ""], queryFn: () => users.get(adminId ?? ""), enabled: Boolean(adminId), staleTime: 30 * 60_000, retry: false });
+
+// Message log (every SMS and email handed to a provider). The summary takes the same ISO range as the list.
+export const useMessages = (query: Query) => useQuery({ queryKey: ["messages", "list", query], queryFn: () => messages.list(query), ...keep, refetchInterval: POLL_MS });
+export const useMessagesSummary = (range: { dateFrom?: string; dateTo?: string }) =>
+  useQuery({ queryKey: ["messages", "summary", range], queryFn: () => messages.summary(range), placeholderData: keepPreviousData, refetchInterval: POLL_MS });
+export const useMessage = (messageId: string) =>
+  useQuery({ queryKey: ["messages", "detail", messageId], queryFn: () => messages.get(messageId), enabled: Boolean(messageId) });
+
+// Email templates. The registry only changes with a core deploy, so it is cached for the session.
+export const useEmailTemplates = () => useQuery({ queryKey: ["email-templates", "list"], queryFn: emailTemplates.list, staleTime: 30 * 60_000 });
+/** Sample-data preview, or a render with `variables` when given. A render error (400) is shown, not retried. */
+export const useEmailPreview = (key: string, variables?: Record<string, unknown> | null) =>
+  useQuery({
+    queryKey: ["email-templates", "preview", key, variables ?? null],
+    queryFn: () => (variables ? emailTemplates.previewWith(key, variables) : emailTemplates.preview(key)),
+    enabled: Boolean(key),
+    staleTime: 5 * 60_000,
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+
+/**
+ * The email controls (switches and pauses). Polls so the pause banner in the shell notices a pause
+ * set elsewhere or lifted by the core's cron; `enabled` keeps it off until the role is known.
+ */
+export const EMAIL_CONTROLS_KEY = ["email-templates", "controls"] as const;
+export const useEmailControls = (enabled = true) =>
+  useQuery({ queryKey: EMAIL_CONTROLS_KEY, queryFn: emailControls.get, refetchInterval: POLL_MS, enabled });
 
 // Developers. Keyed under ["developers"] so every staff action refreshes the list, the queue count and the open team.
 export const useDevelopers = (query: Query, enabled = true) =>

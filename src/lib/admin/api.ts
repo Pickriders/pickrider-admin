@@ -108,6 +108,10 @@ export type User = {
   /** Rider list only (leaderboard rollups). */
   completedDeliveries?: number;
   totalEarned?: number;
+  /** Rider list only (leaderboard rollup); null before any review. The shape is the core's RatingSummaryDto without the distribution. */
+  rating?: Pick<import("@/services").RatingSummaryDto, "average" | "count"> | null;
+  /** Set by the core's read pipelines when the account was erased and a tombstone stands in for it. */
+  isErased?: boolean;
   [key: string]: unknown;
 };
 
@@ -528,11 +532,50 @@ export const stats = {
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
-export type LoginResult = { accessToken: string; expiryDurationSeconds: number; refreshToken: string };
+/**
+ * What sign-in, the MFA challenge and refresh return: tokens, or `mfaRequired` with the
+ * single-use mfaToken for the challenge. Typed straight off the generated client.
+ */
+export type LoginResult = import("@/services").AdminLoginResponseDto;
+export type MfaChallengeInput = import("@/services").MfaChallengeRequestDto;
+export type {
+  AdminSessionResponseDto as AdminSession,
+  MfaStatusResponseDto as MfaStatus,
+  MfaSetupResponseDto as MfaSetup,
+  MfaEnabledResponseDto as MfaEnabled,
+  RecoveryCodesResponseDto as RecoveryCodes,
+  SecurityConfirmResponseDto as SecurityConfirmResult,
+  SecurityConfirmAction,
+  LockoutStatusResponseDto as LockoutStatus,
+  UnlockLoginResponseDto as UnlockResult,
+} from "@/services";
 
 export const auth = {
   /** Any platform staff role signs in; the backend decides what the role can do. */
-  login: (body: { identifier: string; password: string }) => as<LoginResult>(apiService.loginAdmins(body)),
+  login: (body: { identifier: string; password: string }) => apiService.loginAdmins(body),
+  /** Step two of sign-in: an authenticator code or a recovery code against the mfaToken. */
+  mfaChallenge: (body: MfaChallengeInput) => apiService.adminMfaChallenge(body),
+  /** Rotates the session: the old refresh token stops working the moment this succeeds. */
+  refresh: (refreshToken: string) => apiService.adminRefreshSession({ refreshToken }),
+  logout: () => apiService.adminLogout(),
+  sessions: () => apiService.adminListSessions(),
+  revokeSession: (sessionId: string) => apiService.adminRevokeSession(sessionId),
+  revokeOtherSessions: () => apiService.adminRevokeOtherSessions(),
+  mfaStatus: () => apiService.adminMfaStatus(),
+  /** Starts (or restarts) authenticator setup: the secret and otpauth URI to show once. */
+  mfaSetup: () => apiService.adminMfaTotpSetup(),
+  /** Confirms the first code; returns the ten recovery codes, shown once. */
+  mfaVerify: (code: string) => apiService.adminMfaTotpVerify({ code }),
+  mfaDisable: (code: string) => apiService.adminMfaTotpDisable({ code }),
+  regenerateRecoveryCodes: (code: string) => apiService.adminMfaRegenerateRecoveryCodes({ code }),
+  /** Acts on a signed link from a security email (new device, sign out this device). Works once. */
+  securityConfirm: (token: string) => apiService.adminSecurityConfirm({ token }),
+};
+
+/** Sign-in lockouts (tag admins/security): look one up by email, clear it (super admin). */
+export const security = {
+  lockout: (email: string) => apiService.adminLockoutStatus(params({ email })),
+  unlock: (email: string) => apiService.adminUnlockLogin({ email }),
 };
 
 // ── Me ────────────────────────────────────────────────────────────────────────
@@ -575,7 +618,14 @@ export const users = {
   /** Pause (reason required) or lift wallet withdrawals; the note is shown to the rider. */
   setWithdrawalRestriction: (userId: string, body: WithdrawalRestrictionInput) =>
     as<User>(apiService.adminSetWithdrawalRestriction(userId, body as never)),
+  /** What stands in the way of erasing this account (open orders, a balance, a business they own). */
+  erasureBlockers: (userId: string) => apiService.adminErasureBlockers(userId),
+  /** Super admin, step-up protected (428 then X-MFA-Code). Irreversible: the row goes, a tombstone stays. */
+  erase: (userId: string, body: EraseUserInput) => apiService.adminEraseUser(userId, body),
 };
+
+export type EraseUserInput = import("@/services").EraseUserRequestDto;
+export type { ErasureBlockerDto as ErasureBlocker, ErasureBlockersResponseDto as ErasureBlockers, EraseUserResponseDto as EraseUserResult } from "@/services";
 
 export type RefundableOrder = {
   _id: string;
@@ -754,6 +804,20 @@ export const settings = {
   deliveryPricing: () => as<Record<string, unknown>>(apiService.getDeliveryPricing()),
 };
 
+/** Platform-wide settings (one document in core): the fallback support emails and the withdrawal freeze. */
+export type {
+  PlatformSettingsResponseDto as PlatformSettings,
+  UpdatePlatformSettingsRequestDto as PlatformSettingsUpdate,
+  WithdrawalFreezeViewDto as WithdrawalFreeze,
+  WithdrawalFreezeRequestDto as WithdrawalFreezeInput,
+} from "@/services";
+
+export const platformSettings = {
+  get: () => apiService.getPlatformSettings(),
+  /** Only the keys sent change; supportEmails: [] clears the list. Step-up protected (428 then X-MFA-Code). */
+  update: (body: import("@/services").UpdatePlatformSettingsRequestDto) => apiService.updatePlatformSettings(body),
+};
+
 export const deliveryPrice = {
   analytics: (query?: Query) => as<Record<string, unknown>>(apiService.analytics(params(query))),
   config: () => as<Record<string, unknown>>(apiService.adminConfig()),
@@ -791,7 +855,7 @@ export function downloadCsv(name: string, csv: string) {
 // ── Orders: populated shapes ──────────────────────────────────────────────────
 
 /** What the order aggregations attach for the customer and the rider. */
-export type OrderParty = Pick<User, "_id" | "firstname" | "lastname" | "photo" | "phone"> & {
+export type OrderParty = Pick<User, "_id" | "firstname" | "lastname" | "photo" | "phone" | "isErased"> & {
   email?: string;
   /** Rider only, from the order detail aggregation. */
   reviews?: { average: number; count: number };
@@ -1065,8 +1129,8 @@ export type StateConfig = {
   handoffCancelCompensation?: number;
   handoffConfirmRadiusM?: number;
   handoffsPerOrder?: number;
-  /** E.164 (+234…). Urgent alerts nobody claims in 2 minutes go here on WhatsApp. Empty clears it. */
-  supportWhatsappPhone?: string;
+  /** Up to 5 inboxes emailed when an urgent alert goes unclaimed for 2 minutes. Empty falls back to the platform list. */
+  supportEmails?: string[];
   /** Rider releases ("Can't make it"): free early releases per Lagos day, then 7-day counted releases that ring later, alert staff, and pause. */
   releaseFreePerDay?: number;
   releaseAlertWeekly?: number;
@@ -1578,6 +1642,81 @@ export const alerts = {
   summary: () => apiService.adminAlertsSummary(),
   claim: (alertId: string) => apiService.adminClaimAlert(alertId),
   resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
+  /** Sends a sample urgent alert email: to a state's support emails, or the platform list when no codes are given. */
+  testEmail: (body: import("@/services").AdminTestAlertEmailRequestDto = {}) => apiService.adminSendTestAlertEmail(body),
+};
+
+// ── Message log (admins/messages) ────────────────────────────────────────────────
+/**
+ * Every SMS (Termii) and email (SMTP) the platform handed to a provider, with the provider's
+ * answer. Subjects, bodies and errors are redacted by core before they are stored (codes, tokens,
+ * secret link parameters), and `to` is shown exactly as core returns it. Lists omit the body.
+ * Dates are ISO instants (`dateFrom` / `dateTo`, both inclusive); the summary defaults to 7 days.
+ */
+export type {
+  AdminMessageChannelCountDto as MessageChannelCount,
+  AdminMessageDto as OutboundMessage,
+  AdminMessageProviderResponseDto as MessageProviderResponse,
+  AdminMessagesSummaryResponseDto as MessagesSummary,
+  AdminTermiiBalanceDto as TermiiBalance,
+} from "@/services";
+export { OutboundMessageChannel, OutboundMessageProvider, OutboundMessagePurpose, OutboundMessageSkipReason, OutboundMessageStatus } from "@/services";
+
+export const messages = {
+  /** channel, status, skipReason, provider, purpose, recipient, template, userId, orderId, dateFrom, dateTo, page, limit. */
+  list: (query: Query) => page<import("@/services").AdminMessageDto>(apiService.adminListMessages(params(query))),
+  summary: (range: { dateFrom?: string; dateTo?: string } = {}) => apiService.adminMessagesSummary(params(range)),
+  get: (messageId: string) => apiService.adminGetMessage(messageId),
+};
+
+// ── Email templates (admins/email-templates) ─────────────────────────────────────
+/**
+ * The email registry: every template the platform sends, rendered from the code version this
+ * core build ships (not the stored copy). Previews come back as a full HTML document for an
+ * iframe `srcDoc` plus the plain-text part. Test sends go through the real queue with sample
+ * data and a "[Test] " subject, to 1..5 addresses, 10 requests a minute per admin.
+ */
+export type {
+  EmailTemplatePreviewResponseDto as EmailPreview,
+  EmailTemplateSummaryDto as EmailTemplate,
+  SendTestEmailsResponseDto as TestEmailsResult,
+  TestEmailQueuedDto as TestEmailQueued,
+} from "@/services";
+export { EmailAudience, EmailCategory } from "@/services";
+
+/** `templateKey` value that sends every template in the registry. */
+export const ALL_EMAIL_TEMPLATES = "ALL";
+
+export const emailTemplates = {
+  list: () => apiService.adminListEmailTemplates(),
+  preview: (key: string) => apiService.adminPreviewEmailTemplate(key),
+  /** Renders with these values merged over the sample data (core escapes them). */
+  previewWith: (key: string, variables: Record<string, unknown>) => apiService.adminPreviewEmailTemplateWithVariables(key, { variables }),
+  /** One key, or ALL_EMAIL_TEMPLATES, to 1..5 addresses. */
+  sendTests: (templateKey: string, recipients: string[]) => apiService.adminSendTestEmails({ templateKey, recipients }),
+};
+
+// ── Email controls (admins/email-templates/controls) ────────────────────────────
+/**
+ * Which emails the platform holds back: one switch per email (essential emails are locked on), a
+ * marketing pause and a pause of everything non-essential. Every write answers the full controls
+ * document. Writes are SUPER_ADMIN only and step-up protected (428 then X-MFA-Code, handled by the
+ * client); reads are open to every staff role. A reason is required to turn off or to pause.
+ */
+export type {
+  EmailControlsResponseDto as EmailControls,
+  EmailTemplateControlDto as EmailTemplateControl,
+  EmailPauseViewDto as EmailPause,
+  EmailPauseRequestDto as EmailPauseInput,
+} from "@/services";
+
+export const emailControls = {
+  get: () => apiService.adminGetEmailControls(),
+  /** Turning off needs a reason (max 280); turning back on may carry one for the audit log. */
+  setTemplate: (key: string, body: import("@/services").SetEmailTemplateEnabledRequestDto) => apiService.adminSetEmailTemplateEnabled(key, body),
+  /** `{ active: true, reason, until? }` pauses, `{ active: false, reason? }` lifts. */
+  pauseMarketing: (body: import("@/services").EmailPauseRequestDto) => apiService.adminPauseMarketingEmails(body),
+  pauseNonEssential: (body: import("@/services").EmailPauseRequestDto) => apiService.adminPauseNonEssentialEmails(body),
 };
 
 // ── Developers (admins/developers, admins/developer-monitoring) ─────────────────
