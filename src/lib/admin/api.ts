@@ -845,8 +845,10 @@ export type OrderRow = Order & {
   currency?: string;
   paidDate?: string;
   cancelledBy?: string;
-  /** VENDOR_STOREFRONT = storefront, CUSTOMER_WEB = web, absent = customer app. */
+  /** VENDOR_STOREFRONT = storefront, CUSTOMER_WEB = web, DEVELOPER_API = a developer's API key, absent = customer app. */
   channel?: string;
+  /** Developer API orders: the team whose key created it (admin list only). */
+  developerTeam?: { id: string; name: string } | null;
   offers?: unknown[];
   /** Admin list: how many rider offers the order has had, any status. */
   offersCount?: number;
@@ -1576,4 +1578,39 @@ export const alerts = {
   summary: () => apiService.adminAlertsSummary(),
   claim: (alertId: string) => apiService.adminClaimAlert(alertId),
   resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
+};
+
+// ── Developers (admins/developers, admins/developer-monitoring) ─────────────────
+/**
+ * Developer API teams: the live-access review queue, each team's usage, and the staff actions on
+ * it (approve or reject live access, suspend live mode or the whole team, revoke one key). Every
+ * action except approve and the restores takes a reason, which the developer sees.
+ */
+export type {
+  AdminDeveloperRowDto as DeveloperRow,
+  AdminDeveloperDetailDto as DeveloperDetail,
+  AdminDeveloperKeyDto as DeveloperKey,
+  AdminDeveloperMemberDto as DeveloperMember,
+  AdminDeveloperModeDto as DeveloperModeStats,
+  DeveloperMonitoringDto as DeveloperMonitoring,
+  DeveloperMonitoringWindowDto as DeveloperMonitoringWindow,
+} from "@/services";
+export type DeveloperLiveStatus = import("@/services").AdminDeveloperRowDto["liveStatus"];
+
+export const developers = {
+  /** liveStatus=PENDING is the review queue, oldest request first; search matches name, handle, company or email. */
+  list: (query: Query) =>
+    page<import("@/services").AdminDeveloperRowDto>(apiService.adminListDevelopers(params(query))),
+  get: (teamId: string) => apiService.adminGetDeveloper(teamId),
+  approve: (teamId: string) => apiService.adminApproveDeveloperLive(teamId),
+  reject: (teamId: string, reason: string) => apiService.adminRejectDeveloperLive(teamId, { reason }),
+  /** Live mode only: test keys keep working. */
+  suspendLive: (teamId: string, reason: string) => apiService.adminSuspendDeveloperLive(teamId, { reason }),
+  unsuspendLive: (teamId: string) => apiService.adminUnsuspendDeveloperLive(teamId),
+  /** The whole team: every key, test and live, is refused on its next request. */
+  suspendTeam: (teamId: string, reason: string) => apiService.adminSuspendDeveloperTeam(teamId, { reason }),
+  restoreTeam: (teamId: string) => apiService.adminRestoreDeveloperTeam(teamId),
+  revokeKey: (teamId: string, keyId: string, reason: string) =>
+    apiService.adminRevokeDeveloperKey(teamId, keyId, { reason }),
+  monitoring: () => apiService.adminGetDeveloperMonitoring(),
 };

@@ -19,7 +19,7 @@ export type TableState = {
   filters: Record<string, string>;
 };
 
-const RESERVED = new Set(["page", "limit", "sortBy", "order", "search", "from", "to", "tab"]);
+const RESERVED = new Set(["page", "limit", "sortBy", "order", "search", "from", "to", "tab", "open"]);
 /** Earlier than any record on the platform; anchors "everything up to <date>" ranges. */
 const EARLIEST_DAY = "2023-01-01";
 
@@ -111,4 +111,26 @@ export function useTabParam<T extends string>(fallback: T, allowed: readonly T[]
     [fallback, params, pathname, router],
   );
   return [tab, setTab] as const;
+}
+
+/**
+ * The record open in a drawer, as `?open=<id>`: shareable and kept on refresh, but not a table filter,
+ * so opening one keeps the page, isn't counted under "Clear", and survives a tab change.
+ */
+export function useOpenParam() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const open = params.get("open");
+  const setOpen = useCallback(
+    (id: string | null) => {
+      const search = new URLSearchParams(params.toString());
+      if (id) search.set("open", id);
+      else search.delete("open");
+      const query = search.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [params, pathname, router],
+  );
+  return [open, setOpen] as const;
 }

@@ -3846,6 +3846,12 @@ export interface ListReviewResponseDto {
   totalPages: number;
 }
 
+export interface OrderListDeveloperTeamDto {
+  id: string;
+  /** @example "Acme Logistics" */
+  name: string;
+}
+
 export interface OrderListItemResponseDto {
   userId?: string;
   riderId?: string;
@@ -3989,6 +3995,8 @@ export interface OrderListItemResponseDto {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+  /** For orders created through the Developer API (channel DEVELOPER_API): the team. Null otherwise. */
+  developerTeam: OrderListDeveloperTeamDto | null;
   /** How many rider offers (bids) the order has received, any status */
   offersCount: number;
 }
@@ -6298,6 +6306,12 @@ export interface Team {
   liveRejectionReason: string;
   /** Why live access was suspended. The developer sees it. */
   liveSuspensionReason: string;
+  /** Why the whole team was suspended. */
+  suspensionReason?: string;
+  /** @format date-time */
+  suspendedAt?: string;
+  /** The admin who suspended it. */
+  suspendedBy?: string;
   allowedRoles: ("TEAM_OWNER" | "TEAM_MEMBER" | "TEAM_ADMIN" | "TEAM_VIEWER" | "TEAM_DEVELOPER" | "TEAM_FINANCE")[];
   address: {
     country?: string;
@@ -6643,7 +6657,8 @@ export interface StopInputDto {
    * @example "1 Admiralty Way, Lekki, Lagos"
    */
   address: string;
-  contact: StopContactDto;
+  /** Who the rider meets. Required at every drop-off, and at the pickup of a batch. A single or bulk pickup may leave it out: an errand, where the rider buys or collects from a shop with no one to call. */
+  contact?: StopContactDto;
   /**
    * @maxLength 500
    * @example "Gate 3, ask for Bola"
@@ -6685,8 +6700,11 @@ export interface QuoteStopDto {
   address: string;
   lat: number;
   lng: number;
-  /** @example {"name":"Bola Ade","phone":"+2348031234567"} */
-  contact: object;
+  /**
+   * Null at an errand pickup with no one to meet.
+   * @example {"name":"Bola Ade","phone":"+2348031234567"}
+   */
+  contact: object | null;
   instructions: string | null;
   /** @example {"description":"Shoes","value":2500000} */
   package: object | null;
@@ -8258,6 +8276,10 @@ export interface AdminDeveloperRowDto {
   /** @format date-time */
   liveReviewedAt: string | null;
   owner: AdminDeveloperOwnerDto | null;
+  /** Why the whole team is suspended (status SUSPENDED). */
+  suspensionReason: string | null;
+  /** @format date-time */
+  suspendedAt: string | null;
   /** @format date-time */
   createdAt: string;
 }
@@ -8277,6 +8299,90 @@ export interface AdminDeveloperReviewerDto {
   name: string;
 }
 
+export interface AdminDeveloperMemberDto {
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * The strongest of their roles.
+   * @example "TEAM_ADMIN"
+   */
+  role: string;
+  isOwner: boolean;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+}
+
+export interface AdminDeveloperKeyDto {
+  id: string;
+  label: string;
+  /**
+   * The first characters of the secret, never the secret.
+   * @example "sk_test_4eC3"
+   */
+  prefix: string;
+  livemode: boolean;
+  status: "active" | "expiring" | "expired" | "revoked";
+  /** Empty means every scope. */
+  scopes: string[];
+  /** @format date-time */
+  lastUsedAt: string | null;
+  /** @format date-time */
+  expiresAt: string | null;
+  /** @format date-time */
+  revokedAt: string | null;
+  /** Set when a Pickriders admin revoked it. */
+  revokedReason: string | null;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export interface AdminDeveloperWalletDto {
+  /** Balance less held, in kobo. */
+  available: number;
+  /** Held for orders in progress, in kobo. */
+  held: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
+export interface AdminDeveloperOrdersDto {
+  total: number;
+  /** Created in the last 30 days. */
+  last30Days: number;
+  /** Not finished yet. */
+  active: number;
+  delivered: number;
+  /** Cancelled by the developer or by Pickriders. */
+  cancelled: number;
+}
+
+export interface AdminDeveloperWebhooksDto {
+  endpoints: number;
+  /** Enabled and answering. */
+  healthy: number;
+  /** Enabled but failing since some time. */
+  failing: number;
+  /** Turned off, by the developer or after 3 days of failures. */
+  disabled: number;
+}
+
+export interface AdminDeveloperModeDto {
+  /** Null until the wallet exists. */
+  wallet: AdminDeveloperWalletDto | null;
+  orders: AdminDeveloperOrdersDto;
+  webhooks: AdminDeveloperWebhooksDto;
+  /** API requests in the last 30 days. */
+  requests30d: number;
+  /** Of those, answered 400 or above. */
+  errors30d: number;
+  /**
+   * The latest API request in this mode.
+   * @format date-time
+   */
+  lastRequestAt: string | null;
+}
+
 export interface AdminDeveloperDetailDto {
   /** The team id. */
   id: string;
@@ -8291,6 +8397,10 @@ export interface AdminDeveloperDetailDto {
   /** @format date-time */
   liveReviewedAt: string | null;
   owner: AdminDeveloperOwnerDto | null;
+  /** Why the whole team is suspended (status SUSPENDED). */
+  suspensionReason: string | null;
+  /** @format date-time */
+  suspendedAt: string | null;
   /** @format date-time */
   createdAt: string;
   website: string | null;
@@ -8304,6 +8414,13 @@ export interface AdminDeveloperDetailDto {
   liveReviewedBy: AdminDeveloperReviewerDto | null;
   /** Active members, the owner included. */
   memberCount: number;
+  /** Active members, owner first. */
+  members: AdminDeveloperMemberDto[];
+  /** Every key, newest first, revoked included. */
+  keys: AdminDeveloperKeyDto[];
+  /** Test-mode activity: what a reviewer looks at. */
+  test: AdminDeveloperModeDto;
+  live: AdminDeveloperModeDto;
 }
 
 export interface DeveloperLiveDecisionRequestDto {
@@ -8313,6 +8430,67 @@ export interface DeveloperLiveDecisionRequestDto {
    * @example "Add your company website and describe what you deliver."
    */
   reason: string;
+}
+
+export interface DeveloperMonitoringWindowDto {
+  /** @example 60 */
+  minutes: number;
+  /** Requests answered */
+  requests: number;
+  /** Requests answered 5xx */
+  errors: number;
+  errorRate: number | null;
+  /** Requests refused with 429 */
+  rateLimited: number;
+  rateLimitedRate: number | null;
+  /** 95th percentile response time, ms */
+  p95Ms: number | null;
+  webhookAttempts: number;
+  /** Webhook attempts without a 2xx */
+  webhookFailures: number;
+  webhookFailureRate: number | null;
+}
+
+export interface DeveloperWebhookQueueDto {
+  /** Deliveries waiting to be sent or retried */
+  pending: number;
+  /** Pending deliveries due more than a minute ago */
+  overdue: number;
+  /** How late the oldest overdue delivery is, seconds */
+  oldestOverdueSeconds: number | null;
+}
+
+export interface DeveloperErrorTeamDto {
+  teamId: string;
+  name: string | null;
+  requests: number;
+  /** Requests answered 5xx */
+  errors: number;
+}
+
+export interface DeveloperMonitoringThresholdsDto {
+  windowMinutes: number;
+  minRequests: number;
+  errorRate: number;
+  p95Ms: number;
+  rateLimitedRate: number;
+  minWebhookAttempts: number;
+  webhookFailureRate: number;
+  overdueDeliveries: number;
+}
+
+export interface DeveloperMonitoringDto {
+  /** @format date-time */
+  at: string;
+  /** The window the alerts check */
+  now: DeveloperMonitoringWindowDto;
+  lastHour: DeveloperMonitoringWindowDto;
+  last24Hours: DeveloperMonitoringWindowDto;
+  queue: DeveloperWebhookQueueDto;
+  /** Teams with the most 5xx answers in the last hour */
+  errorTeams: DeveloperErrorTeamDto[];
+  /** What raises an alert */
+  thresholds: DeveloperMonitoringThresholdsDto;
 }
 
 export type GetHeartbeatData = any;
@@ -9558,6 +9736,10 @@ export type RiderConfirmHandoffData = HandoffViewDto;
 export type RiderPassOrderData = RiderPassOrderResponseDto;
 
 export interface GetOrdersParams {
+  /** One developer team's orders */
+  teamId?: string;
+  /** Where orders came from: DEVELOPER_API for orders created with a developer API key */
+  channel?: string;
   /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
   releasedOnly?: boolean;
   /** date filter for scheduled orders - provide this if filtering for scheduled orders */
@@ -10336,4 +10518,12 @@ export type AdminRejectDeveloperLiveData = AdminDeveloperDetailDto;
 
 export type AdminSuspendDeveloperLiveData = AdminDeveloperDetailDto;
 
+export type AdminSuspendDeveloperTeamData = AdminDeveloperDetailDto;
+
+export type AdminRestoreDeveloperTeamData = AdminDeveloperDetailDto;
+
+export type AdminRevokeDeveloperKeyData = AdminDeveloperDetailDto;
+
 export type AdminUnsuspendDeveloperLiveData = AdminDeveloperDetailDto;
+
+export type AdminGetDeveloperMonitoringData = DeveloperMonitoringDto;

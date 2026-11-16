@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, finance, handoffs, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, alerts, announcements, businesses, coupons, deliveryPrice, developers, finance, handoffs, issues, me, messaging, orders, reviews, riderInsights, riderReleases, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -237,3 +237,15 @@ export const useAlertsSummary = (enabled = true) =>
 /** A staff member's name for "{name} is handling this"; the alert carries the admin id only. */
 export const useStaffName = (adminId: string | null | undefined) =>
   useQuery({ queryKey: ["user", adminId ?? ""], queryFn: () => users.get(adminId ?? ""), enabled: Boolean(adminId), staleTime: 30 * 60_000, retry: false });
+
+// Developers. Keyed under ["developers"] so every staff action refreshes the list, the queue count and the open team.
+export const useDevelopers = (query: Query, enabled = true) =>
+  useQuery({ queryKey: ["developers", "list", query], queryFn: () => developers.list(query), ...keep, enabled });
+/** How many teams are waiting for a live-access decision: the sidebar badge and the queue tab. */
+export const useDeveloperQueueCount = (enabled = true) =>
+  useQuery({ queryKey: ["developers", "list", { liveStatus: "PENDING", limit: 1 }], queryFn: () => developers.list({ liveStatus: "PENDING", limit: 1 }), select: (data) => data.total, refetchInterval: POLL_MS, enabled });
+export const useDeveloper = (teamId: string) =>
+  useQuery({ queryKey: ["developers", "detail", teamId], queryFn: () => developers.get(teamId), enabled: Boolean(teamId) });
+/** Polls every 30s, about as often as the alert check (every minute) has something new. */
+export const useDeveloperMonitoring = (enabled = true) =>
+  useQuery({ queryKey: ["developers", "monitoring"], queryFn: developers.monitoring, refetchInterval: 30_000, enabled });
