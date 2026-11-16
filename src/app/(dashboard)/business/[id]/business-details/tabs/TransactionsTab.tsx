@@ -16,8 +16,14 @@ import { Badge, DataTable, cx, statusTone, type ColumnMeta } from "@/components/
  * That route filters by status, category, type and date only; there is no
  * free-text search, so the search box is not wired to anything.
  */
-const STATUS_OPTIONS = ["PROCESSING", "SUCCESS", "FAILED", "CANCELLED"].map((value) => ({ value, label: statusLabel(value) }));
-const CATEGORY_OPTIONS = ["DEPOSIT", "WITHDRAWAL", "FEE", "CHARGE", "REVERSAL"].map((value) => ({ value, label: statusLabel(value) }));
+const STATUS_OPTIONS = ["PROCESSING", "SUCCESS", "FAILED", "CANCELLED"].map((value) => ({
+  value,
+  label: statusLabel(value),
+}));
+const CATEGORY_OPTIONS = ["DEPOSIT", "WITHDRAWAL", "FEE", "CHARGE", "REVERSAL"].map((value) => ({
+  value,
+  label: statusLabel(value),
+}));
 const TYPE_OPTIONS = [
   { value: "CREDIT", label: "Credit" },
   { value: "DEBIT", label: "Debit" },
@@ -39,7 +45,9 @@ const COLUMNS: ColumnDef<Transaction, unknown>[] = [
     header: "Transaction",
     cell: ({ row }) => (
       <div className="min-w-0">
-        <p className="truncate font-semibold text-ink">{statusLabel(row.original.purpose) || statusLabel(row.original.category)}</p>
+        <p className="truncate font-semibold text-ink">
+          {statusLabel(row.original.purpose) || statusLabel(row.original.category)}
+        </p>
         <p className="truncate text-xs text-ink-muted">{row.original.description || row.original.reference || ""}</p>
       </div>
     ),
@@ -48,7 +56,9 @@ const COLUMNS: ColumnDef<Transaction, unknown>[] = [
   {
     id: "type",
     header: "Type",
-    cell: ({ row }) => <Badge tone={row.original.type === "CREDIT" ? "success" : "neutral"}>{row.original.type?.toLowerCase()}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={row.original.type === "CREDIT" ? "success" : "neutral"}>{row.original.type?.toLowerCase()}</Badge>
+    ),
     meta: { hideBelow: "md", csv: { key: "type", label: "Type" } } satisfies ColumnMeta,
   },
   {
@@ -70,8 +80,16 @@ const COLUMNS: ColumnDef<Transaction, unknown>[] = [
   {
     id: "balanceAfter",
     header: "Balance after",
-    cell: ({ row }) => <span className="whitespace-nowrap text-ink-muted">{row.original.balanceAfter != null ? naira(row.original.balanceAfter) : ""}</span>,
-    meta: { align: "right", hideBelow: "lg", csv: { key: "balanceAfter", label: "Balance after (kobo)" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-ink-muted">
+        {row.original.balanceAfter != null ? naira(row.original.balanceAfter) : ""}
+      </span>
+    ),
+    meta: {
+      align: "right",
+      hideBelow: "lg",
+      csv: { key: "balanceAfter", label: "Balance after (kobo)" },
+    } satisfies ColumnMeta,
   },
   {
     id: "reference",

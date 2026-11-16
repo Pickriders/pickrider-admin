@@ -20,7 +20,14 @@ import { JsonView } from "./fields";
 const LEVEL_TONE: Record<string, Tone> = { ERROR: "danger", DEBUG: "info", INFO: "brand", LOG: "neutral" };
 
 const FILTERS: FilterSpec[] = [
-  { key: "level", label: "Level", options: ["LOG", "INFO", "DEBUG", "ERROR"].map((value) => ({ value, label: value.charAt(0) + value.slice(1).toLowerCase() })) },
+  {
+    key: "level",
+    label: "Level",
+    options: ["LOG", "INFO", "DEBUG", "ERROR"].map((value) => ({
+      value,
+      label: value.charAt(0) + value.slice(1).toLowerCase(),
+    })),
+  },
   {
     key: "logType",
     label: "Type",
@@ -55,7 +62,9 @@ const COLUMNS: ColumnDef<DataLogRow, unknown>[] = [
     id: "level",
     header: "Level",
     meta: meta({ csv: { key: "level", label: "Level" } }),
-    cell: ({ row }) => <Badge tone={LEVEL_TONE[row.original.level ?? "LOG"] ?? "neutral"}>{row.original.level ?? "LOG"}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={LEVEL_TONE[row.original.level ?? "LOG"] ?? "neutral"}>{row.original.level ?? "LOG"}</Badge>
+    ),
   },
   {
     id: "logType",
@@ -128,7 +137,12 @@ export function DataLogTab() {
             <KeyValue
               columns={3}
               items={[
-                { label: "Level", value: <Badge tone={LEVEL_TONE[selected.level ?? "LOG"] ?? "neutral"}>{selected.level ?? "LOG"}</Badge> },
+                {
+                  label: "Level",
+                  value: (
+                    <Badge tone={LEVEL_TONE[selected.level ?? "LOG"] ?? "neutral"}>{selected.level ?? "LOG"}</Badge>
+                  ),
+                },
                 { label: "Type", value: selected.logType ?? "SYSTEM" },
                 { label: "Recorded", value: when(selected.createdAt) },
               ]}

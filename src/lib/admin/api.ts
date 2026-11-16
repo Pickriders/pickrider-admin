@@ -52,7 +52,13 @@ export function params<T>(query?: Query): T {
 /** Narrow a generated response to the shape the pages read. */
 /** Through the generated client's request, with the bearer token, for routes whose method has no query slot. */
 function get<T>(path: string, query?: Record<string, unknown>) {
-  return apiService.request({ path: `/api/v1${path}`, method: "GET", query, secure: true, format: "json" }) as unknown as Promise<T>;
+  return apiService.request({
+    path: `/api/v1${path}`,
+    method: "GET",
+    query,
+    secure: true,
+    format: "json",
+  }) as unknown as Promise<T>;
 }
 
 function as<T>(promise: Promise<unknown>): Promise<T> {
@@ -367,7 +373,10 @@ export type Series = { range: StatsRange; bucket: "day" | "week" | "month"; poin
 
 export type TopRider = {
   riderId: string;
-  rider?: Pick<User, "_id" | "firstname" | "lastname" | "phone" | "photo" | "isOnline" | "status" | "driversLicenseVerified">;
+  rider?: Pick<
+    User,
+    "_id" | "firstname" | "lastname" | "phone" | "photo" | "isOnline" | "status" | "driversLicenseVerified"
+  >;
   deliveries: number;
   cancelled: number;
   riderFees: number;
@@ -505,7 +514,8 @@ export type {
   ProviderFeeTotalsDto as ProviderFeeTotals,
 } from "@/services";
 
-export type ProviderFeeFlowKey = "WALLET_DEPOSIT" | "ORDER_CARD_PAYMENT" | "WEB_ORDER_PAYMENT" | "WITHDRAWAL" | "PLATFORM_PAYOUT" | "REFUND";
+export type ProviderFeeFlowKey =
+  "WALLET_DEPOSIT" | "ORDER_CARD_PAYMENT" | "WEB_ORDER_PAYMENT" | "WITHDRAWAL" | "PLATFORM_PAYOUT" | "REFUND";
 
 /** One Paystack fee row (GET /admins/stats/provider-fees/rows), with whose money it was. */
 export type ProviderFeeRow = Omit<import("@/services").ProviderFeeRowDto, "owner" | "flow"> & {
@@ -516,16 +526,19 @@ export type ProviderFeeRow = Omit<import("@/services").ProviderFeeRowDto, "owner
 
 export const stats = {
   overview: (range: RangeQuery) => as<Overview>(apiService.overview(params(range))),
-  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) => as<Series>(apiService.series(params(range))),
+  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) =>
+    as<Series>(apiService.series(params(range))),
   topRiders: (range: RangeQuery & { limit?: number }) => as<TopRider[]>(apiService.topRiders(params(range))),
   peakHours: (range: RangeQuery) => as<PeakHours>(apiService.peakHours(params(range))),
   attention: () => as<Attention>(apiService.attention()),
   charges: (range: RangeQuery) => as<Charges>(apiService.charges(params(range))),
   chargesByRider: (query: Query) => page<RiderChargeRow>(apiService.chargesByRider(params(query))),
   customers: (query: Query) => page<CustomerRow>(apiService.customers(params(query))),
-  customersOverview: (range: RangeQuery & { bucket?: string }) => get<CustomersOverview>("/admins/stats/customers/overview", range),
+  customersOverview: (range: RangeQuery & { bucket?: string }) =>
+    get<CustomersOverview>("/admins/stats/customers/overview", range),
   businesses: (query: Query) => page<BusinessRow>(apiService.businesses(params(query))),
-  userOverview: (userId: string, range: RangeQuery) => as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
+  userOverview: (userId: string, range: RangeQuery) =>
+    as<UserOverview>(apiService.userOverview(params({ ...range, userId }))),
   providerFees: (range: RangeQuery & { bucket?: string }) => apiService.providerFees(params(range)),
   providerFeeRows: (query: Query) => page<ProviderFeeRow>(apiService.providerFeeRows(params(query))),
 };
@@ -605,14 +618,18 @@ export const users = {
   /** Paid, non-storefront orders with what has already gone back and what an admin may still refund. */
   refundableOrders: (userId: string, search?: string) =>
     as<RefundableOrder[]>(apiService.refundableOrders(params({ userId, limit: 50, search }))),
-  updatePhone: (userId: string, body: { phone: string; reason?: string }) => as<User>(apiService.updateUserPhone(userId, body)),
-  setDispatch: (userId: string, body: { paused: boolean; reason?: string }) => as<User>(apiService.setDispatchPaused(userId, body)),
+  updatePhone: (userId: string, body: { phone: string; reason?: string }) =>
+    as<User>(apiService.updateUserPhone(userId, body)),
+  setDispatch: (userId: string, body: { paused: boolean; reason?: string }) =>
+    as<User>(apiService.setDispatchPaused(userId, body)),
   /** Clear the profile photo so the app asks for a new one (e.g. the orange failed-upload placeholder). */
   removePhoto: (userId: string) => as<User>(apiService.adminRemoveUserPhoto(userId)),
-  licenceVerify: (userId: string, body: Record<string, unknown>) => as<User>(apiService.adminVerifyDriversLicense(userId, body as never)),
+  licenceVerify: (userId: string, body: Record<string, unknown>) =>
+    as<User>(apiService.adminVerifyDriversLicense(userId, body as never)),
   /** The approve route takes no body; the licence on file is what gets approved. */
   licenceApprove: (userId: string) => as<User>(apiService.approveDriversLicenseSubmission(userId)),
-  licenceUpdate: (userId: string, body: Record<string, unknown>) => as<User>(apiService.updateDriversLicense(userId, body as never)),
+  licenceUpdate: (userId: string, body: Record<string, unknown>) =>
+    as<User>(apiService.updateDriversLicense(userId, body as never)),
   settlementAccount: (userId: string, walletId: string, body: Record<string, unknown>) =>
     as<Wallet>(apiService.adminUpdateSettlementAccount(userId, walletId, body as never)),
   /** Pause (reason required) or lift wallet withdrawals; the note is shown to the rider. */
@@ -625,7 +642,11 @@ export const users = {
 };
 
 export type EraseUserInput = import("@/services").EraseUserRequestDto;
-export type { ErasureBlockerDto as ErasureBlocker, ErasureBlockersResponseDto as ErasureBlockers, EraseUserResponseDto as EraseUserResult } from "@/services";
+export type {
+  ErasureBlockerDto as ErasureBlocker,
+  ErasureBlockersResponseDto as ErasureBlockers,
+  EraseUserResponseDto as EraseUserResult,
+} from "@/services";
 
 export type RefundableOrder = {
   _id: string;
@@ -653,7 +674,8 @@ export const orders = {
   cancel: (orderId: string, body: { reason: string }) => as<Order>(apiService.adminCancelOrder(orderId, body)),
   /** Re-broadcast an order still waiting for a rider (scheduled ones must be paid and inside their lead). */
   ringRiders: (orderId: string) => as<{ riders: number; order: Order }>(apiService.ringRiders(orderId)),
-  updateStatus: (orderId: string, body: { status: OrderStatus }) => as<Order>(apiService.updateOrderStatus(orderId, body as never)),
+  updateStatus: (orderId: string, body: { status: OrderStatus }) =>
+    as<Order>(apiService.updateOrderStatus(orderId, body as never)),
 };
 
 // ── Order chat (admins/orders/:orderId/messages) ─────────────────────────────────
@@ -682,7 +704,10 @@ export const transactions = {
  * only; the customer and the order are resolved per row on the client.
  */
 export type ReviewCustomer = Pick<User, "_id" | "firstname" | "lastname" | "phone" | "photo">;
-export type ReviewOrder = Pick<Order, "_id" | "orderNumber" | "status" | "type" | "totalAmountPayable" | "completedAt" | "createdAt">;
+export type ReviewOrder = Pick<
+  Order,
+  "_id" | "orderNumber" | "status" | "type" | "totalAmountPayable" | "completedAt" | "createdAt"
+>;
 
 /** With `expand=1` the customer and order come populated; otherwise they are ids. */
 export type Review = {
@@ -706,7 +731,8 @@ export const reviews = {
 export const vehicles = {
   list: (query: Query) => page<Vehicle>(apiService.getVehicles(params(query))),
   get: (vehicleId: string) => as<Vehicle>(apiService.adminGetVehicle(vehicleId)),
-  create: (userId: string, body: Record<string, unknown>) => as<Vehicle>(apiService.adminUpdateUserVehicle(userId, body as never)),
+  create: (userId: string, body: Record<string, unknown>) =>
+    as<Vehicle>(apiService.adminUpdateUserVehicle(userId, body as never)),
   verify: (vehicleId: string, userId: string) => as<Vehicle>(apiService.verifyVehicle(vehicleId, userId)),
   reject: (vehicleId: string, userId: string, body: { reason: string }) =>
     as<Vehicle>(apiService.rejectVehicle(vehicleId, userId, body)),
@@ -719,9 +745,12 @@ export const vehicles = {
 
 export const businesses = {
   get: (businessId: string) => as<Business>(apiService.getBusiness(businessId)),
-  orders: (businessId: string, query: Query) => page<Order>(apiService.getBusinessOrders(params({ ...query, businessId }))),
-  users: (businessId: string, query: Query) => page<User>(apiService.getBusinessUsers(params({ ...query, businessId }))),
-  vehicles: (businessId: string, query: Query) => page<Vehicle>(apiService.getBusinessVehicles(params({ ...query, businessId }))),
+  orders: (businessId: string, query: Query) =>
+    page<Order>(apiService.getBusinessOrders(params({ ...query, businessId }))),
+  users: (businessId: string, query: Query) =>
+    page<User>(apiService.getBusinessUsers(params({ ...query, businessId }))),
+  vehicles: (businessId: string, query: Query) =>
+    page<Vehicle>(apiService.getBusinessVehicles(params({ ...query, businessId }))),
   transactions: (businessId: string, query: Query) =>
     page<Transaction>(apiService.getBusinessTransactions(params({ ...query, businessId }))),
   wallets: (businessId: string) => as<Wallet[] | CorePage<Wallet>>(apiService.getBusinessWallets(businessId)),
@@ -729,7 +758,8 @@ export const businesses = {
     as<Record<string, unknown>>(apiService.getBusinessOrderStatistics(params({ ...query, businessId }))),
   suspendUser: (businessId: string, userId: string) => as<User>(apiService.suspendBusinessUser(businessId, userId)),
   unsuspendUser: (businessId: string, userId: string) => as<User>(apiService.unsuspendBusinessUser(businessId, userId)),
-  removeUser: (businessId: string, userId: string) => as<unknown>(apiService.removeUserFromBusiness(businessId, userId)),
+  removeUser: (businessId: string, userId: string) =>
+    as<unknown>(apiService.removeUserFromBusiness(businessId, userId)),
   updatePreferences: (businessId: string, body: Record<string, unknown>) =>
     as<Business>(apiService.updateBusinessPreferences(businessId, body as never)),
 };
@@ -747,16 +777,24 @@ export type FinanceStatus = {
 export const finance = {
   platformWallet: () => as<Wallet>(apiService.getPlatformWallet()),
   status: () => as<FinanceStatus>(apiService.getFinanceStatus()),
-  banks: () => as<{ name: string; code: string }[] | { data?: { name: string; code: string }[] }>(apiService.getPlatformBanks()),
-  updateSettlement: (body: { accountNumber: string; bankCode: string }) => as<unknown>(apiService.updateSettlement(body)),
+  banks: () =>
+    as<{ name: string; code: string }[] | { data?: { name: string; code: string }[] }>(apiService.getPlatformBanks()),
+  updateSettlement: (body: { accountNumber: string; bankCode: string }) =>
+    as<unknown>(apiService.updateSettlement(body)),
   setPin: (body: { pin: string }) => as<unknown>(apiService.setPin(body)),
   payout: (body: { amount: number; pin: string; reason?: string }) => as<unknown>(apiService.initiatePayout(body)),
-  transfer: (body: { userId: string; amount: number; pin: string; reason: string }) => as<unknown>(apiService.transferToUser(body)),
+  transfer: (body: { userId: string; amount: number; pin: string; reason: string }) =>
+    as<unknown>(apiService.transferToUser(body)),
 };
 
 // ── Messaging ─────────────────────────────────────────────────────────────────
 
-export type BroadcastFilters = { status?: UserStatus[]; onlineOnly?: boolean; licenceApprovedOnly?: boolean; country?: string };
+export type BroadcastFilters = {
+  status?: UserStatus[];
+  onlineOnly?: boolean;
+  licenceApprovedOnly?: boolean;
+  country?: string;
+};
 export type BroadcastInput = {
   audience: Broadcast["audience"];
   userIds?: string[];
@@ -777,7 +815,14 @@ export const messaging = {
 
 // ── Admin: team, logs, settings ───────────────────────────────────────────────
 
-export type Team = { _id: string; name?: string; entityType?: string; entityId?: string; createdAt: string; [key: string]: unknown };
+export type Team = {
+  _id: string;
+  name?: string;
+  entityType?: string;
+  entityId?: string;
+  createdAt: string;
+  [key: string]: unknown;
+};
 
 export const admin = {
   teams: (query: Query) => page<Team>(apiService.adminListTeams(params(query))),
@@ -787,14 +832,28 @@ export const admin = {
   reviews: (query: Query) => page<Record<string, unknown>>(apiService.getReviews(params(query))),
 };
 
-export type Country = { _id: string; name: string; code?: string; currency?: string; isActive?: boolean; [key: string]: unknown };
-export type CountryState = { _id: string; name: string; countryId?: string; isActive?: boolean; [key: string]: unknown };
+export type Country = {
+  _id: string;
+  name: string;
+  code?: string;
+  currency?: string;
+  isActive?: boolean;
+  [key: string]: unknown;
+};
+export type CountryState = {
+  _id: string;
+  name: string;
+  countryId?: string;
+  isActive?: boolean;
+  [key: string]: unknown;
+};
 
 export const settings = {
   countries: () => as<Country[] | CorePage<Country>>(apiService.getCountries(params({ limit: 100 }))),
   country: (countryId: string) => as<Country>(apiService.getCountryById(countryId)),
   createCountry: (body: Record<string, unknown>) => as<Country>(apiService.addCountry(body as never)),
-  updateCountry: (countryId: string, body: Record<string, unknown>) => as<Country>(apiService.updateCountry(countryId, body as never)),
+  updateCountry: (countryId: string, body: Record<string, unknown>) =>
+    as<Country>(apiService.updateCountry(countryId, body as never)),
   states: (countryId: string) => as<CountryState[] | CorePage<CountryState>>(apiService.getCountryStates(countryId)),
   state: (countryId: string, stateId: string) => as<CountryState>(apiService.getCountryStateById(countryId, stateId)),
   createState: (countryId: string, body: Record<string, unknown>) =>
@@ -1312,8 +1371,10 @@ export const coupons = {
     as<CouponGroup>(apiService.createGroup(body as never)),
   updateGroup: (groupId: string, body: { name?: string; couponCodes?: string[] }) =>
     as<CouponGroup>(apiService.updateGroup(groupId, body as never)),
-  addGroupUsers: (groupId: string, userIds: string[]) => as<CouponGroup>(apiService.addGroupUsers(groupId, { userIds })),
-  removeGroupUsers: (groupId: string, userIds: string[]) => as<CouponGroup>(apiService.removeGroupUsers(groupId, { userIds })),
+  addGroupUsers: (groupId: string, userIds: string[]) =>
+    as<CouponGroup>(apiService.addGroupUsers(groupId, { userIds })),
+  removeGroupUsers: (groupId: string, userIds: string[]) =>
+    as<CouponGroup>(apiService.removeGroupUsers(groupId, { userIds })),
 };
 
 // ── Achievements (customer badges) ────────────────────────────────────────────
@@ -1414,7 +1475,8 @@ export const achievements = {
   summary: (range?: RangeQuery) => get<AchievementsSummary>("/admins/achievements/summary", range),
   unlocks: (query: Query) => page<AchievementUnlock>(apiService.unlocks(params(query))),
   forUser: (userId: string) => as<CustomerAchievements>(apiService.forUser(userId)),
-  grant: (userId: string, body: { key: string; reason?: string }) => as<CustomerAchievements>(apiService.grant(userId, body)),
+  grant: (userId: string, body: { key: string; reason?: string }) =>
+    as<CustomerAchievements>(apiService.grant(userId, body)),
   revoke: (userId: string, key: string) => as<CustomerAchievements>(apiService.revoke(userId, key)),
 };
 
@@ -1489,7 +1551,12 @@ export type IssuesSummary = {
   previous: IssuesWindow;
   daily: { date: string; opened: number; resolved: number }[];
 };
-export type IssuesWindow = { opened: number; resolved: number; avgResolutionHours: number | null; avgFirstResponseHours: number | null };
+export type IssuesWindow = {
+  opened: number;
+  resolved: number;
+  avgResolutionHours: number | null;
+  avgFirstResponseHours: number | null;
+};
 
 export const issues = {
   list: (query: Query) => page<Issue>(apiService.listIssues(params(query))),
@@ -1499,7 +1566,8 @@ export const issues = {
   updateStatus: (issueId: string, body: { status: IssueStatus; resolution?: string }) =>
     as<Issue>(apiService.updateStatus(issueId, body as never)),
   assign: (issueId: string, adminId: string | null) => as<Issue>(apiService.assign(issueId, { adminId } as never)),
-  updatePriority: (issueId: string, priority: IssuePriority) => as<Issue>(apiService.updatePriority(issueId, { priority } as never)),
+  updatePriority: (issueId: string, priority: IssuePriority) =>
+    as<Issue>(apiService.updatePriority(issueId, { priority } as never)),
   addNote: (issueId: string, note: string) => as<Issue>(apiService.addNote(issueId, { note })),
 };
 
@@ -1528,7 +1596,9 @@ export const announcements = {
   screens: () => apiService.adminListAnnouncementScreens(),
   get: (announcementId: string) => apiService.adminGetAnnouncement(announcementId),
   receipts: (announcementId: string, query: Query) =>
-    page<import("@/services").AnnouncementReceiptRowDto>(apiService.adminListAnnouncementReceipts(params({ ...query, announcementId }))),
+    page<import("@/services").AnnouncementReceiptRowDto>(
+      apiService.adminListAnnouncementReceipts(params({ ...query, announcementId })),
+    ),
   create: (body: import("@/services").CreateAnnouncementRequestDto) => apiService.adminCreateAnnouncement(body),
   update: (announcementId: string, body: import("@/services").UpdateAnnouncementRequestDto) =>
     apiService.adminUpdateAnnouncement(announcementId, body),
@@ -1559,7 +1629,10 @@ export type {
  * Trips the rider was taken off before pickup: their own "Can't make it" (free in the first two
  * minutes, counted as a cancellation after), or the store's "Find another rider".
  */
-export type { AdminRiderReleasesResponseDto as RiderReleases, RiderReleaseItemDto as RiderReleaseItem } from "@/services";
+export type {
+  AdminRiderReleasesResponseDto as RiderReleases,
+  RiderReleaseItemDto as RiderReleaseItem,
+} from "@/services";
 
 export const riderReleases = {
   list: (riderId: string) => apiService.adminListRiderReleases(riderId),
@@ -1605,7 +1678,15 @@ export type {
   AdminReviewHandoffRequestDto as HandoffReviewInput,
   AdminStartHandoffRequestDto as HandoffStartInput,
 } from "@/services";
-export { HandoffBonusAction, HandoffBonusStatus, HandoffCountDecision, HandoffFlag, HandoffReason, HandoffReviewDecision, HandoffStatus } from "@/services";
+export {
+  HandoffBonusAction,
+  HandoffBonusStatus,
+  HandoffCountDecision,
+  HandoffFlag,
+  HandoffReason,
+  HandoffReviewDecision,
+  HandoffStatus,
+} from "@/services";
 
 export const handoffs = {
   /** status is a comma list; flagged=true; review=pending; riderId matches either rider; from/to are ISO dates. */
@@ -1614,14 +1695,17 @@ export const handoffs = {
   get: (handoffId: string) => apiService.adminGetHandoff(handoffId),
   forOrder: (orderId: string) => apiService.adminListOrderHandoffs(orderId),
   start: (body: import("@/services").AdminStartHandoffRequestDto) => apiService.adminStartHandoff(body),
-  startSearch: (handoffId: string, note?: string) => apiService.adminStartHandoffSearch(handoffId, note ? { note } : {}),
+  startSearch: (handoffId: string, note?: string) =>
+    apiService.adminStartHandoffSearch(handoffId, note ? { note } : {}),
   assign: (handoffId: string, riderId: string) => apiService.adminAssignHandoffRider(handoffId, { riderId }),
   cancel: (handoffId: string, note?: string) => apiService.adminCancelHandoff(handoffId, note ? { note } : {}),
   dropRider: (handoffId: string, note?: string) => apiService.adminDropHandoffRider(handoffId, note ? { note } : {}),
   /** The new bonus in kobo; it must be higher than the current one. */
   raiseBonus: (handoffId: string, amount: number) => apiService.adminRaiseHandoffBonus(handoffId, { amount }),
-  review: (handoffId: string, body: import("@/services").AdminReviewHandoffRequestDto) => apiService.adminReviewHandoff(handoffId, body),
-  bulkReview: (body: import("@/services").AdminBulkReviewHandoffsRequestDto) => apiService.adminBulkReviewHandoffs(body),
+  review: (handoffId: string, body: import("@/services").AdminReviewHandoffRequestDto) =>
+    apiService.adminReviewHandoff(handoffId, body),
+  bulkReview: (body: import("@/services").AdminBulkReviewHandoffsRequestDto) =>
+    apiService.adminBulkReviewHandoffs(body),
 };
 
 // ── Admin alerts (admins/alerts) ─────────────────────────────────────────────────
@@ -1643,7 +1727,8 @@ export const alerts = {
   claim: (alertId: string) => apiService.adminClaimAlert(alertId),
   resolve: (alertId: string, note?: string) => apiService.adminResolveAlert(alertId, note ? { note } : {}),
   /** Sends a sample urgent alert email: to a state's support emails, or the platform list when no codes are given. */
-  testEmail: (body: import("@/services").AdminTestAlertEmailRequestDto = {}) => apiService.adminSendTestAlertEmail(body),
+  testEmail: (body: import("@/services").AdminTestAlertEmailRequestDto = {}) =>
+    apiService.adminSendTestAlertEmail(body),
 };
 
 // ── Message log (admins/messages) ────────────────────────────────────────────────
@@ -1660,7 +1745,13 @@ export type {
   AdminMessagesSummaryResponseDto as MessagesSummary,
   AdminTermiiBalanceDto as TermiiBalance,
 } from "@/services";
-export { OutboundMessageChannel, OutboundMessageProvider, OutboundMessagePurpose, OutboundMessageSkipReason, OutboundMessageStatus } from "@/services";
+export {
+  OutboundMessageChannel,
+  OutboundMessageProvider,
+  OutboundMessagePurpose,
+  OutboundMessageSkipReason,
+  OutboundMessageStatus,
+} from "@/services";
 
 export const messages = {
   /** channel, status, skipReason, provider, purpose, recipient, template, userId, orderId, dateFrom, dateTo, page, limit. */
@@ -1691,7 +1782,8 @@ export const emailTemplates = {
   list: () => apiService.adminListEmailTemplates(),
   preview: (key: string) => apiService.adminPreviewEmailTemplate(key),
   /** Renders with these values merged over the sample data (core escapes them). */
-  previewWith: (key: string, variables: Record<string, unknown>) => apiService.adminPreviewEmailTemplateWithVariables(key, { variables }),
+  previewWith: (key: string, variables: Record<string, unknown>) =>
+    apiService.adminPreviewEmailTemplateWithVariables(key, { variables }),
   /** One key, or ALL_EMAIL_TEMPLATES, to 1..5 addresses. */
   sendTests: (templateKey: string, recipients: string[]) => apiService.adminSendTestEmails({ templateKey, recipients }),
 };
@@ -1713,7 +1805,8 @@ export type {
 export const emailControls = {
   get: () => apiService.adminGetEmailControls(),
   /** Turning off needs a reason (max 280); turning back on may carry one for the audit log. */
-  setTemplate: (key: string, body: import("@/services").SetEmailTemplateEnabledRequestDto) => apiService.adminSetEmailTemplateEnabled(key, body),
+  setTemplate: (key: string, body: import("@/services").SetEmailTemplateEnabledRequestDto) =>
+    apiService.adminSetEmailTemplateEnabled(key, body),
   /** `{ active: true, reason, until? }` pauses, `{ active: false, reason? }` lifts. */
   pauseMarketing: (body: import("@/services").EmailPauseRequestDto) => apiService.adminPauseMarketingEmails(body),
   pauseNonEssential: (body: import("@/services").EmailPauseRequestDto) => apiService.adminPauseNonEssentialEmails(body),

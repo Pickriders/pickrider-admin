@@ -43,8 +43,17 @@ export const PrimaryButton = ({
   }
 
   return (
-    <button className={classes} disabled={disabled || busy} aria-busy={busy || undefined} aria-disabled={disabled || busy || undefined} {...props}>
-      <span aria-hidden={busy || undefined} className={cn("inline-flex items-center justify-center gap-2", busy && "invisible")}>
+    <button
+      className={classes}
+      disabled={disabled || busy}
+      aria-busy={busy || undefined}
+      aria-disabled={disabled || busy || undefined}
+      {...props}
+    >
+      <span
+        aria-hidden={busy || undefined}
+        className={cn("inline-flex items-center justify-center gap-2", busy && "invisible")}
+      >
         {children}
       </span>
       {busy ? (

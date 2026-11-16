@@ -14,7 +14,9 @@ export const LiveIndicator = () => {
         live.connected ? "border-success/30 bg-success-soft text-success" : "border-line bg-surface text-ink-muted",
       )}
     >
-      <span className={cn("relative h-2 w-2 rounded-full", live.connected ? "bg-success admin-live-dot" : "bg-ink-faint")} />
+      <span
+        className={cn("relative h-2 w-2 rounded-full", live.connected ? "bg-success admin-live-dot" : "bg-ink-faint")}
+      />
       {live.connected ? "Live" : "Polling"}
     </span>
   );

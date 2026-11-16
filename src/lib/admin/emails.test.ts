@@ -15,7 +15,12 @@ import {
   testSendMessage,
 } from "./emails";
 
-const t = (key: string, category: string, audience: string, extra: Partial<{ description: string; trigger: string; subject: string }> = {}) => ({
+const t = (
+  key: string,
+  category: string,
+  audience: string,
+  extra: Partial<{ description: string; trigger: string; subject: string }> = {},
+) => ({
   key,
   name: `pickriders-${key}`,
   category,
@@ -28,7 +33,10 @@ const t = (key: string, category: string, audience: string, extra: Partial<{ des
 
 const REGISTRY = [
   t("product-news", "MARKETING", "EVERYONE", { description: "What's new" }),
-  t("order-receipt", "ORDERS", "CUSTOMER", { description: "Receipt after a paid order", trigger: "A paid customer-app order is completed" }),
+  t("order-receipt", "ORDERS", "CUSTOMER", {
+    description: "Receipt after a paid order",
+    trigger: "A paid customer-app order is completed",
+  }),
   t("verification-code", "ACCOUNT", "EVERYONE", { subject: "Your Pickriders verification code" }),
   t("withdrawal-paid", "PAYMENTS", "RIDER"),
   t("order-cancelled", "ORDERS", "CUSTOMER"),
@@ -44,9 +52,16 @@ describe("template gallery", () => {
   });
 
   it("filters by audience and by every search word across name, key, subject, description and trigger", () => {
-    expect(groupTemplates(REGISTRY, { audience: "CUSTOMER" }).flatMap((g) => g.templates.map((x) => x.key))).toEqual(["order-receipt", "order-cancelled"]);
-    expect(groupTemplates(REGISTRY, { search: "PAID order" }).flatMap((g) => g.templates.map((x) => x.key))).toEqual(["order-receipt"]);
-    expect(groupTemplates(REGISTRY, { search: "verification code" }).flatMap((g) => g.templates.map((x) => x.key))).toEqual(["verification-code"]);
+    expect(groupTemplates(REGISTRY, { audience: "CUSTOMER" }).flatMap((g) => g.templates.map((x) => x.key))).toEqual([
+      "order-receipt",
+      "order-cancelled",
+    ]);
+    expect(groupTemplates(REGISTRY, { search: "PAID order" }).flatMap((g) => g.templates.map((x) => x.key))).toEqual([
+      "order-receipt",
+    ]);
+    expect(
+      groupTemplates(REGISTRY, { search: "verification code" }).flatMap((g) => g.templates.map((x) => x.key)),
+    ).toEqual(["verification-code"]);
     expect(groupTemplates(REGISTRY, { search: "nothing like this" })).toEqual([]);
     expect(groupTemplates(undefined)).toEqual([]);
   });
@@ -74,7 +89,7 @@ describe("previewDocument", () => {
   const html =
     '<!DOCTYPE html><html><head><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">' +
     "<style>:root{color-scheme:light dark}@media screen and (max-width:620px){.pr-x{display:block}}@media (prefers-color-scheme: dark){.pr-card{background:#111}}" +
-    "@media screen and (prefers-color-scheme:dark){.pr-text{color:#eee}}</style></head><body><a href=\"https://pickriders.com\">Hi</a></body></html>";
+    '@media screen and (prefers-color-scheme:dark){.pr-text{color:#eee}}</style></head><body><a href="https://pickriders.com">Hi</a></body></html>';
 
   it("dark: the template's dark rules always apply and the scheme is pinned dark", () => {
     const doc = previewDocument(html, "dark");
@@ -113,16 +128,31 @@ describe("previewDocument", () => {
 
 describe("sample data editor", () => {
   it("accepts a JSON object", () => {
-    expect(parseSampleVariables(' { "name": "Ada", "total": 2500 } ')).toEqual({ ok: true, value: { name: "Ada", total: 2500 } });
+    expect(parseSampleVariables(' { "name": "Ada", "total": 2500 } ')).toEqual({
+      ok: true,
+      value: { name: "Ada", total: 2500 },
+    });
     expect(parseSampleVariables("{}")).toEqual({ ok: true, value: {} });
   });
 
   it("explains empty input, broken JSON, and JSON that is not an object", () => {
     expect(parseSampleVariables("   ")).toMatchObject({ ok: false, error: expect.stringMatching(/JSON object/) });
-    expect(parseSampleVariables("{ name: Ada }")).toMatchObject({ ok: false, error: expect.stringMatching(/^That is not valid JSON/) });
-    expect(parseSampleVariables("[1, 2]")).toMatchObject({ ok: false, error: expect.stringMatching(/must be a JSON object/) });
-    expect(parseSampleVariables("null")).toMatchObject({ ok: false, error: expect.stringMatching(/must be a JSON object/) });
-    expect(parseSampleVariables('"text"')).toMatchObject({ ok: false, error: expect.stringMatching(/must be a JSON object/) });
+    expect(parseSampleVariables("{ name: Ada }")).toMatchObject({
+      ok: false,
+      error: expect.stringMatching(/^That is not valid JSON/),
+    });
+    expect(parseSampleVariables("[1, 2]")).toMatchObject({
+      ok: false,
+      error: expect.stringMatching(/must be a JSON object/),
+    });
+    expect(parseSampleVariables("null")).toMatchObject({
+      ok: false,
+      error: expect.stringMatching(/must be a JSON object/),
+    });
+    expect(parseSampleVariables('"text"')).toMatchObject({
+      ok: false,
+      error: expect.stringMatching(/must be a JSON object/),
+    });
   });
 
   it("refuses an oversized paste", () => {
@@ -161,12 +191,20 @@ describe("test sends", () => {
 
   const axiosError = (status: number, message: string) => {
     const error = new AxiosError("Request failed");
-    error.response = { status, data: { message }, statusText: "", headers: {}, config: { headers: new AxiosHeaders() } };
+    error.response = {
+      status,
+      data: { message },
+      statusText: "",
+      headers: {},
+      config: { headers: new AxiosHeaders() },
+    };
     return error;
   };
 
   it("turns the per-admin rate limit into advice and passes other errors through", () => {
-    expect(testSendErrorMessage(axiosError(429, "ThrottlerException: Too Many Requests"))).toBe("That's a lot of test emails in a minute. Wait a minute, then send again.");
+    expect(testSendErrorMessage(axiosError(429, "ThrottlerException: Too Many Requests"))).toBe(
+      "That's a lot of test emails in a minute. Wait a minute, then send again.",
+    );
     expect(testSendErrorMessage(axiosError(404, "Unknown email template"))).toBe("Unknown email template");
   });
 });

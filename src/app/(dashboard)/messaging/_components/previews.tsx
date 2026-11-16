@@ -24,7 +24,9 @@ export function PushPreview({ subject, message }: { subject: string; message: st
               <span className="ml-auto text-[10px] text-ink-faint">now</span>
             </div>
             <p className="mt-1.5 line-clamp-1 text-xs font-bold text-ink">{subject || "Subject line"}</p>
-            <p className="line-clamp-3 text-[11px] leading-snug text-ink-muted">{message || "Your message shows here."}</p>
+            <p className="line-clamp-3 text-[11px] leading-snug text-ink-muted">
+              {message || "Your message shows here."}
+            </p>
           </div>
         </div>
       </div>
@@ -45,8 +47,12 @@ export function EmailPreview({ subject, message }: { subject: string; message: s
         </div>
         <div className="px-4 py-4">
           <div className="mb-3 h-6 w-24 rounded-md bg-brand" />
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">{message || "Your message shows here."}</p>
-          <p className="mt-5 text-[11px] text-ink-faint">You are receiving this because you have a Pickriders account.</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">
+            {message || "Your message shows here."}
+          </p>
+          <p className="mt-5 text-[11px] text-ink-faint">
+            You are receiving this because you have a Pickriders account.
+          </p>
         </div>
       </div>
       <p className="mt-2 text-center text-[11px] text-ink-faint">Email preview</p>

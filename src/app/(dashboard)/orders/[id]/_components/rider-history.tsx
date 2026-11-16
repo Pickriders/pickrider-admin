@@ -67,7 +67,8 @@ function releaseTail(release: NonNullable<OrderRiderStint["release"]>) {
 function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
   const name = fullName(stint.rider) || "Rider no longer on Pickriders";
   const released = stint.outcome === "RELEASED" && stint.release;
-  const counted = released && stint.release?.initiatedBy === "RIDER" && (stint.release.counted || stint.release.arrivedAtPickup);
+  const counted =
+    released && stint.release?.initiatedBy === "RIDER" && (stint.release.counted || stint.release.arrivedAtPickup);
   const held = heldFor(stint.acceptedAt, stint.endedAt);
   const outcome = stint.outcome === "RELEASED" ? null : OUTCOME[stint.outcome];
 
@@ -79,7 +80,10 @@ function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {stint.rider ? (
-            <Link href={`/couriers/${stint.rider._id}/details`} className="truncate text-sm font-semibold text-ink hover:underline">
+            <Link
+              href={`/couriers/${stint.rider._id}/details`}
+              className="truncate text-sm font-semibold text-ink hover:underline"
+            >
               {name}
             </Link>
           ) : (
@@ -91,7 +95,9 @@ function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
             </Badge>
           ) : null}
         </div>
-        {stint.rider?.phone ? <p className="truncate text-xs text-ink-muted">{displayPhone(stint.rider.phone)}</p> : null}
+        {stint.rider?.phone ? (
+          <p className="truncate text-xs text-ink-muted">{displayPhone(stint.rider.phone)}</p>
+        ) : null}
         <p className="mt-1 text-xs text-ink-muted">
           Accepted <Stamp value={stint.acceptedAt} />
           {stint.outcome === "PICKED_UP" || (stint.outcome === "DELIVERED" && stint.pickedUpAt) ? (
@@ -119,7 +125,9 @@ function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
             title={RELEASED_BY[stint.release.initiatedBy]}
             className={cx(
               "mt-1.5 rounded-xl border px-3 py-2 text-xs",
-              counted ? "border-danger/30 bg-danger-soft text-danger" : "border-warning/40 bg-warning-soft text-warning",
+              counted
+                ? "border-danger/30 bg-danger-soft text-danger"
+                : "border-warning/40 bg-warning-soft text-warning",
             )}
           >
             {stint.release.arrivedAtPickup ? (
@@ -129,10 +137,12 @@ function StintRow({ stint, last }: { stint: OrderRiderStint; last: boolean }) {
               </Badge>
             ) : null}
             <p className="font-semibold">
-              Released <Stamp value={stint.endedAt} /> · {capitalise(RELEASE_REASON[stint.release.reason] ?? stint.release.reason)} ·{" "}
-              {releaseTail(stint.release)}
+              Released <Stamp value={stint.endedAt} /> ·{" "}
+              {capitalise(RELEASE_REASON[stint.release.reason] ?? stint.release.reason)} · {releaseTail(stint.release)}
             </p>
-            {stint.release.note ? <p className="mt-0.5 break-words text-ink">&ldquo;{stint.release.note}&rdquo;</p> : null}
+            {stint.release.note ? (
+              <p className="mt-0.5 break-words text-ink">&ldquo;{stint.release.note}&rdquo;</p>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -203,7 +213,11 @@ export function RiderHistory({ orderId, enabled }: { orderId: string; enabled: b
         ) : stints.length ? (
           <ol>
             {stints.map((stint, index) => (
-              <StintRow key={`${stint.rider?._id ?? "gone"}-${stint.endedAt ?? stint.acceptedAt ?? index}`} stint={stint} last={index === stints.length - 1 && !finding} />
+              <StintRow
+                key={`${stint.rider?._id ?? "gone"}-${stint.endedAt ?? stint.acceptedAt ?? index}`}
+                stint={stint}
+                last={index === stints.length - 1 && !finding}
+              />
             ))}
             {finding ? <FindingRow /> : null}
             {lastReleased && data?.status === "CANCELLED" ? (

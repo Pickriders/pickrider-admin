@@ -20,7 +20,15 @@ function asBanks(value: Bank[] | { data?: Bank[] } | undefined | null): Bank[] {
   return Array.isArray(value) ? value : (value.data ?? []);
 }
 
-export function WalletHero({ status, wallet, loading }: { status?: FinanceStatus; wallet?: WalletModel; loading: boolean }) {
+export function WalletHero({
+  status,
+  wallet,
+  loading,
+}: {
+  status?: FinanceStatus;
+  wallet?: WalletModel;
+  loading: boolean;
+}) {
   const balance = status?.balance ?? wallet?.balance;
   const currency = status?.currency ?? wallet?.currency ?? "NGN";
   const state = wallet?.status ? String(wallet.status).toLowerCase() : "";
@@ -36,7 +44,15 @@ export function WalletHero({ status, wallet, loading }: { status?: FinanceStatus
   );
 }
 
-export function SettlementCard({ status, loading, onChange }: { status?: FinanceStatus; loading: boolean; onChange: () => void }) {
+export function SettlementCard({
+  status,
+  loading,
+  onChange,
+}: {
+  status?: FinanceStatus;
+  loading: boolean;
+  onChange: () => void;
+}) {
   const s = status?.settlement;
   return (
     <Panel className="flex flex-col p-5">
@@ -79,7 +95,15 @@ export function SettlementCard({ status, loading, onChange }: { status?: Finance
   );
 }
 
-export function PinCard({ status, loading, onChange }: { status?: FinanceStatus; loading: boolean; onChange: () => void }) {
+export function PinCard({
+  status,
+  loading,
+  onChange,
+}: {
+  status?: FinanceStatus;
+  loading: boolean;
+  onChange: () => void;
+}) {
   const hasPin = Boolean(status?.hasPin);
   return (
     <Panel className="flex flex-col p-5">
@@ -163,7 +187,12 @@ export function SettlementDrawer({ open, onClose }: { open: boolean; onClose: ()
           <Button variant="ghost" onClick={onClose} disabled={save.isPending}>
             Cancel
           </Button>
-          <Button icon={CheckCircle2} loading={save.isPending} disabled={!ready} onClick={() => save.mutate({ accountNumber, bankCode })}>
+          <Button
+            icon={CheckCircle2}
+            loading={save.isPending}
+            disabled={!ready}
+            onClick={() => save.mutate({ accountNumber, bankCode })}
+          >
             Verify and save
           </Button>
         </div>
@@ -171,7 +200,11 @@ export function SettlementDrawer({ open, onClose }: { open: boolean; onClose: ()
     >
       <div className="space-y-4">
         <Field label="Find a bank" hint={banks.isLoading ? "Loading banks" : `${list.length} banks available`}>
-          <Input value={bankFilter} onChange={(e) => setBankFilter(e.target.value)} placeholder="Type to narrow the list" />
+          <Input
+            value={bankFilter}
+            onChange={(e) => setBankFilter(e.target.value)}
+            placeholder="Type to narrow the list"
+          />
         </Field>
         <Field label="Bank" error={banks.isError ? "Banks could not be loaded. Close and try again." : undefined}>
           <Select value={bankCode} onChange={(e) => setBankCode(e.target.value)} disabled={banks.isLoading}>
@@ -208,7 +241,11 @@ export function PinDrawer({ open, onClose, hasPin }: { open: boolean; onClose: (
     }
   }, [open]);
 
-  const save = useAction(finance.setPin, { success: hasPin ? "Withdrawal PIN changed" : "Withdrawal PIN set", invalidate: ["finance"], onSuccess: onClose });
+  const save = useAction(finance.setPin, {
+    success: hasPin ? "Withdrawal PIN changed" : "Withdrawal PIN set",
+    invalidate: ["finance"],
+    onSuccess: onClose,
+  });
   const mismatch = confirm.length === 4 && pin !== confirm;
   const ready = pin.length === 4 && pin === confirm;
 

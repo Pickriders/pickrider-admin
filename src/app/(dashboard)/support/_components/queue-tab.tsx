@@ -66,7 +66,13 @@ export function QueueTab() {
 
   return (
     <div>
-      <ScrollRow className="-mx-1 mb-4" innerClassName="px-1 pb-1" label="Issue views" peekKey="support-queue-chips" activeKey={view}>
+      <ScrollRow
+        className="-mx-1 mb-4"
+        innerClassName="px-1 pb-1"
+        label="Issue views"
+        peekKey="support-queue-chips"
+        activeKey={view}
+      >
         <div className="flex w-max gap-2">
           {CHIPS.map((chip) => {
             const active = view === chip.id;

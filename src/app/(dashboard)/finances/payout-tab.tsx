@@ -6,7 +6,20 @@ import { useState } from "react";
 import { finance } from "@/lib/admin/api";
 import { useAction, useFinanceStatus, usePlatformWallet } from "@/lib/admin/hooks";
 import { naira } from "@/lib/admin/format";
-import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, Field, Input, KeyValue, Panel, PanelHeader, Skeleton, Textarea } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  KeyValue,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  Textarea,
+} from "@/components/kit";
 import { PinCard, PinDrawer, SettlementCard, SettlementDrawer, WalletHero } from "./finance-setup";
 import { toKobo } from "./lib";
 
@@ -28,7 +41,12 @@ export function PayoutTab() {
   const balance = s?.balance ?? wallet.data?.balance ?? 0;
   const kobo = toKobo(amount);
   const overBalance = kobo != null && kobo > balance;
-  const amountError = amount && kobo == null ? "Enter an amount above zero." : overBalance ? `More than the wallet holds (${naira(balance, 2)}).` : undefined;
+  const amountError =
+    amount && kobo == null
+      ? "Enter an amount above zero."
+      : overBalance
+        ? `More than the wallet holds (${naira(balance, 2)}).`
+        : undefined;
   const ready = kobo != null && !overBalance && pin.length === 4;
 
   const payout = useAction(finance.payout, {
@@ -46,7 +64,9 @@ export function PayoutTab() {
   });
 
   if (status.isError) {
-    return <ErrorState message="The platform finance status could not be loaded." onRetry={() => void status.refetch()} />;
+    return (
+      <ErrorState message="The platform finance status could not be loaded." onRetry={() => void status.refetch()} />
+    );
   }
 
   const blocked = !status.isLoading && (!s?.hasBank || !s?.hasPin);
@@ -98,7 +118,17 @@ export function PayoutTab() {
           <PanelHeader
             title="Initiate a payout"
             subtitle="Sent to the settlement account through Paystack. It shows up under Withdrawals while it processes."
-            action={s?.settlement?.isVerified ? <Badge tone="success" dot>Account verified</Badge> : <Badge tone="warning" dot>Account not verified</Badge>}
+            action={
+              s?.settlement?.isVerified ? (
+                <Badge tone="success" dot>
+                  Account verified
+                </Badge>
+              ) : (
+                <Badge tone="warning" dot>
+                  Account not verified
+                </Badge>
+              )
+            }
           />
           <div className="grid grid-cols-1 gap-6 px-5 pb-5 pt-4 lg:grid-cols-[1fr_280px]">
             <form
@@ -123,13 +153,23 @@ export function PayoutTab() {
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
                   />
-                  <Button type="button" variant="outline" onClick={() => setAmount((balance / 100).toFixed(2))} disabled={!balance}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setAmount((balance / 100).toFixed(2))}
+                    disabled={!balance}
+                  >
                     Max
                   </Button>
                 </span>
               </Field>
               <Field label="Note (optional)" hint="Kept on the ledger next to the payout.">
-                <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Weekly settlement" maxLength={200} />
+                <Textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Weekly settlement"
+                  maxLength={200}
+                />
               </Field>
               <Field label="Withdrawal PIN">
                 <Input
@@ -155,7 +195,10 @@ export function PayoutTab() {
                 items={[
                   { label: "Bank", value: s?.settlement?.bankName },
                   { label: "Account name", value: s?.settlement?.accountName },
-                  { label: "Account number", value: <span className="font-mono">{s?.settlement?.accountNumberMasked}</span> },
+                  {
+                    label: "Account number",
+                    value: <span className="font-mono">{s?.settlement?.accountNumberMasked}</span>,
+                  },
                 ]}
               />
               <Button size="sm" variant="ghost" className="mt-3" onClick={() => setDrawer("bank")}>

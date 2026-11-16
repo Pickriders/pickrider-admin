@@ -61,12 +61,16 @@ export function TestSendDrawer({
   const emails = scope === "one" ? 1 : totalTemplates;
   const total = emails * recipients.length;
 
-  const send = useAction((vars: { templateKey: string; recipients: string[] }) => emailTemplates.sendTests(vars.templateKey, vars.recipients), {
-    success: (data, vars) => testSendMessage(data, vars.recipients),
-    error: testSendErrorMessage,
-    invalidate: [["messages"]],
-    onSuccess: (data) => setResult(data),
-  });
+  const send = useAction(
+    (vars: { templateKey: string; recipients: string[] }) =>
+      emailTemplates.sendTests(vars.templateKey, vars.recipients),
+    {
+      success: (data, vars) => testSendMessage(data, vars.recipients),
+      error: testSendErrorMessage,
+      invalidate: [["messages"]],
+      onSuccess: (data) => setResult(data),
+    },
+  );
 
   const summary = summariseQueued(result?.queued);
 
@@ -81,7 +85,8 @@ export function TestSendDrawer({
           <p className="text-xs text-ink-muted">
             {recipients.length ? (
               <>
-                <span className="font-semibold text-ink">{count(total)}</span> email{total === 1 ? "" : "s"} to {recipients.length === 1 ? recipients[0] : `${recipients.length} addresses`}
+                <span className="font-semibold text-ink">{count(total)}</span> email{total === 1 ? "" : "s"} to{" "}
+                {recipients.length === 1 ? recipients[0] : `${recipients.length} addresses`}
               </>
             ) : (
               "Add at least one address"
@@ -109,7 +114,12 @@ export function TestSendDrawer({
               title={template ? templateTitle(template.key) : "One email"}
               hint={template ? "The email open in the preview" : "Open an email in the gallery first"}
             />
-            <ScopeOption active={scope === "all"} onClick={() => setScope("all")} title={`All ${count(totalTemplates)} emails`} hint="Every template, once per address" />
+            <ScopeOption
+              active={scope === "all"}
+              onClick={() => setScope("all")}
+              title={`All ${count(totalTemplates)} emails`}
+              hint="Every template, once per address"
+            />
           </div>
         </fieldset>
 
@@ -140,12 +150,24 @@ export function TestSendDrawer({
                 const outcome = OUTCOME[row.status];
                 const Icon = outcome?.icon ?? Clock;
                 return (
-                  <li key={`${row.templateKey}:${row.recipient}`} className="flex items-center justify-between gap-3 py-2 text-xs">
+                  <li
+                    key={`${row.templateKey}:${row.recipient}`}
+                    className="flex items-center justify-between gap-3 py-2 text-xs"
+                  >
                     <span className="min-w-0">
                       <span className="block truncate font-semibold text-ink">{templateTitle(row.templateKey)}</span>
                       <span className="block truncate text-ink-muted">{row.recipient}</span>
                     </span>
-                    <span className={cx("inline-flex shrink-0 items-center gap-1 font-semibold", outcome?.tone === "danger" ? "text-danger" : outcome?.tone === "success" ? "text-success" : "text-ink-muted")}>
+                    <span
+                      className={cx(
+                        "inline-flex shrink-0 items-center gap-1 font-semibold",
+                        outcome?.tone === "danger"
+                          ? "text-danger"
+                          : outcome?.tone === "success"
+                            ? "text-success"
+                            : "text-ink-muted",
+                      )}
+                    >
                       <Icon size={13} aria-hidden />
                       {outcome?.label ?? row.status}
                     </span>
@@ -155,7 +177,10 @@ export function TestSendDrawer({
             </ul>
             <p className="text-[11px] text-ink-faint">
               Queued emails usually arrive within a minute.{" "}
-              <Link href="/messages?purpose=TEST&channel=EMAIL" className="font-semibold text-brand-dark hover:underline">
+              <Link
+                href="/messages?purpose=TEST&channel=EMAIL"
+                className="font-semibold text-brand-dark hover:underline"
+              >
                 Follow them on the Messages page
               </Link>
               .
@@ -167,7 +192,19 @@ export function TestSendDrawer({
   );
 }
 
-function ScopeOption({ active, disabled, onClick, title, hint }: { active: boolean; disabled?: boolean; onClick: () => void; title: string; hint: string }) {
+function ScopeOption({
+  active,
+  disabled,
+  onClick,
+  title,
+  hint,
+}: {
+  active: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  title: string;
+  hint: string;
+}) {
   return (
     <button
       type="button"

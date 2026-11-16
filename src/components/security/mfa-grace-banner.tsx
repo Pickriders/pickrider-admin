@@ -36,13 +36,25 @@ export function MfaGraceBanner() {
       <div className="mx-auto flex max-w-[88rem] items-center gap-3">
         <ShieldAlert size={16} className="shrink-0 text-warning" />
         <p className="min-w-0 flex-1 text-ink">
-          <span className="font-bold">{overdue ? "Authenticator setup is overdue." : `Set up your authenticator app by ${day(deadline)}.`}</span>{" "}
-          <span className="text-ink-muted">Two-step sign-in is required for your role; after the deadline the console locks until it is on.</span>
+          <span className="font-bold">
+            {overdue ? "Authenticator setup is overdue." : `Set up your authenticator app by ${day(deadline)}.`}
+          </span>{" "}
+          <span className="text-ink-muted">
+            Two-step sign-in is required for your role; after the deadline the console locks until it is on.
+          </span>
         </p>
-        <Link href={settingsHref("security", { setup: "1" })} className="shrink-0 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-card hover:opacity-90">
+        <Link
+          href={settingsHref("security", { setup: "1" })}
+          className="shrink-0 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-card hover:opacity-90"
+        >
           Set up now
         </Link>
-        <button type="button" onClick={() => setHidden(true)} aria-label="Hide for now" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-muted hover:bg-card hover:text-ink">
+        <button
+          type="button"
+          onClick={() => setHidden(true)}
+          aria-label="Hide for now"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-muted hover:bg-card hover:text-ink"
+        >
           <X size={16} />
         </button>
       </div>

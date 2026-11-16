@@ -49,15 +49,25 @@ export function emailKind(control: Pick<ControlLike, "essential" | "marketing">)
   return "transactional";
 }
 
-export const EMAIL_KIND_LABEL: Record<EmailKind, string> = { essential: "Essential", marketing: "Marketing", transactional: "Transactional" };
-export const EMAIL_KIND_TONE: Record<EmailKind, Tone> = { essential: "warning", marketing: "brand", transactional: "neutral" };
+export const EMAIL_KIND_LABEL: Record<EmailKind, string> = {
+  essential: "Essential",
+  marketing: "Marketing",
+  transactional: "Transactional",
+};
+export const EMAIL_KIND_TONE: Record<EmailKind, Tone> = {
+  essential: "warning",
+  marketing: "brand",
+  transactional: "neutral",
+};
 
 /** The tooltip on the Essential chip: why it always sends. */
 export function kindHint(control: Pick<ControlLike, "essential" | "marketing" | "essentialReason">): string {
   const kind = emailKind(control);
   if (kind === "essential") {
     const reason = control.essentialReason?.trim();
-    return reason ? `Always sends: ${reason}. It cannot be turned off or paused.` : "Always sends. It cannot be turned off or paused.";
+    return reason
+      ? `Always sends: ${reason}. It cannot be turned off or paused.`
+      : "Always sends. It cannot be turned off or paused.";
   }
   if (kind === "marketing") return "Held back while marketing emails are paused, and by the non-essential pause.";
   return "Held back only by the non-essential pause, or when turned off here.";
@@ -72,21 +82,31 @@ export type SwitchLock = { locked: boolean; reason: string | null };
  * locked for everyone (the core says why in `lockedReason`); otherwise only a super admin can
  * change it. The core enforces all of this again; this only keeps the UI honest.
  */
-export function switchLock(control: Pick<ControlLike, "essential" | "essentialReason" | "lockedReason" | "emailChannel">, canManage: boolean): SwitchLock {
+export function switchLock(
+  control: Pick<ControlLike, "essential" | "essentialReason" | "lockedReason" | "emailChannel">,
+  canManage: boolean,
+): SwitchLock {
   if (control.essential) {
-    const reason = control.lockedReason?.trim() || (control.essentialReason ? `Essential: ${control.essentialReason}` : "Essential: always sends");
+    const reason =
+      control.lockedReason?.trim() ||
+      (control.essentialReason ? `Essential: ${control.essentialReason}` : "Essential: always sends");
     return { locked: true, reason };
   }
   if (control.lockedReason?.trim()) return { locked: true, reason: control.lockedReason.trim() };
-  if (control.emailChannel === false) return { locked: true, reason: "Not sent by email, so there is nothing to turn off." };
+  if (control.emailChannel === false)
+    return { locked: true, reason: "Not sent by email, so there is nothing to turn off." };
   if (!canManage) return { locked: true, reason: "Only a super admin can turn emails on or off." };
   return { locked: false, reason: null };
 }
 
 /** The body for PATCH controls/templates/:key, or the reason it cannot be sent yet. */
-export function templateSwitchBody(enabled: boolean, reason: string | null | undefined): { ok: true; body: { enabled: boolean; reason?: string } } | { ok: false; error: string } {
+export function templateSwitchBody(
+  enabled: boolean,
+  reason: string | null | undefined,
+): { ok: true; body: { enabled: boolean; reason?: string } } | { ok: false; error: string } {
   const text = (reason ?? "").trim();
-  if (text.length > MAX_CONTROL_REASON) return { ok: false, error: `Keep the reason under ${MAX_CONTROL_REASON} characters.` };
+  if (text.length > MAX_CONTROL_REASON)
+    return { ok: false, error: `Keep the reason under ${MAX_CONTROL_REASON} characters.` };
   if (!enabled && text.length < 3) return { ok: false, error: "Say why this email is being turned off." };
   return { ok: true, body: text ? { enabled, reason: text } : { enabled } };
 }
@@ -113,17 +133,28 @@ export function emailStatusLine(control: ControlLike, who?: string | null): Stat
       return { text: "Paused: all non-essential", tone: "warning", skipping: true };
     case null:
     case undefined:
-      return control.enabled ? { text: "Sending", tone: "success", skipping: false } : { text: "Off", tone: "danger", skipping: true };
+      return control.enabled
+        ? { text: "Sending", tone: "success", skipping: false }
+        : { text: "Off", tone: "danger", skipping: true };
     default:
-      return { text: `Held back: ${String(control.skipReason).toLowerCase().replace(/_/g, " ")}`, tone: "warning", skipping: true };
+      return {
+        text: `Held back: ${String(control.skipReason).toLowerCase().replace(/_/g, " ")}`,
+        tone: "warning",
+        skipping: true,
+      };
   }
 }
 
 /** Gallery rows (the list endpoint) merged with the controls by key, so a row has `skipReason` and notes. */
-export function controlFor<T extends { key: string; enabled?: boolean; essential?: boolean; marketing?: boolean; essentialReason?: string | null }>(
-  template: T,
-  controls: readonly ControlLike[] | null | undefined,
-): ControlLike {
+export function controlFor<
+  T extends {
+    key: string;
+    enabled?: boolean;
+    essential?: boolean;
+    marketing?: boolean;
+    essentialReason?: string | null;
+  },
+>(template: T, controls: readonly ControlLike[] | null | undefined): ControlLike {
   const found = (controls ?? []).find((row) => row.key === template.key);
   if (found) return found;
   return {
@@ -149,7 +180,8 @@ export const PAUSE_LABEL: Record<PauseKind, { title: string; short: string; scop
   nonEssential: {
     title: "Pause all non-essential emails",
     short: "Non-essential emails paused",
-    scope: "Every email that is not essential is held back. Codes, security notices, invitations and money receipts still send.",
+    scope:
+      "Every email that is not essential is held back. Codes, security notices, invitations and money receipts still send.",
   },
 };
 
@@ -182,8 +214,10 @@ export function activePauses(
   now = Date.now(),
 ): { kind: PauseKind; pause: PauseLike }[] {
   const out: { kind: PauseKind; pause: PauseLike }[] = [];
-  if (controls?.pauseNonEssential && pauseInEffect(controls.pauseNonEssential, now)) out.push({ kind: "nonEssential", pause: controls.pauseNonEssential });
-  if (controls?.pauseMarketing && pauseInEffect(controls.pauseMarketing, now)) out.push({ kind: "marketing", pause: controls.pauseMarketing });
+  if (controls?.pauseNonEssential && pauseInEffect(controls.pauseNonEssential, now))
+    out.push({ kind: "nonEssential", pause: controls.pauseNonEssential });
+  if (controls?.pauseMarketing && pauseInEffect(controls.pauseMarketing, now))
+    out.push({ kind: "marketing", pause: controls.pauseMarketing });
   return out;
 }
 
@@ -207,7 +241,11 @@ const HOUR = 60 * 60 * 1000;
 
 export type QuickPick = "1h" | "2h" | "tomorrow8";
 
-export const QUICK_PICK_LABEL: Record<QuickPick, string> = { "1h": "1 hour", "2h": "2 hours", tomorrow8: "Tomorrow 8 AM" };
+export const QUICK_PICK_LABEL: Record<QuickPick, string> = {
+  "1h": "1 hour",
+  "2h": "2 hours",
+  tomorrow8: "Tomorrow 8 AM",
+};
 
 /** When a quick pick ends. "Tomorrow 8 AM" is 08:00 on the next Lagos calendar day. */
 export function quickPickUntil(pick: QuickPick, now = Date.now()): Date {
@@ -238,12 +276,17 @@ export function parseLagosInput(value: string | null | undefined): Date | null {
 }
 
 /** The body for PATCH controls/pause-*, or the reason it cannot be sent yet. */
-export function pauseBody(input: { reason: string; until?: Date | null }, now = Date.now()): { ok: true; body: { active: true; reason: string; until?: string } } | { ok: false; error: string } {
+export function pauseBody(
+  input: { reason: string; until?: Date | null },
+  now = Date.now(),
+): { ok: true; body: { active: true; reason: string; until?: string } } | { ok: false; error: string } {
   const reason = input.reason.trim();
   if (reason.length < 3) return { ok: false, error: "Say why emails are being paused." };
-  if (reason.length > MAX_CONTROL_REASON) return { ok: false, error: `Keep the reason under ${MAX_CONTROL_REASON} characters.` };
+  if (reason.length > MAX_CONTROL_REASON)
+    return { ok: false, error: `Keep the reason under ${MAX_CONTROL_REASON} characters.` };
   if (input.until) {
-    if (Number.isNaN(input.until.getTime()) || input.until.getTime() <= now) return { ok: false, error: "Pick a time in the future." };
+    if (Number.isNaN(input.until.getTime()) || input.until.getTime() <= now)
+      return { ok: false, error: "Pick a time in the future." };
     return { ok: true, body: { active: true, reason, until: input.until.toISOString() } };
   }
   return { ok: true, body: { active: true, reason } };

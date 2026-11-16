@@ -26,7 +26,11 @@ export function OrdersBreakdown({ current, loading }: { current?: OrderWindow; l
     () =>
       Object.entries(current?.byType ?? {})
         .sort((a, b) => b[1] - a[1])
-        .map(([type, value], index) => ({ name: TYPE_LABEL[type] ?? type, value, color: TYPE_COLOR[index % TYPE_COLOR.length] })),
+        .map(([type, value], index) => ({
+          name: TYPE_LABEL[type] ?? type,
+          value,
+          color: TYPE_COLOR[index % TYPE_COLOR.length],
+        })),
     [current?.byType],
   );
   const statuses = {
@@ -48,14 +52,18 @@ export function OrdersBreakdown({ current, loading }: { current?: OrderWindow; l
                 <DonutChart data={types} format="count" centerValue={count(total)} centerLabel="orders" />
               </div>
               <ul className="min-w-0 flex-1 space-y-2.5">
-                {(types.length ? types : [{ name: "No orders yet", value: 0, color: "hsl(var(--border))" }]).map((item) => (
-                  <li key={item.name} className="flex items-center gap-2.5 text-sm">
-                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="min-w-0 flex-1 truncate font-medium text-ink">{item.name}</span>
-                    <span className="font-black tabular-nums text-ink">{count(item.value)}</span>
-                    <span className="w-10 text-right text-xs tabular-nums text-ink-faint">{total ? Math.round((item.value / total) * 100) : 0}%</span>
-                  </li>
-                ))}
+                {(types.length ? types : [{ name: "No orders yet", value: 0, color: "hsl(var(--border))" }]).map(
+                  (item) => (
+                    <li key={item.name} className="flex items-center gap-2.5 text-sm">
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className="min-w-0 flex-1 truncate font-medium text-ink">{item.name}</span>
+                      <span className="font-black tabular-nums text-ink">{count(item.value)}</span>
+                      <span className="w-10 text-right text-xs tabular-nums text-ink-faint">
+                        {total ? Math.round((item.value / total) * 100) : 0}%
+                      </span>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
 
@@ -69,7 +77,9 @@ export function OrdersBreakdown({ current, loading }: { current?: OrderWindow; l
               <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface">
                 {STATUS_GROUPS.map((group) => {
                   const width = total ? (statuses[group.key] / total) * 100 : 0;
-                  return width ? <span key={group.key} className={cx("h-full", group.className)} style={{ width: `${width}%` }} /> : null;
+                  return width ? (
+                    <span key={group.key} className={cx("h-full", group.className)} style={{ width: `${width}%` }} />
+                  ) : null;
                 })}
               </div>
               <div className="mt-3 grid grid-cols-3 gap-2">
@@ -79,7 +89,9 @@ export function OrdersBreakdown({ current, loading }: { current?: OrderWindow; l
                       <span className={cx("h-2 w-2 rounded-full", group.className)} />
                       {group.label}
                     </p>
-                    <p className={cx("mt-0.5 text-lg font-black leading-none tabular-nums", group.text)}>{count(statuses[group.key])}</p>
+                    <p className={cx("mt-0.5 text-lg font-black leading-none tabular-nums", group.text)}>
+                      {count(statuses[group.key])}
+                    </p>
                   </div>
                 ))}
               </div>

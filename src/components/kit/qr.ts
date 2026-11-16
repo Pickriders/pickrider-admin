@@ -244,7 +244,9 @@ class QrSymbol {
     positions.forEach((cx, i) => {
       positions.forEach((cy, j) => {
         if ((i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0)) return;
-        for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) this.setFunction(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+        for (let dy = -2; dy <= 2; dy += 1)
+          for (let dx = -2; dx <= 2; dx += 1)
+            this.setFunction(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
       });
     });
     this.drawFormatBits(0);
@@ -361,7 +363,12 @@ class QrSymbol {
     for (let y = 0; y < size - 1; y += 1) {
       for (let x = 0; x < size - 1; x += 1) {
         const color = this.modules[y][x];
-        if (color === this.modules[y][x + 1] && color === this.modules[y + 1][x] && color === this.modules[y + 1][x + 1]) result += PENALTY_N2;
+        if (
+          color === this.modules[y][x + 1] &&
+          color === this.modules[y + 1][x] &&
+          color === this.modules[y + 1][x + 1]
+        )
+          result += PENALTY_N2;
       }
     }
     // Balance of dark and light modules.
@@ -405,7 +412,9 @@ function addRun(history: number[], run: number, size: number) {
 function countFinderPatterns(history: number[]) {
   const n = history[1];
   const core = n > 0 && history[2] === n && history[3] === n * 3 && history[4] === n && history[5] === n;
-  return (core && history[0] >= n * 4 && history[6] >= n ? 1 : 0) + (core && history[6] >= n * 4 && history[0] >= n ? 1 : 0);
+  return (
+    (core && history[0] >= n * 4 && history[6] >= n ? 1 : 0) + (core && history[6] >= n * 4 && history[0] >= n ? 1 : 0)
+  );
 }
 
 function terminateRun(history: number[], runColor: boolean, run: number, size: number) {

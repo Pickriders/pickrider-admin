@@ -1,12 +1,6 @@
 export const PackageDelivered = () => {
   return (
-    <svg
-      width="25"
-      height="24"
-      viewBox="0 0 25 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M21.0479 7V12M3.04785 7C3.04785 10.0645 3.04785 16.7742 3.04785 17.1613C3.04785 18.5438 4.99349 19.3657 8.88478 21.0095C10.4481 21.6698 11.2297 22 12.0479 22V11.3548"
         stroke="white"
@@ -28,20 +22,8 @@ export const PackageDelivered = () => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M6.04785 12L8.04785 13"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M17.0479 4L7.04785 9"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M6.04785 12L8.04785 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M17.0479 4L7.04785 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 };

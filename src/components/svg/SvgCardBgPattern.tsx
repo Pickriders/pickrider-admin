@@ -1,12 +1,6 @@
 export function SvgCardBgPattern() {
   return (
-    <svg
-      width="125"
-      height="200"
-      viewBox="0 0 125 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="125" height="200" viewBox="0 0 125 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect
         x="112.749"
         y="132.825"

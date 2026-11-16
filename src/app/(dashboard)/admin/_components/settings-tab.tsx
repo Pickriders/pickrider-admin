@@ -3,10 +3,40 @@
 import { ChevronRight, Globe2, MapPin, Plus } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-import { Badge, Button, Drawer, EmptyState, ErrorState, Field, Input, KeyValue, Panel, PanelHeader, Skeleton, Switch, cx } from "@/components/kit";
-import { asArray, platformSettings, settings, settingsExtra, type Country, type CountryConfig, type CountryState, type StateConfig } from "@/lib/admin/api";
+import {
+  Badge,
+  Button,
+  Drawer,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  KeyValue,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  Switch,
+  cx,
+} from "@/components/kit";
+import {
+  asArray,
+  platformSettings,
+  settings,
+  settingsExtra,
+  type Country,
+  type CountryConfig,
+  type CountryState,
+  type StateConfig,
+} from "@/lib/admin/api";
 import { naira } from "@/lib/admin/format";
-import { useAction, useCountries, useCountry, useDeliveryPricing, usePlatformSettings, useStates } from "@/lib/admin/hooks";
+import {
+  useAction,
+  useCountries,
+  useCountry,
+  useDeliveryPricing,
+  usePlatformSettings,
+  useStates,
+} from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { secondsToMinutes } from "@/lib/admin/phone";
 import { cleanSupportEmails, sameEmails, supportEmailErrors } from "@/lib/admin/support-emails";
@@ -45,7 +75,12 @@ export function SettingsTab() {
             title="Countries"
             subtitle="Where the platform runs"
             action={
-              <Button size="sm" variant="outline" icon={Plus} onClick={() => table.update({ add: "country" }, { resetPage: false })}>
+              <Button
+                size="sm"
+                variant="outline"
+                icon={Plus}
+                onClick={() => table.update({ add: "country" }, { resetPage: false })}
+              >
                 Add
               </Button>
             }
@@ -59,7 +94,12 @@ export function SettingsTab() {
                 <Skeleton className="h-14 w-full" />
               </div>
             ) : !list.length ? (
-              <EmptyState compact icon={Globe2} title="No countries yet" description="Add the first country to start configuring pricing." />
+              <EmptyState
+                compact
+                icon={Globe2}
+                title="No countries yet"
+                description="Add the first country to start configuring pricing."
+              />
             ) : (
               <ul className="space-y-1">
                 {list.map((country) => {
@@ -74,7 +114,12 @@ export function SettingsTab() {
                           active ? "bg-ink text-card" : "hover:bg-surface",
                         )}
                       >
-                        <span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-xl", active ? "bg-card/15 text-card" : "bg-brand-soft text-brand-dark")}>
+                        <span
+                          className={cx(
+                            "grid h-9 w-9 shrink-0 place-items-center rounded-xl",
+                            active ? "bg-card/15 text-card" : "bg-brand-soft text-brand-dark",
+                          )}
+                        >
                           <Globe2 size={16} />
                         </span>
                         <span className="min-w-0 flex-1">
@@ -100,20 +145,41 @@ export function SettingsTab() {
         {countryId ? (
           <>
             <CountryForm countryId={countryId} />
-            <StatesPanel countryId={countryId} onOpen={(id) => table.update({ state: id }, { resetPage: false })} onAdd={() => table.update({ add: "state" }, { resetPage: false })} />
+            <StatesPanel
+              countryId={countryId}
+              onOpen={(id) => table.update({ state: id }, { resetPage: false })}
+              onAdd={() => table.update({ add: "state" }, { resetPage: false })}
+            />
           </>
         ) : !countries.isLoading && !list.length ? (
           <Panel>
-            <EmptyState icon={Globe2} title="Nothing to configure yet" description="Pricing, withdrawal limits and dispatch rules live under a country." />
+            <EmptyState
+              icon={Globe2}
+              title="Nothing to configure yet"
+              description="Pricing, withdrawal limits and dispatch rules live under a country."
+            />
           </Panel>
         ) : null}
       </div>
 
-      <AddCountryDrawer open={adding === "country"} onClose={() => table.update({ add: undefined }, { resetPage: false })} onCreated={(id) => table.update({ add: undefined, country: id, state: undefined }, { resetPage: false })} />
+      <AddCountryDrawer
+        open={adding === "country"}
+        onClose={() => table.update({ add: undefined }, { resetPage: false })}
+        onCreated={(id) => table.update({ add: undefined, country: id, state: undefined }, { resetPage: false })}
+      />
       {countryId ? (
         <>
-          <AddStateDrawer countryId={countryId} open={adding === "state"} onClose={() => table.update({ add: undefined }, { resetPage: false })} onCreated={(id) => table.update({ add: undefined, state: id }, { resetPage: false })} />
-          <StateDrawer countryId={countryId} stateId={stateId} onClose={() => table.update({ state: undefined }, { resetPage: false })} />
+          <AddStateDrawer
+            countryId={countryId}
+            open={adding === "state"}
+            onClose={() => table.update({ add: undefined }, { resetPage: false })}
+            onCreated={(id) => table.update({ add: undefined, state: id }, { resetPage: false })}
+          />
+          <StateDrawer
+            countryId={countryId}
+            stateId={stateId}
+            onClose={() => table.update({ state: undefined }, { resetPage: false })}
+          />
         </>
       ) : null}
     </div>
@@ -122,7 +188,8 @@ export function SettingsTab() {
 
 // ── Platform-wide support emails ──────────────────────────────────────────────
 
-const STATE_EMAILS_HINT = "Urgent rider alerts nobody claims within 2 minutes are emailed here. Leave empty to use the platform list.";
+const STATE_EMAILS_HINT =
+  "Urgent rider alerts nobody claims within 2 minutes are emailed here. Leave empty to use the platform list.";
 const PLATFORM_EMAILS_HINT = "Used for any state without its own support emails.";
 
 /** The fallback inboxes for urgent alerts, for every state that has none of its own. */
@@ -151,7 +218,12 @@ function PlatformSupportPanel() {
         title="Support emails"
         subtitle="Platform-wide fallback for urgent alerts"
         action={
-          <Button size="sm" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite} onClick={() => save.mutate(undefined)}>
+          <Button
+            size="sm"
+            loading={save.isPending}
+            disabled={!dirty || errors.length > 0 || !canWrite}
+            onClick={() => save.mutate(undefined)}
+          >
             Save
           </Button>
         }
@@ -163,7 +235,13 @@ function PlatformSupportPanel() {
           <Skeleton className="h-16 w-full" />
         ) : (
           <>
-            <SupportEmailsInput label="Platform support emails" hint={PLATFORM_EMAILS_HINT} value={draft} onChange={setDraft} disabled={!canWrite} />
+            <SupportEmailsInput
+              label="Platform support emails"
+              hint={PLATFORM_EMAILS_HINT}
+              value={draft}
+              onChange={setDraft}
+              disabled={!canWrite}
+            />
             {errors.length ? <p className="text-xs font-semibold text-danger">{errors[0]}</p> : null}
             <TestEmailButton body={{}} dirty={dirty} note={saved?.length ? null : "Nothing saved yet"} />
           </>
@@ -214,8 +292,14 @@ function draftFromCountry(country: Country | undefined): CountryDraft {
       exchangeRate: config.exchangeRate ?? 0,
       minimumOfferPercentage: config.minimumOfferPercentage ?? 0,
       maxRiderSurgePercentage: config.maxRiderSurgePercentage ?? 40,
-      userWithdrawalLimits: { minimumAmount: config.userWithdrawalLimits?.minimumAmount ?? 0, maximumAmount: config.userWithdrawalLimits?.maximumAmount ?? 0 },
-      businessWithdrawalLimits: { minimumAmount: config.businessWithdrawalLimits?.minimumAmount ?? 0, maximumAmount: config.businessWithdrawalLimits?.maximumAmount ?? 0 },
+      userWithdrawalLimits: {
+        minimumAmount: config.userWithdrawalLimits?.minimumAmount ?? 0,
+        maximumAmount: config.userWithdrawalLimits?.maximumAmount ?? 0,
+      },
+      businessWithdrawalLimits: {
+        minimumAmount: config.businessWithdrawalLimits?.minimumAmount ?? 0,
+        maximumAmount: config.businessWithdrawalLimits?.maximumAmount ?? 0,
+      },
       referAndEarn: config.referAndEarn ?? false,
       referralEarnAmount: config.referralEarnAmount ?? 0,
       ordersRequiredBeforeEarn: config.ordersRequiredBeforeEarn ?? 1,
@@ -246,7 +330,11 @@ function CountryForm({ countryId }: { countryId: string }) {
     setDraft((d) => ({ ...d, config: { ...d.config, [key]: value } }));
     setDirty(true);
   };
-  const setLimit = (group: "userWithdrawalLimits" | "businessWithdrawalLimits", key: "minimumAmount" | "maximumAmount", value: number) => {
+  const setLimit = (
+    group: "userWithdrawalLimits" | "businessWithdrawalLimits",
+    key: "minimumAmount" | "maximumAmount",
+    value: number,
+  ) => {
     setDraft((d) => ({ ...d, config: { ...d.config, [group]: { ...d.config[group], [key]: value } } }));
     setDirty(true);
   };
@@ -255,11 +343,16 @@ function CountryForm({ countryId }: { countryId: string }) {
     const out: string[] = [];
     const c = draft.config;
     if (!draft.name.trim()) out.push("Country name is required.");
-    if ((c.minimumOfferPercentage ?? 0) < 0 || (c.minimumOfferPercentage ?? 0) > 100) out.push("Minimum offer must be between 0 and 100 percent.");
-    if ((c.maxRiderSurgePercentage ?? 0) < 0 || (c.maxRiderSurgePercentage ?? 0) > 100) out.push("Rider surge cap must be between 0 and 100 percent.");
+    if ((c.minimumOfferPercentage ?? 0) < 0 || (c.minimumOfferPercentage ?? 0) > 100)
+      out.push("Minimum offer must be between 0 and 100 percent.");
+    if ((c.maxRiderSurgePercentage ?? 0) < 0 || (c.maxRiderSurgePercentage ?? 0) > 100)
+      out.push("Rider surge cap must be between 0 and 100 percent.");
     for (const group of ["userWithdrawalLimits", "businessWithdrawalLimits"] as const) {
       const g = c[group];
-      if ((g?.maximumAmount ?? 0) < (g?.minimumAmount ?? 0)) out.push(`${group === "userWithdrawalLimits" ? "Courier" : "Business"} maximum withdrawal is below the minimum.`);
+      if ((g?.maximumAmount ?? 0) < (g?.minimumAmount ?? 0))
+        out.push(
+          `${group === "userWithdrawalLimits" ? "Courier" : "Business"} maximum withdrawal is below the minimum.`,
+        );
     }
     return out;
   }, [draft]);
@@ -270,7 +363,8 @@ function CountryForm({ countryId }: { countryId: string }) {
     save.mutate({ name: draft.name.trim(), config: draft.config });
   };
 
-  if (country.isError) return <ErrorState message={errorMessage(country.error)} onRetry={() => void country.refetch()} />;
+  if (country.isError)
+    return <ErrorState message={errorMessage(country.error)} onRetry={() => void country.refetch()} />;
 
   const data = country.data;
   return (
@@ -279,7 +373,12 @@ function CountryForm({ countryId }: { countryId: string }) {
         title={data?.name ?? "Country"}
         subtitle="Currency, bidding band, withdrawal limits and referral rewards"
         action={
-          <Button type="submit" form="country-form" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite}>
+          <Button
+            type="submit"
+            form="country-form"
+            loading={save.isPending}
+            disabled={!dirty || errors.length > 0 || !canWrite}
+          >
             Save country
           </Button>
         }
@@ -307,36 +406,94 @@ function CountryForm({ countryId }: { countryId: string }) {
                 <Input value={data.code ?? ""} disabled />
               </Field>
               <Field label="Currency" hint="Fixed once created">
-                <Input value={`${String(data.currencyName ?? "")} (${String(data.currencyCode ?? data.currency ?? "")})`} disabled />
+                <Input
+                  value={`${String(data.currencyName ?? "")} (${String(data.currencyCode ?? data.currency ?? "")})`}
+                  disabled
+                />
               </Field>
-              <MoneyInput label="Exchange rate" hint="Local currency for one US dollar" kobo={draft.config.exchangeRate} onChange={(v) => setConfig("exchangeRate", v)} />
+              <MoneyInput
+                label="Exchange rate"
+                hint="Local currency for one US dollar"
+                kobo={draft.config.exchangeRate}
+                onChange={(v) => setConfig("exchangeRate", v)}
+              />
             </div>
 
             <SectionTitle title="Bidding" hint="How far a rider's counter offer may move from the quoted price" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <NumberInput label="Minimum offer" hint="Lowest bid as a share of the quote" unit="%" min={0} max={100} value={draft.config.minimumOfferPercentage} onChange={(v) => setConfig("minimumOfferPercentage", v)} />
-              <NumberInput label="Rider surge cap" hint="Highest bid above the quote" unit="%" min={0} max={100} value={draft.config.maxRiderSurgePercentage} onChange={(v) => setConfig("maxRiderSurgePercentage", v)} />
+              <NumberInput
+                label="Minimum offer"
+                hint="Lowest bid as a share of the quote"
+                unit="%"
+                min={0}
+                max={100}
+                value={draft.config.minimumOfferPercentage}
+                onChange={(v) => setConfig("minimumOfferPercentage", v)}
+              />
+              <NumberInput
+                label="Rider surge cap"
+                hint="Highest bid above the quote"
+                unit="%"
+                min={0}
+                max={100}
+                value={draft.config.maxRiderSurgePercentage}
+                onChange={(v) => setConfig("maxRiderSurgePercentage", v)}
+              />
             </div>
 
             <SectionTitle title="Courier withdrawal limits" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <MoneyInput label="Minimum withdrawal" kobo={draft.config.userWithdrawalLimits?.minimumAmount} onChange={(v) => setLimit("userWithdrawalLimits", "minimumAmount", v)} />
-              <MoneyInput label="Maximum withdrawal" kobo={draft.config.userWithdrawalLimits?.maximumAmount} onChange={(v) => setLimit("userWithdrawalLimits", "maximumAmount", v)} />
+              <MoneyInput
+                label="Minimum withdrawal"
+                kobo={draft.config.userWithdrawalLimits?.minimumAmount}
+                onChange={(v) => setLimit("userWithdrawalLimits", "minimumAmount", v)}
+              />
+              <MoneyInput
+                label="Maximum withdrawal"
+                kobo={draft.config.userWithdrawalLimits?.maximumAmount}
+                onChange={(v) => setLimit("userWithdrawalLimits", "maximumAmount", v)}
+              />
             </div>
 
             <SectionTitle title="Business withdrawal limits" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <MoneyInput label="Minimum withdrawal" kobo={draft.config.businessWithdrawalLimits?.minimumAmount} onChange={(v) => setLimit("businessWithdrawalLimits", "minimumAmount", v)} />
-              <MoneyInput label="Maximum withdrawal" kobo={draft.config.businessWithdrawalLimits?.maximumAmount} onChange={(v) => setLimit("businessWithdrawalLimits", "maximumAmount", v)} />
+              <MoneyInput
+                label="Minimum withdrawal"
+                kobo={draft.config.businessWithdrawalLimits?.minimumAmount}
+                onChange={(v) => setLimit("businessWithdrawalLimits", "minimumAmount", v)}
+              />
+              <MoneyInput
+                label="Maximum withdrawal"
+                kobo={draft.config.businessWithdrawalLimits?.maximumAmount}
+                onChange={(v) => setLimit("businessWithdrawalLimits", "maximumAmount", v)}
+              />
             </div>
 
-            <SectionTitle title="Refer and earn" hint="Credit the referrer once the person they invited completes enough orders" />
+            <SectionTitle
+              title="Refer and earn"
+              hint="Credit the referrer once the person they invited completes enough orders"
+            />
             <div className="mb-3">
-              <Switch checked={Boolean(draft.config.referAndEarn)} onChange={(v) => setConfig("referAndEarn", v)} label="Referral rewards on" />
+              <Switch
+                checked={Boolean(draft.config.referAndEarn)}
+                onChange={(v) => setConfig("referAndEarn", v)}
+                label="Referral rewards on"
+              />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <MoneyInput label="Reward amount" kobo={draft.config.referralEarnAmount} onChange={(v) => setConfig("referralEarnAmount", v)} />
-              <NumberInput label="Orders required before earning" hint="0 pays out on sign up" min={0} step={1} value={draft.config.ordersRequiredBeforeEarn} onChange={(v) => setConfig("ordersRequiredBeforeEarn", Math.round(v))} />
+              <MoneyInput
+                label="Reward amount"
+                kobo={draft.config.referralEarnAmount}
+                onChange={(v) => setConfig("referralEarnAmount", v)}
+              />
+              <NumberInput
+                label="Orders required before earning"
+                hint="0 pays out on sign up"
+                min={0}
+                step={1}
+                value={draft.config.ordersRequiredBeforeEarn}
+                onChange={(v) => setConfig("ordersRequiredBeforeEarn", Math.round(v))}
+              />
             </div>
 
             {errors.length ? (
@@ -355,7 +512,15 @@ function CountryForm({ countryId }: { countryId: string }) {
   );
 }
 
-function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
+function AddCountryDrawer({
+  open,
+  onClose,
+  onCreated,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onCreated: (id: string) => void;
+}) {
   const canWrite = useCan().can("settings.write");
   const [form, setForm] = useState({ name: "", code: "", currencyName: "", currencyCode: "" });
   const create = useAction((body: Record<string, unknown>) => settings.createCountry(body), {
@@ -370,7 +535,12 @@ function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!valid) return;
-    create.mutate({ name: form.name.trim(), code: form.code.trim().toUpperCase(), currencyName: form.currencyName.trim(), currencyCode: form.currencyCode.trim().toUpperCase() });
+    create.mutate({
+      name: form.name.trim(),
+      code: form.code.trim().toUpperCase(),
+      currencyName: form.currencyName.trim(),
+      currencyCode: form.currencyCode.trim().toUpperCase(),
+    });
   };
   return (
     <Drawer
@@ -392,17 +562,35 @@ function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose
     >
       <form id="add-country" onSubmit={submit} className="space-y-4">
         <Field label="Country name">
-          <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nigeria" />
+          <Input
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder="Nigeria"
+          />
         </Field>
         <Field label="Code" hint="ISO 3166 two letter code">
-          <Input value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} placeholder="NG" maxLength={3} />
+          <Input
+            value={form.code}
+            onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+            placeholder="NG"
+            maxLength={3}
+          />
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Currency name">
-            <Input value={form.currencyName} onChange={(e) => setForm((f) => ({ ...f, currencyName: e.target.value }))} placeholder="Naira" />
+            <Input
+              value={form.currencyName}
+              onChange={(e) => setForm((f) => ({ ...f, currencyName: e.target.value }))}
+              placeholder="Naira"
+            />
           </Field>
           <Field label="Currency code">
-            <Input value={form.currencyCode} onChange={(e) => setForm((f) => ({ ...f, currencyCode: e.target.value }))} placeholder="NGN" maxLength={3} />
+            <Input
+              value={form.currencyCode}
+              onChange={(e) => setForm((f) => ({ ...f, currencyCode: e.target.value }))}
+              placeholder="NGN"
+              maxLength={3}
+            />
           </Field>
         </div>
       </form>
@@ -412,7 +600,15 @@ function AddCountryDrawer({ open, onClose, onCreated }: { open: boolean; onClose
 
 // ── States ────────────────────────────────────────────────────────────────────
 
-function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: (id: string) => void; onAdd: () => void }) {
+function StatesPanel({
+  countryId,
+  onOpen,
+  onAdd,
+}: {
+  countryId: string;
+  onOpen: (id: string) => void;
+  onAdd: () => void;
+}) {
   const states = useStates(countryId);
   const list = asArray(states.data);
   return (
@@ -435,7 +631,12 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
             <Skeleton className="h-16 w-full" />
           </div>
         ) : !list.length ? (
-          <EmptyState compact icon={MapPin} title="No states yet" description="Add a state, then set its pricing and dispatch rules." />
+          <EmptyState
+            compact
+            icon={MapPin}
+            title="No states yet"
+            description="Add a state, then set its pricing and dispatch rules."
+          />
         ) : (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {list.map((state) => {
@@ -453,7 +654,8 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-ink">{state.name}</span>
                     <span className="block truncate text-[11px] text-ink-muted">
-                      {String(state.code ?? "")} · {naira(config.basePricePerKm)}/km · min {naira(config.minimumOrderPrice)}
+                      {String(state.code ?? "")} · {naira(config.basePricePerKm)}/km · min{" "}
+                      {naira(config.minimumOrderPrice)}
                     </span>
                   </span>
                   <span className="flex flex-col items-end gap-1">
@@ -472,7 +674,17 @@ function StatesPanel({ countryId, onOpen, onAdd }: { countryId: string; onOpen: 
   );
 }
 
-function AddStateDrawer({ countryId, open, onClose, onCreated }: { countryId: string; open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
+function AddStateDrawer({
+  countryId,
+  open,
+  onClose,
+  onCreated,
+}: {
+  countryId: string;
+  open: boolean;
+  onClose: () => void;
+  onCreated: (id: string) => void;
+}) {
   const canWrite = useCan().can("settings.write");
   const [form, setForm] = useState({ name: "", code: "" });
   const [pendingCode, setPendingCode] = useState<string | null>(null);
@@ -515,7 +727,12 @@ function AddStateDrawer({ countryId, open, onClose, onCreated }: { countryId: st
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" form="add-state" loading={create.isPending || Boolean(pendingCode)} disabled={!valid || !canWrite}>
+          <Button
+            type="submit"
+            form="add-state"
+            loading={create.isPending || Boolean(pendingCode)}
+            disabled={!valid || !canWrite}
+          >
             Add state
           </Button>
         </div>
@@ -523,10 +740,19 @@ function AddStateDrawer({ countryId, open, onClose, onCreated }: { countryId: st
     >
       <form id="add-state" onSubmit={submit} className="space-y-4">
         <Field label="State name">
-          <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Enugu" />
+          <Input
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder="Enugu"
+          />
         </Field>
         <Field label="Code" hint="Short code the apps send, for example EN">
-          <Input value={form.code} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} placeholder="EN" maxLength={4} />
+          <Input
+            value={form.code}
+            onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+            placeholder="EN"
+            maxLength={4}
+          />
         </Field>
       </form>
     </Drawer>
@@ -626,12 +852,15 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
     if (c.arrivalRadiusMeters < 1) out.push("Arrival radius must be at least 1 metre.");
     if (c.etaAverageSpeedKmh < 1) out.push("Average speed must be at least 1 km/h.");
     if (c.handoffRadiusKm < 0.1 || c.handoffRadiusKm > 50) out.push("Handoff radius must be between 0.1 and 50 km.");
-    if (c.handoffWidenRadiusKm < c.handoffRadiusKm || c.handoffWidenRadiusKm > 50) out.push("The wider handoff radius must be at least the first radius, and at most 50 km.");
+    if (c.handoffWidenRadiusKm < c.handoffRadiusKm || c.handoffWidenRadiusKm > 50)
+      out.push("The wider handoff radius must be at least the first radius, and at most 50 km.");
     if (c.handoffAlertAfterSec < c.handoffWidenAfterSec) out.push("Alert staff after the search widens, not before.");
     if (c.handoffExpireAfterMin < 1) out.push("A handoff must stay open at least 1 minute.");
-    if (c.handoffExpireAfterMin * 60 <= c.handoffAlertAfterSec) out.push("A handoff must expire after staff are alerted.");
+    if (c.handoffExpireAfterMin * 60 <= c.handoffAlertAfterSec)
+      out.push("A handoff must expire after staff are alerted.");
     if (c.handoffRingSeconds < 5) out.push("Ring riders for at least 5 seconds.");
-    if (c.handoffMinSharePct < 0 || c.handoffMaxSharePct > 100 || c.handoffMinSharePct > c.handoffMaxSharePct) out.push("Handoff shares must be 0 to 100 percent, minimum below maximum.");
+    if (c.handoffMinSharePct < 0 || c.handoffMaxSharePct > 100 || c.handoffMinSharePct > c.handoffMaxSharePct)
+      out.push("Handoff shares must be 0 to 100 percent, minimum below maximum.");
     if (c.handoffConfirmRadiusM < 1) out.push("Swap distance must be at least 1 metre.");
     if (c.handoffsPerOrder < 0) out.push("Handoffs per order cannot be negative.");
     out.push(...releaseKnobErrors(c));
@@ -642,7 +871,10 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (errors.length || !stateId) return;
-    save.mutate({ name: draft.name.trim(), config: { ...draft.config, supportEmails: cleanSupportEmails(draft.config.supportEmails) } });
+    save.mutate({
+      name: draft.name.trim(),
+      config: { ...draft.config, supportEmails: cleanSupportEmails(draft.config.supportEmails) },
+    });
   };
   const savedEmails = cleanSupportEmails((state?.config as StateConfig | undefined)?.supportEmails);
 
@@ -651,16 +883,27 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
       open={Boolean(stateId)}
       onClose={onClose}
       title={state?.name ?? "State"}
-      subtitle={state ? `${String(state.code ?? "")} · pricing, dispatch, stacking, location updates, arrival, handoff and releases` : undefined}
+      subtitle={
+        state
+          ? `${String(state.code ?? "")} · pricing, dispatch, stacking, location updates, arrival, handoff and releases`
+          : undefined
+      }
       width="lg"
       footer={
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-ink-faint">{errors.length ? errors[0] : dirty ? "Unsaved changes" : "Saved"}</span>
+          <span className="text-xs text-ink-faint">
+            {errors.length ? errors[0] : dirty ? "Unsaved changes" : "Saved"}
+          </span>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>
               Close
             </Button>
-            <Button type="submit" form="state-form" loading={save.isPending} disabled={!dirty || errors.length > 0 || !canWrite}>
+            <Button
+              type="submit"
+              form="state-form"
+              loading={save.isPending}
+              disabled={!dirty || errors.length > 0 || !canWrite}
+            >
               Save state
             </Button>
           </div>
@@ -691,30 +934,96 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             </Field>
           </div>
 
-          <SectionTitle title="Pricing" hint="Fuel moves the per-km rate: rate is scaled by current fuel over base fuel" />
+          <SectionTitle
+            title="Pricing"
+            hint="Fuel moves the per-km rate: rate is scaled by current fuel over base fuel"
+          />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <MoneyInput label="Base rate per km" kobo={c.basePricePerKm} onChange={(v) => set("basePricePerKm", v)} />
-            <MoneyInput label="Base fuel price" hint="Per litre when the rate was set" kobo={c.baseFuelPrice} onChange={(v) => set("baseFuelPrice", v)} />
-            <MoneyInput label="Current fuel price" hint="Per litre today" kobo={c.currentFuelPrice} onChange={(v) => set("currentFuelPrice", v)} />
-            <MoneyInput label="Minimum order price" hint="Floor for any delivery" kobo={c.minimumOrderPrice} onChange={(v) => set("minimumOrderPrice", v)} />
-            <MoneyInput label="Service charge" hint="Flat platform fee per order" kobo={c.serviceCharge} onChange={(v) => set("serviceCharge", v)} />
-            <NumberInput label="Percentage charge" hint="Platform share of the fare" unit="%" min={0} max={100} value={c.percentageCharge} onChange={(v) => set("percentageCharge", v)} />
+            <MoneyInput
+              label="Base fuel price"
+              hint="Per litre when the rate was set"
+              kobo={c.baseFuelPrice}
+              onChange={(v) => set("baseFuelPrice", v)}
+            />
+            <MoneyInput
+              label="Current fuel price"
+              hint="Per litre today"
+              kobo={c.currentFuelPrice}
+              onChange={(v) => set("currentFuelPrice", v)}
+            />
+            <MoneyInput
+              label="Minimum order price"
+              hint="Floor for any delivery"
+              kobo={c.minimumOrderPrice}
+              onChange={(v) => set("minimumOrderPrice", v)}
+            />
+            <MoneyInput
+              label="Service charge"
+              hint="Flat platform fee per order"
+              kobo={c.serviceCharge}
+              onChange={(v) => set("serviceCharge", v)}
+            />
+            <NumberInput
+              label="Percentage charge"
+              hint="Platform share of the fare"
+              unit="%"
+              min={0}
+              max={100}
+              value={c.percentageCharge}
+              onChange={(v) => set("percentageCharge", v)}
+            />
           </div>
 
-          <SectionTitle title="Distance fee taper" hint="Up to the threshold the full per-km rate applies; beyond it the flat rate per km takes over, with no jump at the threshold" />
+          <SectionTitle
+            title="Distance fee taper"
+            hint="Up to the threshold the full per-km rate applies; beyond it the flat rate per km takes over, with no jump at the threshold"
+          />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <MoneyInput label="Taper threshold" hint="Raw distance price where the taper starts" kobo={c.distanceTaperThreshold} onChange={(v) => set("distanceTaperThreshold", v)} />
-            <MoneyInput label="Beyond-threshold rate per km" kobo={c.distanceTaperBeyondRate} onChange={(v) => set("distanceTaperBeyondRate", v)} />
+            <MoneyInput
+              label="Taper threshold"
+              hint="Raw distance price where the taper starts"
+              kobo={c.distanceTaperThreshold}
+              onChange={(v) => set("distanceTaperThreshold", v)}
+            />
+            <MoneyInput
+              label="Beyond-threshold rate per km"
+              kobo={c.distanceTaperBeyondRate}
+              onChange={(v) => set("distanceTaperBeyondRate", v)}
+            />
           </div>
 
           <SectionTitle title="Dispatch" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput label="Max searchable riders" hint="Riders rung per search" min={1} step={1} value={c.maxRidersPerQuery} onChange={(v) => set("maxRidersPerQuery", Math.round(v))} />
-            <NumberInput label="Max active orders per rider" min={1} step={1} value={c.maxActiveOrders} onChange={(v) => set("maxActiveOrders", Math.round(v))} />
-            <NumberInput label="Max search radius" unit="km" min={1} value={c.maxDistanceRadius} onChange={(v) => set("maxDistanceRadius", v)} />
+            <NumberInput
+              label="Max searchable riders"
+              hint="Riders rung per search"
+              min={1}
+              step={1}
+              value={c.maxRidersPerQuery}
+              onChange={(v) => set("maxRidersPerQuery", Math.round(v))}
+            />
+            <NumberInput
+              label="Max active orders per rider"
+              min={1}
+              step={1}
+              value={c.maxActiveOrders}
+              onChange={(v) => set("maxActiveOrders", Math.round(v))}
+            />
+            <NumberInput
+              label="Max search radius"
+              unit="km"
+              min={1}
+              value={c.maxDistanceRadius}
+              onChange={(v) => set("maxDistanceRadius", v)}
+            />
           </div>
           <div className="mt-3">
-            <Switch checked={c.queueOrderByDefault} onChange={(v) => set("queueOrderByDefault", v)} label="Queue orders by default when no rider is free" />
+            <Switch
+              checked={c.queueOrderByDefault}
+              onChange={(v) => set("queueOrderByDefault", v)}
+              label="Queue orders by default when no rider is free"
+            />
           </div>
 
           <SectionTitle
@@ -724,7 +1033,11 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <NumberInput
               label="Most orders when stacking"
-              hint={stackingNeverApplies(c) ? "Raise this above Max active orders per rider, or stacking never applies" : "2 or 3, counting the current order"}
+              hint={
+                stackingNeverApplies(c)
+                  ? "Raise this above Max active orders per rider, or stacking never applies"
+                  : "2 or 3, counting the current order"
+              }
               min={2}
               max={3}
               step={1}
@@ -733,39 +1046,137 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             />
           </div>
           <div className="mb-3 mt-4">
-            <Switch checked={c.stackingEnabled} onChange={(v) => set("stackingEnabled", v)} label="On your way: pick up an order on the way to their drop-off" />
+            <Switch
+              checked={c.stackingEnabled}
+              onChange={(v) => set("stackingEnabled", v)}
+              label="On your way: pick up an order on the way to their drop-off"
+            />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput label="Drop-off within" hint="Of their current drop-off" unit="km" min={0.1} max={20} step={0.5} value={c.stackDropoffRadiusKm} onChange={(v) => set("stackDropoffRadiusKm", v)} />
-            <NumberInput label="Extra distance for the pickup" hint="Added to their way to the current drop-off" unit="km" min={0} max={10} step={0.5} value={c.stackMaxDetourKm} onChange={(v) => set("stackMaxDetourKm", v)} />
+            <NumberInput
+              label="Drop-off within"
+              hint="Of their current drop-off"
+              unit="km"
+              min={0.1}
+              max={20}
+              step={0.5}
+              value={c.stackDropoffRadiusKm}
+              onChange={(v) => set("stackDropoffRadiusKm", v)}
+            />
+            <NumberInput
+              label="Extra distance for the pickup"
+              hint="Added to their way to the current drop-off"
+              unit="km"
+              min={0}
+              max={10}
+              step={0.5}
+              value={c.stackMaxDetourKm}
+              onChange={(v) => set("stackMaxDetourKm", v)}
+            />
           </div>
           <div className="mb-3 mt-4">
-            <Switch checked={c.nextNearbyEnabled} onChange={(v) => set("nextNearbyEnabled", v)} label="Next job: give an order whose pickup is near where they finish" />
+            <Switch
+              checked={c.nextNearbyEnabled}
+              onChange={(v) => set("nextNearbyEnabled", v)}
+              label="Next job: give an order whose pickup is near where they finish"
+            />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput label="Pickup within (km) of their last drop-off" unit="km" min={0.1} max={20} step={0.5} value={c.nextPickupRadiusKm} onChange={(v) => set("nextPickupRadiusKm", v)} />
-            <NumberInput label="Rider within (km) of finishing" hint="Of their last drop-off" unit="km" min={0.1} max={30} step={0.5} value={c.nextFinishWithinKm} onChange={(v) => set("nextFinishWithinKm", v)} />
+            <NumberInput
+              label="Pickup within (km) of their last drop-off"
+              unit="km"
+              min={0.1}
+              max={20}
+              step={0.5}
+              value={c.nextPickupRadiusKm}
+              onChange={(v) => set("nextPickupRadiusKm", v)}
+            />
+            <NumberInput
+              label="Rider within (km) of finishing"
+              hint="Of their last drop-off"
+              unit="km"
+              min={0.1}
+              max={30}
+              step={0.5}
+              value={c.nextFinishWithinKm}
+              onChange={(v) => set("nextFinishWithinKm", v)}
+            />
           </div>
 
-          <SectionTitle title="Mid-order location update" hint="Lets a customer move a stop mid-order for a fee; the rider must accept" />
+          <SectionTitle
+            title="Mid-order location update"
+            hint="Lets a customer move a stop mid-order for a fee; the rider must accept"
+          />
           <div className="mb-3">
-            <Switch checked={c.locationUpdateEnabled} onChange={(v) => set("locationUpdateEnabled", v)} label="Location updates on" />
+            <Switch
+              checked={c.locationUpdateEnabled}
+              onChange={(v) => set("locationUpdateEnabled", v)}
+              label="Location updates on"
+            />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <NumberInput label="Free radius" hint="Route change within this is free" unit="m" min={1} step={1} value={c.locationUpdateFreeRadiusMeters} onChange={(v) => set("locationUpdateFreeRadiusMeters", Math.round(v))} />
-            <NumberInput label="Max updates per stop" min={1} step={1} value={c.locationUpdateMaxPerLocation} onChange={(v) => set("locationUpdateMaxPerLocation", Math.round(v))} />
-            <NumberInput label="Max rider declines per stop" min={1} step={1} value={c.locationUpdateMaxDeclinesPerLocation} onChange={(v) => set("locationUpdateMaxDeclinesPerLocation", Math.round(v))} />
-            <NumberInput label="Rider accept timeout" hint="Auto declines and refunds after this" unit="sec" min={30} step={1} value={c.locationUpdateRiderAcceptTimeoutSec} onChange={(v) => set("locationUpdateRiderAcceptTimeoutSec", Math.round(v))} />
+            <NumberInput
+              label="Free radius"
+              hint="Route change within this is free"
+              unit="m"
+              min={1}
+              step={1}
+              value={c.locationUpdateFreeRadiusMeters}
+              onChange={(v) => set("locationUpdateFreeRadiusMeters", Math.round(v))}
+            />
+            <NumberInput
+              label="Max updates per stop"
+              min={1}
+              step={1}
+              value={c.locationUpdateMaxPerLocation}
+              onChange={(v) => set("locationUpdateMaxPerLocation", Math.round(v))}
+            />
+            <NumberInput
+              label="Max rider declines per stop"
+              min={1}
+              step={1}
+              value={c.locationUpdateMaxDeclinesPerLocation}
+              onChange={(v) => set("locationUpdateMaxDeclinesPerLocation", Math.round(v))}
+            />
+            <NumberInput
+              label="Rider accept timeout"
+              hint="Auto declines and refunds after this"
+              unit="sec"
+              min={30}
+              step={1}
+              value={c.locationUpdateRiderAcceptTimeoutSec}
+              onChange={(v) => set("locationUpdateRiderAcceptTimeoutSec", Math.round(v))}
+            />
           </div>
 
-          <SectionTitle title="Arrival gate and ETA" hint="The gate blocks the rider's ARRIVED action until they are within the radius; ETA uses the average speed" />
+          <SectionTitle
+            title="Arrival gate and ETA"
+            hint="The gate blocks the rider's ARRIVED action until they are within the radius; ETA uses the average speed"
+          />
           <div className="mb-3 flex flex-wrap gap-6">
-            <Switch checked={c.arrivalGateEnabled} onChange={(v) => set("arrivalGateEnabled", v)} label="Arrival gate on" />
+            <Switch
+              checked={c.arrivalGateEnabled}
+              onChange={(v) => set("arrivalGateEnabled", v)}
+              label="Arrival gate on"
+            />
             <Switch checked={c.etaEnabled} onChange={(v) => set("etaEnabled", v)} label="Show ETA to customers" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <NumberInput label="Arrival radius" unit="m" min={1} step={1} value={c.arrivalRadiusMeters} onChange={(v) => set("arrivalRadiusMeters", Math.round(v))} />
-            <NumberInput label="ETA average speed" unit="km/h" min={1} value={c.etaAverageSpeedKmh} onChange={(v) => set("etaAverageSpeedKmh", v)} />
+            <NumberInput
+              label="Arrival radius"
+              unit="m"
+              min={1}
+              step={1}
+              value={c.arrivalRadiusMeters}
+              onChange={(v) => set("arrivalRadiusMeters", Math.round(v))}
+            />
+            <NumberInput
+              label="ETA average speed"
+              unit="km/h"
+              min={1}
+              value={c.etaAverageSpeedKmh}
+              onChange={(v) => set("etaAverageSpeedKmh", v)}
+            />
           </div>
 
           <SectionTitle
@@ -776,23 +1187,124 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             <Switch checked={c.handoffEnabled} onChange={(v) => set("handoffEnabled", v)} label="Handoffs on" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput label="Search radius" hint="Riders rung first, around the meeting point" unit="km" min={0.1} max={50} step={0.5} value={c.handoffRadiusKm} onChange={(v) => set("handoffRadiusKm", v)} />
-            <NumberInput label="Wider radius" hint="Rung when nobody takes it in time" unit="km" min={0.1} max={50} step={0.5} value={c.handoffWidenRadiusKm} onChange={(v) => set("handoffWidenRadiusKm", v)} />
-            <NumberInput label="Widen after" hint={`Stored as ${c.handoffWidenAfterSec} seconds`} unit="min" min={0} step={0.5} value={secondsToMinutes(c.handoffWidenAfterSec)} onChange={(v) => set("handoffWidenAfterSec", Math.round(v * 60))} />
-            <NumberInput label="Alert staff after" hint="Opens a No rider alert; the rider sees Chat with support" unit="min" min={0} step={0.5} value={secondsToMinutes(c.handoffAlertAfterSec)} onChange={(v) => set("handoffAlertAfterSec", Math.round(v * 60))} />
-            <NumberInput label="Expire after" hint="The first rider keeps the order" unit="min" min={1} step={1} value={c.handoffExpireAfterMin} onChange={(v) => set("handoffExpireAfterMin", Math.round(v))} />
-            <NumberInput label="Ring time" hint="How long the request shows on a rider's phone" unit="sec" min={5} step={1} value={c.handoffRingSeconds} onChange={(v) => set("handoffRingSeconds", Math.round(v))} />
-            <NumberInput label="Minimum share" hint="Least the first rider earns of the trip" unit="%" min={0} max={100} step={1} value={c.handoffMinSharePct} onChange={(v) => set("handoffMinSharePct", v)} />
-            <NumberInput label="Maximum share" hint="Most the first rider earns of the trip" unit="%" min={0} max={100} step={1} value={c.handoffMaxSharePct} onChange={(v) => set("handoffMaxSharePct", v)} />
-            <NumberInput label="Handoffs per order" hint="0 turns them off for every order" min={0} step={1} value={c.handoffsPerOrder} onChange={(v) => set("handoffsPerOrder", Math.round(v))} />
-            <MoneyInput label="Bonus for the new rider" hint="Paid by Pickriders, no commission" kobo={c.handoffBonusAmount} onChange={(v) => set("handoffBonusAmount", v)} />
-            <MoneyInput label="Cancel compensation" hint="Paid to a rider who accepted when the handoff is called off" kobo={c.handoffCancelCompensation} onChange={(v) => set("handoffCancelCompensation", v)} />
-            <NumberInput label="Swap distance check" hint="Further apart than this, the swap is flagged and the bonus held" unit="m" min={1} step={10} value={c.handoffConfirmRadiusM} onChange={(v) => set("handoffConfirmRadiusM", Math.round(v))} />
+            <NumberInput
+              label="Search radius"
+              hint="Riders rung first, around the meeting point"
+              unit="km"
+              min={0.1}
+              max={50}
+              step={0.5}
+              value={c.handoffRadiusKm}
+              onChange={(v) => set("handoffRadiusKm", v)}
+            />
+            <NumberInput
+              label="Wider radius"
+              hint="Rung when nobody takes it in time"
+              unit="km"
+              min={0.1}
+              max={50}
+              step={0.5}
+              value={c.handoffWidenRadiusKm}
+              onChange={(v) => set("handoffWidenRadiusKm", v)}
+            />
+            <NumberInput
+              label="Widen after"
+              hint={`Stored as ${c.handoffWidenAfterSec} seconds`}
+              unit="min"
+              min={0}
+              step={0.5}
+              value={secondsToMinutes(c.handoffWidenAfterSec)}
+              onChange={(v) => set("handoffWidenAfterSec", Math.round(v * 60))}
+            />
+            <NumberInput
+              label="Alert staff after"
+              hint="Opens a No rider alert; the rider sees Chat with support"
+              unit="min"
+              min={0}
+              step={0.5}
+              value={secondsToMinutes(c.handoffAlertAfterSec)}
+              onChange={(v) => set("handoffAlertAfterSec", Math.round(v * 60))}
+            />
+            <NumberInput
+              label="Expire after"
+              hint="The first rider keeps the order"
+              unit="min"
+              min={1}
+              step={1}
+              value={c.handoffExpireAfterMin}
+              onChange={(v) => set("handoffExpireAfterMin", Math.round(v))}
+            />
+            <NumberInput
+              label="Ring time"
+              hint="How long the request shows on a rider's phone"
+              unit="sec"
+              min={5}
+              step={1}
+              value={c.handoffRingSeconds}
+              onChange={(v) => set("handoffRingSeconds", Math.round(v))}
+            />
+            <NumberInput
+              label="Minimum share"
+              hint="Least the first rider earns of the trip"
+              unit="%"
+              min={0}
+              max={100}
+              step={1}
+              value={c.handoffMinSharePct}
+              onChange={(v) => set("handoffMinSharePct", v)}
+            />
+            <NumberInput
+              label="Maximum share"
+              hint="Most the first rider earns of the trip"
+              unit="%"
+              min={0}
+              max={100}
+              step={1}
+              value={c.handoffMaxSharePct}
+              onChange={(v) => set("handoffMaxSharePct", v)}
+            />
+            <NumberInput
+              label="Handoffs per order"
+              hint="0 turns them off for every order"
+              min={0}
+              step={1}
+              value={c.handoffsPerOrder}
+              onChange={(v) => set("handoffsPerOrder", Math.round(v))}
+            />
+            <MoneyInput
+              label="Bonus for the new rider"
+              hint="Paid by Pickriders, no commission"
+              kobo={c.handoffBonusAmount}
+              onChange={(v) => set("handoffBonusAmount", v)}
+            />
+            <MoneyInput
+              label="Cancel compensation"
+              hint="Paid to a rider who accepted when the handoff is called off"
+              kobo={c.handoffCancelCompensation}
+              onChange={(v) => set("handoffCancelCompensation", v)}
+            />
+            <NumberInput
+              label="Swap distance check"
+              hint="Further apart than this, the swap is flagged and the bonus held"
+              unit="m"
+              min={1}
+              step={10}
+              value={c.handoffConfirmRadiusM}
+              onChange={(v) => set("handoffConfirmRadiusM", Math.round(v))}
+            />
           </div>
 
-          <SectionTitle title="Urgent alert emails" hint="Who hears about an urgent rider alert (an accident) that nobody on the team claims" />
+          <SectionTitle
+            title="Urgent alert emails"
+            hint="Who hears about an urgent rider alert (an accident) that nobody on the team claims"
+          />
           <div className="space-y-3">
-            <SupportEmailsInput hint={STATE_EMAILS_HINT} value={c.supportEmails} onChange={(v) => set("supportEmails", v)} disabled={!canWrite} />
+            <SupportEmailsInput
+              hint={STATE_EMAILS_HINT}
+              value={c.supportEmails}
+              onChange={(v) => set("supportEmails", v)}
+              disabled={!canWrite}
+            />
             <TestEmailButton
               body={{ countryCode: String(country.data?.code ?? ""), stateCode: String(state?.code ?? "") }}
               dirty={dirty}
@@ -805,11 +1317,50 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             hint="A rider who accepted an order can release it with Can't make it. Counted releases over 7 days ring the rider later, alert staff, then pause them until staff unpause them."
           />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <NumberInput label="Free releases per day" hint="Releases in the first 2 minutes after accepting are free up to this many a day. 0 means none are free." min={0} max={10} step={1} value={c.releaseFreePerDay} onChange={(v) => set("releaseFreePerDay", Math.round(v))} />
-            <NumberInput label="Alert staff at" hint="counted releases in 7 days" min={1} max={50} step={1} value={c.releaseAlertWeekly} onChange={(v) => set("releaseAlertWeekly", Math.round(v))} />
-            <NumberInput label="Pause the rider at" hint="counted releases in 7 days, until staff unpause them" min={1} max={100} step={1} value={c.releasePauseWeekly} onChange={(v) => set("releasePauseWeekly", Math.round(v))} />
-            <NumberInput label="Ring later from" hint="counted releases in 7 days: these riders are rung after reliable riders" min={1} max={50} step={1} value={c.releaseDeprioritizeWeekly} onChange={(v) => set("releaseDeprioritizeWeekly", Math.round(v))} />
-            <NumberInput label="Ring them after (seconds)" min={1} max={300} step={1} value={c.releaseDeprioritizeDelaySec} onChange={(v) => set("releaseDeprioritizeDelaySec", Math.round(v))} />
+            <NumberInput
+              label="Free releases per day"
+              hint="Releases in the first 2 minutes after accepting are free up to this many a day. 0 means none are free."
+              min={0}
+              max={10}
+              step={1}
+              value={c.releaseFreePerDay}
+              onChange={(v) => set("releaseFreePerDay", Math.round(v))}
+            />
+            <NumberInput
+              label="Alert staff at"
+              hint="counted releases in 7 days"
+              min={1}
+              max={50}
+              step={1}
+              value={c.releaseAlertWeekly}
+              onChange={(v) => set("releaseAlertWeekly", Math.round(v))}
+            />
+            <NumberInput
+              label="Pause the rider at"
+              hint="counted releases in 7 days, until staff unpause them"
+              min={1}
+              max={100}
+              step={1}
+              value={c.releasePauseWeekly}
+              onChange={(v) => set("releasePauseWeekly", Math.round(v))}
+            />
+            <NumberInput
+              label="Ring later from"
+              hint="counted releases in 7 days: these riders are rung after reliable riders"
+              min={1}
+              max={50}
+              step={1}
+              value={c.releaseDeprioritizeWeekly}
+              onChange={(v) => set("releaseDeprioritizeWeekly", Math.round(v))}
+            />
+            <NumberInput
+              label="Ring them after (seconds)"
+              min={1}
+              max={300}
+              step={1}
+              value={c.releaseDeprioritizeDelaySec}
+              onChange={(v) => set("releaseDeprioritizeDelaySec", Math.round(v))}
+            />
           </div>
 
           {errors.length ? (

@@ -8,20 +8,9 @@ export const CheckedIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <rect
-        x="0.820312"
-        y="0.375"
-        width="88"
-        height="88"
-        fill="url(#pattern0_16856_7801)"
-      />
+      <rect x="0.820312" y="0.375" width="88" height="88" fill="url(#pattern0_16856_7801)" />
       <defs>
-        <pattern
-          id="pattern0_16856_7801"
-          patternContentUnits="objectBoundingBox"
-          width="1"
-          height="1"
-        >
+        <pattern id="pattern0_16856_7801" patternContentUnits="objectBoundingBox" width="1" height="1">
           <use xlinkHref="#image0_16856_7801" transform="scale(0.00195312)" />
         </pattern>
         <image

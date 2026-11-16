@@ -1,12 +1,6 @@
 export const HelpIcon = () => {
   return (
-    <svg
-      width="17"
-      height="16"
-      viewBox="0 0 17 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M8.06974 14.6673C11.7516 14.6673 14.7364 11.6825 14.7364 8.00065C14.7364 4.31875 11.7516 1.33398 8.06974 1.33398C4.38784 1.33398 1.40308 4.31875 1.40308 8.00065C1.40308 11.6825 4.38784 14.6673 8.06974 14.6673Z"
         fill="#F9C613"
@@ -19,13 +13,7 @@ export const HelpIcon = () => {
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <path
-        d="M8.06445 11.334H8.07045"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M8.06445 11.334H8.07045" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 };

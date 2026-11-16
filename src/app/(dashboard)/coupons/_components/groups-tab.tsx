@@ -229,7 +229,10 @@ function GroupDrawer({ id, canManage, onClose }: { id: string; canManage: boolea
                           type="button"
                           aria-label="Remove member"
                           onClick={() =>
-                            setRemoving({ _id: member._id, name: fullName(member) || formatEmail(member.email) || member._id })
+                            setRemoving({
+                              _id: member._id,
+                              name: fullName(member) || formatEmail(member.email) || member._id,
+                            })
                           }
                           className="grid h-8 w-8 place-items-center rounded-lg text-ink-faint hover:bg-surface hover:text-danger"
                         >

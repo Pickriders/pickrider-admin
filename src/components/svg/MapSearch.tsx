@@ -18,12 +18,7 @@ export const MapSearch = ({ className, height = 24, width = 24 }: SvgProps) => {
         strokeLinejoin="round"
       />
       <path d="M8.00977 2V17.0339" strokeWidth="1.5" strokeLinejoin="round" />
-      <path
-        d="M15.0098 5.00781V11.0214"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M15.0098 5.00781V11.0214" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M20.1167 20.1764L21.9619 21.9994M21.1789 17.6391C21.1789 19.6058 19.585 21.2001 17.6188 21.2001C15.6526 21.2001 14.0586 19.6058 14.0586 17.6391C14.0586 15.6724 15.6526 14.0781 17.6188 14.0781C19.585 14.0781 21.1789 15.6724 21.1789 17.6391Z"
         strokeWidth="1.5"

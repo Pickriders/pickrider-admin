@@ -1,16 +1,7 @@
 export const CardFill = () => {
   return (
-    <svg
-      width="22"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2 12H22V16C22 18.2091 20.2091 20 18 20H6C3.79086 20 2 18.2091 2 16V12Z"
-        fill="white"
-      />
+    <svg width="22" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 12H22V16C22 18.2091 20.2091 20 18 20H6C3.79086 20 2 18.2091 2 16V12Z" fill="white" />
       <path
         d="M6 16.25C5.58579 16.25 5.25 16.5858 5.25 17C5.25 17.4142 5.58579 17.75 6 17.75H8C8.41421 17.75 8.75 17.4142 8.75 17C8.75 16.5858 8.41421 16.25 8 16.25H6Z"
         fill="#A7DCF3"

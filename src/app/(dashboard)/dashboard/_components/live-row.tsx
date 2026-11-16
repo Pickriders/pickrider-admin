@@ -12,7 +12,16 @@ import { Panel, Skeleton, cx } from "@/components/kit/primitives";
  * today's completed and cancelled counts, plus scheduled bookings waiting
  * for their time. One calm row.
  */
-type Tile = { key: string; label: string; value: number; sub?: string; href: string; icon: LucideIcon; accent: "brand" | "warning" | "danger" | "info" | "success"; urgent?: boolean };
+type Tile = {
+  key: string;
+  label: string;
+  value: number;
+  sub?: string;
+  href: string;
+  icon: LucideIcon;
+  accent: "brand" | "warning" | "danger" | "info" | "success";
+  urgent?: boolean;
+};
 
 const ACCENT: Record<Tile["accent"], string> = {
   brand: "bg-brand-soft text-brand-dark",
@@ -25,13 +34,66 @@ const ACCENT: Record<Tile["accent"], string> = {
 export function LiveRow({ live, loading }: { live?: Overview["live"]; loading: boolean }) {
   const stale = live?.awaitingRiderStale ?? 0;
   const tiles: Tile[] = [
-    { key: "awaiting", label: "Awaiting a rider", value: live?.awaitingRider ?? 0, sub: stale ? `${count(stale)} waiting too long` : undefined, href: "/orders?status=INITIATED", icon: UserX, accent: stale ? "danger" : "warning", urgent: stale > 0 },
-    { key: "scheduled", label: "Scheduled, waiting", value: live?.scheduled ?? 0, sub: "Booked ahead, not yet rung", href: "/orders?tab=scheduled", icon: CalendarClock, accent: "info" },
-    { key: "accepted", label: "Rider assigned", value: live?.accepted ?? 0, href: "/orders?status=ACCEPTED", icon: Bike, accent: "brand" },
-    { key: "ongoing", label: "In transit", value: live?.ongoing ?? 0, href: "/orders?status=ON_GOING", icon: Truck, accent: "info" },
-    { key: "online", label: "Riders online", value: live?.ridersOnline ?? 0, href: "/couriers?isOnline=true", icon: Wifi, accent: "success" },
-    { key: "completed", label: "Completed today", value: live?.completedToday ?? 0, sub: `${count(live?.placedToday)} placed today`, href: "/orders?status=COMPLETED", icon: CheckCircle2, accent: "success" },
-    { key: "cancelled", label: "Cancelled today", value: live?.cancelledToday ?? 0, href: "/orders?status=CANCELLED", icon: PackageX, accent: "danger" },
+    {
+      key: "awaiting",
+      label: "Awaiting a rider",
+      value: live?.awaitingRider ?? 0,
+      sub: stale ? `${count(stale)} waiting too long` : undefined,
+      href: "/orders?status=INITIATED",
+      icon: UserX,
+      accent: stale ? "danger" : "warning",
+      urgent: stale > 0,
+    },
+    {
+      key: "scheduled",
+      label: "Scheduled, waiting",
+      value: live?.scheduled ?? 0,
+      sub: "Booked ahead, not yet rung",
+      href: "/orders?tab=scheduled",
+      icon: CalendarClock,
+      accent: "info",
+    },
+    {
+      key: "accepted",
+      label: "Rider assigned",
+      value: live?.accepted ?? 0,
+      href: "/orders?status=ACCEPTED",
+      icon: Bike,
+      accent: "brand",
+    },
+    {
+      key: "ongoing",
+      label: "In transit",
+      value: live?.ongoing ?? 0,
+      href: "/orders?status=ON_GOING",
+      icon: Truck,
+      accent: "info",
+    },
+    {
+      key: "online",
+      label: "Riders online",
+      value: live?.ridersOnline ?? 0,
+      href: "/couriers?isOnline=true",
+      icon: Wifi,
+      accent: "success",
+    },
+    {
+      key: "completed",
+      label: "Completed today",
+      value: live?.completedToday ?? 0,
+      sub: `${count(live?.placedToday)} placed today`,
+      href: "/orders?status=COMPLETED",
+      icon: CheckCircle2,
+      accent: "success",
+    },
+    {
+      key: "cancelled",
+      label: "Cancelled today",
+      value: live?.cancelledToday ?? 0,
+      href: "/orders?status=CANCELLED",
+      icon: PackageX,
+      accent: "danger",
+    },
   ];
 
   return (
@@ -65,11 +127,25 @@ export function LiveRow({ live, loading }: { live?: Overview["live"]; loading: b
                 <Icon size={17} />
               </span>
               <span className="min-w-0">
-                <span className={cx("block text-2xl font-black leading-none tracking-tight tabular-nums", tile.urgent ? "text-danger" : "text-ink")}>
+                <span
+                  className={cx(
+                    "block text-2xl font-black leading-none tracking-tight tabular-nums",
+                    tile.urgent ? "text-danger" : "text-ink",
+                  )}
+                >
                   {loading ? <Skeleton className="h-6 w-10" /> : count(tile.value)}
                 </span>
                 <span className="mt-1 block truncate text-xs font-semibold text-ink-muted">{tile.label}</span>
-                {tile.sub ? <span className={cx("block truncate text-[11px]", tile.urgent ? "font-semibold text-danger" : "text-ink-faint")}>{tile.sub}</span> : null}
+                {tile.sub ? (
+                  <span
+                    className={cx(
+                      "block truncate text-[11px]",
+                      tile.urgent ? "font-semibold text-danger" : "text-ink-faint",
+                    )}
+                  >
+                    {tile.sub}
+                  </span>
+                ) : null}
               </span>
             </Link>
           );

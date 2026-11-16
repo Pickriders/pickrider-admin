@@ -43,7 +43,10 @@ export const MobileNav = () => {
 
   const drawer = (
     <div
-      className={cn("fixed inset-0 z-[70] bg-black/50 transition-opacity duration-200 xl:hidden", open ? "opacity-100" : "pointer-events-none opacity-0")}
+      className={cn(
+        "fixed inset-0 z-[70] bg-black/50 transition-opacity duration-200 xl:hidden",
+        open ? "opacity-100" : "pointer-events-none opacity-0",
+      )}
       onClick={() => setOpen(false)}
       aria-hidden={!open}
     >

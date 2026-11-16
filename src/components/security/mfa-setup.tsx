@@ -22,7 +22,10 @@ type Step = { kind: "scan" } | { kind: "codes"; result: MfaEnabled };
 
 /** The otpauth URI's "secret" grouped in fours so it can be typed into an app. */
 export function groupSecret(secret: string) {
-  return secret.replace(/\s+/g, "").replace(/(.{4})/g, "$1 ").trim();
+  return secret
+    .replace(/\s+/g, "")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
 }
 
 /** The account label from an otpauth URI, for the caption under the QR. */
@@ -34,10 +37,20 @@ export function otpauthAccount(uri: string): string | null {
 }
 
 export function recoveryCodesText(codes: string[]) {
-  return ["Pickriders Admin recovery codes", "Each code works once. Keep them somewhere safe.", "", ...codes, ""].join("\n");
+  return ["Pickriders Admin recovery codes", "Each code works once. Keep them somewhere safe.", "", ...codes, ""].join(
+    "\n",
+  );
 }
 
-export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void; onCancel?: () => void; compact?: boolean }) {
+export function MfaSetupFlow({
+  onDone,
+  onCancel,
+  compact,
+}: {
+  onDone: () => void;
+  onCancel?: () => void;
+  compact?: boolean;
+}) {
   const client = useQueryClient();
   const [step, setStep] = useState<Step>({ kind: "scan" });
   const [setup, setSetup] = useState<MfaSetup | null>(null);
@@ -72,10 +85,12 @@ export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-success-soft text-success">
           <CheckCircle2 size={22} />
         </span>
-        <h2 className={cx("mt-4 font-bold tracking-tight text-ink", compact ? "text-xl" : "text-2xl")}>Authenticator on</h2>
+        <h2 className={cx("mt-4 font-bold tracking-tight text-ink", compact ? "text-xl" : "text-2xl")}>
+          Authenticator on
+        </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          Save these recovery codes now. Each one signs you in once if you lose your phone. They are shown only this once; you can generate a new set
-          from Settings, Security later.
+          Save these recovery codes now. Each one signs you in once if you lose your phone. They are shown only this
+          once; you can generate a new set from Settings, Security later.
         </p>
         <ol className="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 rounded-2xl border border-line bg-surface p-4 font-mono text-sm font-semibold tracking-wider text-ink">
           {codes.map((item) => (
@@ -89,10 +104,23 @@ export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void
           <DownloadButton name="pickriders-admin-recovery-codes.txt" text={recoveryCodesText(codes)} />
         </div>
         <label className="mt-5 flex cursor-pointer items-start gap-2.5 text-sm">
-          <input type="checkbox" checked={saved} onChange={(event) => setSaved(event.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--brand)]" />
+          <input
+            type="checkbox"
+            checked={saved}
+            onChange={(event) => setSaved(event.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-[var(--brand)]"
+          />
           <span className="font-semibold text-ink">I saved these codes somewhere safe</span>
         </label>
-        <Button type="button" fullWidth size="lg" className="mt-5" disabled={!saved} icon={ShieldCheck} onClick={onDone}>
+        <Button
+          type="button"
+          fullWidth
+          size="lg"
+          className="mt-5"
+          disabled={!saved}
+          icon={ShieldCheck}
+          onClick={onDone}
+        >
           Continue
         </Button>
       </div>
@@ -107,30 +135,48 @@ export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void
       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft text-brand-dark">
         <KeyRound size={22} />
       </span>
-      <h2 className={cx("mt-4 font-bold tracking-tight text-ink", compact ? "text-xl" : "text-2xl")}>Set up your authenticator app</h2>
+      <h2 className={cx("mt-4 font-bold tracking-tight text-ink", compact ? "text-xl" : "text-2xl")}>
+        Set up your authenticator app
+      </h2>
       <p className="mt-2 text-sm text-ink-muted">
-        Scan the code with Google Authenticator, 1Password, Authy or any app that supports one-time codes, then enter the 6-digit code it shows.
+        Scan the code with Google Authenticator, 1Password, Authy or any app that supports one-time codes, then enter
+        the 6-digit code it shows.
       </p>
 
       <div className={cx("mt-6 grid gap-5", compact ? "grid-cols-1" : "sm:grid-cols-[11rem_1fr]")}>
         <div className="mx-auto w-44 sm:mx-0">
-          {setup ? <QrCode value={setup.otpauthUri} label="Authenticator setup QR code" className="w-full" /> : <Skeleton className="aspect-square w-full rounded-2xl" />}
+          {setup ? (
+            <QrCode value={setup.otpauthUri} label="Authenticator setup QR code" className="w-full" />
+          ) : (
+            <Skeleton className="aspect-square w-full rounded-2xl" />
+          )}
         </div>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-ink-muted">Cannot scan? Enter this key by hand</p>
           {setup ? (
             <>
-              <p className="mt-1.5 select-all break-all rounded-xl border border-line bg-surface px-3 py-2 font-mono text-sm font-semibold tracking-wider text-ink" data-testid="mfa-secret">
+              <p
+                className="mt-1.5 select-all break-all rounded-xl border border-line bg-surface px-3 py-2 font-mono text-sm font-semibold tracking-wider text-ink"
+                data-testid="mfa-secret"
+              >
                 {groupSecret(setup.secret)}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <CopyButton text={setup.secret} label="Copy key" />
-                <Button type="button" variant="ghost" size="sm" icon={RefreshCw} loading={start.isPending} onClick={() => start.mutate()}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  icon={RefreshCw}
+                  loading={start.isPending}
+                  onClick={() => start.mutate()}
+                >
                   New key
                 </Button>
               </div>
               <p className="mt-2 text-[11px] text-ink-faint">
-                Time based, 6 digits, 30 seconds{account ? ` · account ${account}` : ""}. Verify a code before {new Date(setup.expiresAt).toLocaleTimeString()} or start again.
+                Time based, 6 digits, 30 seconds{account ? ` · account ${account}` : ""}. Verify a code before{" "}
+                {new Date(setup.expiresAt).toLocaleTimeString()} or start again.
               </p>
             </>
           ) : (
@@ -147,9 +193,18 @@ export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void
         }}
       >
         <p className="mb-2 text-xs font-semibold text-ink-muted">Code from the app</p>
-        <CodeInput value={code} onChange={setCode} onComplete={(value) => !verify.isPending && verify.mutate(value)} disabled={!setup || verify.isPending} error={Boolean(verify.error)} />
+        <CodeInput
+          value={code}
+          onChange={setCode}
+          onComplete={(value) => !verify.isPending && verify.mutate(value)}
+          disabled={!setup || verify.isPending}
+          error={Boolean(verify.error)}
+        />
         {error ? (
-          <p role="alert" className="mt-3 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2 text-sm font-semibold text-danger">
+          <p
+            role="alert"
+            className="mt-3 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2 text-sm font-semibold text-danger"
+          >
             {errorMessage(error, "Could not confirm the code.")}
           </p>
         ) : null}
@@ -159,7 +214,13 @@ export function MfaSetupFlow({ onDone, onCancel, compact }: { onDone: () => void
               Not now
             </Button>
           ) : null}
-          <Button type="submit" size={onCancel ? "md" : "lg"} fullWidth={!onCancel} loading={verify.isPending} disabled={!setup || code.length < 6}>
+          <Button
+            type="submit"
+            size={onCancel ? "md" : "lg"}
+            fullWidth={!onCancel}
+            loading={verify.isPending}
+            disabled={!setup || code.length < 6}
+          >
             Turn on authenticator
           </Button>
         </div>

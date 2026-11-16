@@ -113,7 +113,13 @@ function BusinessDetailInner({ businessId }: { businessId: string }) {
         }
         description={
           business
-            ? [business.businessHandle ? `@${business.businessHandle}` : null, formatEmail(business.email), business.phone].filter(Boolean).join(" · ")
+            ? [
+                business.businessHandle ? `@${business.businessHandle}` : null,
+                formatEmail(business.email),
+                business.phone,
+              ]
+                .filter(Boolean)
+                .join(" · ")
             : undefined
         }
       />
@@ -125,16 +131,21 @@ function BusinessDetailInner({ businessId }: { businessId: string }) {
         items={BUSINESS_TABS.map((id) => ({
           id,
           label: TAB_LABEL[id],
-          count: id === "couriers" ? business?.users?.length : id === "vehicles" ? business?.vehicles?.length : undefined,
+          count:
+            id === "couriers" ? business?.users?.length : id === "vehicles" ? business?.vehicles?.length : undefined,
         }))}
       />
 
-      {tab === "overview" ? <OverviewTab businessId={businessId} business={business} loading={query.isPending} onTab={setTab} /> : null}
+      {tab === "overview" ? (
+        <OverviewTab businessId={businessId} business={business} loading={query.isPending} onTab={setTab} />
+      ) : null}
       {tab === "couriers" ? <CouriersTab businessId={businessId} /> : null}
       {tab === "orders" ? <OrdersTab businessId={businessId} /> : null}
       {tab === "vehicles" ? <VehiclesTab businessId={businessId} /> : null}
       {tab === "transactions" ? <TransactionsTab businessId={businessId} /> : null}
-      {tab === "settings" ? <SettingsTab businessId={businessId} business={business} loading={query.isPending} /> : null}
+      {tab === "settings" ? (
+        <SettingsTab businessId={businessId} business={business} loading={query.isPending} />
+      ) : null}
     </div>
   );
 }

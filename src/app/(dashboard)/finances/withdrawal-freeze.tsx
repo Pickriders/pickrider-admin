@@ -6,7 +6,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge, Button, ConfirmDialog, Drawer, Field, Input, KeyValue, Panel, PanelHeader, Skeleton, Textarea } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  Field,
+  Input,
+  KeyValue,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  Textarea,
+} from "@/components/kit";
 import { platformSettings, type WithdrawalFreeze } from "@/lib/admin/api";
 import { when } from "@/lib/admin/format";
 import { useAction, usePlatformSettings } from "@/lib/admin/hooks";
@@ -97,7 +109,9 @@ export function WithdrawalFreezeCard() {
         {query.isLoading ? (
           <Skeleton className="h-20 w-full" />
         ) : query.isError ? (
-          <p className="text-sm font-semibold text-danger">{errorMessage(query.error, "Could not load the freeze state.")}</p>
+          <p className="text-sm font-semibold text-danger">
+            {errorMessage(query.error, "Could not load the freeze state.")}
+          </p>
         ) : freeze?.active ? (
           <div className="space-y-4">
             <div className="rounded-xl border border-info/40 bg-info-soft px-4 py-3 text-sm">
@@ -108,13 +122,17 @@ export function WithdrawalFreezeCard() {
               columns={3}
               items={[
                 { label: "Since", value: freeze.setAt ? when(freeze.setAt) : undefined },
-                { label: "Set by", value: freeze.setBy ? <span className="font-mono text-xs">{freeze.setBy}</span> : undefined },
+                {
+                  label: "Set by",
+                  value: freeze.setBy ? <span className="font-mono text-xs">{freeze.setBy}</span> : undefined,
+                },
                 {
                   label: "Lifts automatically",
                   value: freeze.until ? (
                     <span className="inline-flex items-center gap-1.5">
                       <Clock3 size={13} className="text-ink-muted" />
-                      {countdown ? `in ${countdown}` : "any moment now"} <span className="text-ink-faint">({when(freeze.until)})</span>
+                      {countdown ? `in ${countdown}` : "any moment now"}{" "}
+                      <span className="text-ink-faint">({when(freeze.until)})</span>
                     </span>
                   ) : (
                     "Not scheduled, lift it by hand"
@@ -131,7 +149,8 @@ export function WithdrawalFreezeCard() {
         ) : (
           <div className="space-y-4">
             <p className="text-sm text-ink-muted">
-              Use this when a provider is failing, a reconciliation is running or you suspect fraud across accounts. A per-account restriction (on the rider&apos;s record) is the tool for one person.
+              Use this when a provider is failing, a reconciliation is running or you suspect fraud across accounts. A
+              per-account restriction (on the rider&apos;s record) is the tool for one person.
             </p>
             {freeze?.liftedAt ? (
               <p className="text-xs text-ink-faint">
@@ -148,7 +167,11 @@ export function WithdrawalFreezeCard() {
         )}
       </div>
 
-      <FreezeDrawer open={freezeOpen} onClose={() => setFreezeOpen(false)} onSaved={() => void client.invalidateQueries({ queryKey: ["settings", "platform"] })} />
+      <FreezeDrawer
+        open={freezeOpen}
+        onClose={() => setFreezeOpen(false)}
+        onSaved={() => void client.invalidateQueries({ queryKey: ["settings", "platform"] })}
+      />
       <ConfirmDialog
         open={liftOpen}
         onClose={() => setLiftOpen(false)}
@@ -177,12 +200,17 @@ function FreezeDrawer({ open, onClose, onSaved }: { open: boolean; onClose: () =
   }, [open]);
 
   const untilDate = untilOn && until ? new Date(until) : null;
-  const untilInvalid = untilOn && (!untilDate || Number.isNaN(untilDate.getTime()) || untilDate.getTime() <= Date.now());
+  const untilInvalid =
+    untilOn && (!untilDate || Number.isNaN(untilDate.getTime()) || untilDate.getTime() <= Date.now());
 
   const save = useMutation({
     mutationFn: () =>
       platformSettings.update({
-        withdrawalsFrozen: { active: true, reason: reason.trim(), until: untilDate && !untilInvalid ? untilDate.toISOString() : undefined },
+        withdrawalsFrozen: {
+          active: true,
+          reason: reason.trim(),
+          until: untilDate && !untilInvalid ? untilDate.toISOString() : undefined,
+        },
       }),
     onSuccess: () => {
       toast.success("Withdrawals frozen");
@@ -206,29 +234,56 @@ function FreezeDrawer({ open, onClose, onSaved }: { open: boolean; onClose: () =
           <Button variant="ghost" onClick={onClose} disabled={save.isPending}>
             Cancel
           </Button>
-          <Button variant="primary" icon={LockKeyhole} loading={save.isPending} disabled={reason.trim().length < 3 || untilInvalid} onClick={() => save.mutate()}>
+          <Button
+            variant="primary"
+            icon={LockKeyhole}
+            loading={save.isPending}
+            disabled={reason.trim().length < 3 || untilInvalid}
+            onClick={() => save.mutate()}
+          >
             Freeze withdrawals
           </Button>
         </div>
       }
     >
       <div className="space-y-4">
-        <Field label="Reason" hint={`Shown to riders and customers when they try to withdraw, and kept in the audit log. ${reason.length}/${MAX_REASON}`}>
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value.slice(0, MAX_REASON))} placeholder="e.g. Our payout provider is down. Withdrawals resume as soon as transfers clear." />
+        <Field
+          label="Reason"
+          hint={`Shown to riders and customers when they try to withdraw, and kept in the audit log. ${reason.length}/${MAX_REASON}`}
+        >
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value.slice(0, MAX_REASON))}
+            placeholder="e.g. Our payout provider is down. Withdrawals resume as soon as transfers clear."
+          />
         </Field>
         <label className="flex cursor-pointer items-start gap-2.5 text-sm">
-          <input type="checkbox" checked={untilOn} onChange={(e) => setUntilOn(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--brand)]" />
+          <input
+            type="checkbox"
+            checked={untilOn}
+            onChange={(e) => setUntilOn(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-[var(--brand)]"
+          />
           <span>
             <span className="block font-semibold text-ink">Lift automatically</span>
-            <span className="block text-xs text-ink-muted">The core lifts the freeze within five minutes of this time. Leave off for an open-ended pause.</span>
+            <span className="block text-xs text-ink-muted">
+              The core lifts the freeze within five minutes of this time. Leave off for an open-ended pause.
+            </span>
           </span>
         </label>
         {untilOn ? (
           <Field label="Lift at" error={untilInvalid ? "Pick a time in the future." : undefined}>
-            <Input type="datetime-local" value={until} onChange={(e) => setUntil(e.target.value)} min={toLocalInput(new Date())} />
+            <Input
+              type="datetime-local"
+              value={until}
+              onChange={(e) => setUntil(e.target.value)}
+              min={toLocalInput(new Date())}
+            />
           </Field>
         ) : null}
-        <p className="text-xs text-ink-faint">You will be asked for a code from your authenticator app before this goes through.</p>
+        <p className="text-xs text-ink-faint">
+          You will be asked for a code from your authenticator app before this goes through.
+        </p>
       </div>
     </Drawer>
   );

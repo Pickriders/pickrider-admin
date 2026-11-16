@@ -68,14 +68,24 @@ export const FLOW_META: FlowMeta[] = [
 const BY_KEY = new Map(FLOW_META.map((meta) => [meta.key, meta]));
 
 export function flowMeta(flow: string | null | undefined): FlowMeta {
-  return BY_KEY.get(flow as ProviderFeeFlowKey) ?? { ...FLOW_META[0], key: flow as ProviderFeeFlowKey, label: flow ?? "Other", short: flow ?? "Other" };
+  return (
+    BY_KEY.get(flow as ProviderFeeFlowKey) ?? {
+      ...FLOW_META[0],
+      key: flow as ProviderFeeFlowKey,
+      label: flow ?? "Other",
+      short: flow ?? "Other",
+    }
+  );
 }
 
 /**
  * A fee going up is money lost, so the trend reads the other way round from revenue: up is
  * "danger", down is "success". Null when there is nothing to compare against.
  */
-export function feeTrend(current: number, previous: number): { value: number; tone: "danger" | "success" | "neutral" } | null {
+export function feeTrend(
+  current: number,
+  previous: number,
+): { value: number; tone: "danger" | "success" | "neutral" } | null {
   if (!previous) return current ? null : { value: 0, tone: "neutral" };
   const value = Math.round(((current - previous) / previous) * 1000) / 10;
   return { value, tone: value > 0 ? "danger" : value < 0 ? "success" : "neutral" };

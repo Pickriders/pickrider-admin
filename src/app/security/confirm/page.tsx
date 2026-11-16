@@ -20,7 +20,10 @@ import { errorMessage } from "@/lib/admin/http";
  */
 type ActionKey = "TRUST_DEVICE" | "SECURE_ACCOUNT" | "REVOKE_SESSION";
 
-const ACTIONS: Record<ActionKey, { icon: LucideIcon; tone: "brand" | "danger" | "warning"; title: string; body: string; button: string }> = {
+const ACTIONS: Record<
+  ActionKey,
+  { icon: LucideIcon; tone: "brand" | "danger" | "warning"; title: string; body: string; button: string }
+> = {
   TRUST_DEVICE: {
     icon: Smartphone,
     tone: "brand",
@@ -44,7 +47,11 @@ const ACTIONS: Record<ActionKey, { icon: LucideIcon; tone: "brand" | "danger" | 
   },
 };
 
-const TONE_CHIP = { brand: "bg-brand-soft text-brand-dark", danger: "bg-danger-soft text-danger", warning: "bg-warning-soft text-warning" };
+const TONE_CHIP = {
+  brand: "bg-brand-soft text-brand-dark",
+  danger: "bg-danger-soft text-danger",
+  warning: "bg-warning-soft text-warning",
+};
 
 function ConfirmScreen() {
   const params = useSearchParams();
@@ -60,7 +67,9 @@ function ConfirmScreen() {
           <ShieldAlert size={22} />
         </span>
         <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">This link is incomplete</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Open the link from the email again, or sign in and manage your sessions from Settings, Security.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Open the link from the email again, or sign in and manage your sessions from Settings, Security.
+        </p>
         <Link href="/auth/login" className="mt-6 inline-block text-sm font-bold text-primary hover:underline">
           Go to sign in
         </Link>
@@ -85,7 +94,9 @@ function ConfirmScreen() {
         {result.passwordResetRequired ? (
           <div className="mt-6 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 text-sm">
             <p className="font-bold text-ink">Reset your password to sign in again</p>
-            <p className="mt-0.5 text-ink-muted">Your old password no longer works. Use the reset flow to pick a new one.</p>
+            <p className="mt-0.5 text-ink-muted">
+              Your old password no longer works. Use the reset flow to pick a new one.
+            </p>
             <Link href="/auth/reset-password" className="mt-2 inline-block font-bold text-primary hover:underline">
               Reset my password
             </Link>
@@ -114,7 +125,10 @@ function ConfirmScreen() {
       <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">{action.title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">{action.body}</p>
       {errorText ? (
-        <p role="alert" className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger">
+        <p
+          role="alert"
+          className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger"
+        >
           {errorText}
         </p>
       ) : null}

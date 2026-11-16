@@ -7,7 +7,9 @@ describe("authenticator setup helpers", () => {
   });
 
   it("reads the account out of an otpauth URI", () => {
-    expect(otpauthAccount("otpauth://totp/Pickriders%20Admin:ops@pickriders.com?secret=ABC&issuer=Pickriders%20Admin")).toBe("ops@pickriders.com");
+    expect(
+      otpauthAccount("otpauth://totp/Pickriders%20Admin:ops@pickriders.com?secret=ABC&issuer=Pickriders%20Admin"),
+    ).toBe("ops@pickriders.com");
     expect(otpauthAccount("otpauth://totp/ops@pickriders.com?secret=ABC")).toBe("ops@pickriders.com");
     expect(otpauthAccount("not a uri")).toBeNull();
   });

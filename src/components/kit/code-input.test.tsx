@@ -94,13 +94,19 @@ describe("CodeInput", () => {
   it("a pasted code with spaces fills every box and completes", () => {
     const onComplete = jest.fn();
     act(() => root.render(<Harness onComplete={onComplete} />));
-    const event = new Event("paste", { bubbles: true, cancelable: true }) as Event & { clipboardData: { getData: () => string } };
+    const event = new Event("paste", { bubbles: true, cancelable: true }) as Event & {
+      clipboardData: { getData: () => string };
+    };
     Object.defineProperty(event, "clipboardData", { value: { getData: () => "123 456" } });
     act(() => {
       inputs()[0].dispatchEvent(event);
     });
     expect(value()).toBe("123456");
-    expect(inputs().map((i) => i.value).join("")).toBe("123456");
+    expect(
+      inputs()
+        .map((i) => i.value)
+        .join(""),
+    ).toBe("123456");
     expect(onComplete).toHaveBeenCalledWith("123456");
   });
 

@@ -4,12 +4,33 @@ import { ArrowLeft, Building2, CheckCircle2, Lock, Package, Receipt, Wallet } fr
 import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
-import { Badge, ChartCard, ErrorState, PageHeader, RangeTabs, Skeleton, StatCard, StatGrid, Tabs, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
+import {
+  Badge,
+  ChartCard,
+  ErrorState,
+  PageHeader,
+  RangeTabs,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  Tabs,
+  TrendChart,
+  presetRange,
+  rangeToQuery,
+  type RangeValue,
+} from "@/components/kit";
 import { CustomerBadges } from "@/components/users/customer-badges";
 import { CustomerReports } from "@/components/users/customer-reports";
 import { DangerZone } from "@/components/users/danger-zone";
 import { UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
-import { ActivityFeed, MoneyByPurpose, UserHeader, UserOrdersTable, UserTransactionsTable, bucketLabel } from "@/components/users/user-panels";
+import {
+  ActivityFeed,
+  MoneyByPurpose,
+  UserHeader,
+  UserOrdersTable,
+  UserTransactionsTable,
+  bucketLabel,
+} from "@/components/users/user-panels";
 import { naira, count, percent, trend } from "@/lib/admin/format";
 import { useSeries, useUserOverview } from "@/lib/admin/hooks";
 import { useTabParam } from "@/lib/admin/url-state";
@@ -61,7 +82,11 @@ function CustomerDetail({ id }: { id: string }) {
       <UserHeader
         user={user}
         loading={loading}
-        subtitle={lifetime ? `${count(lifetime.orders)} orders lifetime · ${naira(lifetime.completedVolume)} spent on completed orders` : undefined}
+        subtitle={
+          lifetime
+            ? `${count(lifetime.orders)} orders lifetime · ${naira(lifetime.completedVolume)} spent on completed orders`
+            : undefined
+        }
         badges={
           <>
             {restriction?.active ? (
@@ -79,7 +104,9 @@ function CustomerDetail({ id }: { id: string }) {
           </>
         }
         actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showRefund /> : null}
-        banner={user && restriction?.active ? <WithdrawalRestrictionBanner user={user} restriction={restriction} /> : null}
+        banner={
+          user && restriction?.active ? <WithdrawalRestrictionBanner user={user} restriction={restriction} /> : null
+        }
       />
 
       <StatGrid columns={5}>
@@ -118,7 +145,11 @@ function CustomerDetail({ id }: { id: string }) {
           icon={Wallet}
           tone="brand"
           loading={loading}
-          hint={data?.wallet ? `${data.wallet.currency ?? "NGN"} wallet${data.wallet.status ? ` · ${String(data.wallet.status).toLowerCase()}` : ""}` : "No wallet yet"}
+          hint={
+            data?.wallet
+              ? `${data.wallet.currency ?? "NGN"} wallet${data.wallet.status ? ` · ${String(data.wallet.status).toLowerCase()}` : ""}`
+              : "No wallet yet"
+          }
         />
       </StatGrid>
 
@@ -143,8 +174,20 @@ function CustomerDetail({ id }: { id: string }) {
             />
           </ChartCard>
         </div>
-        <ChartCard title="Spend over time" subtitle="Order value per bucket" loading={series.isLoading} empty={!series.data?.points.length} height={260}>
-          <TrendChart data={series.data?.points ?? []} xKey="bucket" xFormat={bucketLabel(series.data?.bucket)} yFormat="naira" series={[{ key: "volume", label: "Spend", format: "naira" }]} />
+        <ChartCard
+          title="Spend over time"
+          subtitle="Order value per bucket"
+          loading={series.isLoading}
+          empty={!series.data?.points.length}
+          height={260}
+        >
+          <TrendChart
+            data={series.data?.points ?? []}
+            xKey="bucket"
+            xFormat={bucketLabel(series.data?.bucket)}
+            yFormat="naira"
+            series={[{ key: "volume", label: "Spend", format: "naira" }]}
+          />
         </ChartCard>
       </div>
 

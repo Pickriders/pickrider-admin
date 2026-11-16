@@ -36,7 +36,9 @@ const KIND_TONE: Record<TransactionOwnerKind, Tone> = {
  * The profile page for a wallet owner. The platform wallet and teams have no profile page, and an
  * account that no longer exists has nowhere to go.
  */
-export function ownerHref(owner: Pick<TransactionOwner, "kind" | "id" | "missing"> | null | undefined): string | undefined {
+export function ownerHref(
+  owner: Pick<TransactionOwner, "kind" | "id" | "missing"> | null | undefined,
+): string | undefined {
   if (!owner || owner.missing || !owner.id) return undefined;
   switch (owner.kind) {
     case "CUSTOMER":
@@ -53,7 +55,10 @@ export function ownerHref(owner: Pick<TransactionOwner, "kind" | "id" | "missing
 function KindAvatar({ person, size }: { person: TransactionOwner; size: number }) {
   if (person.missing) {
     return (
-      <span className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint" style={{ width: size, height: size }}>
+      <span
+        className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint"
+        style={{ width: size, height: size }}
+      >
         <UserRoundX size={Math.round(size * 0.45)} />
       </span>
     );
@@ -62,7 +67,10 @@ function KindAvatar({ person, size }: { person: TransactionOwner; size: number }
     const Icon = person.kind === "PLATFORM" ? Landmark : person.kind === "TEAM" ? UsersRound : Building2;
     return (
       <span
-        className={cx("grid shrink-0 place-items-center rounded-xl", person.kind === "PLATFORM" ? "bg-success-soft text-success" : "bg-surface text-ink-muted")}
+        className={cx(
+          "grid shrink-0 place-items-center rounded-xl",
+          person.kind === "PLATFORM" ? "bg-success-soft text-success" : "bg-surface text-ink-muted",
+        )}
         style={{ width: size, height: size }}
       >
         <Icon size={Math.round(size * 0.45)} />
@@ -74,7 +82,10 @@ function KindAvatar({ person, size }: { person: TransactionOwner; size: number }
       <Avatar src={person.photo} name={ownerName(person)} size={size} />
       {person.kind === "RIDER" && person.isOnline !== undefined ? (
         <span
-          className={cx("absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card", person.isOnline ? "bg-success" : "bg-line-strong")}
+          className={cx(
+            "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card",
+            person.isOnline ? "bg-success" : "bg-line-strong",
+          )}
           aria-label={person.isOnline ? "Online" : "Offline"}
           title={person.isOnline ? "Online now" : "Offline"}
         />
@@ -181,7 +192,9 @@ export function PersonCard({
 
   if (person.missing) {
     return (
-      <div className={cx("rounded-2xl border border-dashed border-line bg-surface/60", small ? "p-3" : "p-4", className)}>
+      <div
+        className={cx("rounded-2xl border border-dashed border-line bg-surface/60", small ? "p-3" : "p-4", className)}
+      >
         {label ? <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">{label}</p> : null}
         <div className="flex items-center gap-3 opacity-70">
           <KindAvatar person={person} size={avatarSize} />
@@ -227,17 +240,23 @@ export function PersonCard({
         <KindAvatar person={person} size={avatarSize} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <p className={cx("max-w-full truncate font-bold text-ink", small ? "text-sm" : "text-base tracking-tight")}>{ownerName(person)}</p>
+            <p className={cx("max-w-full truncate font-bold text-ink", small ? "text-sm" : "text-base tracking-tight")}>
+              {ownerName(person)}
+            </p>
             <Badge tone={KIND_TONE[person.kind]}>{OWNER_KIND_LABEL[person.kind]}</Badge>
             {showStatus ? (
               <Badge tone={statusTone(person.status)} dot>
                 {statusLabel(person.status)}
               </Badge>
             ) : null}
-            {person.kind === "RIDER" && person.isOnline ? <span className="text-[11px] font-semibold text-success">Online</span> : null}
+            {person.kind === "RIDER" && person.isOnline ? (
+              <span className="text-[11px] font-semibold text-success">Online</span>
+            ) : null}
           </div>
           {person.kind === "PLATFORM" ? (
-            <p className="mt-0.5 text-xs text-ink-muted">The platform&apos;s own wallet: charges, commissions and payouts.</p>
+            <p className="mt-0.5 text-xs text-ink-muted">
+              The platform&apos;s own wallet: charges, commissions and payouts.
+            </p>
           ) : null}
           {person.phone ? (
             <p className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-ink-muted">
@@ -261,14 +280,25 @@ export function PersonCard({
 }
 
 /** The owner in a table cell: avatar, name and kind, linked to the profile when there is one. */
-export function PersonInline({ person, fallback = "Wallet" }: { person: TransactionOwner | null | undefined; fallback?: string }) {
+export function PersonInline({
+  person,
+  fallback = "Wallet",
+}: {
+  person: TransactionOwner | null | undefined;
+  fallback?: string;
+}) {
   if (!person) return <span className="text-sm text-ink-muted">{fallback}</span>;
   const href = ownerHref(person);
   const body = (
     <span className={cx("flex min-w-0 items-center gap-2", person.missing && "opacity-60")}>
       <KindAvatar person={person} size={28} />
       <span className="min-w-0">
-        <span className={cx("block truncate text-sm font-semibold", person.missing ? "text-ink-muted" : "text-ink group-hover:text-brand-dark")}>
+        <span
+          className={cx(
+            "block truncate text-sm font-semibold",
+            person.missing ? "text-ink-muted" : "text-ink group-hover:text-brand-dark",
+          )}
+        >
           {person.missing ? "Account removed" : ownerName(person)}
         </span>
         <span className="block truncate text-[11px] text-ink-faint">{OWNER_KIND_LABEL[person.kind]}</span>
@@ -277,7 +307,12 @@ export function PersonInline({ person, fallback = "Wallet" }: { person: Transact
   );
   if (!href) return body;
   return (
-    <Link href={href} prefetch={false} onClick={(e) => e.stopPropagation()} className="group block min-w-0 max-w-[220px]">
+    <Link
+      href={href}
+      prefetch={false}
+      onClick={(e) => e.stopPropagation()}
+      className="group block min-w-0 max-w-[220px]"
+    >
       {body}
     </Link>
   );

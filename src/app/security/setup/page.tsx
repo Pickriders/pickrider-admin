@@ -18,7 +18,8 @@ function SetupScreen() {
   const params = useSearchParams();
   const { logout } = useAuth();
   const next = params.get("next");
-  const destination = next && next.startsWith("/") && !next.startsWith("/auth") && !next.startsWith("/security") ? next : "/dashboard";
+  const destination =
+    next && next.startsWith("/") && !next.startsWith("/auth") && !next.startsWith("/security") ? next : "/dashboard";
 
   return (
     <AuthCard>
@@ -26,7 +27,11 @@ function SetupScreen() {
         Two-step sign-in is now required for your role. Set up your authenticator app to keep using the console.
       </p>
       <MfaSetupFlow onDone={() => router.replace(destination)} />
-      <button type="button" onClick={() => void logout()} className="mt-6 block w-full text-center text-sm font-semibold text-ink-muted hover:text-ink hover:underline">
+      <button
+        type="button"
+        onClick={() => void logout()}
+        className="mt-6 block w-full text-center text-sm font-semibold text-ink-muted hover:text-ink hover:underline"
+      >
         Sign out instead
       </button>
     </AuthCard>

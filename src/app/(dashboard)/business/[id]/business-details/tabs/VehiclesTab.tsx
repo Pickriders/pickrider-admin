@@ -14,7 +14,10 @@ import { VEHICLE_STATUS_OPTIONS, VehicleMobileCard, vehicleColumns } from "@/app
 /** Vehicles registered under the business, from GET businesses/:id/vehicles. */
 export function VehiclesTab({ businessId }: { businessId: string }) {
   const table = useTableState();
-  const query = useMemo(() => ({ ...table.query, vehicleSearch: table.state.search }), [table.query, table.state.search]);
+  const query = useMemo(
+    () => ({ ...table.query, vehicleSearch: table.state.search }),
+    [table.query, table.state.search],
+  );
   const data = useBusinessVehicles(businessId, query);
   const columns = useMemo(() => vehicleColumns(), []);
 

@@ -8,15 +8,35 @@ import { createRoot, type Root } from "react-dom/client";
 import type { ChatParticipant, OrderChat, OrderMessage } from "@/lib/admin/api";
 
 import { OrderChatPanel } from "./order-chat";
-import { mayHaveChat, seenSeqs, tally, tallyLine, threadState, transcriptItems, transcriptText } from "./order-chat-lib";
+import {
+  mayHaveChat,
+  seenSeqs,
+  tally,
+  tallyLine,
+  threadState,
+  transcriptItems,
+  transcriptText,
+} from "./order-chat-lib";
 
-let state: { data?: OrderChat; isLoading: boolean; isError: boolean; error?: unknown } = { isLoading: false, isError: false };
+let state: { data?: OrderChat; isLoading: boolean; isError: boolean; error?: unknown } = {
+  isLoading: false,
+  isError: false,
+};
 const useOrderMessages = jest.fn((..._args: unknown[]) => ({ ...state, refetch: jest.fn() }));
 jest.mock("@/lib/admin/hooks", () => ({ useOrderMessages: (...args: unknown[]) => useOrderMessages(...args) }));
 jest.mock("sonner", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href, prefetch: _prefetch, ...rest }: { children: React.ReactNode; href: string; prefetch?: boolean }) => (
+  default: ({
+    children,
+    href,
+    prefetch: _prefetch,
+    ...rest
+  }: {
+    children: React.ReactNode;
+    href: string;
+    prefetch?: boolean;
+  }) => (
     <a href={href} {...rest}>
       {children}
     </a>
@@ -24,22 +44,71 @@ jest.mock("next/link", () => ({
 }));
 
 const people: ChatParticipant[] = [
-  { id: "c1", firstname: "Ada", lastname: "Obi", role: "CUSTOMER", phone: "2348011111111", current: true } as ChatParticipant,
-  { id: "r1", firstname: "Bayo", lastname: "Old", role: "RIDER", phone: "2348022222222", current: false } as ChatParticipant,
-  { id: "r2", firstname: "Chidi", lastname: "New", role: "RIDER", photo: "https://x/chidi.png", current: true } as ChatParticipant,
+  {
+    id: "c1",
+    firstname: "Ada",
+    lastname: "Obi",
+    role: "CUSTOMER",
+    phone: "2348011111111",
+    current: true,
+  } as ChatParticipant,
+  {
+    id: "r1",
+    firstname: "Bayo",
+    lastname: "Old",
+    role: "RIDER",
+    phone: "2348022222222",
+    current: false,
+  } as ChatParticipant,
+  {
+    id: "r2",
+    firstname: "Chidi",
+    lastname: "New",
+    role: "RIDER",
+    photo: "https://x/chidi.png",
+    current: true,
+  } as ChatParticipant,
 ];
 
 let seq = 0;
 const msg = (patch: Partial<OrderMessage>): OrderMessage =>
-  ({ id: `m${++seq}`, orderId: "o1", seq, kind: "TEXT", senderRole: "CUSTOMER", senderId: "c1", mine: false, body: "hi", createdAt: "2026-11-10T09:00:00.000Z", ...patch }) as OrderMessage;
+  ({
+    id: `m${++seq}`,
+    orderId: "o1",
+    seq,
+    kind: "TEXT",
+    senderRole: "CUSTOMER",
+    senderId: "c1",
+    mine: false,
+    body: "hi",
+    createdAt: "2026-11-10T09:00:00.000Z",
+    ...patch,
+  }) as OrderMessage;
 
 function chat(): OrderChat {
   seq = 0;
   const messages = [
-    msg({ kind: "SYSTEM" as OrderMessage["kind"], senderRole: "SYSTEM" as OrderMessage["senderRole"], senderId: undefined, body: "Bayo is on this order.", createdAt: "2026-11-10T08:59:00.000Z" }),
+    msg({
+      kind: "SYSTEM" as OrderMessage["kind"],
+      senderRole: "SYSTEM" as OrderMessage["senderRole"],
+      senderId: undefined,
+      body: "Bayo is on this order.",
+      createdAt: "2026-11-10T08:59:00.000Z",
+    }),
     msg({ body: "Where are you?" }),
-    msg({ senderRole: "RIDER" as OrderMessage["senderRole"], senderId: "r1", body: "On my way", quickReplyKey: "ON_MY_WAY", createdAt: "2026-11-10T09:01:00.000Z" }),
-    msg({ senderRole: "RIDER" as OrderMessage["senderRole"], senderId: "r2", body: "I'm outside", createdAt: "2026-11-11T10:00:00.000Z" }),
+    msg({
+      senderRole: "RIDER" as OrderMessage["senderRole"],
+      senderId: "r1",
+      body: "On my way",
+      quickReplyKey: "ON_MY_WAY",
+      createdAt: "2026-11-10T09:01:00.000Z",
+    }),
+    msg({
+      senderRole: "RIDER" as OrderMessage["senderRole"],
+      senderId: "r2",
+      body: "I'm outside",
+      createdAt: "2026-11-11T10:00:00.000Z",
+    }),
     msg({ body: "Coming down now", createdAt: "2026-11-11T10:01:00.000Z" }),
   ];
   return {
@@ -73,8 +142,13 @@ describe("order chat rules", () => {
   it("labels the thread open, read-only until a time, or closed", () => {
     const now = new Date("2026-11-11T12:00:00.000Z").getTime();
     expect(threadState({ open: true }, now)).toEqual({ label: "Open", tone: "success" });
-    expect(threadState({ open: false, readOnlyUntil: "2026-11-12T10:00:00.000Z" }, now).label).toMatch(/^Read-only until /);
-    expect(threadState({ open: false, readOnlyUntil: "2026-11-11T10:00:00.000Z" }, now)).toEqual({ label: "Closed", tone: "neutral" });
+    expect(threadState({ open: false, readOnlyUntil: "2026-11-12T10:00:00.000Z" }, now).label).toMatch(
+      /^Read-only until /,
+    );
+    expect(threadState({ open: false, readOnlyUntil: "2026-11-11T10:00:00.000Z" }, now)).toEqual({
+      label: "Closed",
+      tone: "neutral",
+    });
     expect(threadState({ open: false }, now).label).toBe("Closed");
   });
 
@@ -139,7 +213,8 @@ describe("OrderChatPanel", () => {
     container.remove();
   });
 
-  const render = (order: Parameters<typeof OrderChatPanel>[0]["order"] = { _id: "o1" }) => act(() => root.render(<OrderChatPanel order={order} />));
+  const render = (order: Parameters<typeof OrderChatPanel>[0]["order"] = { _id: "o1" }) =>
+    act(() => root.render(<OrderChatPanel order={order} />));
 
   it("never asks for a storefront order's chat", () => {
     render({ _id: "o1", channel: "VENDOR_STOREFRONT" });
@@ -167,7 +242,11 @@ describe("OrderChatPanel", () => {
     state = { isLoading: false, isError: false, data: { ...chat(), thread: { ...chat().thread, eligible: false } } };
     render();
     expect(container.innerHTML).toBe("");
-    state = { isLoading: false, isError: false, data: { ...chat(), messages: [], thread: { ...chat().thread, lastSeq: 0 } } };
+    state = {
+      isLoading: false,
+      isError: false,
+      data: { ...chat(), messages: [], thread: { ...chat().thread, lastSeq: 0 } },
+    };
     render();
     expect(container.innerHTML).toBe("");
   });
@@ -185,7 +264,9 @@ describe("OrderChatPanel", () => {
     expect(container.querySelector("a[href='/couriers/r2/details']")).not.toBeNull();
     expect(text.match(/Seen/g)).toHaveLength(2);
     expect(text).toContain("Bayo Old (earlier rider)");
-    const outside = Array.from(container.querySelectorAll("li")).find((li) => li.textContent?.includes("I'm outside") && li.className.includes("flex-row-reverse"));
+    const outside = Array.from(container.querySelectorAll("li")).find(
+      (li) => li.textContent?.includes("I'm outside") && li.className.includes("flex-row-reverse"),
+    );
     expect(outside).toBeDefined();
     expect(container.querySelector("img[src='https://x/chidi.png']")).not.toBeNull();
   });

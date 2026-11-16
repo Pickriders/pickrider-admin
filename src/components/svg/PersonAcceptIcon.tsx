@@ -1,12 +1,6 @@
 export const PersonAcceptIcon = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="19"
-      height="17"
-      viewBox="0 0 21 21"
-      fill="none"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="17" viewBox="0 0 21 21" fill="none">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

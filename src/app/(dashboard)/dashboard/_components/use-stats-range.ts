@@ -33,7 +33,8 @@ export function bucketLabel(bucket: Bucket) {
   return (value: string) => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
-    if (bucket === "month") return date.toLocaleDateString("en-NG", { month: "short", year: "2-digit", timeZone: "Africa/Lagos" });
+    if (bucket === "month")
+      return date.toLocaleDateString("en-NG", { month: "short", year: "2-digit", timeZone: "Africa/Lagos" });
     return date.toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "Africa/Lagos" });
   };
 }

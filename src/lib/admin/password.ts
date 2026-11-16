@@ -11,10 +11,18 @@ export function passwordStrength(value: string): PasswordStrength | null {
 }
 
 /** The rules shown under the form, each ticked as it is met. */
-export function passwordRules(current: string, next: string, confirm: string): { id: string; label: string; met: boolean }[] {
+export function passwordRules(
+  current: string,
+  next: string,
+  confirm: string,
+): { id: string; label: string; met: boolean }[] {
   return [
     { id: "length", label: `At least ${MIN_PASSWORD_LENGTH} characters`, met: next.length >= MIN_PASSWORD_LENGTH },
-    { id: "mixed", label: "Upper case, a number and a symbol (for a strong one)", met: /[A-Z]/.test(next) && /[0-9]/.test(next) && /[^A-Za-z0-9]/.test(next) },
+    {
+      id: "mixed",
+      label: "Upper case, a number and a symbol (for a strong one)",
+      met: /[A-Z]/.test(next) && /[0-9]/.test(next) && /[^A-Za-z0-9]/.test(next),
+    },
     { id: "different", label: "Different from your current password", met: Boolean(next) && next !== current },
     { id: "match", label: "Both new passwords match", met: Boolean(next) && confirm === next },
   ];

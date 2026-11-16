@@ -28,7 +28,11 @@ const FILTERS: FilterSpec[] = [
       { value: "FAILED", label: "Failed" },
     ],
   },
-  { key: "type", label: "Channel", options: ["IN_APP", "PUSH", "SMS", "EMAIL"].map((value) => ({ value, label: CHANNEL_LABEL[value] ?? value })) },
+  {
+    key: "type",
+    label: "Channel",
+    options: ["IN_APP", "PUSH", "SMS", "EMAIL"].map((value) => ({ value, label: CHANNEL_LABEL[value] ?? value })),
+  },
   {
     key: "category",
     label: "Category",
@@ -55,14 +59,20 @@ const COLUMNS: ColumnDef<NotificationRow, unknown>[] = [
   {
     id: "recipient",
     header: "Recipient",
-    meta: meta({ csv: { key: "entityId", label: "Recipient id", value: (row) => recipientId(row as NotificationRow) } }),
+    meta: meta({
+      csv: { key: "entityId", label: "Recipient id", value: (row) => recipientId(row as NotificationRow) },
+    }),
     cell: ({ row }) => <Recipient row={row.original} />,
   },
   {
     id: "type",
     header: "Channel",
     meta: meta({ csv: { key: "type", label: "Channel" } }),
-    cell: ({ row }) => <Badge tone={CHANNEL_TONE[row.original.type] ?? "neutral"}>{CHANNEL_LABEL[row.original.type] ?? row.original.type}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={CHANNEL_TONE[row.original.type] ?? "neutral"}>
+        {CHANNEL_LABEL[row.original.type] ?? row.original.type}
+      </Badge>
+    ),
   },
   {
     id: "status",
@@ -85,7 +95,9 @@ const COLUMNS: ColumnDef<NotificationRow, unknown>[] = [
     meta: meta({ hideBelow: "md", csv: { key: "subject", label: "Subject" } }),
     cell: ({ row }) => (
       <span className="block max-w-[24rem]">
-        <span className="block truncate text-sm font-semibold text-ink">{row.original.subject || <span className="text-ink-faint">No subject</span>}</span>
+        <span className="block truncate text-sm font-semibold text-ink">
+          {row.original.subject || <span className="text-ink-faint">No subject</span>}
+        </span>
         <span className="block truncate text-[11px] text-ink-muted">{body(row.original)}</span>
       </span>
     ),
@@ -96,7 +108,12 @@ function Recipient({ row }: { row: NotificationRow }) {
   const id = recipientId(row);
   if (!id) return <span className="text-xs text-ink-faint">External</span>;
   return (
-    <Link href={`/customers/${id}`} onClick={(e) => e.stopPropagation()} className="font-mono text-[11px] text-brand-dark hover:underline" title={id}>
+    <Link
+      href={`/customers/${id}`}
+      onClick={(e) => e.stopPropagation()}
+      className="font-mono text-[11px] text-brand-dark hover:underline"
+      title={id}
+    >
       {shortId(id)}
     </Link>
   );
@@ -118,7 +135,8 @@ export function LogTab() {
   return (
     <>
       <p className="mb-3 text-xs text-ink-muted">
-        For what Termii and the mail server answered (provider ids, failures, the Termii balance) and every security code sent, see{" "}
+        For what Termii and the mail server answered (provider ids, failures, the Termii balance) and every security
+        code sent, see{" "}
         <Link href="/messages" className="font-semibold text-brand-dark hover:underline">
           Messages
         </Link>
@@ -128,7 +146,8 @@ export function LogTab() {
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-card px-3 py-2 text-xs text-ink-muted">
           {table.state.filters.broadcastId ? (
             <span>
-              Deliveries for broadcast <span className="font-mono text-ink">{shortId(table.state.filters.broadcastId)}</span>
+              Deliveries for broadcast{" "}
+              <span className="font-mono text-ink">{shortId(table.state.filters.broadcastId)}</span>
             </span>
           ) : null}
           {table.state.filters.entityId ? (
@@ -136,7 +155,12 @@ export function LogTab() {
               Notifications to <span className="font-mono text-ink">{shortId(table.state.filters.entityId)}</span>
             </span>
           ) : null}
-          <Button size="sm" variant="ghost" icon={X} onClick={() => table.update({ broadcastId: undefined, entityId: undefined })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={X}
+            onClick={() => table.update({ broadcastId: undefined, entityId: undefined })}
+          >
             Show all
           </Button>
         </div>
@@ -160,7 +184,11 @@ export function LogTab() {
             <div className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-1.5">
                 <Badge tone={CHANNEL_TONE[row.type] ?? "neutral"}>{CHANNEL_LABEL[row.type] ?? row.type}</Badge>
-                {row.status === "FAILED" ? <Badge tone="danger">Failed</Badge> : <Badge tone="success">Delivered</Badge>}
+                {row.status === "FAILED" ? (
+                  <Badge tone="danger">Failed</Badge>
+                ) : (
+                  <Badge tone="success">Delivered</Badge>
+                )}
               </span>
               <span className="text-[11px] text-ink-faint">{when(row.createdAt)}</span>
             </div>
@@ -169,7 +197,12 @@ export function LogTab() {
           </div>
         )}
       />
-      <Drawer open={Boolean(selected)} onClose={() => setSelected(null)} title={selected?.subject || "Notification"} subtitle={selected ? when(selected.createdAt) : undefined}>
+      <Drawer
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        title={selected?.subject || "Notification"}
+        subtitle={selected ? when(selected.createdAt) : undefined}
+      >
         {selected ? (
           <div className="space-y-5">
             <KeyValue
@@ -177,8 +210,20 @@ export function LogTab() {
                 { label: "Channel", value: CHANNEL_LABEL[selected.type] ?? selected.type },
                 { label: "Status", value: selected.status === "FAILED" ? "Failed" : "Delivered" },
                 { label: "Category", value: selected.category },
-                { label: "Recipient", value: recipientId(selected) ? <span className="font-mono text-xs">{recipientId(selected)}</span> : "External" },
-                { label: "Broadcast", value: selected.broadcastId ? <span className="font-mono text-xs">{String(selected.broadcastId)}</span> : undefined },
+                {
+                  label: "Recipient",
+                  value: recipientId(selected) ? (
+                    <span className="font-mono text-xs">{recipientId(selected)}</span>
+                  ) : (
+                    "External"
+                  ),
+                },
+                {
+                  label: "Broadcast",
+                  value: selected.broadcastId ? (
+                    <span className="font-mono text-xs">{String(selected.broadcastId)}</span>
+                  ) : undefined,
+                },
                 { label: "Failure reason", value: selected.failureReason ? String(selected.failureReason) : undefined },
               ]}
             />
@@ -186,7 +231,10 @@ export function LogTab() {
               <p className="whitespace-pre-wrap text-sm text-ink">{body(selected) || "No content"}</p>
             </div>
             {selected.broadcastId ? (
-              <Link href={`/messaging?tab=history&id=${String(selected.broadcastId)}`} className="text-xs font-semibold text-brand-dark hover:underline">
+              <Link
+                href={`/messaging?tab=history&id=${String(selected.broadcastId)}`}
+                className="text-xs font-semibold text-brand-dark hover:underline"
+              >
                 Open the broadcast
               </Link>
             ) : null}

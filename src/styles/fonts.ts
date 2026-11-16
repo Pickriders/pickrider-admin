@@ -69,5 +69,7 @@ export const adminDigits = localFont({
   // No fallback faces: anything outside the digits falls through to the admin's font.
   fallback: [],
   adjustFontFallback: false,
-  declarations: [{ prop: "unicode-range", value: "U+0030-0039, U+002B, U+002C, U+002D, U+002E, U+0025, U+003A, U+2212" }],
+  declarations: [
+    { prop: "unicode-range", value: "U+0030-0039, U+002B, U+002C, U+002D, U+002E, U+0025, U+003A, U+2212" },
+  ],
 });

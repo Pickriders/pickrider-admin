@@ -102,7 +102,11 @@ export function stopCodes(stop: OrderStop): { code: string; name?: string; statu
   if (stop.recipients?.length) {
     return stop.recipients
       .filter((recipient) => recipient.confirmationCode)
-      .map((recipient) => ({ code: recipient.confirmationCode, name: formatPersonName(recipient.name) || undefined, status: recipient.status }));
+      .map((recipient) => ({
+        code: recipient.confirmationCode,
+        name: formatPersonName(recipient.name) || undefined,
+        status: recipient.status,
+      }));
   }
   return stop.confirmationCode ? [{ code: stop.confirmationCode }] : [];
 }

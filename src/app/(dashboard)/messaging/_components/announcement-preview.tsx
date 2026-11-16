@@ -55,14 +55,20 @@ export function AnnouncementPreview({
               <div className="mb-3 flex h-24 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-danger/50 bg-danger/5 px-3 text-center">
                 <ImageOff size={18} className="text-danger" />
                 <p className="text-[10px] font-semibold leading-tight text-danger">
-                  {isSvg ? "SVG images do not show in the apps. Use a JPG, PNG or WebP." : "This link is not an image the apps can load. Use a direct JPG, PNG or WebP URL."}
+                  {isSvg
+                    ? "SVG images do not show in the apps. Use a JPG, PNG or WebP."
+                    : "This link is not an image the apps can load. Use a direct JPG, PNG or WebP URL."}
                 </p>
               </div>
             ) : (
               <div className="mb-3 text-center text-5xl leading-none">{emoji?.trim() || "🎉"}</div>
             )}
-            <p className="text-center text-[10px] font-bold uppercase tracking-[0.18em] text-brand">New on Pickriders</p>
-            <p className="mt-1 text-center text-base font-black leading-tight text-ink">{title.trim() || "Your headline"}</p>
+            <p className="text-center text-[10px] font-bold uppercase tracking-[0.18em] text-brand">
+              New on Pickriders
+            </p>
+            <p className="mt-1 text-center text-base font-black leading-tight text-ink">
+              {title.trim() || "Your headline"}
+            </p>
             <p className="mt-2 line-clamp-5 whitespace-pre-wrap text-center text-xs leading-relaxed text-ink-muted">
               {body.trim() || "A couple of lines on what is new and why it matters."}
             </p>
@@ -79,7 +85,9 @@ export function AnnouncementPreview({
               <div className="flex h-9 items-center justify-center rounded-xl text-xs font-semibold text-ink-muted">
                 Show me later
               </div>
-              {action ? <p className="text-center text-[10px] text-ink-faint underline">Don&apos;t show this again</p> : null}
+              {action ? (
+                <p className="text-center text-[10px] text-ink-faint underline">Don&apos;t show this again</p>
+              ) : null}
             </div>
           </div>
         </div>

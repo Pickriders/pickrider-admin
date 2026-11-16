@@ -43,7 +43,9 @@ export function ChartCard({
         {loading ? (
           <Skeleton className="h-full w-full" />
         ) : empty ? (
-          <div className="grid h-full place-items-center text-xs font-medium text-ink-faint">Nothing in this window yet</div>
+          <div className="grid h-full place-items-center text-xs font-medium text-ink-faint">
+            Nothing in this window yet
+          </div>
         ) : (
           children
         )}
@@ -110,7 +112,9 @@ export function Heatmap({
     { label: "Night", hours: [0, 1, 2, 3, 4, 5] },
   ];
   const grid = days.map((_, day) =>
-    blocks.map((block) => cells.filter((c) => c.day === day && block.hours.includes(c.hour)).reduce((s, c) => s + c.count, 0)),
+    blocks.map((block) =>
+      cells.filter((c) => c.day === day && block.hours.includes(c.hour)).reduce((s, c) => s + c.count, 0),
+    ),
   );
   const max = Math.max(1, ...grid.flat());
   return (
@@ -132,7 +136,9 @@ export function Heatmap({
                   title={`${label}, ${blocks[index].label}: ${value}`}
                   className="h-8 rounded-md"
                   style={{
-                    backgroundColor: value ? `color-mix(in srgb, var(--brand) ${Math.max(12, Math.round((value / max) * 100))}%, hsl(var(--surface)))` : "hsl(var(--surface))",
+                    backgroundColor: value
+                      ? `color-mix(in srgb, var(--brand) ${Math.max(12, Math.round((value / max) * 100))}%, hsl(var(--surface)))`
+                      : "hsl(var(--surface))",
                   }}
                 />
               ))}

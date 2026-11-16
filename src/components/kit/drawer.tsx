@@ -86,10 +86,28 @@ export function Drawer({
  * description says exactly what happens next, and the primary button names
  * the action rather than saying "OK".
  */
-const CONFIRM_TONE: Record<"primary" | "warning" | "danger", { icon: LucideIcon; chip: string; button: string; ring: string }> = {
-  primary: { icon: CircleHelp, chip: "bg-brand-soft text-brand-dark", button: "bg-brand text-brand-ink hover:bg-brand-dark", ring: "from-brand/15" },
-  warning: { icon: AlertTriangle, chip: "bg-warning-soft text-warning", button: "bg-warning text-white hover:brightness-95", ring: "from-warning/15" },
-  danger: { icon: ShieldAlert, chip: "bg-danger-soft text-danger", button: "bg-danger text-white hover:brightness-95", ring: "from-danger/15" },
+const CONFIRM_TONE: Record<
+  "primary" | "warning" | "danger",
+  { icon: LucideIcon; chip: string; button: string; ring: string }
+> = {
+  primary: {
+    icon: CircleHelp,
+    chip: "bg-brand-soft text-brand-dark",
+    button: "bg-brand text-brand-ink hover:bg-brand-dark",
+    ring: "from-brand/15",
+  },
+  warning: {
+    icon: AlertTriangle,
+    chip: "bg-warning-soft text-warning",
+    button: "bg-warning text-white hover:brightness-95",
+    ring: "from-warning/15",
+  },
+  danger: {
+    icon: ShieldAlert,
+    chip: "bg-danger-soft text-danger",
+    button: "bg-danger text-white hover:brightness-95",
+    ring: "from-danger/15",
+  },
 };
 
 export function ConfirmDialog({
@@ -142,7 +160,9 @@ export function ConfirmDialog({
         aria-modal="true"
         className="relative w-full max-w-md overflow-hidden rounded-3xl border border-line bg-card shadow-pop admin-fade-up"
       >
-        <div className={cx("pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b to-transparent", look.ring)} />
+        <div
+          className={cx("pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b to-transparent", look.ring)}
+        />
         <div className="relative px-6 pb-6 pt-6">
           <span className={cx("grid h-12 w-12 place-items-center rounded-2xl", look.chip)}>
             <Icon size={22} />
@@ -163,7 +183,10 @@ export function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={loading || disabled}
-              className={cx("h-11 rounded-xl px-4 text-sm font-bold shadow-sm transition-all active:scale-[0.98] disabled:opacity-60", look.button)}
+              className={cx(
+                "h-11 rounded-xl px-4 text-sm font-bold shadow-sm transition-all active:scale-[0.98] disabled:opacity-60",
+                look.button,
+              )}
             >
               {loading ? "Working…" : confirmLabel}
             </button>

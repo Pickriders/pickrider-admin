@@ -4,7 +4,23 @@ import { ArrowLeft, Check, ExternalLink, FileText, Maximize2, PauseCircle, Refre
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 
-import { Badge, Button, ConfirmDialog, Drawer, ErrorState, Field, Input, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton, Textarea, cx } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  ErrorState,
+  Field,
+  Input,
+  KeyValue,
+  LinkButton,
+  PageHeader,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  Textarea,
+  cx,
+} from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import { LICENCE_LABEL, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { users, type KycStatus, type User } from "@/lib/admin/api";
@@ -19,7 +35,13 @@ import { useCan } from "@/lib/admin/use-can";
  * number check (drivers-license/verify) when the number or document needs
  * fixing from the admin side.
  */
-const REJECT_REASONS = ["Licence not valid", "Licence mismatch", "Unable to verify licence number", "Document unclear or unreadable", "Other"];
+const REJECT_REASONS = [
+  "Licence not valid",
+  "Licence mismatch",
+  "Unable to verify licence number",
+  "Document unclear or unreadable",
+  "Other",
+];
 
 function licenceInvalidations(userId: string) {
   return [["user", userId], ["stats", "user-overview"], "users", ["stats", "attention"]];
@@ -55,7 +77,9 @@ function DocumentPanel({ doc, loading }: { doc: string; loading: boolean }) {
         {loading ? (
           <Skeleton className="h-80 w-full" />
         ) : !doc ? (
-          <div className="grid h-80 place-items-center rounded-xl border border-dashed border-line text-sm text-ink-faint">No document uploaded yet.</div>
+          <div className="grid h-80 place-items-center rounded-xl border border-dashed border-line text-sm text-ink-faint">
+            No document uploaded yet.
+          </div>
         ) : broken ? (
           <div className="grid h-80 place-items-center rounded-xl border border-dashed border-line bg-surface text-center text-sm text-ink-muted">
             <div className="space-y-2 px-6">
@@ -68,7 +92,12 @@ function DocumentPanel({ doc, loading }: { doc: string; loading: boolean }) {
         ) : (
           <div className="relative grid h-80 place-items-center overflow-hidden rounded-xl border border-line bg-surface">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={doc} alt="Driver's licence" className="h-full w-full object-contain" onError={() => setBroken(true)} />
+            <img
+              src={doc}
+              alt="Driver's licence"
+              className="h-full w-full object-contain"
+              onError={() => setBroken(true)}
+            />
             <button
               type="button"
               onClick={() => setExpanded(true)}
@@ -82,7 +111,11 @@ function DocumentPanel({ doc, loading }: { doc: string; loading: boolean }) {
       </div>
       <Drawer open={expanded} onClose={() => setExpanded(false)} title="Licence document" width="lg">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={doc} alt="Driver's licence, full size" className="mx-auto max-h-[80vh] w-auto max-w-full rounded-xl object-contain" />
+        <img
+          src={doc}
+          alt="Driver's licence, full size"
+          className="mx-auto max-h-[80vh] w-auto max-w-full rounded-xl object-contain"
+        />
       </Drawer>
     </Panel>
   );
@@ -97,7 +130,8 @@ function RejectDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
       setNote("");
     }
   }, [open]);
-  const toggle = (reason: string) => setSelected((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]));
+  const toggle = (reason: string) =>
+    setSelected((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]));
   const comment = [...selected.filter((r) => r !== "Other"), note.trim()].filter(Boolean).join("; ");
   const action = useAction((body: { status: KycStatus; comment?: string }) => users.licenceUpdate(user._id, body), {
     success: "Licence rejected",
@@ -116,7 +150,12 @@ function RejectDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
           <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
             Cancel
           </Button>
-          <Button variant="danger" loading={action.isPending} disabled={!comment} onClick={() => action.mutate({ status: "DISAPPROVE", comment })}>
+          <Button
+            variant="danger"
+            loading={action.isPending}
+            disabled={!comment}
+            onClick={() => action.mutate({ status: "DISAPPROVE", comment })}
+          >
             Reject licence
           </Button>
         </div>
@@ -136,7 +175,12 @@ function RejectDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
                     on ? "border-danger bg-danger-soft text-danger" : "border-line text-ink hover:bg-surface",
                   )}
                 >
-                  <span className={cx("grid h-5 w-5 shrink-0 place-items-center rounded-md border", on ? "border-danger bg-danger text-white" : "border-line-strong")}>
+                  <span
+                    className={cx(
+                      "grid h-5 w-5 shrink-0 place-items-center rounded-md border",
+                      on ? "border-danger bg-danger text-white" : "border-line-strong",
+                    )}
+                  >
                     {on ? <Check size={13} /> : null}
                   </span>
                   {reason}
@@ -145,8 +189,15 @@ function RejectDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
             );
           })}
         </ul>
-        <Field label="Note to the rider" hint={selected.includes("Other") ? "Required when the reason is Other." : "Optional detail."}>
-          <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="The photo is cropped, please upload the full card." />
+        <Field
+          label="Note to the rider"
+          hint={selected.includes("Other") ? "Required when the reason is Other." : "Optional detail."}
+        >
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="The photo is cropped, please upload the full card."
+          />
         </Field>
       </div>
     </Drawer>
@@ -167,9 +218,13 @@ function VerifyDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
   const action = useAction(
-    (body: { licenseNumber: string; licenseDocument?: string; businessId?: string }) => users.licenceVerify(user._id, body),
+    (body: { licenseNumber: string; licenseDocument?: string; businessId?: string }) =>
+      users.licenceVerify(user._id, body),
     {
-      success: (data) => (data?.driversLicenseVerified === "APPROVE" ? "Licence number checked and approved" : "Licence saved, the number did not pass the automatic check"),
+      success: (data) =>
+        data?.driversLicenseVerified === "APPROVE"
+          ? "Licence number checked and approved"
+          : "Licence saved, the number did not pass the automatic check",
       invalidate: licenceInvalidations(user._id),
       onSuccess: onClose,
     },
@@ -194,7 +249,13 @@ function VerifyDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
           <Button
             loading={action.isPending}
             disabled={!number.trim()}
-            onClick={() => action.mutate({ licenseNumber: number.trim(), licenseDocument: doc || undefined, businessId: user.businessId || undefined })}
+            onClick={() =>
+              action.mutate({
+                licenseNumber: number.trim(),
+                licenseDocument: doc || undefined,
+                businessId: user.businessId || undefined,
+              })
+            }
           >
             Run check
           </Button>
@@ -203,10 +264,23 @@ function VerifyDrawer({ user, open, onClose }: { user: User; open: boolean; onCl
     >
       <div className="space-y-4">
         <Field label="Licence number" hint={licence.number ? `Currently ${licence.number}` : "Nothing on file yet."}>
-          <Input value={number} onChange={(e) => setNumber(e.target.value)} placeholder="ABC12345AB12" autoComplete="off" />
+          <Input
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            placeholder="ABC12345AB12"
+            autoComplete="off"
+          />
         </Field>
-        <Field label="Replace document (optional)" hint={fileName ? `Selected ${fileName}` : "Image of the licence card. Leave empty to keep the current one."}>
-          <Input type="file" accept="image/*" onChange={(e) => void onFile(e.target.files?.[0])} className="py-1.5 file:mr-3 file:rounded-lg file:border-0 file:bg-surface file:px-2 file:text-xs file:font-semibold file:text-ink" />
+        <Field
+          label="Replace document (optional)"
+          hint={fileName ? `Selected ${fileName}` : "Image of the licence card. Leave empty to keep the current one."}
+        >
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => void onFile(e.target.files?.[0])}
+            className="py-1.5 file:mr-3 file:rounded-lg file:border-0 file:bg-surface file:px-2 file:text-xs file:font-semibold file:text-ink"
+          />
         </Field>
       </div>
     </Drawer>
@@ -225,7 +299,10 @@ function Verification({ id }: { id: string }) {
   const close = () => setDialog(null);
 
   const approve = useAction(
-    async () => (licence.status === "SUBMITTED" ? users.licenceApprove(id) : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" })),
+    async () =>
+      licence.status === "SUBMITTED"
+        ? users.licenceApprove(id)
+        : users.licenceUpdate(id, { status: "APPROVE", comment: comment.trim() || "Approved by admin" }),
     { success: "Licence approved", invalidate: licenceInvalidations(id), onSuccess: close },
   );
   const suspend = useAction((body: { status: KycStatus; comment?: string }) => users.licenceUpdate(id, body), {
@@ -278,7 +355,10 @@ function Verification({ id }: { id: string }) {
                     { label: "Licence number", value: licence.number || undefined },
                     { label: "Phone", value: phoneLabel(u.phone) || undefined },
                     { label: "Name on account", value: fullName(u) || undefined },
-                    { label: "Date of birth", value: typeof raw.dob === "string" && raw.dob ? day(raw.dob) : undefined },
+                    {
+                      label: "Date of birth",
+                      value: typeof raw.dob === "string" && raw.dob ? day(raw.dob) : undefined,
+                    },
                     { label: "NIN", value: u.nin },
                     { label: "Rider since", value: day(u.createdAt) },
                   ]}
@@ -293,9 +373,16 @@ function Verification({ id }: { id: string }) {
 
                 {licence.status === "APPROVE" ? (
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex-1 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-success">This rider&apos;s licence is verified.</div>
+                    <div className="flex-1 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-success">
+                      This rider&apos;s licence is verified.
+                    </div>
                     {canReview ? (
-                      <Button variant="outline" icon={PauseCircle} className="text-danger" onClick={() => setDialog("suspend")}>
+                      <Button
+                        variant="outline"
+                        icon={PauseCircle}
+                        className="text-danger"
+                        onClick={() => setDialog("suspend")}
+                      >
                         Suspend licence
                       </Button>
                     ) : null}
@@ -304,7 +391,11 @@ function Verification({ id }: { id: string }) {
                   <div className="space-y-3">
                     {licence.status !== "SUBMITTED" ? (
                       <p className="text-xs text-ink-muted">
-                        This licence is marked <span className="font-semibold text-ink">{LICENCE_LABEL[licence.status].replace("Licence ", "")}</span>. You can still approve or reject it.
+                        This licence is marked{" "}
+                        <span className="font-semibold text-ink">
+                          {LICENCE_LABEL[licence.status].replace("Licence ", "")}
+                        </span>
+                        . You can still approve or reject it.
                       </p>
                     ) : null}
                     {canReview ? (
@@ -321,7 +412,9 @@ function Verification({ id }: { id: string }) {
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-xl bg-surface px-4 py-3 text-sm text-ink-muted">This rider has not added a driver&apos;s licence yet.</div>
+                  <div className="rounded-xl bg-surface px-4 py-3 text-sm text-ink-muted">
+                    This rider has not added a driver&apos;s licence yet.
+                  </div>
                 )}
 
                 {canReview ? (
@@ -350,7 +443,11 @@ function Verification({ id }: { id: string }) {
           >
             {licence.status !== "SUBMITTED" ? (
               <Field label="Note" hint="Optional, saved on the record.">
-                <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Checked manually against the FRSC portal" />
+                <Textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Checked manually against the FRSC portal"
+                />
               </Field>
             ) : null}
           </ConfirmDialog>
@@ -365,7 +462,11 @@ function Verification({ id }: { id: string }) {
             onConfirm={() => suspend.mutate({ status: "SUSPENDED", comment: comment.trim() || undefined })}
           >
             <Field label="Reason" hint="Shown to the rider.">
-              <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Licence reported expired" />
+              <Textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Licence reported expired"
+              />
             </Field>
           </ConfirmDialog>
           <RejectDrawer user={u} open={dialog === "reject"} onClose={close} />
