@@ -11,6 +11,7 @@ import {
   Calculator,
   Car,
   ClipboardList,
+  Code2,
   LayoutDashboard,
   LifeBuoy,
   Medal,
@@ -25,7 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
-import { useAlertsSummary, useAttention, useHandoffsSummary } from "@/lib/admin/hooks";
+import { useAlertsSummary, useAttention, useDeveloperQueueCount, useHandoffsSummary } from "@/lib/admin/hooks";
 import { canAccessSection, getAdminRoles, type AdminRole } from "@/lib/admin-access";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,8 @@ type AttentionCounts = {
   alertsOpen?: number;
   /** Handoffs waiting on support or still looking for a rider. */
   handoffsWaiting?: number;
+  /** Developer teams waiting for a live-access decision. */
+  developersWaiting?: number;
 };
 
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
@@ -71,6 +74,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Customers", href: "/customers", icon: Users },
       { label: "Business", href: "/business", icon: Building2 },
+      { label: "Developers", href: "/developers", icon: Code2, badge: (a) => a.developersWaiting },
     ],
   },
   {
@@ -104,10 +108,12 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
   const attention = useAttention();
   const alerts = useAlertsSummary();
   const handoffs = useHandoffsSummary();
+  const developersWaiting = useDeveloperQueueCount();
   const counts: AttentionCounts = {
     ...((attention.data ?? {}) as AttentionCounts),
     alertsOpen: alerts.data?.open,
     handoffsWaiting: handoffs.data ? handoffs.data.awaitingSupport + handoffs.data.searching : undefined,
+    developersWaiting: developersWaiting.data,
   };
 
   const visible = (href: string) => roles === null || roles.length === 0 || canAccessSection(href, roles);

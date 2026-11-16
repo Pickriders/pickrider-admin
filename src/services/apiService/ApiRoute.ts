@@ -54,6 +54,7 @@ import {
   AdminDropHandoffRiderRequestDto,
   AdminGetAnnouncementData,
   AdminGetDeveloperData,
+  AdminGetDeveloperMonitoringData,
   AdminGetHandoffData,
   AdminGetMyProfileData,
   AdminGetRiderAchievementsData,
@@ -83,14 +84,17 @@ import {
   AdminRemoveUserPhotoData,
   AdminResolveAlertData,
   AdminResolveAlertRequestDto,
+  AdminRestoreDeveloperTeamData,
   AdminReviewHandoffData,
   AdminReviewHandoffRequestDto,
+  AdminRevokeDeveloperKeyData,
   AdminSetWithdrawalRestrictionData,
   AdminStartHandoffData,
   AdminStartHandoffRequestDto,
   AdminStartHandoffSearchData,
   AdminStartHandoffSearchRequestDto,
   AdminSuspendDeveloperLiveData,
+  AdminSuspendDeveloperTeamData,
   AdminUnsuspendDeveloperLiveData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
@@ -5529,6 +5533,10 @@ export namespace Api {
   export namespace GetOrders {
     export type RequestParams = {};
     export type RequestQuery = {
+      /** One developer team's orders */
+      teamId?: string;
+      /** Where orders came from: DEVELOPER_API for orders created with a developer API key */
+      channel?: string;
       /** true: only orders a rider was released from at least once (riderReleaseCount > 0) */
       releasedOnly?: boolean;
       /** date filter for scheduled orders - provide this if filtering for scheduled orders */
@@ -7201,6 +7209,61 @@ export namespace Api {
   }
 
   /**
+   * @description Suspends the whole team: every key, test and live, stops on its next request. Reason required.
+   * @tags admins/developers
+   * @name AdminSuspendDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/suspend
+   * @secure
+   * @response `200` `AdminSuspendDeveloperTeamData`
+   */
+  export namespace AdminSuspendDeveloperTeam {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = DeveloperLiveDecisionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminSuspendDeveloperTeamData;
+  }
+
+  /**
+   * @description Lifts a team suspension.
+   * @tags admins/developers
+   * @name AdminRestoreDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/restore
+   * @secure
+   * @response `200` `AdminRestoreDeveloperTeamData`
+   */
+  export namespace AdminRestoreDeveloperTeam {
+    export type RequestParams = {
+      teamId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminRestoreDeveloperTeamData;
+  }
+
+  /**
+   * @description Revokes one of the team's API keys at once. Reason required; the key stores it.
+   * @tags admins/developers
+   * @name AdminRevokeDeveloperKey
+   * @request POST:/api/v1/admins/developers/{teamId}/keys/{keyId}/revoke
+   * @secure
+   * @response `200` `AdminRevokeDeveloperKeyData`
+   */
+  export namespace AdminRevokeDeveloperKey {
+    export type RequestParams = {
+      teamId: string;
+      keyId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = DeveloperLiveDecisionRequestDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminRevokeDeveloperKeyData;
+  }
+
+  /**
    * @description SUSPENDED → APPROVED.
    * @tags admins/developers
    * @name AdminUnsuspendDeveloperLive
@@ -7216,5 +7279,21 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = AdminUnsuspendDeveloperLiveData;
+  }
+
+  /**
+   * @description Error, latency, 429 and webhook rates for the alert window, the last hour and day, and the webhook queue.
+   * @tags admins/developers
+   * @name AdminGetDeveloperMonitoring
+   * @request GET:/api/v1/admins/developer-monitoring
+   * @secure
+   * @response `200` `AdminGetDeveloperMonitoringData`
+   */
+  export namespace AdminGetDeveloperMonitoring {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AdminGetDeveloperMonitoringData;
   }
 }
