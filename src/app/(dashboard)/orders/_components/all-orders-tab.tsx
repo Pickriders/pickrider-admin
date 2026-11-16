@@ -12,7 +12,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, statusAt, totalDistanceKm } from "../lib";
-import { CourierCell, OrderCell, OrderPaymentBadge, OrderStatusBadge, PartiesLine, PartyCell, PaymentLine, StatusWithTime } from "./order-cells";
+import { CourierCell, CustomerCell, OrderCell, OrderPaymentBadge, OrderStatusBadge, PartiesLine, PaymentLine, StatusWithTime } from "./order-cells";
 
 /**
  * Every order the platform has seen, server paginated. Search is by order
@@ -32,6 +32,7 @@ const FILTERS: FilterSpec[] = [
   },
   // Orders a rider was taken off at least once before pickup (riderReleaseCount > 0).
   { key: "releasedOnly", label: "Rider released", options: [{ value: "true", label: "Rider released" }] },
+  { key: "channel", label: "Source", options: [{ value: "DEVELOPER_API", label: "Developer API" }] },
 ];
 
 const meta = (value: ColumnMeta) => value;
@@ -59,10 +60,10 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "customer",
     header: "Customer",
-    meta: meta({ skeleton: "person", csv: { key: "customer", label: "Customer", value: (row) => fullName((row as OrderRow).user) } }),
+    meta: meta({ skeleton: "person", csv: { key: "customer", label: "Customer", value: (row) => (row as OrderRow).developerTeam?.name ?? fullName((row as OrderRow).user) } }),
     cell: ({ row }) => (
-      <PartyCell
-        party={row.original.user}
+      <CustomerCell
+        order={row.original}
         href={row.original.user ? `/customers/${row.original.user._id}` : undefined}
         fallback="Unknown"
         className="max-w-[200px]"

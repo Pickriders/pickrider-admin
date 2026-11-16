@@ -8,6 +8,7 @@ import { ChargesTab } from "./charges-tab";
 import { ProviderFeesTab } from "./provider-fees-tab";
 import { TransactionsTab } from "./transactions-tab";
 import { TransferTab } from "./transfer-tab";
+import { WithdrawalFreezeCard } from "./withdrawal-freeze";
 import { useCan } from "@/lib/admin/use-can";
 
 const TABS = ["overview", "charges", "provider-fees", "payout", "transfer", "transactions", "withdrawals"] as const;
@@ -41,7 +42,12 @@ export function FinancesClient() {
       {active === "payout" && treasury ? <PayoutTab /> : null}
       {active === "transfer" && treasury ? <TransferTab /> : null}
       {active === "transactions" ? <TransactionsTab preset="all" /> : null}
-      {active === "withdrawals" ? <TransactionsTab preset="withdrawals" /> : null}
+      {active === "withdrawals" ? (
+        <div className="space-y-5">
+          <WithdrawalFreezeCard />
+          <TransactionsTab preset="withdrawals" />
+        </div>
+      ) : null}
     </div>
   );
 }

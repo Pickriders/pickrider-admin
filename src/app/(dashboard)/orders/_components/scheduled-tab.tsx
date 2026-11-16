@@ -25,7 +25,7 @@ import { useCan } from "@/lib/admin/use-can";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { orderNumber } from "../lib";
-import { OrderPaymentBadge, PartyCell, ReleasedChip, SourcePill, TypeBadge, bidsOf } from "./order-cells";
+import { CustomerCell, OrderPaymentBadge, ReleasedChip, SourcePill, TypeBadge, bidsOf } from "./order-cells";
 
 /**
  * Scheduled orders that have not found a rider yet. The dispatcher rings riders 30 minutes before
@@ -180,7 +180,7 @@ export function ScheduledTab() {
         id: "customer",
         header: "Customer",
         meta: meta({ hideBelow: "md", skeleton: "person", csv: { key: "user", label: "Customer" } }),
-        cell: ({ row }) => <PartyCell party={row.original.user} fallback="Unknown" size={28} className="max-w-[200px]" />,
+        cell: ({ row }) => <CustomerCell order={row.original} size={28} className="max-w-[200px]" />,
       },
       {
         id: "scheduledFor",
@@ -330,7 +330,7 @@ export function ScheduledTab() {
               <ReleasedChip order={row} />
             </div>
             <div className="rounded-xl bg-surface/70 px-2.5 py-2">
-              <PartyCell party={row.user} fallback="Unknown customer" size={24} />
+              <CustomerCell order={row} fallback="Unknown customer" size={24} />
             </div>
             {can("order.cancel") ? (
               <div onClick={(e) => e.stopPropagation()} className="[&_button]:w-full">

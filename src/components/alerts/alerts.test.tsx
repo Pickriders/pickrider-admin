@@ -7,7 +7,7 @@ import { playUrgentChime } from "@/lib/admin/chime";
 import type { AdminAlert } from "@/lib/admin/api";
 
 import { alertToastId, bellBadge, showAlertToast } from "./alert-bell";
-import { ALERT_TYPE_OPTIONS, alertTypeLabel, digestTitle, riderUnpauseHref } from "./alert-ui";
+import { ALERT_TYPE_OPTIONS, alertEmailMeta, alertHref, alertTypeLabel, digestTitle, findAlert, riderUnpauseHref } from "./alert-ui";
 
 jest.mock("sonner", () => ({ toast: { error: jest.fn(), warning: jest.fn(), success: jest.fn(), dismiss: jest.fn() } }));
 jest.mock("@/lib/admin/chime", () => ({ playUrgentChime: jest.fn(() => true) }));
@@ -68,6 +68,53 @@ describe("alert copy", () => {
     expect(riderUnpauseHref({ type: "RIDER_AUTO_PAUSED", riderId: "r1" })).toBe("/couriers/r1/details?resume=dispatch");
     expect(riderUnpauseHref({ type: "RIDER_AUTO_PAUSED" })).toBeNull();
     expect(riderUnpauseHref({ type: "RIDER_FREQUENT_RELEASES", riderId: "r1" })).toBeNull();
+  });
+});
+
+describe("alert emails", () => {
+  it("shows nothing when no email went out", () => {
+    expect(alertEmailMeta(alert())).toEqual([]);
+    expect(alertEmailMeta(alert({ escalatedAt: "2026-11-10T09:02:00.000Z" }))).toEqual([]);
+  });
+
+  it("lists the escalation, digest, reminder and resolved follow-up in that order, with the Lagos time", () => {
+    const meta = alertEmailMeta(
+      alert({
+        emailedAt: "2026-11-10T09:42:00.000Z",
+        emailRecipientsCount: 2,
+        emailReminderAt: "2026-11-10T09:50:00.000Z",
+        emailResolvedAt: "2026-11-10T10:05:00.000Z",
+        emailDigestAt: "2026-11-10T09:45:00.000Z",
+      }),
+    );
+    expect(meta.map((m) => m.key)).toEqual(["emailed", "digest", "reminder", "resolved"]);
+    expect(meta[0].label).toMatch(/^Emailed support at 10:42/);
+    expect(meta[0].title).toMatch(/^Emailed 2 support inboxes at /);
+    expect(meta.slice(1).map((m) => m.label)).toEqual(["In digest", "Reminder sent", "Resolved email sent"]);
+  });
+
+  it("a digest-only alert says In digest and nothing else", () => {
+    expect(alertEmailMeta(alert({ emailDigestAt: "2026-11-10T09:45:00.000Z" })).map((m) => m.label)).toEqual(["In digest"]);
+  });
+
+  it("one inbox reads singular", () => {
+    expect(alertEmailMeta(alert({ emailedAt: "2026-11-10T09:42:00.000Z", emailRecipientsCount: 1 }))[0].title).toMatch(/^Emailed 1 support inbox at /);
+  });
+});
+
+describe("linked alert", () => {
+  it("builds the link the support emails and toasts open", () => {
+    expect(alertHref("a1")).toBe("/alerts?alert=a1");
+    expect(alertHref("a b")).toBe("/alerts?alert=a%20b");
+  });
+
+  it("finds the alert in the first list that has it", () => {
+    const a = alert({ id: "a1" });
+    const b = alert({ id: "b2" });
+    expect(findAlert(undefined, [a])).toBeUndefined();
+    expect(findAlert("b2", [a], undefined, [b])).toBe(b);
+    expect(findAlert("a1", [a], [alert({ id: "a1", title: "older copy" })])).toBe(a);
+    expect(findAlert("zz", [a], [b])).toBeUndefined();
   });
 });
 

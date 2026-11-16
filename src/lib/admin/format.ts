@@ -92,9 +92,13 @@ export function minutes(value: number | null | undefined) {
 }
 
 /** A person's display name, cased by formatPersonName ("ADA obi" -> "Ada Obi"). */
-export function fullName(user: { firstname?: string | null; lastname?: string | null } | null | undefined) {
+export function fullName(user: { firstname?: string | null; lastname?: string | null; isErased?: boolean } | null | undefined) {
+  // The core sends `{ firstname: "Erased user", lastname: "", isErased: true }` for a tombstone; keep its casing.
+  if (user?.isErased) return ERASED_USER_LABEL;
   return formatPersonName([user?.firstname, user?.lastname].filter(Boolean).join(" "));
 }
+
+export const ERASED_USER_LABEL = "Erased user";
 
 export function initials(name: string | null | undefined) {
   return (name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
@@ -127,16 +131,17 @@ export function nairaUnits(value: number | null | undefined, digits = 0) {
 
 // ── Orders: where they came from and how they were paid ─────────────────────
 
-export type OrderSource = "APP" | "STORE" | "WEB";
+export type OrderSource = "APP" | "STORE" | "WEB" | "API";
 
-/** `channel` on an order: VENDOR_STOREFRONT = a vendor's storefront, CUSTOMER_WEB = the public web flow, absent = the customer app. */
+/** `channel` on an order: VENDOR_STOREFRONT = a vendor's storefront, CUSTOMER_WEB = the public web flow, DEVELOPER_API = a developer team's API key, absent = the customer app. */
 export function orderSource(channel: string | null | undefined): OrderSource {
   if (channel === "VENDOR_STOREFRONT") return "STORE";
   if (channel === "CUSTOMER_WEB") return "WEB";
+  if (channel === "DEVELOPER_API") return "API";
   return "APP";
 }
 
-export const ORDER_SOURCE_LABEL: Record<OrderSource, string> = { APP: "App", STORE: "Store", WEB: "Web" };
+export const ORDER_SOURCE_LABEL: Record<OrderSource, string> = { APP: "App", STORE: "Store", WEB: "Web", API: "API" };
 
 export const STOREFRONT_REFUND_HINT = "Paid and refunded through the storefront (Paystack). No core wallet money moved.";
 export const STOREFRONT_PREPAID_HINT = "The customer paid on the storefront (Paystack) before the delivery was booked.";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, ArrowRight, CalendarClock, Gavel, Globe, Info, Smartphone, Store, Undo2 } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, CalendarClock, Code2, Gavel, Globe, Info, Smartphone, Store, Undo2, UserRoundX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
@@ -31,12 +31,25 @@ export function PartyCell({
   className?: string;
 }) {
   if (!party) return <span className={cx("block truncate text-xs text-ink-faint", className)}>{fallback}</span>;
+  // An erased account: a tombstone stands in for the person, so there is no profile to open.
+  if (party.isErased) {
+    return (
+      <span className={cx("flex min-w-0 items-center gap-2.5", className)} title="This account was erased">
+        <span className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint" style={{ width: size, height: size }}>
+          <UserRoundX size={Math.round(size * 0.5)} />
+        </span>
+        <span className="truncate text-[13px] font-semibold italic text-ink-faint">{fullName(party)}</span>
+      </span>
+    );
+  }
   const name = fullName(party) || "Unnamed";
   const body = (
     <span className="flex min-w-0 items-center gap-2.5">
       <Avatar src={party.photo} name={name} size={size} />
       <span className="min-w-0 flex-1 leading-tight">
-        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{name}</span>
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark" title={name}>
+          {name}
+        </span>
         {party.phone ? <span className="mt-0.5 block truncate text-[11px] tabular-nums text-ink-muted">{displayPhone(party.phone)}</span> : null}
       </span>
     </span>
@@ -45,6 +58,26 @@ export function PartyCell({
   return (
     <Link href={href} onClick={stop} className={cx("group/party block min-w-0 rounded-lg", className)}>
       {body}
+    </Link>
+  );
+}
+
+/**
+ * Who the order is for: the customer, or for a Developer API order the team whose key created it,
+ * linking to that team on the Developers page (its "customer" is a system account).
+ */
+export function CustomerCell({ order, href, fallback = "Unknown", size = 28, className }: { order: Pick<OrderRow, "user" | "developerTeam">; href?: string; fallback?: string; size?: number; className?: string }) {
+  const team = order.developerTeam;
+  if (!team) return <PartyCell party={order.user} href={href} fallback={fallback} size={size} className={className} />;
+  return (
+    <Link href={`/developers?tab=all&open=${team.id}`} onClick={stop} title="Created with this developer team's API key" className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}>
+      <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-warning-soft text-warning">
+        <Code2 size={Math.round(size * 0.5)} aria-hidden strokeWidth={2.5} />
+      </span>
+      <span className="min-w-0 flex-1 leading-tight">
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{team.name}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-ink-muted">Developer API</span>
+      </span>
     </Link>
   );
 }
@@ -98,7 +131,7 @@ export function PaymentLine({ order, className }: { order: Pick<OrderRow, "chann
 export function PartiesLine({ order }: { order: OrderRow }) {
   return (
     <span className="flex min-w-0 items-center gap-2">
-      <PartyCell party={order.user} fallback="Unknown customer" size={24} className="min-w-0 flex-1" />
+      <CustomerCell order={order} fallback="Unknown customer" size={24} className="min-w-0 flex-1" />
       <ArrowRight size={13} aria-hidden className="shrink-0 text-ink-faint" />
       <span className="min-w-0 flex-1">
         <CourierCell order={order} size={24} />
@@ -138,12 +171,13 @@ export function OrderPaymentBadge({ order }: { order: Pick<OrderRow, "channel" |
   );
 }
 
-const SOURCE_TONE: Record<OrderSource, Tone> = { APP: "neutral", STORE: "brand", WEB: "info" };
-const SOURCE_ICON = { APP: Smartphone, STORE: Store, WEB: Globe } as const;
+const SOURCE_TONE: Record<OrderSource, Tone> = { APP: "neutral", STORE: "brand", WEB: "info", API: "warning" };
+const SOURCE_ICON = { APP: Smartphone, STORE: Store, WEB: Globe, API: Code2 } as const;
 const SOURCE_HINT: Record<OrderSource, string> = {
   APP: "Placed in the customer app",
   STORE: "From a vendor storefront",
   WEB: "Placed on pickriders.com",
+  API: "Created by a developer team with an API key",
 };
 
 /** Quiet tints, one per source, built on the theme tokens so they follow dark mode. */
@@ -151,6 +185,7 @@ const SOURCE_PILL: Record<OrderSource, string> = {
   APP: "border-line bg-surface text-ink-muted",
   STORE: "border-transparent bg-brand-soft text-brand-dark",
   WEB: "border-transparent bg-info-soft text-info",
+  API: "border-transparent bg-warning-soft text-warning",
 };
 
 /**
@@ -261,7 +296,7 @@ export function ReleasedChip({ order }: { order: Pick<OrderRow, "_id" | "rider" 
       }}
       title="A rider released this order. Open it to see the rider history."
       className={cx(
-        "inline-flex w-fit cursor-pointer items-center gap-1 rounded-full border border-warning/40 bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning transition-colors",
+        "inline-flex w-fit shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border border-warning/40 bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning transition-colors",
         "hover:border-warning focus:outline-none focus-visible:ring-2 focus-visible:ring-warning/40",
       )}
     >
@@ -294,7 +329,7 @@ export function HandedOffChip({ order }: { order: Pick<OrderRow, "_id" | "handof
       }}
       title="Another rider took over this order after pickup. Open it to see the handoff."
       className={cx(
-        "inline-flex w-fit cursor-pointer items-center gap-1 rounded-full border border-info/30 bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info transition-colors",
+        "inline-flex w-fit shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border border-info/30 bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info transition-colors",
         "hover:border-info focus:outline-none focus-visible:ring-2 focus-visible:ring-info/40",
       )}
     >
@@ -307,8 +342,9 @@ export function HandedOffChip({ order }: { order: Pick<OrderRow, "_id" | "handof
 /**
  * The courier column. Customer-app orders are bid on, so they also say how many riders offered:
  * under the courier once one won, or on their own while the order still waits. An order a rider
- * was released from carries the amber "Released" chip underneath; one handed to another rider after
- * pickup carries the blue "Handed off" chip.
+ * was released from carries the amber "Released" chip; one handed to another rider after pickup
+ * carries the blue "Handed off" chip. The chips sit on the courier's line and never shrink: the
+ * name truncates instead (its full text is on the title), so a narrow card never overflows.
  */
 export function CourierCell({
   order,
@@ -322,9 +358,9 @@ export function CourierCell({
   const courier = <CourierBody order={order} href={href} size={size} />;
   if (!((order.riderReleaseCount ?? 0) > 0) && !((order.handoffCount ?? 0) > 0)) return courier;
   return (
-    <span className="flex min-w-0 flex-col items-start gap-1">
-      {courier}
-      <span className="flex flex-wrap gap-1">
+    <span className="flex min-w-0 items-center gap-1.5" data-testid="courier-cell">
+      <span className="min-w-0 flex-1">{courier}</span>
+      <span className="flex shrink-0 items-center gap-1">
         <ReleasedChip order={order} />
         <HandedOffChip order={order} />
       </span>
