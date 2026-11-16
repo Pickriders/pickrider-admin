@@ -1,11 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "./http";
-import { achievements, admin, adminLogs, alerts, announcements, auth, businesses, coupons, deliveryPrice, developers, emailControls, emailTemplates, finance, handoffs, issues, me, messages, messaging, orders, platformSettings, reviews, riderInsights, riderReleases, security, settings, stats, transactions, users, vehicles, type Query, type RangeQuery } from "./api";
+import { achievements, admin, adminLogs, alerts, announcements, auth, businesses, coupons, deliveryPrice, developers, emailControls, emailTemplates, finance, handoffs, issues, me, messages, messaging, orders, platformSettings, reviews, riderInsights, riderReleases, security, settings, stats, transactions, users, vehicles, type DeveloperUsagePeriod, type Query, type RangeQuery } from "./api";
 
 /**
  * Query hooks for the admin. Lists keep the previous page on screen while the
@@ -295,3 +295,30 @@ export const useDeveloper = (teamId: string) =>
 /** Polls every 30s, about as often as the alert check (every minute) has something new. */
 export const useDeveloperMonitoring = (enabled = true) =>
   useQuery({ queryKey: ["developers", "monitoring"], queryFn: developers.monitoring, refetchInterval: 30_000, enabled });
+
+// The developer team page. Everything sits under ["developers"], so a staff action refreshes it all.
+/** A Developer API cursor list ({ data, has_more }) as "load more" pages, flattened into `rows`. */
+function useCursorList<T extends { id: string }>(key: unknown[], fetchPage: (startingAfter?: string) => Promise<{ data: T[]; has_more: boolean }>, enabled = true) {
+  const query = useInfiniteQuery({
+    queryKey: key,
+    queryFn: ({ pageParam }) => fetchPage(pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => (last.has_more ? last.data[last.data.length - 1]?.id : undefined),
+    enabled,
+  });
+  return { ...query, rows: query.data?.pages.flatMap((page) => page.data) ?? [] };
+}
+export const useDeveloperUsage = (teamId: string, livemode: boolean, period: DeveloperUsagePeriod) =>
+  useQuery({ queryKey: ["developers", "usage", teamId, livemode, period], queryFn: () => developers.usage(teamId, livemode, period), placeholderData: keepPreviousData, enabled: Boolean(teamId) });
+export const useDeveloperActivity = (teamId: string, query: Query, enabled = true) =>
+  useCursorList(["developers", "activity", teamId, query], (after) => developers.activity(teamId, { ...query, limit: 25, starting_after: after }), enabled);
+export const useDeveloperRequestLogs = (teamId: string, query: Query, enabled = true) =>
+  useCursorList(["developers", "request-logs", teamId, query], (after) => developers.requestLogs(teamId, { ...query, limit: 25, starting_after: after }), enabled);
+export const useDeveloperRequestLog = (teamId: string, logId: string | null) =>
+  useQuery({ queryKey: ["developers", "request-log", teamId, logId], queryFn: () => developers.requestLog(teamId, logId ?? ""), enabled: Boolean(teamId && logId) });
+export const useDeveloperWebhookEndpoints = (teamId: string, enabled = true) =>
+  useQuery({ queryKey: ["developers", "webhook-endpoints", teamId], queryFn: () => developers.webhookEndpoints(teamId, { limit: 100 }), enabled: Boolean(teamId) && enabled });
+export const useDeveloperWebhookDeliveries = (teamId: string, endpointId: string | null) =>
+  useCursorList(["developers", "webhook-deliveries", teamId, endpointId], (after) => developers.webhookDeliveries(teamId, endpointId ?? "", { limit: 20, starting_after: after }), Boolean(endpointId));
+export const useDeveloperTransactions = (teamId: string, query: Query, enabled = true) =>
+  useCursorList(["developers", "transactions", teamId, query], (after) => developers.transactions(teamId, { ...query, limit: 25, starting_after: after }), enabled);
