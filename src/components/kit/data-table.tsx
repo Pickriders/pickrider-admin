@@ -58,6 +58,8 @@ export type DataTableProps<T> = {
   emptyIcon?: Parameters<typeof EmptyState>[0]["icon"];
   onRowClick?: (row: T) => void;
   rowHref?: (row: T) => string | undefined;
+  /** Extra classes for one row (and its phone card), e.g. to highlight the record a link pointed at. */
+  rowClassName?: (row: T) => string | undefined;
   mobileCard?: (row: T) => ReactNode;
   /** The card's loading shape on phones; defaults to two plain lines. */
   mobileCardSkeleton?: ReactNode;
@@ -99,6 +101,7 @@ export function DataTable<T extends Record<string, unknown>>({
   emptyIcon,
   onRowClick,
   rowHref,
+  rowClassName,
   mobileCard,
   mobileCardSkeleton,
   toolbarExtra,
@@ -275,7 +278,7 @@ export function DataTable<T extends Record<string, unknown>>({
           if (onRowClick) onRowClick(row.original);
           else if (href) router.push(href);
         }}
-        className={cx("border-b border-line last:border-0 transition-colors", clickable && "cursor-pointer hover:bg-surface/80")}
+        className={cx("border-b border-line last:border-0 transition-colors", clickable && "cursor-pointer hover:bg-surface/80", rowClassName?.(row.original))}
       >
         {row.getVisibleCells().map((cell) => {
           const meta = (cell.column.columnDef.meta ?? {}) as ColumnMeta;
@@ -338,7 +341,7 @@ export function DataTable<T extends Record<string, unknown>>({
                           if (onRowClick) onRowClick(row);
                           else if (href) router.push(href);
                         }}
-                        className={cx("px-4 py-3", (onRowClick || href) && "cursor-pointer active:bg-surface")}
+                        className={cx("px-4 py-3", (onRowClick || href) && "cursor-pointer active:bg-surface", rowClassName?.(row))}
                       >
                         {mobileCard(row)}
                       </div>

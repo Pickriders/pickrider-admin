@@ -117,6 +117,13 @@ export function LogTab() {
 
   return (
     <>
+      <p className="mb-3 text-xs text-ink-muted">
+        For what Termii and the mail server answered (provider ids, failures, the Termii balance) and every security code sent, see{" "}
+        <Link href="/messages" className="font-semibold text-brand-dark hover:underline">
+          Messages
+        </Link>
+        .
+      </p>
       {scoped ? (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-card px-3 py-2 text-xs text-ink-muted">
           {table.state.filters.broadcastId ? (

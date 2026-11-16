@@ -1,11 +1,8 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-import { AdminHub } from "./_components/admin-hub";
+import { adminHubRedirect } from "@/lib/admin/settings-tabs";
 
-export default function AdminPage() {
-  return (
-    <Suspense>
-      <AdminHub />
-    </Suspense>
-  );
+/** The Admin hub merged into Settings: its tabs live there now, query kept for the drawers. */
+export default function AdminPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+  redirect(adminHubRedirect(searchParams));
 }

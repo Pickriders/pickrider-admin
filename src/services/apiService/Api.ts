@@ -53,9 +53,14 @@ import {
   AdminDeleteAnnouncementData,
   AdminDropHandoffRiderData,
   AdminDropHandoffRiderRequestDto,
+  AdminEraseUserData,
+  AdminErasureBlockersData,
   AdminGetAnnouncementData,
   AdminGetDeveloperData,
+  AdminGetDeveloperMonitoringData,
+  AdminGetEmailControlsData,
   AdminGetHandoffData,
+  AdminGetMessageData,
   AdminGetMyProfileData,
   AdminGetRiderAchievementsData,
   AdminGetRiderDeliveryMapData,
@@ -82,28 +87,63 @@ import {
   AdminListAnnouncementsParams,
   AdminListDevelopersData,
   AdminListDevelopersParams,
+  AdminListEmailTemplatesData,
   AdminListHandoffsData,
   AdminListHandoffsParams,
+  AdminListMessagesData,
+  AdminListMessagesParams,
   AdminListOrderHandoffsData,
   AdminListOrderMessagesData,
   AdminListRiderReleasesData,
+  AdminListSessionsData,
   AdminListTeamsData,
   AdminListTeamsParams,
+  AdminLockoutStatusData,
+  AdminLockoutStatusParams,
+  AdminLogoutData,
+  AdminMessagesSummaryData,
+  AdminMessagesSummaryParams,
+  AdminMfaChallengeData,
+  AdminMfaRegenerateRecoveryCodesData,
+  AdminMfaStatusData,
+  AdminMfaTotpDisableData,
+  AdminMfaTotpSetupData,
+  AdminMfaTotpVerifyData,
   AdminOrderRiderHistoryData,
+  AdminPauseMarketingEmailsData,
+  AdminPauseNonEssentialEmailsData,
+  AdminPreviewEmailTemplateData,
+  AdminPreviewEmailTemplateWithVariablesData,
   AdminRaiseHandoffBonusData,
   AdminRaiseHandoffBonusRequestDto,
+  AdminRebuildRiderRatingsData,
+  AdminRefreshRequestDto,
+  AdminRefreshSessionData,
   AdminRejectDeveloperLiveData,
   AdminRemoveUserPhotoData,
   AdminResolveAlertData,
   AdminResolveAlertRequestDto,
+  AdminRestoreDeveloperTeamData,
   AdminReviewHandoffData,
   AdminReviewHandoffRequestDto,
+  AdminRevokeDeveloperKeyData,
+  AdminRevokeOtherSessionsData,
+  AdminRevokeSessionData,
+  AdminSecurityConfirmData,
+  AdminSecurityConfirmRedirectData,
+  AdminSecurityConfirmRedirectParams,
+  AdminSendTestAlertEmailData,
+  AdminSendTestEmailsData,
+  AdminSetEmailTemplateEnabledData,
   AdminSetWithdrawalRestrictionData,
   AdminStartHandoffData,
   AdminStartHandoffRequestDto,
   AdminStartHandoffSearchData,
   AdminStartHandoffSearchRequestDto,
   AdminSuspendDeveloperLiveData,
+  AdminSuspendDeveloperTeamData,
+  AdminTestAlertEmailRequestDto,
+  AdminUnlockLoginData,
   AdminUnsuspendDeveloperLiveData,
   AdminUpdateAnnouncementData,
   AdminUpdateAnnouncementStatusData,
@@ -128,10 +168,13 @@ import {
   BusinessesData,
   BusinessesParams,
   CancelData,
+  CancelErasureByTokenData,
+  CancelErasureRequestDto,
   CancelFundWalletData,
   CancelFundWalletRequestDto,
   CancelLocationRequestDto,
   CancelLocationUpdateData,
+  CancelMyErasureData,
   CancelOrderData,
   CancelOrderLocationData,
   CancelOrderRequestDto,
@@ -192,6 +235,8 @@ import {
   DeleteVehicleData,
   DeliveryPriceEventDto,
   DeveloperLiveDecisionRequestDto,
+  EmailPauseRequestDto,
+  EraseUserRequestDto,
   EstimateBroadcastData,
   EventData,
   FeedbackData,
@@ -284,6 +329,7 @@ import {
   GetOrdersParams,
   GetPendingLocationUpdateData,
   GetPlatformBanksData,
+  GetPlatformSettingsData,
   GetPlatformWalletData,
   GetQueuedOrdersData,
   GetQuoteData,
@@ -371,6 +417,8 @@ import {
   MarkAsReadData,
   MarkOrderMessagesReadData,
   MarkOrderMessagesReadRequestDto,
+  MfaChallengeRequestDto,
+  MfaCodeRequestDto,
   Object,
   OffersData,
   OverviewData,
@@ -383,6 +431,7 @@ import {
   PayRiderTripRequestDto,
   PeakHoursData,
   PeakHoursParams,
+  PreviewEmailTemplateRequestDto,
   ProviderFeeRowsData,
   ProviderFeeRowsParams,
   ProviderFeesData,
@@ -404,6 +453,7 @@ import {
   ReDispatchRequestDto,
   ReassignRiderData,
   ReassignRiderRequestDto,
+  RebuildRiderRatingsRequestDto,
   RefundCustomerOrderData,
   RefundOrderRequestDto,
   RefundableOrdersData,
@@ -449,12 +499,15 @@ import {
   RingRidersData,
   RunData,
   SearchData,
+  SecurityConfirmRequestDto,
   SendOrderMessageData,
   SendOrderMessageRequestDto,
   SendRiderLinkCodeData,
+  SendTestEmailsRequestDto,
   SeriesData,
   SeriesParams,
   SetDispatchPausedData,
+  SetEmailTemplateEnabledRequestDto,
   SetPinData,
   SetWithdrawalPinDto,
   StartOrderData,
@@ -474,6 +527,7 @@ import {
   TransferToWalletDto,
   TriggerNotificationData,
   TriggerNotificationRequestDto,
+  UnlockLoginRequestDto,
   UnlocksData,
   UnlocksParams,
   UnsuspendBusinessUserData,
@@ -512,6 +566,8 @@ import {
   UpdatePhoneNumberData,
   UpdatePhoneRequestDto,
   UpdatePhotoRequestDto,
+  UpdatePlatformSettingsData,
+  UpdatePlatformSettingsRequestDto,
   UpdatePlatformSettlementDto,
   UpdatePreferencesRequestDto,
   UpdatePriorityData,
@@ -577,6 +633,44 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<GetDeliveryPricingData, any>({
       path: `/api/v1/admin-configs/delivery-pricing`,
       method: "GET",
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admin-configs
+   * @name GetPlatformSettings
+   * @summary Platform-wide settings (not tied to a country or state), e.g. support emails
+   * @request GET:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `GetPlatformSettingsData`
+   */
+  getPlatformSettings = (params: RequestParams = {}) =>
+    this.request<GetPlatformSettingsData, any>({
+      path: `/api/v1/admin-configs/platform-settings`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admin-configs
+   * @name UpdatePlatformSettings
+   * @summary Update platform-wide settings; only the keys sent change. Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request PATCH:/api/v1/admin-configs/platform-settings
+   * @secure
+   * @response `200` `UpdatePlatformSettingsData`
+   */
+  updatePlatformSettings = (data: UpdatePlatformSettingsRequestDto, params: RequestParams = {}) =>
+    this.request<UpdatePlatformSettingsData, any>({
+      path: `/api/v1/admin-configs/platform-settings`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -719,6 +813,46 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<UpdateCountryStateData, any>({
       path: `/api/v1/admin-configs/countries/${countryId}/states/${stateId}`,
       method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/security
+   * @name AdminLockoutStatus
+   * @summary Whether sign-in is locked for an admin email, and until when
+   * @request GET:/api/v1/admins/security/lockouts
+   * @secure
+   * @response `200` `AdminLockoutStatusData`
+   */
+  adminLockoutStatus = (query: AdminLockoutStatusParams, params: RequestParams = {}) =>
+    this.request<AdminLockoutStatusData, any>({
+      path: `/api/v1/admins/security/lockouts`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/security
+   * @name AdminUnlockLogin
+   * @summary Super admin: clear the sign-in lockout for an admin email
+   * @request POST:/api/v1/admins/security/lockouts/unlock
+   * @secure
+   * @response `200` `AdminUnlockLoginData`
+   * @response `201` `UnlockLoginResponseDto`
+   */
+  adminUnlockLogin = (data: UnlockLoginRequestDto, params: RequestParams = {}) =>
+    this.request<AdminUnlockLoginData, any>({
+      path: `/api/v1/admins/security/lockouts/unlock`,
+      method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
@@ -1547,8 +1681,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags auth
    * @name LoginAdmins
+   * @summary Admin console sign-in (email only). Returns tokens, or mfaRequired with an mfaToken for /auth/admins/mfa/challenge
    * @request POST:/api/v1/auth/admins/login
-   * @response `201` `LoginAdminsData`
+   * @response `200` `LoginAdminsData`
+   * @response `201` `AdminLoginResponseDto`
    */
   loginAdmins = (data: LoginRequestDto, params: RequestParams = {}) =>
     this.request<LoginAdminsData, any>({
@@ -1706,6 +1842,252 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   googleSignIn = (data: GoogleSignInRequestDto, params: RequestParams = {}) =>
     this.request<GoogleSignInData, any>({
       path: `/api/v1/auth/google`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaChallenge
+   * @summary Second sign-in step: the authenticator or recovery code against the mfaToken
+   * @request POST:/api/v1/auth/admins/mfa/challenge
+   * @response `200` `AdminMfaChallengeData`
+   * @response `201` `AdminLoginResponseDto`
+   */
+  adminMfaChallenge = (data: MfaChallengeRequestDto, params: RequestParams = {}) =>
+    this.request<AdminMfaChallengeData, any>({
+      path: `/api/v1/auth/admins/mfa/challenge`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminRefreshSession
+   * @summary New access and refresh tokens; the presented refresh token stops working
+   * @request POST:/api/v1/auth/admins/refresh
+   * @response `200` `AdminRefreshSessionData`
+   * @response `201` `AdminLoginResponseDto`
+   */
+  adminRefreshSession = (data: AdminRefreshRequestDto, params: RequestParams = {}) =>
+    this.request<AdminRefreshSessionData, any>({
+      path: `/api/v1/auth/admins/refresh`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminLogout
+   * @summary Sign out this session
+   * @request POST:/api/v1/auth/admins/logout
+   * @secure
+   * @response `200` `AdminLogoutData`
+   * @response `201` `MessageResponseDto`
+   */
+  adminLogout = (params: RequestParams = {}) =>
+    this.request<AdminLogoutData, any>({
+      path: `/api/v1/auth/admins/logout`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminListSessions
+   * @summary Your live sessions (devices signed in), the current one flagged
+   * @request GET:/api/v1/auth/admins/sessions
+   * @secure
+   * @response `200` `AdminListSessionsData`
+   */
+  adminListSessions = (params: RequestParams = {}) =>
+    this.request<AdminListSessionsData, any>({
+      path: `/api/v1/auth/admins/sessions`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminRevokeSession
+   * @summary Sign out one of your sessions
+   * @request DELETE:/api/v1/auth/admins/sessions/{sessionId}
+   * @secure
+   * @response `200` `AdminRevokeSessionData`
+   */
+  adminRevokeSession = (sessionId: string, params: RequestParams = {}) =>
+    this.request<AdminRevokeSessionData, any>({
+      path: `/api/v1/auth/admins/sessions/${sessionId}`,
+      method: "DELETE",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminRevokeOtherSessions
+   * @summary Sign out every session except this one
+   * @request POST:/api/v1/auth/admins/sessions/revoke-others
+   * @secure
+   * @response `200` `AdminRevokeOtherSessionsData`
+   * @response `201` `RevokedSessionsResponseDto`
+   */
+  adminRevokeOtherSessions = (params: RequestParams = {}) =>
+    this.request<AdminRevokeOtherSessionsData, any>({
+      path: `/api/v1/auth/admins/sessions/revoke-others`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaStatus
+   * @summary Whether an authenticator is set up, recovery codes left, trusted devices
+   * @request GET:/api/v1/auth/admins/mfa/status
+   * @secure
+   * @response `200` `AdminMfaStatusData`
+   */
+  adminMfaStatus = (params: RequestParams = {}) =>
+    this.request<AdminMfaStatusData, any>({
+      path: `/api/v1/auth/admins/mfa/status`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaTotpSetup
+   * @summary Start authenticator setup: a secret and otpauth URI (render the QR client-side)
+   * @request POST:/api/v1/auth/admins/mfa/totp/setup
+   * @secure
+   * @response `200` `AdminMfaTotpSetupData`
+   * @response `201` `MfaSetupResponseDto`
+   */
+  adminMfaTotpSetup = (params: RequestParams = {}) =>
+    this.request<AdminMfaTotpSetupData, any>({
+      path: `/api/v1/auth/admins/mfa/totp/setup`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaTotpVerify
+   * @summary Finish setup with the first code; enables MFA and returns the recovery codes once
+   * @request POST:/api/v1/auth/admins/mfa/totp/verify
+   * @secure
+   * @response `200` `AdminMfaTotpVerifyData`
+   * @response `201` `MfaEnabledResponseDto`
+   */
+  adminMfaTotpVerify = (data: MfaCodeRequestDto, params: RequestParams = {}) =>
+    this.request<AdminMfaTotpVerifyData, any>({
+      path: `/api/v1/auth/admins/mfa/totp/verify`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaTotpDisable
+   * @summary Turn the authenticator off (needs a current code)
+   * @request POST:/api/v1/auth/admins/mfa/totp/disable
+   * @secure
+   * @response `200` `AdminMfaTotpDisableData`
+   * @response `201` `MfaDisabledResponseDto`
+   */
+  adminMfaTotpDisable = (data: MfaCodeRequestDto, params: RequestParams = {}) =>
+    this.request<AdminMfaTotpDisableData, any>({
+      path: `/api/v1/auth/admins/mfa/totp/disable`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminMfaRegenerateRecoveryCodes
+   * @summary New recovery codes (needs a current code); the old ones stop working
+   * @request POST:/api/v1/auth/admins/mfa/recovery-codes/regenerate
+   * @secure
+   * @response `200` `AdminMfaRegenerateRecoveryCodesData`
+   * @response `201` `RecoveryCodesResponseDto`
+   */
+  adminMfaRegenerateRecoveryCodes = (data: MfaCodeRequestDto, params: RequestParams = {}) =>
+    this.request<AdminMfaRegenerateRecoveryCodesData, any>({
+      path: `/api/v1/auth/admins/mfa/recovery-codes/regenerate`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminSecurityConfirmRedirect
+   * @summary Email link landing: redirects to the admin app page that POSTs the token. Never acts on GET
+   * @request GET:/api/v1/auth/admins/security/confirm
+   * @response `200` `AdminSecurityConfirmRedirectData`
+   */
+  adminSecurityConfirmRedirect = (query: AdminSecurityConfirmRedirectParams, params: RequestParams = {}) =>
+    this.request<AdminSecurityConfirmRedirectData, any>({
+      path: `/api/v1/auth/admins/security/confirm`,
+      method: "GET",
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags auth
+   * @name AdminSecurityConfirm
+   * @summary Act on a security email link: trust the device, sign out a session, or secure the account
+   * @request POST:/api/v1/auth/admins/security/confirm
+   * @response `200` `AdminSecurityConfirmData`
+   */
+  adminSecurityConfirm = (data: SecurityConfirmRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSecurityConfirmData, any>({
+      path: `/api/v1/auth/admins/security/confirm`,
       method: "POST",
       body: data,
       type: ContentType.Json,
@@ -2081,6 +2463,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags users
    * @name DeleteUserAccount
+   * @summary Schedule the account for erasure after a 7-day grace period. Sign-in is paused meanwhile; the email has a "Keep my account" link
    * @request DELETE:/api/v1/users/me/delete-account
    * @secure
    * @response `200` `DeleteUserAccountData`
@@ -2090,6 +2473,44 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/users/me/delete-account`,
       method: "DELETE",
       secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
+   * @name CancelMyErasure
+   * @summary Keep the account: cancels a scheduled erasure (signed in)
+   * @request POST:/api/v1/users/me/cancel-erasure
+   * @secure
+   * @response `200` `CancelMyErasureData`
+   * @response `201` `ErasureStatusResponseDto`
+   */
+  cancelMyErasure = (params: RequestParams = {}) =>
+    this.request<CancelMyErasureData, any>({
+      path: `/api/v1/users/me/cancel-erasure`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags users
+   * @name CancelErasureByToken
+   * @summary Keep the account with the token from the "Keep my account" email link (no sign-in needed)
+   * @request POST:/api/v1/users/cancel-erasure
+   * @response `200` `CancelErasureByTokenData`
+   * @response `201` `ErasureStatusResponseDto`
+   */
+  cancelErasureByToken = (data: CancelErasureRequestDto, params: RequestParams = {}) =>
+    this.request<CancelErasureByTokenData, any>({
+      path: `/api/v1/users/cancel-erasure`,
+      method: "POST",
+      body: data,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
@@ -2485,6 +2906,45 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/users
+   * @name AdminErasureBlockers
+   * @summary What stops this account from being erased (open orders, balance, withdrawals...)
+   * @request GET:/api/v1/admins/users/{userId}/erasure-blockers
+   * @secure
+   * @response `200` `AdminErasureBlockersData`
+   */
+  adminErasureBlockers = (userId: string, params: RequestParams = {}) =>
+    this.request<AdminErasureBlockersData, any>({
+      path: `/api/v1/admins/users/${userId}/erasure-blockers`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
+   * @name AdminEraseUser
+   * @summary Super admin: erase the account and its personal data for good (409 with the blockers when anything is outstanding). Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request POST:/api/v1/admins/users/{userId}/erase
+   * @secure
+   * @response `200` `AdminEraseUserData`
+   * @response `201` `EraseUserResponseDto`
+   */
+  adminEraseUser = (userId: string, data: EraseUserRequestDto, params: RequestParams = {}) =>
+    this.request<AdminEraseUserData, any>({
+      path: `/api/v1/admins/users/${userId}/erase`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/users
    * @name AdminGetUserWallets
    * @request GET:/api/v1/admins/users/{userId}/wallets
    * @secure
@@ -2495,7 +2955,6 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       path: `/api/v1/admins/users/${userId}/wallets`,
       method: "GET",
       secure: true,
-      format: "json",
       ...params,
     });
   /**
@@ -3308,6 +3767,164 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
+   * @tags admins/email-templates
+   * @name AdminListEmailTemplates
+   * @summary Every email core sends: key, audience, category, trigger, subject (metadata only), with its admin switch (enabled, essential, marketing)
+   * @request GET:/api/v1/admins/email-templates
+   * @secure
+   * @response `200` `AdminListEmailTemplatesData`
+   */
+  adminListEmailTemplates = (params: RequestParams = {}) =>
+    this.request<AdminListEmailTemplatesData, any>({
+      path: `/api/v1/admins/email-templates`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminGetEmailControls
+   * @summary The email controls: emails turned off, the marketing and non-essential pauses, and one row per email (enabled, essential, marketing, why the switch is locked, what happens to it right now)
+   * @request GET:/api/v1/admins/email-templates/controls
+   * @secure
+   * @response `200` `AdminGetEmailControlsData`
+   */
+  adminGetEmailControls = (params: RequestParams = {}) =>
+    this.request<AdminGetEmailControlsData, any>({
+      path: `/api/v1/admins/email-templates/controls`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminSetEmailTemplateEnabled
+   * @summary Super admin: turn one email on or off (reason required to turn off). Essential emails cannot be turned off (400). Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request PATCH:/api/v1/admins/email-templates/controls/templates/{key}
+   * @secure
+   * @response `200` `AdminSetEmailTemplateEnabledData`
+   */
+  adminSetEmailTemplateEnabled = (key: string, data: SetEmailTemplateEnabledRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSetEmailTemplateEnabledData, any>({
+      path: `/api/v1/admins/email-templates/controls/templates/${key}`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminPauseMarketingEmails
+   * @summary Super admin: pause (reason required, optional until) or resume marketing, launch and referral emails. Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request PATCH:/api/v1/admins/email-templates/controls/pause-marketing
+   * @secure
+   * @response `200` `AdminPauseMarketingEmailsData`
+   */
+  adminPauseMarketingEmails = (data: EmailPauseRequestDto, params: RequestParams = {}) =>
+    this.request<AdminPauseMarketingEmailsData, any>({
+      path: `/api/v1/admins/email-templates/controls/pause-marketing`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminPauseNonEssentialEmails
+   * @summary Super admin: pause (reason required, optional until) or resume every email that is not essential. Essential emails always send. Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request PATCH:/api/v1/admins/email-templates/controls/pause-non-essential
+   * @secure
+   * @response `200` `AdminPauseNonEssentialEmailsData`
+   */
+  adminPauseNonEssentialEmails = (data: EmailPauseRequestDto, params: RequestParams = {}) =>
+    this.request<AdminPauseNonEssentialEmailsData, any>({
+      path: `/api/v1/admins/email-templates/controls/pause-non-essential`,
+      method: "PATCH",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminSendTestEmails
+   * @summary Send one template (or ALL) with sample data to 1 to 5 addresses, subject prefixed "[Test] ". Queued, logged in the message log with purpose TEST. 10 requests a minute per admin
+   * @request POST:/api/v1/admins/email-templates/test-sends
+   * @secure
+   * @response `200` `AdminSendTestEmailsData`
+   */
+  adminSendTestEmails = (data: SendTestEmailsRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSendTestEmailsData, any>({
+      path: `/api/v1/admins/email-templates/test-sends`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminPreviewEmailTemplate
+   * @summary The email rendered with its sample data: subject, HTML (for an iframe) and text
+   * @request GET:/api/v1/admins/email-templates/{key}/preview
+   * @secure
+   * @response `200` `AdminPreviewEmailTemplateData`
+   */
+  adminPreviewEmailTemplate = (key: string, params: RequestParams = {}) =>
+    this.request<AdminPreviewEmailTemplateData, any>({
+      path: `/api/v1/admins/email-templates/${key}/preview`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/email-templates
+   * @name AdminPreviewEmailTemplateWithVariables
+   * @summary The email rendered with your values laid over the sample data
+   * @request POST:/api/v1/admins/email-templates/{key}/preview
+   * @secure
+   * @response `200` `AdminPreviewEmailTemplateWithVariablesData`
+   */
+  adminPreviewEmailTemplateWithVariables = (
+    key: string,
+    data: PreviewEmailTemplateRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminPreviewEmailTemplateWithVariablesData, any>({
+      path: `/api/v1/admins/email-templates/${key}/preview`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
    * @tags businesses
    * @name CreateBusiness
    * @request POST:/api/v1/businesses
@@ -3797,6 +4414,27 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   rateRider = (data: RateRiderRequestDto, params: RequestParams = {}) =>
     this.request<RateRiderData, any>({
       path: `/api/v1/reviews/rate-rider`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/reviews
+   * @name AdminRebuildRiderRatings
+   * @summary Recompute every rider's stored rating (User.ratingStats) from the reviews collection, in batches. Super admin only. Step-up: needs a recent MFA check or an X-MFA-Code header
+   * @request POST:/api/v1/admins/reviews/ratings/rebuild
+   * @secure
+   * @response `200` `AdminRebuildRiderRatingsData`
+   * @response `201` `RiderRatingBackfillResponseDto`
+   */
+  adminRebuildRiderRatings = (data: RebuildRiderRatingsRequestDto, params: RequestParams = {}) =>
+    this.request<AdminRebuildRiderRatingsData, any>({
+      path: `/api/v1/admins/reviews/ratings/rebuild`,
       method: "POST",
       body: data,
       secure: true,
@@ -5660,8 +6298,29 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags admins/alerts
+   * @name AdminSendTestAlertEmail
+   * @summary Send a sample urgent alert email to the support inboxes a state resolves to (its own list, else the platform list). 400 when none are set
+   * @request POST:/api/v1/admins/alerts/test-email
+   * @secure
+   * @response `200` `AdminSendTestAlertEmailData`
+   * @response `201` `AdminTestAlertEmailResponseDto`
+   */
+  adminSendTestAlertEmail = (data: AdminTestAlertEmailRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSendTestAlertEmailData, any>({
+      path: `/api/v1/admins/alerts/test-email`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/alerts
    * @name AdminClaimAlert
-   * @summary Take an OPEN alert (stops its WhatsApp escalation)
+   * @summary Take an OPEN alert (stops its escalation and reminder emails)
    * @request POST:/api/v1/admins/alerts/{alertId}/claim
    * @secure
    * @response `200` `AdminClaimAlertData`
@@ -5693,6 +6352,62 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/messages
+   * @name AdminListMessages
+   * @summary SMS and emails core sent, newest first, with filters. Kept 180 days
+   * @request GET:/api/v1/admins/messages
+   * @secure
+   * @response `200` `AdminListMessagesData`
+   */
+  adminListMessages = (query: AdminListMessagesParams, params: RequestParams = {}) =>
+    this.request<AdminListMessagesData, any>({
+      path: `/api/v1/admins/messages`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/messages
+   * @name AdminMessagesSummary
+   * @summary Counts by channel and status over a range (default 7 days), and the latest Termii balance
+   * @request GET:/api/v1/admins/messages/summary
+   * @secure
+   * @response `200` `AdminMessagesSummaryData`
+   */
+  adminMessagesSummary = (query: AdminMessagesSummaryParams, params: RequestParams = {}) =>
+    this.request<AdminMessagesSummaryData, any>({
+      path: `/api/v1/admins/messages/summary`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags admins/messages
+   * @name AdminGetMessage
+   * @summary One message with its redacted body preview and the provider response
+   * @request GET:/api/v1/admins/messages/{messageId}
+   * @secure
+   * @response `200` `AdminGetMessageData`
+   */
+  adminGetMessage = (messageId: string, params: RequestParams = {}) =>
+    this.request<AdminGetMessageData, any>({
+      path: `/api/v1/admins/messages/${messageId}`,
+      method: "GET",
+      secure: true,
       format: "json",
       ...params,
     });
@@ -6536,6 +7251,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<TrackData, any>({
       path: `/api/v1/web-orders/${token}`,
       method: "GET",
+      format: "json",
       ...params,
     });
   /**
@@ -6578,6 +7294,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<AcceptOfferData, any>({
       path: `/api/v1/web-orders/${token}/offers/${offerId}`,
       method: "PATCH",
+      format: "json",
       ...params,
     });
   /**
@@ -6736,6 +7453,66 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
+   * @description Suspends the whole team: every key, test and live, stops on its next request. Reason required.
+   *
+   * @tags admins/developers
+   * @name AdminSuspendDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/suspend
+   * @secure
+   * @response `200` `AdminSuspendDeveloperTeamData`
+   */
+  adminSuspendDeveloperTeam = (teamId: string, data: DeveloperLiveDecisionRequestDto, params: RequestParams = {}) =>
+    this.request<AdminSuspendDeveloperTeamData, any>({
+      path: `/api/v1/admins/developers/${teamId}/team/suspend`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Lifts a team suspension.
+   *
+   * @tags admins/developers
+   * @name AdminRestoreDeveloperTeam
+   * @request POST:/api/v1/admins/developers/{teamId}/team/restore
+   * @secure
+   * @response `200` `AdminRestoreDeveloperTeamData`
+   */
+  adminRestoreDeveloperTeam = (teamId: string, params: RequestParams = {}) =>
+    this.request<AdminRestoreDeveloperTeamData, any>({
+      path: `/api/v1/admins/developers/${teamId}/team/restore`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Revokes one of the team's API keys at once. Reason required; the key stores it.
+   *
+   * @tags admins/developers
+   * @name AdminRevokeDeveloperKey
+   * @request POST:/api/v1/admins/developers/{teamId}/keys/{keyId}/revoke
+   * @secure
+   * @response `200` `AdminRevokeDeveloperKeyData`
+   */
+  adminRevokeDeveloperKey = (
+    teamId: string,
+    keyId: string,
+    data: DeveloperLiveDecisionRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<AdminRevokeDeveloperKeyData, any>({
+      path: `/api/v1/admins/developers/${teamId}/keys/${keyId}/revoke`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * @description SUSPENDED → APPROVED.
    *
    * @tags admins/developers
@@ -6748,6 +7525,23 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<AdminUnsuspendDeveloperLiveData, any>({
       path: `/api/v1/admins/developers/${teamId}/unsuspend`,
       method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Error, latency, 429 and webhook rates for the alert window, the last hour and day, and the webhook queue.
+   *
+   * @tags admins/developers
+   * @name AdminGetDeveloperMonitoring
+   * @request GET:/api/v1/admins/developer-monitoring
+   * @secure
+   * @response `200` `AdminGetDeveloperMonitoringData`
+   */
+  adminGetDeveloperMonitoring = (params: RequestParams = {}) =>
+    this.request<AdminGetDeveloperMonitoringData, any>({
+      path: `/api/v1/admins/developer-monitoring`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

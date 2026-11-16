@@ -25,7 +25,7 @@ import { useOrders, useOverview } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
 import { STALE_AFTER_MINUTES, isStale, typeLabel } from "../lib";
-import { CourierCell, OrderCell, OrderPaymentBadge, PartyCell } from "./order-cells";
+import { CourierCell, CustomerCell, OrderCell, OrderPaymentBadge } from "./order-cells";
 
 /**
  * The live board: every order that is not finished, in three columns by
@@ -193,7 +193,7 @@ function BoardCard({ order }: { order: OrderRow }) {
       <div className="mt-3 grid grid-cols-1 gap-2.5 rounded-lg bg-surface/70 px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
         <div className="min-w-0">
           <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-faint">Customer</p>
-          <PartyCell party={order.user} fallback="Unknown" size={24} />
+          <CustomerCell order={order} size={24} />
         </div>
         <div className="min-w-0">
           <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-faint">Courier</p>

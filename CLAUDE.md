@@ -47,7 +47,9 @@ src/
 │   ├── (dashboard)/      achievements, admin, alerts, analytics, business, coupons, couriers,
 │   │                     customers, dashboard, delivery-price, finances, handoffs, messaging,
 │   │                     orders, support, vehicles — each with `_components/` tabs
-│   ├── auth/             login etc. (unauthenticated)
+│   ├── auth/             login (password -> MFA challenge), password reset (unauthenticated)
+│   ├── security/         confirm (email links: trust device / secure account / revoke session),
+│   │                     setup (MFA setup-only screen for a restricted session); public shell
 │   ├── layout.tsx        root layout
 │   └── globals.css
 ├── services/apiService/  GENERATED swagger client (`apiService`) + hand-written index.ts
@@ -59,6 +61,10 @@ src/
 │   ├── api.test.ts       route contract: verb + path + query + body per namespace function
 │   ├── hooks.ts          React Query hooks over api.ts (`useAction` = mutation + toast)
 │   ├── http.ts           errorMessage()
+│   ├── session.ts        access + refresh token cookies, X-Device-Id (localStorage), MFA grace deadline
+│   ├── auth-errors.ts    core error codes (LOGIN_LOCKED, SESSION_REVOKED, MFA_*) + one voice for sign-in copy
+│   ├── refresh.ts        single in-flight refresh queue used by apiService on 401
+│   ├── step-up.ts        bridge between apiService (428 MFA_STEP_UP_REQUIRED) and the StepUpDialog
 │   ├── url-state.ts      useTableState / useTabParam — table + tab state in the URL
 │   └── format.ts         naira/count/when/… display helpers
 ├── lib/admin-access.ts   role matrix: SECTION_ACCESS, ACTION_ROLES, can()
@@ -71,7 +77,25 @@ src/
 ```
 
 **Auth is global, in `src/middleware.ts`** — it reads the access-token cookie and redirects to
-`/auth/login?redirect=<original path>`. Do **not** re-implement auth gating per page.
+`/auth/login?redirect=<original path>`. Do **not** re-implement auth gating per page. `/security/*`
+(the email confirmation page and the MFA setup-only screen) is reachable with or without a session.
+
+**Sessions:** the core issues a 15-minute admin access token plus a rotating refresh token.
+`src/services/apiService/index.ts` owns the lifecycle: `X-Device-Id` on every request, one shared
+refresh on 401 then a single retry, sign-out with a reason (`expired`, `revoked`) when that fails,
+a 428 `MFA_STEP_UP_REQUIRED` prompt (StepUpDialog in the dashboard layout) retried once with
+`X-MFA-Code`, and a 403 `MFA_SETUP_REQUIRED` redirect to `/security/setup`. Sign-in is
+password -> MFA challenge (`src/app/auth/login/LoginForm`); the admin's own authenticator and
+sessions live on the Settings page's Security tab (`/dashboard/settings?tab=security`). Never store
+tokens anywhere but `src/lib/admin/session.ts`.
+
+**Settings** is one page, `/dashboard/settings`, with tabs in `?tab=`: the account tabs (profile,
+appearance, password, security) for every staff member, then the platform tabs (team, app-settings,
+audit, logs) shown only with access to the `/admin` section. There is no separate Admin hub any
+more. `src/lib/admin/settings-tabs.ts` owns the tab ids, `settingsHref()`, the legacy map and
+`adminHubRedirect()`. `/dashboard/profile`, `/dashboard/change-password`, `/dashboard/security`,
+`/admin` and every `/admin/...` sub-page are redirects kept for old links and the core's emails;
+link new things with `settingsHref()`, never the old paths.
 
 ---
 
@@ -198,6 +222,8 @@ and destructive actions without confirmation.
 
 Branch off `dev`; PR into `dev`. Commit only when asked. Never commit `.next/`, `out/`, or
 `tsconfig.tsbuildinfo`.
+
+**Never add Claude, or any AI tool, as a commit author.** No `Co-Authored-By: Claude …` trailer and no "Generated with Claude Code" line, in commit messages or PR descriptions, even if your tooling suggests one. If you can't commit without it, don't commit: leave the commit to the user.
 
 ---
 

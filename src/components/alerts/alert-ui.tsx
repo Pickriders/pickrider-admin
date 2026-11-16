@@ -1,11 +1,11 @@
 "use client";
 
-import { AlertOctagon, AlertTriangle, PlayCircle } from "lucide-react";
+import { AlertOctagon, AlertTriangle, Mail, PlayCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Badge, cx } from "@/components/kit";
 import type { AdminAlert } from "@/lib/admin/api";
-import { fullName } from "@/lib/admin/format";
+import { fullName, time, when } from "@/lib/admin/format";
 import { useMe, useStaffName } from "@/lib/admin/hooks";
 
 /**
@@ -106,4 +106,58 @@ export function ResolvedBy({ alert }: { alert: Pick<AdminAlert, "resolution" | "
       {alert.resolutionNote ? <span className="mt-0.5 block break-words text-[11px] text-ink-muted">&ldquo;{alert.resolutionNote}&rdquo;</span> : null}
     </span>
   );
+}
+
+type EmailFields = Pick<AdminAlert, "emailedAt" | "emailReminderAt" | "emailDigestAt" | "emailResolvedAt" | "emailRecipientsCount">;
+
+/**
+ * What core emailed support about an alert, oldest first: the escalation ("Emailed support at
+ * 10:42"), the one reminder, a storm digest listing it instead, and the resolved follow-up.
+ */
+export function alertEmailMeta(alert: EmailFields): { key: string; label: string; title: string }[] {
+  const out: { key: string; label: string; title: string }[] = [];
+  if (alert.emailedAt) {
+    const n = alert.emailRecipientsCount;
+    out.push({
+      key: "emailed",
+      label: `Emailed support at ${time(alert.emailedAt)}`,
+      title: `Emailed ${n ? `${n} support inbox${n === 1 ? "" : "es"}` : "support"} at ${when(alert.emailedAt)}`,
+    });
+  }
+  if (alert.emailDigestAt) out.push({ key: "digest", label: "In digest", title: `Listed in an alert storm digest email at ${when(alert.emailDigestAt)}` });
+  if (alert.emailReminderAt) out.push({ key: "reminder", label: "Reminder sent", title: `Still unclaimed, reminder emailed at ${when(alert.emailReminderAt)}` });
+  if (alert.emailResolvedAt) out.push({ key: "resolved", label: "Resolved email sent", title: `Resolved follow-up emailed at ${when(alert.emailResolvedAt)}` });
+  return out;
+}
+
+/** The email trail as small muted meta; nothing when no email went out. */
+export function AlertEmailMeta({ alert, className }: { alert: EmailFields; className?: string }) {
+  const items = alertEmailMeta(alert);
+  if (!items.length) return null;
+  return (
+    <span className={cx("flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-ink-faint", className)}>
+      <Mail size={11} aria-hidden className="shrink-0" />
+      {items.map((item, i) => (
+        <span key={item.key} title={item.title} className="whitespace-nowrap">
+          {i ? <span aria-hidden className="mr-2">·</span> : null}
+          {item.label}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** The Alerts page opened on one alert, the link the support emails carry too. */
+export function alertHref(alertId: string) {
+  return `/alerts?alert=${encodeURIComponent(alertId)}`;
+}
+
+/** The alert a `?alert=<id>` link points at, from whichever loaded list has it. */
+export function findAlert<T extends { id: string }>(alertId: string | undefined, ...lists: (T[] | undefined)[]): T | undefined {
+  if (!alertId) return undefined;
+  for (const list of lists) {
+    const hit = list?.find((alert) => alert.id === alertId);
+    if (hit) return hit;
+  }
+  return undefined;
 }

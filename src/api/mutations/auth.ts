@@ -1,5 +1,5 @@
 import { MutationOptions } from "@tanstack/react-query";
-import { auth, type LoginResult } from "@/lib/admin/api";
+import { auth, type LoginResult, type MfaChallengeInput } from "@/lib/admin/api";
 import {
   apiService,
   CheckTokenValidityData,
@@ -15,30 +15,21 @@ import {
   VerifyPhoneRequestDto,
 } from "@/services";
 import { useApiMutation } from "@/hooks/useApiMutation";
-import { useAuth } from "@/hooks/useAuth";
+import { useMutation } from "@tanstack/react-query";
 
 /**
- * Admin sign-in. Any platform staff role gets in — the console no longer names a role, the
- * backend checks the account holds one and the guards decide what it can do afterwards.
+ * Admin sign-in, step one. Any platform staff role gets in; the backend checks the account holds
+ * one and the guards decide what it can do afterwards. The result either carries tokens or asks
+ * for the MFA challenge (`mfaRequired`); the login form decides what happens next, including
+ * storing the session, so no toast or redirect happens here. Errors are not toasted either: the
+ * form shows them inline with one uniform voice (see loginErrorMessage).
  */
-export const useLoginMn = (
-  rememberMe?: boolean,
-  options?: MutationOptions<LoginResult, any, { identifier: string; password: string }>,
-) => {
-  const { login } = useAuth();
+export const useLoginMn = (options?: MutationOptions<LoginResult, unknown, { identifier: string; password: string }>) =>
+  useMutation({ ...options, mutationFn: (variables) => auth.login(variables) });
 
-  return useApiMutation({
-    ...options,
-    mutationFn: (variables) => auth.login(variables),
-    onError(error, variables, context) {
-      options?.onError?.(error, variables, context);
-    },
-    onSuccess(data, variables, context) {
-      login(data.accessToken, rememberMe);
-      options?.onSuccess?.(data, variables, context);
-    },
-  });
-};
+/** Step two: the authenticator (or recovery) code against the mfaToken from step one. */
+export const useMfaChallengeMn = (options?: MutationOptions<LoginResult, unknown, MfaChallengeInput>) =>
+  useMutation({ ...options, mutationFn: (variables) => auth.mfaChallenge(variables) });
 
 export const useVerifyPhoneMn = (options?: MutationOptions<VerifyPhoneData, any, VerifyPhoneRequestDto>) =>
   useApiMutation({

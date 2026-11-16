@@ -7,6 +7,7 @@ import { Suspense, useMemo, useState } from "react";
 import { Badge, ChartCard, ErrorState, PageHeader, RangeTabs, Skeleton, StatCard, StatGrid, Tabs, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
 import { CustomerBadges } from "@/components/users/customer-badges";
 import { CustomerReports } from "@/components/users/customer-reports";
+import { DangerZone } from "@/components/users/danger-zone";
 import { UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
 import { ActivityFeed, MoneyByPurpose, UserHeader, UserOrdersTable, UserTransactionsTable, bucketLabel } from "@/components/users/user-panels";
 import { naira, count, percent, trend } from "@/lib/admin/format";
@@ -169,6 +170,8 @@ function CustomerDetail({ id }: { id: string }) {
       {tab === "badges" ? <CustomerBadges userId={id} enabled={tab === "badges"} /> : null}
       {tab === "reports" ? <CustomerReports userId={id} enabled={tab === "reports"} /> : null}
       {tab === "activity" ? <ActivityFeed user={user} includeOrders enabled={tab === "activity"} /> : null}
+
+      {user ? <DangerZone user={user} listHref="/customers" kind="customer" /> : null}
     </div>
   );
 }

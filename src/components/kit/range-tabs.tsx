@@ -1,12 +1,16 @@
 "use client";
 
-import { CalendarDays, X } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Popover } from "@/components/kit/popover";
 import { Button, Input, cx } from "@/components/kit/primitives";
 
 /**
  * Window picker for stats pages: 7 / 30 / 90 days or a custom span. Emits ISO
  * date-only strings; the backend treats `to` as the end of that Lagos day.
+ *
+ * Both pickers open a `Popover`: a bottom sheet on phones, an anchored panel that stays inside
+ * the viewport from `sm` up.
  */
 export type RangeValue = { from?: string; to?: string; preset?: number; all?: boolean };
 
@@ -55,15 +59,6 @@ export function RangeTabs({
   const [to, setTo] = useState(value.to ?? "");
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
-
   const custom = !value.all && value.preset == null && (value.from || value.to);
   const customLabel = useMemo(() => {
     if (!custom) return "Custom";
@@ -104,6 +99,9 @@ export function RangeTabs({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-label={customLabel}
           className={cx(
             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors",
             custom ? "bg-ink text-card" : "text-ink-muted hover:text-ink",
@@ -113,46 +111,47 @@ export function RangeTabs({
           <span className="hidden sm:inline">{customLabel}</span>
         </button>
       </div>
-      {open ? (
-        <div className="absolute right-0 z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-line bg-card-raised p-4 shadow-pop admin-fade-up">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs font-bold text-ink">Custom range</p>
-            <button type="button" onClick={() => setOpen(false)} className="text-ink-faint hover:text-ink" aria-label="Close">
-              <X size={14} />
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <label className="text-[11px] font-semibold text-ink-muted">
-              From
-              <Input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="mt-1" />
-            </label>
-            <label className="text-[11px] font-semibold text-ink-muted">
-              To
-              <Input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="mt-1" />
-            </label>
-          </div>
-          <div className="mt-3 flex justify-end gap-2">
-            <Button size="sm" variant="ghost" onClick={() => { setFrom(""); setTo(""); onChange(presetRange(30)); setOpen(false); }}>
-              Reset
-            </Button>
-            <Button
-              size="sm"
-              disabled={!from && !to}
-              onClick={() => {
-                onChange({ from: from || undefined, to: to || undefined });
-                setOpen(false);
-              }}
-            >
-              Apply
-            </Button>
-          </div>
+      <Popover open={open} onClose={() => setOpen(false)} anchorRef={ref} align="end" title="Custom range">
+        <div className="grid grid-cols-2 gap-2">
+          <label className="text-[11px] font-semibold text-ink-muted">
+            From
+            <Input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="mt-1" />
+          </label>
+          <label className="text-[11px] font-semibold text-ink-muted">
+            To
+            <Input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="mt-1" />
+          </label>
         </div>
-      ) : null}
+        <div className="mt-3 flex justify-end gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setFrom("");
+              setTo("");
+              onChange(presetRange(30));
+              setOpen(false);
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            size="sm"
+            disabled={!from && !to}
+            onClick={() => {
+              onChange({ from: from || undefined, to: to || undefined });
+              setOpen(false);
+            }}
+          >
+            Apply
+          </Button>
+        </div>
+      </Popover>
     </div>
   );
 }
 
-/** Compact from/to picker for table toolbars; emits YYYY-MM-DD or undefined. */
+/** Compact from/to picker for table toolbars (the DataTable `dateFilter`); emits YYYY-MM-DD or undefined. */
 export function DateRangeButton({ from, to, onChange }: { from?: string; to?: string; onChange: (from?: string, to?: string) => void }) {
   const [open, setOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState(from ?? "");
@@ -164,15 +163,6 @@ export function DateRangeButton({ from, to, onChange }: { from?: string; to?: st
     setDraftTo(to ?? "");
   }, [from, to]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
-
   const active = Boolean(from || to);
   const label = active
     ? `${from ? new Date(from).toLocaleDateString("en-NG", { day: "numeric", month: "short" }) : "…"} to ${to ? new Date(to).toLocaleDateString("en-NG", { day: "numeric", month: "short" }) : "…"}`
@@ -180,31 +170,51 @@ export function DateRangeButton({ from, to, onChange }: { from?: string; to?: st
 
   return (
     <div ref={ref} className="relative">
-      <Button variant={active ? "secondary" : "outline"} size="md" icon={CalendarDays} onClick={() => setOpen((v) => !v)}>
+      <Button
+        variant={active ? "secondary" : "outline"}
+        size="md"
+        icon={CalendarDays}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={label}
+      >
         <span className="hidden sm:inline">{label}</span>
       </Button>
-      {open ? (
-        <div className="absolute left-0 z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-line bg-card-raised p-4 shadow-pop admin-fade-up">
-          <div className="grid grid-cols-2 gap-2">
-            <label className="text-[11px] font-semibold text-ink-muted">
-              From
-              <Input type="date" value={draftFrom} max={draftTo || undefined} onChange={(e) => setDraftFrom(e.target.value)} className="mt-1" />
-            </label>
-            <label className="text-[11px] font-semibold text-ink-muted">
-              To
-              <Input type="date" value={draftTo} min={draftFrom || undefined} onChange={(e) => setDraftTo(e.target.value)} className="mt-1" />
-            </label>
-          </div>
-          <div className="mt-3 flex justify-end gap-2">
-            <Button size="sm" variant="ghost" onClick={() => { onChange(undefined, undefined); setOpen(false); }}>
-              Clear
-            </Button>
-            <Button size="sm" disabled={!draftFrom && !draftTo} onClick={() => { onChange(draftFrom || undefined, draftTo || undefined); setOpen(false); }}>
-              Apply
-            </Button>
-          </div>
+      <Popover open={open} onClose={() => setOpen(false)} anchorRef={ref} align="start" title="Date range">
+        <div className="grid grid-cols-2 gap-2">
+          <label className="text-[11px] font-semibold text-ink-muted">
+            From
+            <Input type="date" value={draftFrom} max={draftTo || undefined} onChange={(e) => setDraftFrom(e.target.value)} className="mt-1" />
+          </label>
+          <label className="text-[11px] font-semibold text-ink-muted">
+            To
+            <Input type="date" value={draftTo} min={draftFrom || undefined} onChange={(e) => setDraftTo(e.target.value)} className="mt-1" />
+          </label>
         </div>
-      ) : null}
+        <div className="mt-3 flex justify-end gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              onChange(undefined, undefined);
+              setOpen(false);
+            }}
+          >
+            Clear
+          </Button>
+          <Button
+            size="sm"
+            disabled={!draftFrom && !draftTo}
+            onClick={() => {
+              onChange(draftFrom || undefined, draftTo || undefined);
+              setOpen(false);
+            }}
+          >
+            Apply
+          </Button>
+        </div>
+      </Popover>
     </div>
   );
 }
