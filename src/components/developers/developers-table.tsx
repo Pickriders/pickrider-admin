@@ -198,7 +198,7 @@ export function DevelopersTable({ mode }: { mode: DevelopersMode }) {
       emptyDescription={
         mode === "queue"
           ? "When a developer asks for live access, they show up here, oldest first."
-          : "Teams that sign up at dashboard.pickriders.com show up here."
+          : "Teams that sign up on the developer dashboard show up here."
       }
     />
   );
