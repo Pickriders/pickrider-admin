@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { BadgeCheck, CircleSlash, Inbox, Users } from "lucide-react";
 import { useMemo } from "react";
 
-import { Button, DataTable, cx, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import { DataTable, LinkButton, cx, type ColumnMeta, type FilterSpec } from "@/components/kit";
 import type { DeveloperRow, Paged, Query } from "@/lib/admin/api";
 import { ago, day, when } from "@/lib/admin/format";
 import { useDevelopers } from "@/lib/admin/hooks";
@@ -82,7 +82,10 @@ function OwnerCell({ owner }: { owner: DeveloperRow["owner"] }) {
   );
 }
 
-function columns(mode: DevelopersMode, open: (id: string) => void): ColumnDef<Row, unknown>[] {
+/** Where a team opens: its own page. */
+export const teamHref = (teamId: string) => `/developers/${teamId}`;
+
+function columns(mode: DevelopersMode): ColumnDef<Row, unknown>[] {
   return [
     {
       id: "team",
@@ -150,26 +153,19 @@ function columns(mode: DevelopersMode, open: (id: string) => void): ColumnDef<Ro
       header: "",
       meta: meta({ align: "right", width: "7rem", skeleton: "button" }),
       cell: ({ row }) => (
-        <Button
-          size="sm"
-          variant={mode === "queue" ? "primary" : "outline"}
-          onClick={(event) => {
-            event.stopPropagation();
-            open(row.original.id);
-          }}
-        >
+        <LinkButton size="sm" variant={mode === "queue" ? "primary" : "outline"} href={teamHref(row.original.id)}>
           {mode === "queue" ? "Review" : "Open"}
-        </Button>
+        </LinkButton>
       ),
     },
   ];
 }
 
-export function DevelopersTable({ mode, onOpen }: { mode: DevelopersMode; onOpen: (teamId: string) => void }) {
+export function DevelopersTable({ mode }: { mode: DevelopersMode }) {
   const table = useTableState({ limit: 20 });
   const query = useMemo(() => developersQuery(mode, table.state), [mode, table.state]);
   const list = useDevelopers(query);
-  const cols = useMemo(() => columns(mode, onOpen), [mode, onOpen]);
+  const cols = useMemo(() => columns(mode), [mode]);
 
   return (
     <DataTable<Row>
@@ -181,7 +177,7 @@ export function DevelopersTable({ mode, onOpen }: { mode: DevelopersMode; onOpen
       searchPlaceholder="Team, handle, company or email"
       filters={mode === "all" ? [LIVE_FILTER] : []}
       csvName={mode === "queue" ? "developer-review-queue" : "developers"}
-      onRowClick={(row) => onOpen(row.id)}
+      rowHref={(row) => teamHref(row.id)}
       mobileCard={(row) => (
         <div className="space-y-2.5">
           <div className="flex items-start justify-between gap-2">

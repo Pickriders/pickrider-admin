@@ -2,17 +2,15 @@
 
 import { Suspense } from "react";
 
-import { DeveloperDrawer } from "@/components/developers/developer-drawer";
 import { DeveloperMonitoringPanel } from "@/components/developers/developer-monitoring";
 import { DevelopersTable, type DevelopersMode } from "@/components/developers/developers-table";
 import { PageHeader, Tabs } from "@/components/kit";
 import { useDeveloperQueueCount } from "@/lib/admin/hooks";
-import { useOpenParam, useTabParam } from "@/lib/admin/url-state";
+import { useTabParam } from "@/lib/admin/url-state";
 
 /**
  * Teams building on the Developer API: the live-access review queue (oldest first), every team,
- * and how the API is doing. A team opens in a drawer kept in the URL (?open=), so links from
- * the orders board and the alerts land on it.
+ * and how the API is doing. Each team opens on its own page, /developers/<teamId>.
  */
 type Tab = DevelopersMode | "monitoring";
 const TABS: readonly Tab[] = ["queue", "all", "monitoring"];
@@ -26,7 +24,6 @@ const DESCRIPTION: Record<Tab, string> = {
 function DevelopersHub() {
   const [tab, setTab] = useTabParam<Tab>("queue", TABS);
   const queue = useDeveloperQueueCount();
-  const [teamId, setTeamId] = useOpenParam();
 
   return (
     <div>
@@ -41,12 +38,7 @@ function DevelopersHub() {
           { id: "monitoring", label: "Monitoring" },
         ]}
       />
-      {tab === "monitoring" ? (
-        <DeveloperMonitoringPanel onOpenTeam={setTeamId} />
-      ) : (
-        <DevelopersTable key={tab} mode={tab} onOpen={setTeamId} />
-      )}
-      <DeveloperDrawer teamId={teamId} onClose={() => setTeamId(null)} />
+      {tab === "monitoring" ? <DeveloperMonitoringPanel /> : <DevelopersTable key={tab} mode={tab} />}
     </div>
   );
 }

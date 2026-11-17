@@ -34,7 +34,7 @@ import {
   type FilterSpec,
   type Tone,
 } from "@/components/kit";
-import type { KycStatus, Order, Transaction, User } from "@/lib/admin/api";
+import type { KycStatus, Order, Query, Transaction, User } from "@/lib/admin/api";
 import { ago, day, fullName, naira, orderPaymentDisplay, statusLabel, when } from "@/lib/admin/format";
 import { useOrders, useTransactions } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
@@ -428,6 +428,22 @@ function OrderCard({ order }: { order: Order }) {
 
 /** Orders placed by a user. Filter keys are prefixed in the URL so they never collide with the transactions tab. */
 export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: string }) {
+  const scope = useMemo(() => ({ byUserId: userId }), [userId]);
+  return (
+    <OrdersTable scope={scope} csvName={csvName} emptyDescription="Orders this customer places will show up here." />
+  );
+}
+
+/** Orders narrowed by `scope` (a customer, or a developer team's API orders), with the usual filters. */
+export function OrdersTable({
+  scope,
+  csvName,
+  emptyDescription,
+}: {
+  scope: Query;
+  csvName: string;
+  emptyDescription: string;
+}) {
   const table = useTableState({ limit: 20, sortBy: "createdAt", order: "DESC" });
   const { state } = table;
   const query = useMemo(
@@ -436,14 +452,14 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       limit: state.limit,
       sortBy: state.sortBy,
       order: state.order,
-      byUserId: userId,
+      ...scope,
       orderNumber: state.search,
       status: state.filters.orderStatus,
       type: state.filters.orderType,
       isScheduled: state.filters.orderScheduled,
       dateRange: table.query.dateRange,
     }),
-    [state, userId, table.query.dateRange],
+    [state, scope, table.query.dateRange],
   );
   const orders = useOrders(query);
   const filters: FilterSpec[] = [
@@ -471,7 +487,7 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       defaultSort={{ sortBy: "createdAt", order: "DESC" }}
       emptyIcon={Package}
       emptyTitle="No orders yet"
-      emptyDescription="Orders this customer places will show up here."
+      emptyDescription={emptyDescription}
       rowHref={(row) => `/orders/${row._id}`}
       mobileCard={(row) => <OrderCard order={row} />}
     />

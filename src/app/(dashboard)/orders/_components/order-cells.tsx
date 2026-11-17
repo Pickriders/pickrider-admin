@@ -114,7 +114,7 @@ export function CustomerCell({
   if (!team) return <PartyCell party={order.user} href={href} fallback={fallback} size={size} className={className} />;
   return (
     <Link
-      href={`/developers?tab=all&open=${team.id}`}
+      href={`/developers/${team.id}`}
       onClick={stop}
       title="Created with this developer team's API key"
       className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}

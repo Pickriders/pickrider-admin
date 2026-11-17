@@ -1828,6 +1828,18 @@ export type {
   DeveloperMonitoringWindowDto as DeveloperMonitoringWindow,
 } from "@/services";
 export type DeveloperLiveStatus = import("@/services").AdminDeveloperRowDto["liveStatus"];
+export type {
+  AdminDeveloperSettingsDto as DeveloperSettings,
+  AdminDeveloperInvitationDto as DeveloperInvitation,
+  AdminDeveloperWebhookEndpointDto as DeveloperWebhookEndpoint,
+  StaffTeamAuditLogDto as DeveloperActivity,
+  RequestLogDto as DeveloperRequestLog,
+  RequestLogDetailDto as DeveloperRequestLogDetail,
+  WebhookDeliveryDto as DeveloperWebhookDelivery,
+  PublicWalletTransactionDto as DeveloperTransaction,
+  UsageDto as DeveloperUsage,
+} from "@/services";
+export type DeveloperUsagePeriod = import("@/services").UsageDto["period"];
 
 export const developers = {
   /** liveStatus=PENDING is the review queue, oldest request first; search matches name, handle, company or email. */
@@ -1845,4 +1857,40 @@ export const developers = {
   revokeKey: (teamId: string, keyId: string, reason: string) =>
     apiService.adminRevokeDeveloperKey(teamId, keyId, { reason }),
   monitoring: () => apiService.adminGetDeveloperMonitoring(),
+
+  // The team page, read-only. Lists are the Developer API's cursor lists: { data, has_more }, paged with starting_after.
+  /** The team's audit trail, with the staff member behind each staff action. event narrows (`key.` for an area). */
+  activity: (teamId: string, query: Query = {}) =>
+    apiService.adminListDeveloperActivity({
+      teamId,
+      ...params<Omit<import("@/services").AdminListDeveloperActivityParams, "teamId">>(query),
+    }),
+  /** Orders per day, spend, API errors and webhook success for one mode over 7d, 30d or 90d. */
+  usage: (teamId: string, livemode: boolean, period: DeveloperUsagePeriod) =>
+    apiService.adminGetDeveloperUsage({ teamId, livemode: livemode ? "true" : "false", period }),
+  requestLogs: (teamId: string, query: Query = {}) =>
+    apiService.adminListDeveloperRequestLogs({
+      teamId,
+      ...params<Omit<import("@/services").AdminListDeveloperRequestLogsParams, "teamId">>(query),
+    }),
+  /** One request in full: query, IP, user agent and the redacted bodies. */
+  requestLog: (teamId: string, logId: string) => apiService.adminGetDeveloperRequestLog(teamId, logId),
+  /** Each endpoint with its last 7 days of deliveries; both modes unless livemode is given. */
+  webhookEndpoints: (teamId: string, query: Query = {}) =>
+    apiService.adminListDeveloperWebhookEndpoints({
+      teamId,
+      ...params<Omit<import("@/services").AdminListDeveloperWebhookEndpointsParams, "teamId">>(query),
+    }),
+  webhookDeliveries: (teamId: string, endpointId: string, query: Query = {}) =>
+    apiService.adminListDeveloperWebhookDeliveries({
+      teamId,
+      endpointId,
+      ...params<Omit<import("@/services").AdminListDeveloperWebhookDeliveriesParams, "teamId" | "endpointId">>(query),
+    }),
+  /** The wallet's transactions in one mode (test unless livemode=true); type=credit|debit narrows. */
+  transactions: (teamId: string, query: Query = {}) =>
+    apiService.adminListDeveloperTransactions({
+      teamId,
+      ...params<Omit<import("@/services").AdminListDeveloperTransactionsParams, "teamId">>(query),
+    }),
 };
