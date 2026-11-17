@@ -1833,6 +1833,7 @@ export type {
   AdminDeveloperInvitationDto as DeveloperInvitation,
   AdminDeveloperWebhookEndpointDto as DeveloperWebhookEndpoint,
   StaffTeamAuditLogDto as DeveloperActivity,
+  AdminIncidentDto as DeveloperIncident,
   RequestLogDto as DeveloperRequestLog,
   RequestLogDetailDto as DeveloperRequestLogDetail,
   WebhookDeliveryDto as DeveloperWebhookDelivery,
@@ -1857,6 +1858,15 @@ export const developers = {
   revokeKey: (teamId: string, keyId: string, reason: string) =>
     apiService.adminRevokeDeveloperKey(teamId, keyId, { reason }),
   monitoring: () => apiService.adminGetDeveloperMonitoring(),
+
+  // The public status page's incidents (step 15.6). Everything posted here is public at once.
+  /** Open incidents first, then the latest 50 resolved. */
+  incidents: () => apiService.adminListDeveloperIncidents(),
+  /** Opens an incident with its first public update. */
+  openIncident: (body: import("@/services").CreateIncidentRequestDto) => apiService.adminCreateDeveloperIncident(body),
+  /** Posts a public update; status `resolved` closes the incident. `recordId` is the incident's record_id. */
+  updateIncident: (recordId: string, body: import("@/services").IncidentUpdateRequestDto) =>
+    apiService.adminUpdateDeveloperIncident(recordId, body),
 
   // The team page, read-only. Lists are the Developer API's cursor lists: { data, has_more }, paged with starting_after.
   /** The team's audit trail, with the staff member behind each staff action. event narrows (`key.` for an area). */

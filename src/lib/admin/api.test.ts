@@ -1349,6 +1349,32 @@ const CASES: Case[] = [
     path: `${P}/admins/developer-monitoring`,
   },
   {
+    name: "developers.incidents",
+    call: () => api.developers.incidents(),
+    method: "GET",
+    path: `${P}/admins/developer-incidents`,
+  },
+  {
+    name: "developers.openIncident",
+    call: () =>
+      api.developers.openIncident({
+        title: "Slow orders",
+        impact: "major",
+        components: ["api"],
+        message: "Looking into it.",
+      }),
+    method: "POST",
+    path: `${P}/admins/developer-incidents`,
+    data: { title: "Slow orders", impact: "major", components: ["api"], message: "Looking into it." },
+  },
+  {
+    name: "developers.updateIncident",
+    call: () => api.developers.updateIncident(ID, { status: "resolved", message: "Back to normal." }),
+    method: "POST",
+    path: `${P}/admins/developer-incidents/${ID}/updates`,
+    data: { status: "resolved", message: "Back to normal." },
+  },
+  {
     name: "developers.activity",
     call: () => api.developers.activity(ID, { event: "key.", starting_after: "a1", limit: 20 }),
     method: "GET",
