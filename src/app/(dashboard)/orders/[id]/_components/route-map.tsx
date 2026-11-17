@@ -112,7 +112,14 @@ function RouteCanvas({ stops }: { stops: OrderStop[] }) {
         },
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK && result) renderer?.setDirections(result);
-          else fallback = new google.maps.Polyline({ path, map, strokeColor: brand, strokeWeight: 4, strokeOpacity: 0.85 });
+          else
+            fallback = new google.maps.Polyline({
+              path,
+              map,
+              strokeColor: brand,
+              strokeWeight: 4,
+              strokeOpacity: 0.85,
+            });
         },
       );
     }
@@ -129,7 +136,14 @@ function RouteCanvas({ stops }: { stops: OrderStop[] }) {
   }, [mapsLib, routesLib, pointsKey, resolvedTheme]);
 
   if (!points.length) {
-    return <EmptyState compact icon={MapPinOff} title="No coordinates on this order" description="The stops were saved without a position, so there is nothing to plot." />;
+    return (
+      <EmptyState
+        compact
+        icon={MapPinOff}
+        title="No coordinates on this order"
+        description="The stops were saved without a position, so there is nothing to plot."
+      />
+    );
   }
   if (!mapsLib) return <Skeleton className="h-full w-full" />;
   return <div ref={ref} className="h-full w-full" aria-label="Delivery route map" />;
@@ -137,7 +151,14 @@ function RouteCanvas({ stops }: { stops: OrderStop[] }) {
 
 export function RouteMap({ stops }: { stops: OrderStop[] }) {
   if (!GOOGLE_MAP_API_KEY) {
-    return <EmptyState compact icon={MapPinOff} title="Map unavailable" description="Set NEXT_PUBLIC_GOOGLE_MAP_API_KEY to draw the route." />;
+    return (
+      <EmptyState
+        compact
+        icon={MapPinOff}
+        title="Map unavailable"
+        description="Set NEXT_PUBLIC_GOOGLE_MAP_API_KEY to draw the route."
+      />
+    );
   }
   return (
     <APIProvider apiKey={GOOGLE_MAP_API_KEY}>

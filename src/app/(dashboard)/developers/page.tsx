@@ -38,11 +38,7 @@ function DevelopersHub() {
           { id: "monitoring", label: "Monitoring" },
         ]}
       />
-      {tab === "monitoring" ? (
-        <DeveloperMonitoringPanel />
-      ) : (
-        <DevelopersTable key={tab} mode={tab} />
-      )}
+      {tab === "monitoring" ? <DeveloperMonitoringPanel /> : <DevelopersTable key={tab} mode={tab} />}
     </div>
   );
 }

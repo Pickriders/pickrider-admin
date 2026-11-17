@@ -34,9 +34,7 @@ export const TextInputWithCounter = ({
         placeholder={placeholder}
         className={cn(
           "transition-all duration-300 w-full border-[1.5px] text-muted-foreground px-2 text-sm font-montserrat font-semibold py-2.5 rounded-[4px] bg-muted dark:bg-transparent outline-none border-[#C7CBE0] dark:border-neutral-800 hover:bg-gray-200 focus:hover:bg-muted dark:hover:bg-transparent focus-visible:ring-[3px]",
-          valueLength === maxLength
-            ? "focus-visible:ring-destructive"
-            : "focus-visible:ring-ring/40"
+          valueLength === maxLength ? "focus-visible:ring-destructive" : "focus-visible:ring-ring/40",
         )}
       />
     </div>

@@ -10,7 +10,15 @@ import { Button, cx, type Tone } from "@/components/kit";
 export type Mode = "test" | "live";
 
 /** Test or live, for the whole page: usage, requests, webhooks and the wallet all follow it. */
-export function ModeSwitch({ value, onChange, liveOn }: { value: Mode; onChange: (mode: Mode) => void; liveOn: boolean }) {
+export function ModeSwitch({
+  value,
+  onChange,
+  liveOn,
+}: {
+  value: Mode;
+  onChange: (mode: Mode) => void;
+  liveOn: boolean;
+}) {
   return (
     <div role="radiogroup" aria-label="Mode" className="inline-flex rounded-xl border border-line bg-surface p-1">
       {(["test", "live"] as const).map((mode) => {
@@ -27,9 +35,17 @@ export function ModeSwitch({ value, onChange, liveOn }: { value: Mode; onChange:
               active ? "bg-card text-ink shadow-sm" : "text-ink-muted hover:text-ink",
             )}
           >
-            <span aria-hidden className={cx("h-2 w-2 rounded-full", mode === "live" ? (liveOn ? "bg-success" : "bg-line-strong") : "bg-warning")} />
+            <span
+              aria-hidden
+              className={cx(
+                "h-2 w-2 rounded-full",
+                mode === "live" ? (liveOn ? "bg-success" : "bg-line-strong") : "bg-warning",
+              )}
+            />
             {mode}
-            {mode === "live" && !liveOn ? <span className="font-medium normal-case text-ink-faint">not live</span> : null}
+            {mode === "live" && !liveOn ? (
+              <span className="font-medium normal-case text-ink-faint">not live</span>
+            ) : null}
           </button>
         );
       })}
@@ -38,7 +54,17 @@ export function ModeSwitch({ value, onChange, liveOn }: { value: Mode; onChange:
 }
 
 /** A panel section heading inside a card: small caps label, optional right-hand action. */
-export function CardTitle({ title, hint, action, icon: Icon }: { title: ReactNode; hint?: ReactNode; action?: ReactNode; icon?: typeof Loader2 }) {
+export function CardTitle({
+  title,
+  hint,
+  action,
+  icon: Icon,
+}: {
+  title: ReactNode;
+  hint?: ReactNode;
+  action?: ReactNode;
+  icon?: typeof Loader2;
+}) {
   return (
     <div className="flex items-start justify-between gap-3 px-5 pt-4">
       <div className="min-w-0">
@@ -86,14 +112,21 @@ const PILL: Record<Tone, string> = {
 
 export function StatusPill({ status, label }: { status: number | null | undefined; label?: ReactNode }) {
   return (
-    <span className={cx("inline-flex h-6 min-w-[44px] items-center justify-center rounded-md px-1.5 font-mono text-xs font-bold tabular-nums", PILL[statusTone(status)])}>
+    <span
+      className={cx(
+        "inline-flex h-6 min-w-[44px] items-center justify-center rounded-md px-1.5 font-mono text-xs font-bold tabular-nums",
+        PILL[statusTone(status)],
+      )}
+    >
       {label ?? status ?? "—"}
     </span>
   );
 }
 
 export function MethodTag({ method }: { method: string }) {
-  return <span className="inline-block w-[52px] shrink-0 font-mono text-[11px] font-bold text-ink-muted">{method}</span>;
+  return (
+    <span className="inline-block w-[52px] shrink-0 font-mono text-[11px] font-bold text-ink-muted">{method}</span>
+  );
 }
 
 /** A body or object, pretty-printed; strings that hold JSON are parsed first. */
@@ -109,13 +142,23 @@ export function prettyJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-export function JsonBlock({ label, value, empty = "Nothing sent." }: { label: ReactNode; value: unknown; empty?: string }) {
+export function JsonBlock({
+  label,
+  value,
+  empty = "Nothing sent.",
+}: {
+  label: ReactNode;
+  value: unknown;
+  empty?: string;
+}) {
   const text = prettyJson(value);
   return (
     <div className="min-w-0">
       <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
       {text ? (
-        <pre className="max-h-80 overflow-auto rounded-xl border border-line bg-surface px-3.5 py-3 font-mono text-[12px] leading-5 text-ink">{text}</pre>
+        <pre className="max-h-80 overflow-auto rounded-xl border border-line bg-surface px-3.5 py-3 font-mono text-[12px] leading-5 text-ink">
+          {text}
+        </pre>
       ) : (
         <p className="rounded-xl border border-dashed border-line px-3.5 py-3 text-xs text-ink-faint">{empty}</p>
       )}
@@ -124,7 +167,19 @@ export function JsonBlock({ label, value, empty = "Nothing sent." }: { label: Re
 }
 
 /** The foot of a cursor list: load the next page, or say it's the end. */
-export function LoadMore({ hasMore, loading, onMore, shown, noun }: { hasMore: boolean; loading: boolean; onMore: () => void; shown: number; noun: string }) {
+export function LoadMore({
+  hasMore,
+  loading,
+  onMore,
+  shown,
+  noun,
+}: {
+  hasMore: boolean;
+  loading: boolean;
+  onMore: () => void;
+  shown: number;
+  noun: string;
+}) {
   if (!shown) return null;
   return (
     <div className="flex items-center justify-center border-t border-line px-4 py-3">
@@ -143,9 +198,23 @@ export function LoadMore({ hasMore, loading, onMore, shown, noun }: { hasMore: b
 }
 
 /** Segmented control for a handful of options (filters, periods). */
-export function Segmented<T extends string>({ value, onChange, options, label }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode }[]; label: string }) {
+export function Segmented<T extends string>({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: ReactNode }[];
+  label: string;
+}) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex flex-wrap rounded-xl border border-line bg-surface p-1">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="inline-flex flex-wrap rounded-xl border border-line bg-surface p-1"
+    >
       {options.map((option) => (
         <button
           key={option.value}
@@ -170,7 +239,12 @@ export function Expandable({ children, summary }: { children: ReactNode; summary
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink"
+      >
         <ChevronDown size={12} className={cx("transition-transform", open && "rotate-180")} aria-hidden />
         {summary}
       </button>

@@ -1,10 +1,6 @@
 import { SvgProps } from "./Svg.type";
 
-export const ChevronLeftIcon = ({
-  className,
-  height = 8,
-  width = 4,
-}: SvgProps) => {
+export const ChevronLeftIcon = ({ className, height = 8, width = 4 }: SvgProps) => {
   return (
     <svg
       className={className}

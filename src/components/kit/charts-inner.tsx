@@ -55,7 +55,9 @@ function TooltipBox({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-line bg-card-raised px-3 py-2 text-xs shadow-pop">
-      {label ? <p className="mb-1 font-bold text-ink">{labelFormat ? labelFormat(String(label)) : String(label)}</p> : null}
+      {label ? (
+        <p className="mb-1 font-bold text-ink">{labelFormat ? labelFormat(String(label)) : String(label)}</p>
+      ) : null}
       {payload.map((entry, index) => {
         const spec = series?.find((s) => s.key === entry.dataKey);
         return (
@@ -165,8 +167,12 @@ export default function ChartsInner(props: Props) {
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          {props.centerValue ? <span className="text-xl font-black tracking-tight text-ink">{props.centerValue}</span> : null}
-          {props.centerLabel ? <span className="text-[11px] font-semibold text-ink-faint">{props.centerLabel}</span> : null}
+          {props.centerValue ? (
+            <span className="text-xl font-black tracking-tight text-ink">{props.centerValue}</span>
+          ) : null}
+          {props.centerLabel ? (
+            <span className="text-[11px] font-semibold text-ink-faint">{props.centerLabel}</span>
+          ) : null}
         </div>
       </div>
     );
@@ -179,7 +185,12 @@ export default function ChartsInner(props: Props) {
     const Chart = BarChart;
     return (
       <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 320, height: 160 }}>
-        <Chart data={props.data} layout={props.horizontal ? "vertical" : "horizontal"} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap="28%">
+        <Chart
+          data={props.data}
+          layout={props.horizontal ? "vertical" : "horizontal"}
+          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+          barCategoryGap="28%"
+        >
           <CartesianGrid stroke="hsl(var(--chart-grid))" vertical={false} strokeDasharray="0" />
           {props.horizontal ? (
             <>
@@ -192,7 +203,10 @@ export default function ChartsInner(props: Props) {
               <YAxis {...axis} tickFormatter={yTick} width={44} />
             </>
           )}
-          <Tooltip cursor={{ fill: "hsl(var(--surface))" }} content={<TooltipBox series={props.series} labelFormat={props.xFormat} />} />
+          <Tooltip
+            cursor={{ fill: "hsl(var(--surface))" }}
+            content={<TooltipBox series={props.series} labelFormat={props.xFormat} />}
+          />
           {props.series.map((s, index) => (
             <Bar
               key={s.key}
@@ -217,7 +231,10 @@ export default function ChartsInner(props: Props) {
           <CartesianGrid stroke="hsl(var(--chart-grid))" vertical={false} />
           <XAxis dataKey={props.xKey} {...axis} tickFormatter={props.xFormat} minTickGap={16} />
           <YAxis {...axis} tickFormatter={yTick} width={44} />
-          <Tooltip cursor={{ stroke: "hsl(var(--line-strong))" }} content={<TooltipBox series={props.series} labelFormat={props.xFormat} />} />
+          <Tooltip
+            cursor={{ stroke: "hsl(var(--line-strong))" }}
+            content={<TooltipBox series={props.series} labelFormat={props.xFormat} />}
+          />
           {props.series.map((s, index) => (
             <Line
               key={s.key}
@@ -249,7 +266,10 @@ export default function ChartsInner(props: Props) {
         <CartesianGrid stroke="hsl(var(--chart-grid))" vertical={false} />
         <XAxis dataKey={props.xKey} {...axis} tickFormatter={props.xFormat} minTickGap={16} />
         <YAxis {...axis} tickFormatter={yTick} width={44} />
-        <Tooltip cursor={{ stroke: "hsl(var(--line-strong))" }} content={<TooltipBox series={props.series} labelFormat={props.xFormat} />} />
+        <Tooltip
+          cursor={{ stroke: "hsl(var(--line-strong))" }}
+          content={<TooltipBox series={props.series} labelFormat={props.xFormat} />}
+        />
         {props.series.map((s, index) => (
           <Area
             key={s.key}

@@ -4,8 +4,29 @@ import { Mail, Search, Send, Smartphone, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { Button, ConfirmDialog, Field, Input, Panel, PanelHeader, Select, Skeleton, Switch, Textarea, UsersPicker, cx, useDebounced } from "@/components/kit";
-import { asArray, messaging, type BroadcastEstimate, type BroadcastInput, type User, type UserStatus } from "@/lib/admin/api";
+import {
+  Button,
+  ConfirmDialog,
+  Field,
+  Input,
+  Panel,
+  PanelHeader,
+  Select,
+  Skeleton,
+  Switch,
+  Textarea,
+  UsersPicker,
+  cx,
+  useDebounced,
+} from "@/components/kit";
+import {
+  asArray,
+  messaging,
+  type BroadcastEstimate,
+  type BroadcastInput,
+  type User,
+  type UserStatus,
+} from "@/lib/admin/api";
 import { count, fullName } from "@/lib/admin/format";
 import { useAction, useBroadcastEstimate, useCountries, useUsers } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
@@ -28,13 +49,14 @@ const STATUSES: { value: UserStatus; label: string }[] = [
 const SUBJECT_MAX = 120;
 const MESSAGE_MAX = 2000;
 
-
 export function ComposeTab() {
   const { can } = useCan();
   const router = useRouter();
   const params = useSearchParams();
   const prefill = params.get("audience");
-  const [audience, setAudience] = useState<Audience>(AUDIENCES.some((a) => a.id === prefill) ? (prefill as Audience) : "CUSTOMERS");
+  const [audience, setAudience] = useState<Audience>(
+    AUDIENCES.some((a) => a.id === prefill) ? (prefill as Audience) : "CUSTOMERS",
+  );
   const [status, setStatus] = useState<UserStatus[]>([]);
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [licenceApprovedOnly, setLicenceApprovedOnly] = useState(false);
@@ -87,8 +109,10 @@ export function ComposeTab() {
   if (!isUsers && reach && total === 0) problems.push("Nobody matches that audience.");
   const ready = problems.length === 0;
 
-  const toggleStatus = (value: UserStatus) => setStatus((s) => (s.includes(value) ? s.filter((v) => v !== value) : [...s, value]));
-  const toggleChannel = (value: Channel) => setChannels((c) => (c.includes(value) ? c.filter((v) => v !== value) : [...c, value]));
+  const toggleStatus = (value: UserStatus) =>
+    setStatus((s) => (s.includes(value) ? s.filter((v) => v !== value) : [...s, value]));
+  const toggleChannel = (value: Channel) =>
+    setChannels((c) => (c.includes(value) ? c.filter((v) => v !== value) : [...c, value]));
 
   return (
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_22rem]">
@@ -110,7 +134,9 @@ export function ComposeTab() {
                     )}
                   >
                     <span className="block text-sm font-bold">{item.label}</span>
-                    <span className={cx("block text-[11px]", active ? "text-card/70" : "text-ink-muted")}>{item.hint}</span>
+                    <span className={cx("block text-[11px]", active ? "text-card/70" : "text-ink-muted")}>
+                      {item.hint}
+                    </span>
                   </button>
                 );
               })}
@@ -132,7 +158,9 @@ export function ComposeTab() {
                           onClick={() => toggleStatus(item.value)}
                           className={cx(
                             "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
-                            active ? "border-transparent bg-brand text-brand-ink" : "border-line text-ink-muted hover:bg-surface",
+                            active
+                              ? "border-transparent bg-brand text-brand-ink"
+                              : "border-line text-ink-muted hover:bg-surface",
                           )}
                         >
                           {item.label}
@@ -156,7 +184,11 @@ export function ComposeTab() {
                   {isRiders ? (
                     <div className="flex flex-col justify-end gap-3 pb-1">
                       <Switch checked={onlineOnly} onChange={setOnlineOnly} label="Online right now only" />
-                      <Switch checked={licenceApprovedOnly} onChange={setLicenceApprovedOnly} label="Approved licence only" />
+                      <Switch
+                        checked={licenceApprovedOnly}
+                        onChange={setLicenceApprovedOnly}
+                        label="Approved licence only"
+                      />
                     </div>
                   ) : null}
                 </div>
@@ -173,8 +205,18 @@ export function ComposeTab() {
               <div className="flex flex-wrap gap-2">
                 {(
                   [
-                    { id: "PUSH", label: "Push notification", icon: Smartphone, hint: reach ? `${count(reach.withPush)} can receive` : "" },
-                    { id: "EMAIL", label: "Email", icon: Mail, hint: reach ? `${count(reach.withEmail)} can receive` : "" },
+                    {
+                      id: "PUSH",
+                      label: "Push notification",
+                      icon: Smartphone,
+                      hint: reach ? `${count(reach.withPush)} can receive` : "",
+                    },
+                    {
+                      id: "EMAIL",
+                      label: "Email",
+                      icon: Mail,
+                      hint: reach ? `${count(reach.withEmail)} can receive` : "",
+                    },
                   ] as const
                 ).map((item) => {
                   const active = channels.includes(item.id);
@@ -190,12 +232,19 @@ export function ComposeTab() {
                         active ? "border-brand bg-brand-soft" : "border-line bg-card hover:bg-surface",
                       )}
                     >
-                      <span className={cx("grid h-9 w-9 place-items-center rounded-lg", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+                      <span
+                        className={cx(
+                          "grid h-9 w-9 place-items-center rounded-lg",
+                          active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted",
+                        )}
+                      >
                         <item.icon size={16} />
                       </span>
                       <span className="min-w-0">
                         <span className="block text-sm font-bold text-ink">{item.label}</span>
-                        <span className="block text-[11px] text-ink-muted">{item.hint || "Everyone also gets an in-app copy"}</span>
+                        <span className="block text-[11px] text-ink-muted">
+                          {item.hint || "Everyone also gets an in-app copy"}
+                        </span>
                       </span>
                     </button>
                   );
@@ -212,7 +261,12 @@ export function ComposeTab() {
                 </span>
               }
             >
-              <Input value={subject} maxLength={SUBJECT_MAX} onChange={(e) => setSubject(e.target.value)} placeholder="Short and clear, it is the push title too" />
+              <Input
+                value={subject}
+                maxLength={SUBJECT_MAX}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Short and clear, it is the push title too"
+              />
             </Field>
             <Field
               label={
@@ -224,7 +278,13 @@ export function ComposeTab() {
                 </span>
               }
             >
-              <Textarea value={message} maxLength={MESSAGE_MAX} onChange={(e) => setMessage(e.target.value)} className="min-h-40" placeholder="Plain text. Line breaks are kept in the email." />
+              <Textarea
+                value={message}
+                maxLength={MESSAGE_MAX}
+                onChange={(e) => setMessage(e.target.value)}
+                className="min-h-40"
+                placeholder="Plain text. Line breaks are kept in the email."
+              />
             </Field>
           </div>
         </Panel>
@@ -241,8 +301,11 @@ export function ComposeTab() {
             <Skeleton className="mt-2 h-8 w-32" />
           ) : (
             <>
-              <p className={cx("mt-1 text-3xl font-black tracking-tight text-ink", estimate.isFetching && "opacity-60")}>
-                {count(total)} <span className="text-base font-bold text-ink-muted">{total === 1 ? "person" : "people"}</span>
+              <p
+                className={cx("mt-1 text-3xl font-black tracking-tight text-ink", estimate.isFetching && "opacity-60")}
+              >
+                {count(total)}{" "}
+                <span className="text-base font-bold text-ink-muted">{total === 1 ? "person" : "people"}</span>
               </p>
               <p className="mt-1 text-xs text-ink-muted">
                 {count(reach.withPush)} with push · {count(reach.withEmail)} with email
@@ -256,7 +319,13 @@ export function ComposeTab() {
               </p>
             ))}
           </div>
-          <Button fullWidth className="mt-4" icon={Send} disabled={!ready || !can("broadcast.send")} onClick={() => setConfirm(true)}>
+          <Button
+            fullWidth
+            className="mt-4"
+            icon={Send}
+            disabled={!ready || !can("broadcast.send")}
+            onClick={() => setConfirm(true)}
+          >
             Send broadcast
           </Button>
         </Panel>

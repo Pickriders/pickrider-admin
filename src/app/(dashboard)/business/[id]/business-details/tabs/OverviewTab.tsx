@@ -6,7 +6,17 @@ import Link from "next/link";
 import { asArray, type BusinessDetail, type Order, type User, type Wallet as WalletShape } from "@/lib/admin/api";
 import { count, fullName, maskAccount, naira, statusLabel, when } from "@/lib/admin/format";
 import { useBusinessOrderStatistics, useBusinessOrders, useBusinessWallets } from "@/lib/admin/hooks";
-import { Badge, Button, KeyValue, Panel, PanelHeader, Skeleton, StatCard, StatGrid, statusTone } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  KeyValue,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  statusTone,
+} from "@/components/kit";
 
 import { BUSINESS_TYPE_LABEL, SERVICE_TYPE_LABEL, type BusinessTab } from "../BusinessDetail";
 import { formatEmail } from "@/lib/admin/person";
@@ -44,7 +54,9 @@ export function OverviewTab({
   const balance = walletList.reduce((sum, w) => sum + (w.balance ?? 0), 0);
   const orders = recent.data?.items ?? [];
   const address = business?.address;
-  const addressLine = address ? [address.name, address.landmark, address.lga, address.state, address.country].filter(Boolean).join(", ") : "";
+  const addressLine = address
+    ? [address.name, address.landmark, address.lga, address.state, address.country].filter(Boolean).join(", ")
+    : "";
 
   return (
     <div className="space-y-4">
@@ -55,11 +67,40 @@ export function OverviewTab({
           tone="brand"
           icon={Wallet}
           loading={wallets.isPending}
-          hint={walletList.length > 1 ? `Across ${walletList.length} wallets` : walletList[0]?.currency ?? "No wallet yet"}
+          hint={
+            walletList.length > 1 ? `Across ${walletList.length} wallets` : (walletList[0]?.currency ?? "No wallet yet")
+          }
         />
-        <StatCard label="Orders" value={count(stats.data?.total)} icon={ClipboardList} loading={stats.isPending} hint="All time" onClick={() => onTab("orders")} />
-        <StatCard label="Completed" value={count(stats.data?.completed)} icon={CheckCircle2} loading={stats.isPending} hint={stats.data?.total ? `${Math.round(((stats.data.completed ?? 0) / stats.data.total) * 100)}% of orders` : "No orders yet"} />
-        <StatCard label="Cancelled" value={count(stats.data?.cancelled)} icon={XCircle} loading={stats.isPending} hint={stats.data ? `${count(stats.data.single)} single · ${count(stats.data.batch)} batch · ${count(stats.data.bulk)} bulk` : undefined} />
+        <StatCard
+          label="Orders"
+          value={count(stats.data?.total)}
+          icon={ClipboardList}
+          loading={stats.isPending}
+          hint="All time"
+          onClick={() => onTab("orders")}
+        />
+        <StatCard
+          label="Completed"
+          value={count(stats.data?.completed)}
+          icon={CheckCircle2}
+          loading={stats.isPending}
+          hint={
+            stats.data?.total
+              ? `${Math.round(((stats.data.completed ?? 0) / stats.data.total) * 100)}% of orders`
+              : "No orders yet"
+          }
+        />
+        <StatCard
+          label="Cancelled"
+          value={count(stats.data?.cancelled)}
+          icon={XCircle}
+          loading={stats.isPending}
+          hint={
+            stats.data
+              ? `${count(stats.data.single)} single · ${count(stats.data.batch)} batch · ${count(stats.data.bulk)} bulk`
+              : undefined
+          }
+        />
       </StatGrid>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -81,19 +122,43 @@ export function OverviewTab({
                     { label: "Handle", value: business?.businessHandle ? `@${business.businessHandle}` : undefined },
                     { label: "Email", value: formatEmail(business?.email) || undefined },
                     { label: "Phone", value: business?.phone },
-                    { label: "Business type", value: business?.type ? BUSINESS_TYPE_LABEL[business.type] ?? business.type : undefined },
-                    { label: "Service model", value: business?.businessType ? SERVICE_TYPE_LABEL[business.businessType] ?? business.businessType : undefined },
+                    {
+                      label: "Business type",
+                      value: business?.type ? (BUSINESS_TYPE_LABEL[business.type] ?? business.type) : undefined,
+                    },
+                    {
+                      label: "Service model",
+                      value: business?.businessType
+                        ? (SERVICE_TYPE_LABEL[business.businessType] ?? business.businessType)
+                        : undefined,
+                    },
                     { label: "Branch", value: business?.branchName },
                     {
                       label: "Website",
                       value: business?.website ? (
-                        <a href={business.website} target="_blank" rel="noreferrer" className="text-brand-dark hover:underline">
+                        <a
+                          href={business.website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-brand-dark hover:underline"
+                        >
                           {business.website}
                         </a>
                       ) : undefined,
                     },
-                    { label: "Webhook", value: business?.webhook ? <span className="font-mono text-xs">{business.webhook}</span> : undefined },
-                    { label: "Location", value: [named(business?.city), named(business?.state), named(business?.country)].filter(Boolean).join(", ") || undefined },
+                    {
+                      label: "Webhook",
+                      value: business?.webhook ? (
+                        <span className="font-mono text-xs">{business.webhook}</span>
+                      ) : undefined,
+                    },
+                    {
+                      label: "Location",
+                      value:
+                        [named(business?.city), named(business?.state), named(business?.country)]
+                          .filter(Boolean)
+                          .join(", ") || undefined,
+                    },
                     { label: "Address", value: addressLine || undefined },
                     { label: "About", value: business?.aboutMe },
                     { label: "Joined", value: when(business?.createdAt) },
@@ -125,9 +190,14 @@ export function OverviewTab({
                 <ul className="divide-y divide-line">
                   {orders.map((order: Order) => (
                     <li key={order._id}>
-                      <Link href={`/orders/${order._id}`} className="flex items-center justify-between gap-3 py-2.5 hover:bg-surface">
+                      <Link
+                        href={`/orders/${order._id}`}
+                        className="flex items-center justify-between gap-3 py-2.5 hover:bg-surface"
+                      >
                         <span className="min-w-0">
-                          <span className="block truncate text-sm font-semibold text-ink">#{order.orderNumber ?? order._id.slice(-6)}</span>
+                          <span className="block truncate text-sm font-semibold text-ink">
+                            #{order.orderNumber ?? order._id.slice(-6)}
+                          </span>
                           <span className="block truncate text-xs text-ink-muted">
                             {order.type ? `${order.type.toLowerCase()} · ` : ""}
                             {personName(order.riderId) ? `Rider ${personName(order.riderId)} · ` : ""}
@@ -153,17 +223,29 @@ export function OverviewTab({
           <Panel>
             <PanelHeader title="Team" />
             <div className="grid grid-cols-2 gap-3 p-5 pt-3">
-              <button type="button" onClick={() => onTab("couriers")} className="rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-line-strong">
+              <button
+                type="button"
+                onClick={() => onTab("couriers")}
+                className="rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-line-strong"
+              >
                 <span className="flex items-center gap-2 text-xs font-semibold text-ink-muted">
                   <Bike size={14} /> Couriers
                 </span>
-                <span className="mt-1 block text-2xl font-black text-ink">{loading ? <Skeleton className="h-7 w-10" /> : count(business?.users?.length)}</span>
+                <span className="mt-1 block text-2xl font-black text-ink">
+                  {loading ? <Skeleton className="h-7 w-10" /> : count(business?.users?.length)}
+                </span>
               </button>
-              <button type="button" onClick={() => onTab("vehicles")} className="rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-line-strong">
+              <button
+                type="button"
+                onClick={() => onTab("vehicles")}
+                className="rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-line-strong"
+              >
                 <span className="flex items-center gap-2 text-xs font-semibold text-ink-muted">
                   <Car size={14} /> Vehicles
                 </span>
-                <span className="mt-1 block text-2xl font-black text-ink">{loading ? <Skeleton className="h-7 w-10" /> : count(business?.vehicles?.length)}</span>
+                <span className="mt-1 block text-2xl font-black text-ink">
+                  {loading ? <Skeleton className="h-7 w-10" /> : count(business?.vehicles?.length)}
+                </span>
               </button>
             </div>
           </Panel>
@@ -179,11 +261,15 @@ export function OverviewTab({
                     <li key={wallet._id} className="rounded-xl border border-line p-3">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-lg font-black text-ink">{naira(wallet.balance)}</span>
-                        <Badge tone={wallet.status && wallet.status !== "ACTIVE" ? "warning" : "success"}>{wallet.status?.toLowerCase() ?? "active"}</Badge>
+                        <Badge tone={wallet.status && wallet.status !== "ACTIVE" ? "warning" : "success"}>
+                          {wallet.status?.toLowerCase() ?? "active"}
+                        </Badge>
                       </div>
                       <p className="mt-1 text-xs text-ink-muted">
                         {wallet.currency ?? "NGN"}
-                        {wallet.settlement?.bankName ? ` · ${wallet.settlement.bankName} ${maskAccount(wallet.settlement.accountNumber)}` : " · No settlement account"}
+                        {wallet.settlement?.bankName
+                          ? ` · ${wallet.settlement.bankName} ${maskAccount(wallet.settlement.accountNumber)}`
+                          : " · No settlement account"}
                       </p>
                     </li>
                   ))}

@@ -1,9 +1,28 @@
 "use client";
 
-import { ArrowDownLeft, ArrowUpRight, Banknote, Coins, Landmark, Link2, Percent, Receipt, Undo2, Users, Wallet } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Banknote,
+  Coins,
+  Landmark,
+  Link2,
+  Percent,
+  Receipt,
+  Undo2,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useExternalPayments, useFinanceStatus, useOverview, usePlatformWallet, useSeries, useTransactionSummary } from "@/lib/admin/hooks";
+import {
+  useExternalPayments,
+  useFinanceStatus,
+  useOverview,
+  usePlatformWallet,
+  useSeries,
+  useTransactionSummary,
+} from "@/lib/admin/hooks";
 import { count, naira } from "@/lib/admin/format";
 import {
   ChartCard,
@@ -78,7 +97,13 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
   return (
     <div className="space-y-6">
       {status.isError && wallet.isError ? (
-        <ErrorState message="The platform wallet could not be loaded." onRetry={() => { void status.refetch(); void wallet.refetch(); }} />
+        <ErrorState
+          message="The platform wallet could not be loaded."
+          onRetry={() => {
+            void status.refetch();
+            void wallet.refetch();
+          }}
+        />
       ) : null}
 
       <div className="grid grid-cols-1 gap-3 md:gap-4 lg:grid-cols-3">
@@ -96,9 +121,27 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
       </div>
 
       <StatGrid columns={4}>
-        <StatCard label="Money in" value={naira(tx.moneyIn)} icon={ArrowDownLeft} hint="Credits to wallets" loading={overview.isLoading} />
-        <StatCard label="Money out" value={naira(tx.moneyOut)} icon={ArrowUpRight} hint="Debits from wallets" loading={overview.isLoading} />
-        <StatCard label="Transactions" value={count(tx.count)} icon={Receipt} hint={`${naira(tx.volume)} total volume`} loading={overview.isLoading} />
+        <StatCard
+          label="Money in"
+          value={naira(tx.moneyIn)}
+          icon={ArrowDownLeft}
+          hint="Credits to wallets"
+          loading={overview.isLoading}
+        />
+        <StatCard
+          label="Money out"
+          value={naira(tx.moneyOut)}
+          icon={ArrowUpRight}
+          hint="Debits from wallets"
+          loading={overview.isLoading}
+        />
+        <StatCard
+          label="Transactions"
+          value={count(tx.count)}
+          icon={Receipt}
+          hint={`${naira(tx.volume)} total volume`}
+          loading={overview.isLoading}
+        />
         <StatCard
           label="Paystack fees"
           value={naira(tx.fees)}
@@ -151,7 +194,13 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
             />
           </ChartCard>
         </div>
-        <ChartCard title="By category" subtitle="Share of successful volume" loading={summary.isLoading} empty={!summary.isLoading && !mix.length} height={280}>
+        <ChartCard
+          title="By category"
+          subtitle="Share of successful volume"
+          loading={summary.isLoading}
+          empty={!summary.isLoading && !mix.length}
+          height={280}
+        >
           <DonutChart data={mix} format="naira" centerLabel="Volume" centerValue={naira(sum.totalVolume)} />
         </ChartCard>
       </div>
@@ -202,17 +251,29 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
       <div>
         <div className="mb-3">
           <h2 className="text-base font-black tracking-tight text-ink">Someone else pays</h2>
-          <p className="text-xs text-ink-muted">Orders funded by a third party through a shared pay link, same window.</p>
+          <p className="text-xs text-ink-muted">
+            Orders funded by a third party through a shared pay link, same window.
+          </p>
         </div>
         {external.isError ? (
           <ErrorState message="Pay link metrics could not be loaded." onRetry={() => void external.refetch()} />
         ) : (
           <StatGrid columns={5}>
             <StatCard label="Payments" value={count(ext.count)} icon={Link2} loading={external.isLoading} />
-            <StatCard label="Total funded" value={naira(ext.totalFunded)} icon={Banknote} loading={external.isLoading} />
+            <StatCard
+              label="Total funded"
+              value={naira(ext.totalFunded)}
+              icon={Banknote}
+              loading={external.isLoading}
+            />
             <StatCard label="Fees charged" value={naira(ext.totalFees)} icon={Coins} loading={external.isLoading} />
             <StatCard label="Net received" value={naira(ext.netReceived)} icon={Wallet} loading={external.isLoading} />
-            <StatCard label="Unique payers" value={count(ext.uniqueCustomers)} icon={Users} loading={external.isLoading} />
+            <StatCard
+              label="Unique payers"
+              value={count(ext.uniqueCustomers)}
+              icon={Users}
+              loading={external.isLoading}
+            />
           </StatGrid>
         )}
       </div>

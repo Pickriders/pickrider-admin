@@ -11,7 +11,10 @@ jest.mock("next/navigation", () => ({ redirect: (url: string) => mockRedirect(ur
 describe("legacy account pages", () => {
   beforeEach(() => mockRedirect.mockClear());
 
-  const target = (page: (props: { searchParams: Record<string, string | string[] | undefined> }) => unknown, searchParams = {}) => {
+  const target = (
+    page: (props: { searchParams: Record<string, string | string[] | undefined> }) => unknown,
+    searchParams = {},
+  ) => {
     expect(() => page({ searchParams })).toThrow("NEXT_REDIRECT");
     return mockRedirect.mock.calls[0][0];
   };

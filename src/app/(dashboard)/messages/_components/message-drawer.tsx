@@ -25,7 +25,10 @@ import {
 /** Status pill; a retried message says how many tries it took. */
 export function MessageStatusBadge({ status, attempts }: { status: string; attempts?: number }) {
   return (
-    <span className="inline-flex items-center gap-1" title={attempts && attempts > 1 ? `${attempts} attempts` : undefined}>
+    <span
+      className="inline-flex items-center gap-1"
+      title={attempts && attempts > 1 ? `${attempts} attempts` : undefined}
+    >
       <Badge tone={MESSAGE_STATUS_TONE[status] ?? "neutral"} dot>
         {label(MESSAGE_STATUS_LABEL, status)}
       </Badge>
@@ -59,7 +62,12 @@ function Mono({ value, what }: { value: string; what: string }) {
       <span className="truncate font-mono text-xs" title={value}>
         {value}
       </span>
-      <button type="button" onClick={() => copy(value, what)} aria-label={`Copy ${what.toLowerCase()}`} className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-ink-faint hover:bg-surface hover:text-ink">
+      <button
+        type="button"
+        onClick={() => copy(value, what)}
+        aria-label={`Copy ${what.toLowerCase()}`}
+        className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-ink-faint hover:bg-surface hover:text-ink"
+      >
         <Copy size={12} />
       </button>
     </span>
@@ -80,15 +88,26 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
   const detail = useMessage(id ?? "");
   const m = detail.data;
   const provider = m?.providerResponse;
-  const hasProviderResponse = Boolean(provider && (provider.balance != null || provider.message || provider.rejected?.length));
+  const hasProviderResponse = Boolean(
+    provider && (provider.balance != null || provider.message || provider.rejected?.length),
+  );
 
   return (
     <Drawer
       open={Boolean(id)}
       onClose={onClose}
       width="lg"
-      title={m ? m.subject || (m.templateKey ? templateTitle(m.templateKey) : `${label(MESSAGE_CHANNEL_LABEL, m.channel)} to ${m.to}`) : "Message"}
-      subtitle={m ? `${label(MESSAGE_CHANNEL_LABEL, m.channel)} via ${label(MESSAGE_PROVIDER_LABEL, m.provider)} · ${when(m.createdAt)}` : undefined}
+      title={
+        m
+          ? m.subject ||
+            (m.templateKey ? templateTitle(m.templateKey) : `${label(MESSAGE_CHANNEL_LABEL, m.channel)} to ${m.to}`)
+          : "Message"
+      }
+      subtitle={
+        m
+          ? `${label(MESSAGE_CHANNEL_LABEL, m.channel)} via ${label(MESSAGE_PROVIDER_LABEL, m.provider)} · ${when(m.createdAt)}`
+          : undefined
+      }
     >
       {detail.isError ? (
         <p className="text-sm font-semibold text-danger">{errorMessage(detail.error)}</p>
@@ -121,10 +140,14 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
                 Why it was held back
               </p>
               <p className="mt-0.5 text-sm text-ink">
-                {m.skipReason ? label(MESSAGE_SKIP_REASON_LABEL, m.skipReason) : "Held back by the email controls"}. Nothing reached the provider and it will not be resent.
+                {m.skipReason ? label(MESSAGE_SKIP_REASON_LABEL, m.skipReason) : "Held back by the email controls"}.
+                Nothing reached the provider and it will not be resent.
               </p>
               {m.templateKey ? (
-                <Link href={`/emails?key=${encodeURIComponent(m.templateKey)}`} className="mt-1 inline-block text-xs font-semibold text-brand-dark hover:underline">
+                <Link
+                  href={`/emails?key=${encodeURIComponent(m.templateKey)}`}
+                  className="mt-1 inline-block text-xs font-semibold text-brand-dark hover:underline"
+                >
                   See the email controls
                 </Link>
               ) : null}
@@ -136,15 +159,25 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
               { label: "To", value: <Mono value={m.to} what="Recipient" /> },
               { label: "Provider", value: label(MESSAGE_PROVIDER_LABEL, m.provider) },
               { label: "Template", value: m.templateKey ? templateTitle(m.templateKey) : m.templateName || "Custom" },
-              { label: "Template name", value: m.templateName ? <span className="font-mono text-xs">{m.templateName}</span> : undefined },
+              {
+                label: "Template name",
+                value: m.templateName ? <span className="font-mono text-xs">{m.templateName}</span> : undefined,
+              },
               { label: "Created", value: when(m.createdAt) },
               {
                 label: m.status === "FAILED" ? "Failed" : m.status === "SKIPPED" ? "Skipped" : "Sent",
-                value: when(m.status === "FAILED" ? m.failedAt : m.status === "SKIPPED" ? m.skippedAt : m.sentAt) || undefined,
+                value:
+                  when(m.status === "FAILED" ? m.failedAt : m.status === "SKIPPED" ? m.skippedAt : m.sentAt) ||
+                  undefined,
               },
-              ...(m.status === "SKIPPED" && m.skipReason ? [{ label: "Skip reason", value: label(MESSAGE_SKIP_REASON_LABEL, m.skipReason) }] : []),
+              ...(m.status === "SKIPPED" && m.skipReason
+                ? [{ label: "Skip reason", value: label(MESSAGE_SKIP_REASON_LABEL, m.skipReason) }]
+                : []),
               { label: "Attempts", value: count(m.attempts) },
-              { label: "Provider id", value: m.providerMessageId ? <Mono value={m.providerMessageId} what="Provider id" /> : undefined },
+              {
+                label: "Provider id",
+                value: m.providerMessageId ? <Mono value={m.providerMessageId} what="Provider id" /> : undefined,
+              },
               { label: "Message id", value: <Mono value={m.id} what="Message id" /> },
             ]}
           />
@@ -165,7 +198,8 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
             </div>
             <p className="mt-1.5 flex items-center gap-1.5 text-[11px] text-ink-faint">
               <ShieldCheck size={12} aria-hidden />
-              Codes, passwords, tokens and secret link values are masked before storage. Long bodies are cut at 2,000 characters.
+              Codes, passwords, tokens and secret link values are masked before storage. Long bodies are cut at 2,000
+              characters.
             </p>
           </Section>
 
@@ -174,9 +208,29 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
               <div className="rounded-xl border border-line bg-card p-3">
                 <KeyValue
                   items={[
-                    ...(provider?.message ? [{ label: "Response", value: <span className="whitespace-normal">{provider.message}</span> }] : []),
-                    ...(provider?.balance != null ? [{ label: "Balance after send", value: termiiBalanceLabel({ balance: provider.balance, currency: provider.currency }) }] : []),
-                    ...(provider?.rejected?.length ? [{ label: "Rejected addresses", value: <span className="whitespace-normal font-mono text-xs">{provider.rejected.join(", ")}</span> }] : []),
+                    ...(provider?.message
+                      ? [{ label: "Response", value: <span className="whitespace-normal">{provider.message}</span> }]
+                      : []),
+                    ...(provider?.balance != null
+                      ? [
+                          {
+                            label: "Balance after send",
+                            value: termiiBalanceLabel({ balance: provider.balance, currency: provider.currency }),
+                          },
+                        ]
+                      : []),
+                    ...(provider?.rejected?.length
+                      ? [
+                          {
+                            label: "Rejected addresses",
+                            value: (
+                              <span className="whitespace-normal font-mono text-xs">
+                                {provider.rejected.join(", ")}
+                              </span>
+                            ),
+                          },
+                        ]
+                      : []),
                   ]}
                 />
               </div>
@@ -192,24 +246,38 @@ export function MessageDrawer({ id, onClose }: { id?: string; onClose: () => voi
                       <User size={14} className="shrink-0 text-ink-faint" aria-hidden />
                       <PersonLink userId={m.userId} />
                     </span>
-                    <Link href={`/messages?userId=${m.userId}`} className="text-xs font-semibold text-brand-dark hover:underline">
+                    <Link
+                      href={`/messages?userId=${m.userId}`}
+                      className="text-xs font-semibold text-brand-dark hover:underline"
+                    >
                       All messages to them
                     </Link>
                   </div>
                 ) : null}
                 {m.orderId ? (
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line px-3 py-2">
-                    <Link href={`/orders/${m.orderId}`} className="flex min-w-0 items-center gap-2 text-sm font-semibold text-brand-dark hover:underline">
+                    <Link
+                      href={`/orders/${m.orderId}`}
+                      className="flex min-w-0 items-center gap-2 text-sm font-semibold text-brand-dark hover:underline"
+                    >
                       <ClipboardList size={14} className="shrink-0 text-ink-faint" aria-hidden />
                       Open the order
                     </Link>
-                    <Link href={`/messages?orderId=${m.orderId}`} className="text-xs font-semibold text-brand-dark hover:underline">
+                    <Link
+                      href={`/messages?orderId=${m.orderId}`}
+                      className="text-xs font-semibold text-brand-dark hover:underline"
+                    >
                       All messages about it
                     </Link>
                   </div>
                 ) : null}
                 {m.channel === "EMAIL" && m.templateKey ? (
-                  <LinkButton href={`/emails?key=${encodeURIComponent(m.templateKey)}`} icon={Mail} variant="outline" size="sm">
+                  <LinkButton
+                    href={`/emails?key=${encodeURIComponent(m.templateKey)}`}
+                    icon={Mail}
+                    variant="outline"
+                    size="sm"
+                  >
                     Preview the {templateTitle(m.templateKey).toLowerCase()} email
                   </LinkButton>
                 ) : null}

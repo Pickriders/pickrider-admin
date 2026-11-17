@@ -60,7 +60,10 @@ export function useTableState(defaults: { limit?: number; sortBy?: string; order
     [params, pathname, router],
   );
 
-  const setPage = useCallback((page: number) => update({ page: page > 1 ? page : undefined }, { resetPage: false }), [update]);
+  const setPage = useCallback(
+    (page: number) => update({ page: page > 1 ? page : undefined }, { resetPage: false }),
+    [update],
+  );
   const setSort = useCallback(
     (sortBy: string) => {
       const flip = state.sortBy === sortBy && state.order === "DESC" ? "ASC" : "DESC";
@@ -88,7 +91,8 @@ export function useTableState(defaults: { limit?: number; sortBy?: string; order
     [state],
   );
 
-  const activeFilterCount = Object.keys(state.filters).length + (state.search ? 1 : 0) + (state.from || state.to ? 1 : 0);
+  const activeFilterCount =
+    Object.keys(state.filters).length + (state.search ? 1 : 0) + (state.from || state.to ? 1 : 0);
 
   return { state, query, update, setPage, setSort, setSearch, setRange, setFilter, clear, activeFilterCount };
 }

@@ -22,7 +22,11 @@ export function liveJourney(team: DeveloperDetail): Step[] {
   const by = team.liveReviewedBy ? ` by ${team.liveReviewedBy.name}` : "";
   const steps: Step[] = [
     { label: "Signed up", at: team.createdAt, state: "done" },
-    { label: requested ? "Asked to go live" : "Hasn't asked to go live", at: team.liveRequestedAt, state: requested ? "done" : "todo" },
+    {
+      label: requested ? "Asked to go live" : "Hasn't asked to go live",
+      at: team.liveRequestedAt,
+      state: requested ? "done" : "todo",
+    },
   ];
   if (team.liveStatus === "PENDING") steps.push({ label: "Waiting for a decision", state: "current" });
   else if (decided)
@@ -32,8 +36,15 @@ export function liveJourney(team: DeveloperDetail): Step[] {
       detail: team.liveStatus === "REJECTED" ? team.liveRejectionReason : null,
       state: team.liveStatus === "REJECTED" ? "failed" : "done",
     });
-  if (team.liveStatus === "SUSPENDED") steps.push({ label: "Live access suspended", detail: team.liveSuspensionReason, state: "failed" });
-  if (team.status === "SUSPENDED") steps.push({ label: `Team suspended${team.suspendedBy ? ` by ${team.suspendedBy.name}` : ""}`, at: team.suspendedAt, detail: team.suspensionReason, state: "failed" });
+  if (team.liveStatus === "SUSPENDED")
+    steps.push({ label: "Live access suspended", detail: team.liveSuspensionReason, state: "failed" });
+  if (team.status === "SUSPENDED")
+    steps.push({
+      label: `Team suspended${team.suspendedBy ? ` by ${team.suspendedBy.name}` : ""}`,
+      at: team.suspendedAt,
+      detail: team.suspensionReason,
+      state: "failed",
+    });
   return steps;
 }
 
@@ -51,9 +62,13 @@ function Journey({ team }: { team: DeveloperDetail }) {
         <li key={i} className="flex gap-3">
           <span className="mt-0.5 shrink-0">{STEP_ICON[step.state]}</span>
           <div className="min-w-0">
-            <p className={cx("text-sm font-semibold", step.state === "todo" ? "text-ink-muted" : "text-ink")}>{step.label}</p>
+            <p className={cx("text-sm font-semibold", step.state === "todo" ? "text-ink-muted" : "text-ink")}>
+              {step.label}
+            </p>
             {step.at ? <p className="text-xs text-ink-faint">{when(step.at)}</p> : null}
-            {step.detail ? <p className="mt-1 rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ink">&ldquo;{step.detail}&rdquo;</p> : null}
+            {step.detail ? (
+              <p className="mt-1 rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ink">&ldquo;{step.detail}&rdquo;</p>
+            ) : null}
           </div>
         </li>
       ))}
@@ -70,7 +85,11 @@ function RecentActivity({ teamId, onSeeAll }: { teamId: string; onSeeAll: () => 
         title="Recent activity"
         icon={Activity}
         action={
-          <button type="button" onClick={onSeeAll} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-dark hover:underline">
+          <button
+            type="button"
+            onClick={onSeeAll}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-dark hover:underline"
+          >
             See all <ArrowRight size={12} aria-hidden />
           </button>
         }
@@ -97,7 +116,15 @@ function RecentActivity({ teamId, onSeeAll }: { teamId: string; onSeeAll: () => 
 }
 
 /** The team at a glance in the page's mode: money, orders, traffic, webhooks, the road to live, and what changed lately. */
-export function TeamOverview({ team, mode, onTab }: { team: DeveloperDetail; mode: Mode; onTab: (tab: "activity" | "webhooks" | "requests" | "wallet") => void }) {
+export function TeamOverview({
+  team,
+  mode,
+  onTab,
+}: {
+  team: DeveloperDetail;
+  mode: Mode;
+  onTab: (tab: "activity" | "webhooks" | "requests" | "wallet") => void;
+}) {
   const stats = mode === "live" ? team.live : team.test;
   const usage = useDeveloperUsage(team.id, mode === "live", "30d");
   const errorRate = stats.requests30d ? (stats.errors30d / stats.requests30d) * 100 : null;
@@ -111,7 +138,15 @@ export function TeamOverview({ team, mode, onTab }: { team: DeveloperDetail; mod
           value={stats.wallet ? naira(stats.wallet.available) : "No wallet"}
           icon={Wallet}
           tone={mode === "live" && stats.wallet ? "brand" : "default"}
-          hint={stats.wallet ? (stats.wallet.held ? `${naira(stats.wallet.held)} held for orders in progress` : "Nothing held") : mode === "live" ? "Opened when live access is approved" : undefined}
+          hint={
+            stats.wallet
+              ? stats.wallet.held
+                ? `${naira(stats.wallet.held)} held for orders in progress`
+                : "Nothing held"
+              : mode === "live"
+                ? "Opened when live access is approved"
+                : undefined
+          }
           onClick={() => onTab("wallet")}
         />
         <StatCard
@@ -125,14 +160,28 @@ export function TeamOverview({ team, mode, onTab }: { team: DeveloperDetail; mod
           label="API requests, 30 days"
           value={count(stats.requests30d)}
           icon={Activity}
-          hint={stats.requests30d ? `${percent(errorRate)} answered with an error · last ${ago(stats.lastRequestAt)}` : "No requests yet"}
+          hint={
+            stats.requests30d
+              ? `${percent(errorRate)} answered with an error · last ${ago(stats.lastRequestAt)}`
+              : "No requests yet"
+          }
           onClick={() => onTab("requests")}
         />
         <StatCard
           label="Webhook endpoints"
-          value={stats.webhooks.endpoints ? `${count(stats.webhooks.healthy)} of ${count(stats.webhooks.endpoints)} healthy` : "None"}
+          value={
+            stats.webhooks.endpoints
+              ? `${count(stats.webhooks.healthy)} of ${count(stats.webhooks.endpoints)} healthy`
+              : "None"
+          }
           icon={Webhook}
-          hint={stats.webhooks.failing || stats.webhooks.disabled ? `${count(stats.webhooks.failing)} failing · ${count(stats.webhooks.disabled)} turned off` : stats.webhooks.endpoints ? "All delivering" : "They haven't added one"}
+          hint={
+            stats.webhooks.failing || stats.webhooks.disabled
+              ? `${count(stats.webhooks.failing)} failing · ${count(stats.webhooks.disabled)} turned off`
+              : stats.webhooks.endpoints
+                ? "All delivering"
+                : "They haven't added one"
+          }
           onClick={() => onTab("webhooks")}
         />
       </StatGrid>
@@ -149,11 +198,17 @@ export function TeamOverview({ team, mode, onTab }: { team: DeveloperDetail; mod
           <CardTitle title="Business" hint="What the team told us about itself." />
           <dl className="grid grid-cols-1 gap-x-6 gap-y-4 px-5 pb-5 pt-4 sm:grid-cols-2">
             <Fact label="Company">{team.companyName}</Fact>
-            <Fact label="Expected volume">{team.expectedMonthlyVolume ? VOLUME_LABEL[team.expectedMonthlyVolume] : null}</Fact>
+            <Fact label="Expected volume">
+              {team.expectedMonthlyVolume ? VOLUME_LABEL[team.expectedMonthlyVolume] : null}
+            </Fact>
             <Fact label="Support email">{team.supportEmail}</Fact>
             <Fact label="Support phone">{team.supportPhone}</Fact>
             <div className="sm:col-span-2">
-              <Fact label="What they deliver">{team.useCase ? <span className="whitespace-pre-line font-normal leading-6">{team.useCase}</span> : null}</Fact>
+              <Fact label="What they deliver">
+                {team.useCase ? (
+                  <span className="whitespace-pre-line font-normal leading-6">{team.useCase}</span>
+                ) : null}
+              </Fact>
             </div>
           </dl>
         </Panel>

@@ -28,9 +28,7 @@ export const LogoutModal = () => {
           >
             <SVG.WarningIcon />
           </motion.span>
-          <UI.AlertDialogTitle className="text-danger mt-1 font-semibold">
-            Log out!
-          </UI.AlertDialogTitle>
+          <UI.AlertDialogTitle className="text-danger mt-1 font-semibold">Log out!</UI.AlertDialogTitle>
         </div>
 
         <div>

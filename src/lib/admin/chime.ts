@@ -19,7 +19,8 @@ export const CHIME_COOLDOWN_MS = 4_000;
 
 function audioContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
-  const Ctor = (window.AudioContext ?? (window as unknown as { webkitAudioContext?: AudioCtor }).webkitAudioContext) as AudioCtor | undefined;
+  const Ctor = (window.AudioContext ?? (window as unknown as { webkitAudioContext?: AudioCtor }).webkitAudioContext) as
+    AudioCtor | undefined;
   if (!Ctor) return null;
   if (!context) context = new Ctor();
   return context;

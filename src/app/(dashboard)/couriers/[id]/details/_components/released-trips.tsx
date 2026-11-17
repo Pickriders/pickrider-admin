@@ -70,7 +70,8 @@ export function ReleasedTrips({ riderId }: { riderId: string }) {
   const counts = data?.counts;
   const loading = query.isLoading;
 
-  if (query.error && !data) return <ErrorState message="Could not load released trips." onRetry={() => query.refetch()} />;
+  if (query.error && !data)
+    return <ErrorState message="Could not load released trips." onRetry={() => query.refetch()} />;
 
   return (
     <div className="space-y-4">
@@ -80,13 +81,29 @@ export function ReleasedTrips({ riderId }: { riderId: string }) {
           value={count(counts?.today)}
           icon={Undo2}
           loading={loading}
-          hint={counts ? `${count(counts.countedToday)} counted · ${count(data?.releasesLeftToday)} left today` : undefined}
+          hint={
+            counts ? `${count(counts.countedToday)} counted · ${count(data?.releasesLeftToday)} left today` : undefined
+          }
         />
-        <StatCard label="Last 7 days" value={count(counts?.last7Days)} loading={loading} hint={counts ? `${count(counts.countedLast7Days)} counted` : undefined} />
-        <StatCard label="Last 30 days" value={count(counts?.last30Days)} loading={loading} hint={counts ? `${count(counts.countedLast30Days)} counted` : undefined} />
+        <StatCard
+          label="Last 7 days"
+          value={count(counts?.last7Days)}
+          loading={loading}
+          hint={counts ? `${count(counts.countedLast7Days)} counted` : undefined}
+        />
+        <StatCard
+          label="Last 30 days"
+          value={count(counts?.last30Days)}
+          loading={loading}
+          hint={counts ? `${count(counts.countedLast30Days)} counted` : undefined}
+        />
         <StatCard
           label="Released at the store (30d)"
-          value={<span className={cx((counts?.arrivedAtPickupLast30Days ?? 0) > 0 && "text-danger")}>{count(counts?.arrivedAtPickupLast30Days)}</span>}
+          value={
+            <span className={cx((counts?.arrivedAtPickupLast30Days ?? 0) > 0 && "text-danger")}>
+              {count(counts?.arrivedAtPickupLast30Days)}
+            </span>
+          }
           icon={Store}
           loading={loading}
           hint="Gave it back after arriving, always counted"
@@ -102,7 +119,12 @@ export function ReleasedTrips({ riderId }: { riderId: string }) {
           {loading ? (
             <Skeleton className="my-3 h-24 w-full" />
           ) : !data?.releases.length ? (
-            <EmptyState compact icon={Undo2} title="No released trips" description="Trips the rider gives back before pickup, or the store takes off them, show up here." />
+            <EmptyState
+              compact
+              icon={Undo2}
+              title="No released trips"
+              description="Trips the rider gives back before pickup, or the store takes off them, show up here."
+            />
           ) : (
             <ul className="divide-y divide-line">
               {data.releases.map((release) => (

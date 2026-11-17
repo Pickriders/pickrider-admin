@@ -56,7 +56,9 @@ function UserPicker({ value, onChange }: { value: User | null; onChange: (user: 
         <Avatar src={value.photo} name={fullName(value)} size={40} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-ink">{fullName(value) || value.phone || value._id}</p>
-          <p className="truncate text-xs text-ink-muted">{[value.phone, formatEmail(value.email)].filter(Boolean).join(" · ")}</p>
+          <p className="truncate text-xs text-ink-muted">
+            {[value.phone, formatEmail(value.email)].filter(Boolean).join(" · ")}
+          </p>
         </div>
         <Badge tone={value.isRider ? "brand" : "neutral"}>{roleOf(value)}</Badge>
         <Button size="sm" variant="ghost" onClick={() => onChange(null)}>
@@ -68,10 +70,18 @@ function UserPicker({ value, onChange }: { value: User | null; onChange: (user: 
 
   return (
     <div>
-      <Input left={<Search size={15} />} value={text} onChange={(e) => setText(e.target.value)} placeholder="Name, phone or email" autoFocus />
+      <Input
+        left={<Search size={15} />}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Name, phone or email"
+        autoFocus
+      />
       <div className="mt-2 overflow-hidden rounded-xl border border-line">
         {!enabled ? (
-          <p className="px-3 py-3 text-xs text-ink-faint">Type at least two characters to search riders and customers.</p>
+          <p className="px-3 py-3 text-xs text-ink-faint">
+            Type at least two characters to search riders and customers.
+          </p>
         ) : users.isLoading ? (
           <div className="space-y-2 p-3">
             <Skeleton className="h-9 w-full" />
@@ -92,8 +102,12 @@ function UserPicker({ value, onChange }: { value: User | null; onChange: (user: 
                 >
                   <Avatar src={user.photo} name={fullName(user)} size={32} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-ink">{fullName(user) || user.phone || user._id}</span>
-                    <span className="block truncate text-xs text-ink-muted">{[user.phone, formatEmail(user.email)].filter(Boolean).join(" · ")}</span>
+                    <span className="block truncate text-sm font-semibold text-ink">
+                      {fullName(user) || user.phone || user._id}
+                    </span>
+                    <span className="block truncate text-xs text-ink-muted">
+                      {[user.phone, formatEmail(user.email)].filter(Boolean).join(" · ")}
+                    </span>
                   </span>
                   <Badge tone={user.isRider ? "brand" : "neutral"}>{roleOf(user)}</Badge>
                 </button>
@@ -120,7 +134,12 @@ export function TransferTab() {
   const balance = s?.balance ?? wallet.data?.balance ?? 0;
   const kobo = toKobo(amount);
   const overBalance = kobo != null && kobo > balance;
-  const amountError = amount && kobo == null ? "Enter an amount above zero." : overBalance ? `More than the wallet holds (${naira(balance, 2)}).` : undefined;
+  const amountError =
+    amount && kobo == null
+      ? "Enter an amount above zero."
+      : overBalance
+        ? `More than the wallet holds (${naira(balance, 2)}).`
+        : undefined;
   const ready = Boolean(user) && kobo != null && !overBalance && reason.trim().length >= 3 && pin.length === 4;
   const recipient = user ? fullName(user) || user.phone || user._id : "";
 
@@ -137,7 +156,9 @@ export function TransferTab() {
   });
 
   if (status.isError) {
-    return <ErrorState message="The platform finance status could not be loaded." onRetry={() => void status.refetch()} />;
+    return (
+      <ErrorState message="The platform finance status could not be loaded." onRetry={() => void status.refetch()} />
+    );
   }
 
   return (
@@ -178,8 +199,22 @@ export function TransferTab() {
               <UserPicker value={user} onChange={setUser} />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="Amount in naira" error={amountError} hint={kobo != null && !amountError ? `Sends ${naira(kobo, 2)}` : "Whole naira or with kobo, like 1500.50"}>
-                <Input type="number" inputMode="decimal" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" />
+              <Field
+                label="Amount in naira"
+                error={amountError}
+                hint={
+                  kobo != null && !amountError ? `Sends ${naira(kobo, 2)}` : "Whole naira or with kobo, like 1500.50"
+                }
+              >
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                />
               </Field>
               <Field label="Withdrawal PIN">
                 <Input
@@ -193,8 +228,17 @@ export function TransferTab() {
                 />
               </Field>
             </div>
-            <Field label="Reason" hint="Required. The recipient sees it on their wallet history." error={reason && reason.trim().length < 3 ? "Say a little more." : undefined}>
-              <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Goodwill credit for order PR-1234 delay" maxLength={240} />
+            <Field
+              label="Reason"
+              hint="Required. The recipient sees it on their wallet history."
+              error={reason && reason.trim().length < 3 ? "Say a little more." : undefined}
+            >
+              <Textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Goodwill credit for order PR-1234 delay"
+                maxLength={240}
+              />
             </Field>
             <Button type="submit" icon={ArrowRightLeft} disabled={!ready} loading={transfer.isPending}>
               Review transfer

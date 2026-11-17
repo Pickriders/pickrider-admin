@@ -5,7 +5,14 @@ describe("erasure checklist", () => {
     const list = erasureChecklist([]);
     expect(list).toHaveLength(6);
     expect(list.every((c) => c.ok)).toBe(true);
-    expect(list.map((c) => c.code)).toEqual(["OPEN_ORDERS", "RIDER_MID_TRIP", "WALLET_BALANCE", "PENDING_WITHDRAWALS", "OWNS_BUSINESS", "OWNS_TEAM"]);
+    expect(list.map((c) => c.code)).toEqual([
+      "OPEN_ORDERS",
+      "RIDER_MID_TRIP",
+      "WALLET_BALANCE",
+      "PENDING_WITHDRAWALS",
+      "OWNS_BUSINESS",
+      "OWNS_TEAM",
+    ]);
   });
 
   it("maps blockers onto their checks with the API's sentence, and shows the balance in naira", () => {
@@ -34,7 +41,10 @@ describe("erasure checklist", () => {
 
 describe("erasure confirmation", () => {
   it("asks for the phone first, then the email", () => {
-    expect(erasureConfirmTarget({ phone: "2348011111111", email: "a@b.c" })).toEqual({ label: "phone number", value: "2348011111111" });
+    expect(erasureConfirmTarget({ phone: "2348011111111", email: "a@b.c" })).toEqual({
+      label: "phone number",
+      value: "2348011111111",
+    });
     expect(erasureConfirmTarget({ email: "a@b.c" })).toEqual({ label: "email address", value: "a@b.c" });
     expect(erasureConfirmTarget({})).toBeNull();
   });

@@ -49,9 +49,7 @@ export const NewPasswordForm = () => {
                         type="password"
                         showToggle
                         className={`${
-                          touched.newPassword && errors.newPassword
-                            ? "focus-visible:ring-[#FF5244]/60"
-                            : ""
+                          touched.newPassword && errors.newPassword ? "focus-visible:ring-[#FF5244]/60" : ""
                         }`}
                         {...field}
                       />
@@ -74,9 +72,7 @@ export const NewPasswordForm = () => {
                         type="password"
                         showToggle
                         className={`${
-                          touched.confirmPassword && errors.confirmPassword
-                            ? "focus-visible:ring-[#FF5244]/60 "
-                            : ""
+                          touched.confirmPassword && errors.confirmPassword ? "focus-visible:ring-[#FF5244]/60 " : ""
                         }`}
                         {...field}
                       />

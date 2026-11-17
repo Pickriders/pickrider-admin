@@ -11,11 +11,7 @@ export const XIcon = ({ height = 21, width = 21, className }: SvgProps) => {
       xmlns="http://www.w3.org/2000/svg"
       className={cn("stroke-foreground", className)}
     >
-      <path
-        d="M5 5L19 19M5.00003 19L12 12L19 5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+      <path d="M5 5L19 19M5.00003 19L12 12L19 5" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 };

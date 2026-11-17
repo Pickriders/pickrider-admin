@@ -21,7 +21,11 @@ export function sortKeys(keys: DeveloperKey[]): { working: DeveloperKey[]; old: 
 }
 
 /** "TEAM_DEVELOPER" → "Developer". */
-export const roleLabel = (role: string) => role.replace(/^TEAM_/, "").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+export const roleLabel = (role: string) =>
+  role
+    .replace(/^TEAM_/, "")
+    .toLowerCase()
+    .replace(/^\w/, (c) => c.toUpperCase());
 
 function KeyRow({ apiKey, canRevoke, onRevoke }: { apiKey: DeveloperKey; canRevoke: boolean; onRevoke: () => void }) {
   const usable = apiKey.status === "active" || apiKey.status === "expiring";
@@ -42,7 +46,9 @@ function KeyRow({ apiKey, canRevoke, onRevoke }: { apiKey: DeveloperKey; canRevo
         </p>
         <p className="mt-1 text-xs text-ink-faint">
           Created {day(apiKey.createdAt)} · {apiKey.lastUsedAt ? `used ${ago(apiKey.lastUsedAt)}` : "never used"}
-          {apiKey.expiresAt ? ` · ${apiKey.status === "expired" ? "expired" : "expires"} ${when(apiKey.expiresAt)}` : ""}
+          {apiKey.expiresAt
+            ? ` · ${apiKey.status === "expired" ? "expired" : "expires"} ${when(apiKey.expiresAt)}`
+            : ""}
         </p>
         {apiKey.revokedAt ? (
           <p className="mt-1.5 rounded-lg bg-danger-soft px-2.5 py-1.5 text-xs text-danger">
@@ -58,12 +64,19 @@ function KeyRow({ apiKey, canRevoke, onRevoke }: { apiKey: DeveloperKey; canRevo
               </span>
             ))
           ) : (
-            <span className="rounded-md bg-surface px-1.5 py-0.5 text-[11px] font-semibold text-ink-muted">Full access</span>
+            <span className="rounded-md bg-surface px-1.5 py-0.5 text-[11px] font-semibold text-ink-muted">
+              Full access
+            </span>
           )}
         </p>
       </div>
       {usable && canRevoke ? (
-        <Button variant="ghost" size="sm" onClick={onRevoke} className="shrink-0 self-start text-danger hover:bg-danger-soft hover:text-danger">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRevoke}
+          className="shrink-0 self-start text-danger hover:bg-danger-soft hover:text-danger"
+        >
           Revoke
         </Button>
       ) : null}
@@ -90,7 +103,11 @@ export function TeamKeys({ team, mode }: { team: DeveloperDetail; mode: Mode }) 
           hint={`${working.length} working${old.length ? `, ${old.length} revoked or expired` : ""}. Revoking stops a key on its next request.`}
           action={
             old.length ? (
-              <button type="button" onClick={() => setShowOld((v) => !v)} className="text-xs font-semibold text-ink-muted hover:text-ink">
+              <button
+                type="button"
+                onClick={() => setShowOld((v) => !v)}
+                className="text-xs font-semibold text-ink-muted hover:text-ink"
+              >
                 {showOld ? "Hide old keys" : "Show old keys"}
               </button>
             ) : undefined
@@ -103,12 +120,21 @@ export function TeamKeys({ team, mode }: { team: DeveloperDetail; mode: Mode }) 
             ))}
           </ul>
         ) : (
-          <EmptyState compact icon={KeyRound} title={`No working ${mode} keys`} description="They create keys in the developer dashboard." />
+          <EmptyState
+            compact
+            icon={KeyRound}
+            title={`No working ${mode} keys`}
+            description="They create keys in the developer dashboard."
+          />
         )}
       </Panel>
 
       <Panel className="self-start">
-        <CardTitle title="IP allowlist" icon={ShieldCheck} hint="Keys are refused from any other address. Applies to every key." />
+        <CardTitle
+          title="IP allowlist"
+          icon={ShieldCheck}
+          hint="Keys are refused from any other address. Applies to every key."
+        />
         <div className="px-5 pb-5 pt-4">
           {ips.length ? (
             <ul className="space-y-1.5">
@@ -136,7 +162,10 @@ export function TeamMembers({ team }: { team: DeveloperDetail }) {
         <CardTitle title="Members" icon={Users} hint="Active members, owner first, with their own verification." />
         <ul className="mt-3 divide-y divide-line border-t border-line">
           {team.members.map((member) => (
-            <li key={member.id} className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <li
+              key={member.id}
+              className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-sm font-semibold text-ink">
                   <span className="truncate">{member.name || member.email}</span>
@@ -188,7 +217,11 @@ export function TeamMembers({ team }: { team: DeveloperDetail }) {
           </div>
         </Panel>
         <Panel>
-          <CardTitle title="Operational emails" icon={Mail} hint="Low balance, failed top-ups and failing webhooks go to owners, finance members and these." />
+          <CardTitle
+            title="Operational emails"
+            icon={Mail}
+            hint="Low balance, failed top-ups and failing webhooks go to owners, finance members and these."
+          />
           <div className="px-5 pb-5 pt-4">
             {team.settings.notificationEmails.length ? (
               <ul className="space-y-1">

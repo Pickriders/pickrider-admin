@@ -29,11 +29,19 @@ function BidRow({ bid }: { bid: OrderBid }) {
   const name = fullName(bid.rider) || "Courier";
   const won = bid.status === "ACCEPTED";
   return (
-    <div className={cx("flex items-center gap-3 rounded-xl border p-3", won ? "border-success/40 bg-success-soft/50" : "border-line bg-card")}>
+    <div
+      className={cx(
+        "flex items-center gap-3 rounded-xl border p-3",
+        won ? "border-success/40 bg-success-soft/50" : "border-line bg-card",
+      )}
+    >
       <Avatar src={bid.rider?.photo} name={name} size={36} />
       <div className="min-w-0 flex-1">
         {bid.rider ? (
-          <Link href={`/couriers/${bid.rider._id}`} className="block truncate text-sm font-semibold text-ink hover:underline">
+          <Link
+            href={`/couriers/${bid.rider._id}`}
+            className="block truncate text-sm font-semibold text-ink hover:underline"
+          >
             {name}
           </Link>
         ) : (
@@ -41,7 +49,9 @@ function BidRow({ bid }: { bid: OrderBid }) {
         )}
         <p className="truncate text-xs text-ink-muted">
           {bid.rider?.phone ? displayPhone(bid.rider.phone) : "No phone"}
-          {bid.riderStats ? ` · ${count(bid.riderStats.totalBids)} bids, ${count(bid.riderStats.wonBids)} won, avg ${naira(bid.riderStats.avgBid)}` : ""}
+          {bid.riderStats
+            ? ` · ${count(bid.riderStats.totalBids)} bids, ${count(bid.riderStats.wonBids)} won, avg ${naira(bid.riderStats.avgBid)}`
+            : ""}
         </p>
         <p className="text-[11px] text-ink-faint">Bid {when(bid.createdAt)}</p>
       </div>
@@ -63,18 +73,24 @@ export function RiderBids({ orderId, askingPrice }: { orderId: string; askingPri
   // The "7 bids" chips on the order lists link here with #bids; the page renders after the order
   // loads, so the browser's own jump to the anchor has already missed by then.
   useEffect(() => {
-    if (window.location.hash === "#bids") document.getElementById("bids")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (window.location.hash === "#bids")
+      document.getElementById("bids")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   return (
     <Panel id="bids" className="scroll-mt-24">
       <PanelHeader
         title="Rider bids"
-        subtitle={askingPrice ? `Every offer on this order, cheapest first. Customer asked ${naira(askingPrice)}.` : "Every offer on this order, cheapest first."}
+        subtitle={
+          askingPrice
+            ? `Every offer on this order, cheapest first. Customer asked ${naira(askingPrice)}.`
+            : "Every offer on this order, cheapest first."
+        }
         action={
           total ? (
             <Badge tone="neutral">
-              {count(total)} bid{total === 1 ? "" : "s"} · {count(data?.uniqueRiders)} rider{data?.uniqueRiders === 1 ? "" : "s"}
+              {count(total)} bid{total === 1 ? "" : "s"} · {count(data?.uniqueRiders)} rider
+              {data?.uniqueRiders === 1 ? "" : "s"}
             </Badge>
           ) : null
         }
@@ -88,7 +104,12 @@ export function RiderBids({ orderId, askingPrice }: { orderId: string; askingPri
         ) : offers.isError ? (
           <ErrorState message={errorMessage(offers.error)} onRetry={() => void offers.refetch()} />
         ) : !data || !data.offers.length ? (
-          <EmptyState compact icon={Gavel} title="No bids yet" description="Riders who offer on this order will show here with their price." />
+          <EmptyState
+            compact
+            icon={Gavel}
+            title="No bids yet"
+            description="Riders who offer on this order will show here with their price."
+          />
         ) : (
           <>
             <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">

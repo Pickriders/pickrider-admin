@@ -1,6 +1,20 @@
 "use client";
 
-import { ArrowLeft, Bike, Building2, Car, ExternalLink, Landmark, Lock, PauseCircle, ShieldCheck, Star, UserRound, Wallet, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Bike,
+  Building2,
+  Car,
+  ExternalLink,
+  Landmark,
+  Lock,
+  PauseCircle,
+  ShieldCheck,
+  Star,
+  UserRound,
+  Wallet,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -28,7 +42,16 @@ import {
 } from "@/components/kit";
 import { DangerZone } from "@/components/users/danger-zone";
 import { DispatchDialog, UserActions, WithdrawalRestrictionBanner } from "@/components/users/user-actions";
-import { ActivityFeed, LICENCE_LABEL, MoneyByPurpose, UserHeader, UserTransactionsTable, bucketLabel, licenceOf, licenceTone } from "@/components/users/user-panels";
+import {
+  ActivityFeed,
+  LICENCE_LABEL,
+  MoneyByPurpose,
+  UserHeader,
+  UserTransactionsTable,
+  bucketLabel,
+  licenceOf,
+  licenceTone,
+} from "@/components/users/user-panels";
 import { RiderReviews, Stars, type ReviewSummary } from "@/components/users/rider-reviews";
 import type { Vehicle } from "@/lib/admin/api";
 import { count, maskAccount, naira, percent, statusLabel, trend, when } from "@/lib/admin/format";
@@ -53,7 +76,15 @@ const TABS = ["insights", "earnings", "reviews", "releases", "handoffs", "transa
 type Tab = (typeof TABS)[number];
 const EARNING_PURPOSES = "ORDER_EARNING,ORDER_EARNING_SPLIT";
 
-function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | undefined; loading: boolean; onPick: (star?: number) => void }) {
+function RatingPanel({
+  reviews,
+  loading,
+  onPick,
+}: {
+  reviews: ReviewSummary | undefined;
+  loading: boolean;
+  onPick: (star?: number) => void;
+}) {
   const total = reviews?.count ?? 0;
   return (
     <Panel>
@@ -62,7 +93,11 @@ function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | un
         subtitle={total ? `${count(total)} review${total === 1 ? "" : "s"} from customers` : "No reviews yet"}
         action={
           total ? (
-            <button type="button" onClick={() => onPick(undefined)} className="text-xs font-bold text-brand-dark hover:underline">
+            <button
+              type="button"
+              onClick={() => onPick(undefined)}
+              className="text-xs font-bold text-brand-dark hover:underline"
+            >
               Read reviews
             </button>
           ) : null
@@ -74,7 +109,9 @@ function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | un
         ) : (
           <div className="flex items-start gap-5">
             <div className="shrink-0 text-center">
-              <p className="text-4xl font-black tracking-tight text-ink">{reviews?.average != null ? reviews.average.toFixed(1) : "–"}</p>
+              <p className="text-4xl font-black tracking-tight text-ink">
+                {reviews?.average != null ? reviews.average.toFixed(1) : "–"}
+              </p>
               <Stars value={reviews?.average ?? 0} size={12} className="mt-1" />
               <p className="mt-1 text-[11px] text-ink-faint">out of 5</p>
             </div>
@@ -93,7 +130,10 @@ function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | un
                     >
                       <span className="w-3 text-right font-semibold text-ink-muted">{star}</span>
                       <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface">
-                        <span className="block h-full rounded-full bg-warning transition-[filter] group-enabled:group-hover:brightness-95" style={{ width: `${width}%` }} />
+                        <span
+                          className="block h-full rounded-full bg-warning transition-[filter] group-enabled:group-hover:brightness-95"
+                          style={{ width: `${width}%` }}
+                        />
                       </span>
                       <span className="w-6 text-right tabular-nums text-ink-faint">{n}</span>
                     </button>
@@ -111,22 +151,35 @@ function RatingPanel({ reviews, loading, onPick }: { reviews: ReviewSummary | un
 function VehiclesPanel({ vehicles, loading }: { vehicles: Vehicle[] | undefined; loading: boolean }) {
   return (
     <Panel>
-      <PanelHeader title="Vehicles" subtitle={vehicles?.length ? `${vehicles.length} on this rider` : "What this rider delivers with"} />
+      <PanelHeader
+        title="Vehicles"
+        subtitle={vehicles?.length ? `${vehicles.length} on this rider` : "What this rider delivers with"}
+      />
       <div className="px-5 pb-5 pt-4">
         {loading ? (
           <Skeleton className="h-20 w-full" />
         ) : !vehicles?.length ? (
-          <EmptyState compact icon={Car} title="No vehicles added" description="Vehicles the rider registers in the app show up here." />
+          <EmptyState
+            compact
+            icon={Car}
+            title="No vehicles added"
+            description="Vehicles the rider registers in the app show up here."
+          />
         ) : (
           <ul className="divide-y divide-line">
             {vehicles.map((v) => (
               <li key={v._id}>
-                <Link href={`/vehicles/${v._id}/verification`} className="flex items-center gap-3 py-2.5 hover:bg-surface">
+                <Link
+                  href={`/vehicles/${v._id}/verification`}
+                  className="flex items-center gap-3 py-2.5 hover:bg-surface"
+                >
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand-dark">
                     <Car size={16} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-ink">{[v.make, v.model].filter(Boolean).join(" ") || v.name || "Vehicle"}</p>
+                    <p className="truncate text-sm font-semibold text-ink">
+                      {[v.make, v.model].filter(Boolean).join(" ") || v.name || "Vehicle"}
+                    </p>
                     <p className="truncate text-xs text-ink-muted">
                       {[v.plateNumber, v.color, v.type].filter(Boolean).join(" · ")}
                     </p>
@@ -154,7 +207,8 @@ function CourierDetail({ id }: { id: string }) {
   const ratingFilter = Number(table.state.filters.rating) || undefined;
   const setRatingFilter = (star?: number) => table.update({ rating: star ?? undefined }, { resetPage: false });
   /** Jump to the Reviews tab, optionally already filtered to one star rating. */
-  const openReviews = (star?: number) => table.update({ tab: "reviews", rating: star ?? undefined }, { resetPage: false });
+  const openReviews = (star?: number) =>
+    table.update({ tab: "reviews", rating: star ?? undefined }, { resetPage: false });
 
   const data = overview.data;
   const user = data?.user;
@@ -209,13 +263,20 @@ function CourierDetail({ id }: { id: string }) {
         user={user}
         loading={loading}
         online={user ? Boolean(user.isOnline) : undefined}
-        subtitle={lifetime ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned` : undefined}
+        subtitle={
+          lifetime
+            ? `${count(lifetime.completed)} deliveries lifetime · ${naira(lifetime.riderFees)} earned`
+            : undefined
+        }
         badges={
           <>
             <Badge tone={user?.isOnline ? "success" : "neutral"} dot>
               {user?.isOnline ? "Online" : "Offline"}
             </Badge>
-            <Link href={`/couriers/${id}/verification`} className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30">
+            <Link
+              href={`/couriers/${id}/verification`}
+              className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+            >
               <Badge tone={licenceTone(licence.status)}>
                 <ShieldCheck size={11} aria-hidden />
                 {LICENCE_LABEL[licence.status]}
@@ -241,7 +302,11 @@ function CourierDetail({ id }: { id: string }) {
             ) : null}
           </>
         }
-        actions={user ? <UserActions user={user} wallet={data?.wallet} restriction={restriction} showDispatch showWithdrawals /> : null}
+        actions={
+          user ? (
+            <UserActions user={user} wallet={data?.wallet} restriction={restriction} showDispatch showWithdrawals />
+          ) : null
+        }
         banner={
           user && (user.dispatchPaused || restriction?.active) ? (
             <div className="space-y-2">
@@ -258,7 +323,11 @@ function CourierDetail({ id }: { id: string }) {
                       </p>
                     </div>
                   </div>
-                  <button type="button" onClick={() => setDispatchOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setDispatchOpen(true)}
+                    className="shrink-0 text-sm font-bold text-brand-dark hover:underline"
+                  >
                     Resume dispatch
                   </button>
                 </div>
@@ -317,7 +386,13 @@ function CourierDetail({ id }: { id: string }) {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Deliveries over time" subtitle="Assigned, completed and cancelled per bucket" loading={series.isLoading} empty={!series.data?.points.length} height={260}>
+          <ChartCard
+            title="Deliveries over time"
+            subtitle="Assigned, completed and cancelled per bucket"
+            loading={series.isLoading}
+            empty={!series.data?.points.length}
+            height={260}
+          >
             <TrendChart
               data={series.data?.points ?? []}
               xKey="bucket"
@@ -330,8 +405,20 @@ function CourierDetail({ id }: { id: string }) {
             />
           </ChartCard>
         </div>
-        <ChartCard title="Earnings over time" subtitle="Rider fees per bucket" loading={series.isLoading} empty={!series.data?.points.length} height={260}>
-          <TrendChart data={series.data?.points ?? []} xKey="bucket" xFormat={bucketLabel(series.data?.bucket)} yFormat="naira" series={[{ key: "riderFees", label: "Earned", format: "naira" }]} />
+        <ChartCard
+          title="Earnings over time"
+          subtitle="Rider fees per bucket"
+          loading={series.isLoading}
+          empty={!series.data?.points.length}
+          height={260}
+        >
+          <TrendChart
+            data={series.data?.points ?? []}
+            xKey="bucket"
+            xFormat={bucketLabel(series.data?.bucket)}
+            yFormat="naira"
+            series={[{ key: "riderFees", label: "Earned", format: "naira" }]}
+          />
         </ChartCard>
       </div>
 
@@ -344,21 +431,31 @@ function CourierDetail({ id }: { id: string }) {
             {loading ? (
               <Skeleton className="h-24 w-full" />
             ) : !data?.wallet ? (
-              <EmptyState compact icon={Wallet} title="No wallet yet" description="A wallet is created the first time the rider earns." />
+              <EmptyState
+                compact
+                icon={Wallet}
+                title="No wallet yet"
+                description="A wallet is created the first time the rider earns."
+              />
             ) : (
               <div className="space-y-4">
                 <KeyValue
                   columns={2}
                   items={[
                     { label: "Balance", value: naira(data.wallet.balance) },
-                    { label: "Wallet status", value: data.wallet.status ? statusLabel(String(data.wallet.status)) : "Active" },
+                    {
+                      label: "Wallet status",
+                      value: data.wallet.status ? statusLabel(String(data.wallet.status)) : "Active",
+                    },
                   ]}
                 />
                 {settlement?.accountNumber ? (
                   <div className="flex items-start gap-3 rounded-xl border border-line bg-surface px-4 py-3">
                     <Landmark size={16} className="mt-0.5 shrink-0 text-ink-muted" />
                     <div className="min-w-0 text-sm">
-                      <p className="truncate font-semibold text-ink">{settlement.accountName ?? "Account name not set"}</p>
+                      <p className="truncate font-semibold text-ink">
+                        {settlement.accountName ?? "Account name not set"}
+                      </p>
                       <p className="text-ink-muted">
                         {settlement.bankName ?? "Bank"} · {maskAccount(settlement.accountNumber)}
                       </p>
@@ -368,7 +465,9 @@ function CourierDetail({ id }: { id: string }) {
                     </Badge>
                   </div>
                 ) : (
-                  <p className="text-xs text-ink-faint">No settlement account yet. The rider adds one in the app before withdrawing.</p>
+                  <p className="text-xs text-ink-faint">
+                    No settlement account yet. The rider adds one in the app before withdrawing.
+                  </p>
                 )}
               </div>
             )}
@@ -400,7 +499,9 @@ function CourierDetail({ id }: { id: string }) {
           emptyDescription="Each completed delivery credits the rider's wallet and shows up here."
         />
       ) : null}
-      {tab === "reviews" ? <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} /> : null}
+      {tab === "reviews" ? (
+        <RiderReviews riderId={id} summary={data?.reviews} rating={ratingFilter} onRatingChange={setRatingFilter} />
+      ) : null}
       {tab === "releases" ? <ReleasedTrips riderId={id} /> : null}
       {tab === "handoffs" ? <RiderHandoffs riderId={id} /> : null}
       {tab === "transactions" ? (

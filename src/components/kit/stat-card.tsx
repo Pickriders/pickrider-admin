@@ -65,7 +65,11 @@ export function StatCard({
       </div>
       {spark && spark.length > 1 ? (
         <div className="-mx-1 mt-3">
-          <Sparkline data={spark} dataKey={sparkKey} color={tone === "brand" ? "rgba(255,255,255,0.85)" : tone === "dark" ? "hsl(var(--card))" : undefined} />
+          <Sparkline
+            data={spark}
+            dataKey={sparkKey}
+            color={tone === "brand" ? "rgba(255,255,255,0.85)" : tone === "dark" ? "hsl(var(--card))" : undefined}
+          />
         </div>
       ) : null}
       {trend != null || hint ? (

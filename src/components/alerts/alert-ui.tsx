@@ -24,7 +24,13 @@ export const ALERT_TYPE_LABEL: Record<string, string> = {
 export const URGENT_ALERT_TYPES = new Set(["HANDOFF_ACCIDENT"]);
 
 export function alertTypeLabel(type: string) {
-  return ALERT_TYPE_LABEL[type] ?? type.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  return (
+    ALERT_TYPE_LABEL[type] ??
+    type
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .replace(/^\w/, (c) => c.toUpperCase())
+  );
 }
 
 /** "15 handoffs waiting for a rider": one toast for a burst instead of fifteen. */
@@ -56,18 +62,33 @@ export function riderUnpauseHref(alert: Pick<AdminAlert, "type" | "riderId">) {
 }
 
 /** "Review and unpause" link for a rider the release rules paused; nothing for other alerts. */
-export function RiderUnpauseLink({ alert, onClick, className }: { alert: Pick<AdminAlert, "type" | "riderId">; onClick?: () => void; className?: string }) {
+export function RiderUnpauseLink({
+  alert,
+  onClick,
+  className,
+}: {
+  alert: Pick<AdminAlert, "type" | "riderId">;
+  onClick?: () => void;
+  className?: string;
+}) {
   const href = riderUnpauseHref(alert);
   if (!href) return null;
   return (
-    <Link href={href} onClick={onClick} className={cx("inline-flex items-center gap-1 font-semibold text-brand-dark hover:underline", className)}>
+    <Link
+      href={href}
+      onClick={onClick}
+      className={cx("inline-flex items-center gap-1 font-semibold text-brand-dark hover:underline", className)}
+    >
       <PlayCircle size={12} aria-hidden />
       Review and unpause
     </Link>
   );
 }
 
-export const ALERT_TYPE_OPTIONS = Object.keys(ALERT_TYPE_LABEL).map((value) => ({ value, label: ALERT_TYPE_LABEL[value] }));
+export const ALERT_TYPE_OPTIONS = Object.keys(ALERT_TYPE_LABEL).map((value) => ({
+  value,
+  label: ALERT_TYPE_LABEL[value],
+}));
 
 export function SeverityBadge({ severity }: { severity: string }) {
   const urgent = severity === "URGENT";
@@ -80,7 +101,13 @@ export function SeverityBadge({ severity }: { severity: string }) {
 }
 
 /** "Ada is handling this", "You are handling this", or nothing while unclaimed. */
-export function ClaimedBy({ alert, className }: { alert: Pick<AdminAlert, "status" | "claimedBy">; className?: string }) {
+export function ClaimedBy({
+  alert,
+  className,
+}: {
+  alert: Pick<AdminAlert, "status" | "claimedBy">;
+  className?: string;
+}) {
   const me = useMe();
   const staff = useStaffName(alert.status === "CLAIMED" && alert.claimedBy !== me.data?._id ? alert.claimedBy : null);
   if (alert.status !== "CLAIMED" || !alert.claimedBy) return null;
@@ -97,18 +124,31 @@ export function ClaimedBy({ alert, className }: { alert: Pick<AdminAlert, "statu
 /** Who closed it: the system once the problem went away, or a named admin with their note. */
 export function ResolvedBy({ alert }: { alert: Pick<AdminAlert, "resolution" | "resolvedBy" | "resolutionNote"> }) {
   const me = useMe();
-  const staff = useStaffName(alert.resolution === "ADMIN" && alert.resolvedBy !== me.data?._id ? alert.resolvedBy : null);
+  const staff = useStaffName(
+    alert.resolution === "ADMIN" && alert.resolvedBy !== me.data?._id ? alert.resolvedBy : null,
+  );
   const who =
-    alert.resolution === "AUTO" ? "Resolved itself" : alert.resolvedBy === me.data?._id ? "Resolved by you" : `Resolved by ${fullName(staff.data) || "a teammate"}`;
+    alert.resolution === "AUTO"
+      ? "Resolved itself"
+      : alert.resolvedBy === me.data?._id
+        ? "Resolved by you"
+        : `Resolved by ${fullName(staff.data) || "a teammate"}`;
   return (
     <span className="block max-w-[16rem] leading-tight">
       <span className="block text-[12px] font-semibold text-success">{who}</span>
-      {alert.resolutionNote ? <span className="mt-0.5 block break-words text-[11px] text-ink-muted">&ldquo;{alert.resolutionNote}&rdquo;</span> : null}
+      {alert.resolutionNote ? (
+        <span className="mt-0.5 block break-words text-[11px] text-ink-muted">
+          &ldquo;{alert.resolutionNote}&rdquo;
+        </span>
+      ) : null}
     </span>
   );
 }
 
-type EmailFields = Pick<AdminAlert, "emailedAt" | "emailReminderAt" | "emailDigestAt" | "emailResolvedAt" | "emailRecipientsCount">;
+type EmailFields = Pick<
+  AdminAlert,
+  "emailedAt" | "emailReminderAt" | "emailDigestAt" | "emailResolvedAt" | "emailRecipientsCount"
+>;
 
 /**
  * What core emailed support about an alert, oldest first: the escalation ("Emailed support at
@@ -124,9 +164,24 @@ export function alertEmailMeta(alert: EmailFields): { key: string; label: string
       title: `Emailed ${n ? `${n} support inbox${n === 1 ? "" : "es"}` : "support"} at ${when(alert.emailedAt)}`,
     });
   }
-  if (alert.emailDigestAt) out.push({ key: "digest", label: "In digest", title: `Listed in an alert storm digest email at ${when(alert.emailDigestAt)}` });
-  if (alert.emailReminderAt) out.push({ key: "reminder", label: "Reminder sent", title: `Still unclaimed, reminder emailed at ${when(alert.emailReminderAt)}` });
-  if (alert.emailResolvedAt) out.push({ key: "resolved", label: "Resolved email sent", title: `Resolved follow-up emailed at ${when(alert.emailResolvedAt)}` });
+  if (alert.emailDigestAt)
+    out.push({
+      key: "digest",
+      label: "In digest",
+      title: `Listed in an alert storm digest email at ${when(alert.emailDigestAt)}`,
+    });
+  if (alert.emailReminderAt)
+    out.push({
+      key: "reminder",
+      label: "Reminder sent",
+      title: `Still unclaimed, reminder emailed at ${when(alert.emailReminderAt)}`,
+    });
+  if (alert.emailResolvedAt)
+    out.push({
+      key: "resolved",
+      label: "Resolved email sent",
+      title: `Resolved follow-up emailed at ${when(alert.emailResolvedAt)}`,
+    });
   return out;
 }
 
@@ -139,7 +194,11 @@ export function AlertEmailMeta({ alert, className }: { alert: EmailFields; class
       <Mail size={11} aria-hidden className="shrink-0" />
       {items.map((item, i) => (
         <span key={item.key} title={item.title} className="whitespace-nowrap">
-          {i ? <span aria-hidden className="mr-2">·</span> : null}
+          {i ? (
+            <span aria-hidden className="mr-2">
+              ·
+            </span>
+          ) : null}
           {item.label}
         </span>
       ))}
@@ -153,7 +212,10 @@ export function alertHref(alertId: string) {
 }
 
 /** The alert a `?alert=<id>` link points at, from whichever loaded list has it. */
-export function findAlert<T extends { id: string }>(alertId: string | undefined, ...lists: (T[] | undefined)[]): T | undefined {
+export function findAlert<T extends { id: string }>(
+  alertId: string | undefined,
+  ...lists: (T[] | undefined)[]
+): T | undefined {
   if (!alertId) return undefined;
   for (const list of lists) {
     const hit = list?.find((alert) => alert.id === alertId);

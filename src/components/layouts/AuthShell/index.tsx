@@ -22,13 +22,19 @@ export function AuthShell({ children }: Readonly<{ children: React.ReactNode }>)
         </div>
 
         <div className="mt-auto">
-          <h2 className="font-clash-display text-3xl font-semibold leading-tight">The command center for everything Pickriders.</h2>
-          <p className="mt-3 max-w-sm text-sm text-white/70">One console for orders, couriers, businesses and finances across the platform.</p>
+          <h2 className="font-clash-display text-3xl font-semibold leading-tight">
+            The command center for everything Pickriders.
+          </h2>
+          <p className="mt-3 max-w-sm text-sm text-white/70">
+            One console for orders, couriers, businesses and finances across the platform.
+          </p>
 
           <div className="mt-8 space-y-4">
             {HIGHLIGHTS.map((item) => (
               <div key={item.title} className="flex items-start gap-3">
-                <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-white/15">{item.icon}</span>
+                <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-white/15">
+                  {item.icon}
+                </span>
                 <div>
                   <p className="text-sm font-semibold">{item.title}</p>
                   <p className="text-xs text-white/60">{item.body}</p>

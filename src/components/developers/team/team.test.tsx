@@ -20,7 +20,11 @@ import { endpointHealth } from "./team-webhooks";
 jest.mock("@/lib/admin/hooks", () => ({ useAction: () => ({ mutate: jest.fn(), isPending: false }) }));
 let allowed = true;
 jest.mock("@/lib/admin/use-can", () => ({ useCan: () => ({ can: () => allowed, roles: [], ready: true }) }));
-jest.mock("next/navigation", () => ({ useRouter: () => ({ push: jest.fn(), replace: jest.fn() }), usePathname: () => "/developers/t1", useSearchParams: () => new URLSearchParams() }));
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => "/developers/t1",
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 const mode = (patch: Partial<DeveloperModeStats> = {}): DeveloperModeStats =>
   ({
@@ -34,7 +38,20 @@ const mode = (patch: Partial<DeveloperModeStats> = {}): DeveloperModeStats =>
   }) as DeveloperModeStats;
 
 const key = (patch: Partial<DeveloperKey> = {}): DeveloperKey =>
-  ({ id: "k1", label: "Server", prefix: "sk_test_4fQ9", livemode: false, status: "active", scopes: [], lastUsedAt: null, expiresAt: null, revokedAt: null, revokedReason: null, createdAt: "2026-11-01T09:00:00Z", ...patch }) as DeveloperKey;
+  ({
+    id: "k1",
+    label: "Server",
+    prefix: "sk_test_4fQ9",
+    livemode: false,
+    status: "active",
+    scopes: [],
+    lastUsedAt: null,
+    expiresAt: null,
+    revokedAt: null,
+    revokedReason: null,
+    createdAt: "2026-11-01T09:00:00Z",
+    ...patch,
+  }) as DeveloperKey;
 
 const team = (patch: Partial<DeveloperDetail> = {}): DeveloperDetail =>
   ({
@@ -46,7 +63,14 @@ const team = (patch: Partial<DeveloperDetail> = {}): DeveloperDetail =>
     liveStatus: "PENDING",
     liveRequestedAt: "2026-11-14T09:00:00Z",
     liveReviewedAt: null,
-    owner: { id: "u1", name: "Ada Obi", email: "ada@acme.test", phone: null, emailVerified: true, phoneVerified: false },
+    owner: {
+      id: "u1",
+      name: "Ada Obi",
+      email: "ada@acme.test",
+      phone: null,
+      emailVerified: true,
+      phoneVerified: false,
+    },
     suspensionReason: null,
     suspendedAt: null,
     createdAt: "2026-11-01T09:00:00Z",
@@ -71,7 +95,16 @@ const team = (patch: Partial<DeveloperDetail> = {}): DeveloperDetail =>
       lowBalanceThreshold: null,
       lowBalanceAlertedAt: null,
       allowedIps: [],
-      autoTopUp: { enabled: false, threshold: null, amount: null, card: null, lastChargeAt: null, consecutiveFailures: 0, lastFailureReason: null, disabledReason: null },
+      autoTopUp: {
+        enabled: false,
+        threshold: null,
+        amount: null,
+        card: null,
+        lastChargeAt: null,
+        consecutiveFailures: 0,
+        lastFailureReason: null,
+        disabledReason: null,
+      },
       fundingAccount: null,
     },
     invitations: [],
@@ -80,7 +113,17 @@ const team = (patch: Partial<DeveloperDetail> = {}): DeveloperDetail =>
   }) as DeveloperDetail;
 
 const activity = (patch: Partial<DeveloperActivity> = {}): DeveloperActivity =>
-  ({ id: "a1", event: "key.revoked", actor: null, staff: null, target: { type: "api_key", label: "Server" }, before: null, after: null, createdAt: "2026-11-15T10:00:00Z", ...patch }) as DeveloperActivity;
+  ({
+    id: "a1",
+    event: "key.revoked",
+    actor: null,
+    staff: null,
+    target: { type: "api_key", label: "Server" },
+    before: null,
+    after: null,
+    createdAt: "2026-11-15T10:00:00Z",
+    ...patch,
+  }) as DeveloperActivity;
 
 describe("developer team page rules", () => {
   it("opens live once a team has been live, test before", () => {
@@ -92,39 +135,82 @@ describe("developer team page rules", () => {
 
   it("says why a team is held back, team suspension first", () => {
     expect(teamNotice(team())).toBeNull();
-    expect(teamNotice(team({ liveStatus: "REJECTED", liveRejectionReason: "Add a website.", liveReviewedBy: { id: "s1", name: "Ola" } }))).toMatchObject({ title: "Live request rejected", body: "Add a website.", by: "Ola" });
-    expect(teamNotice(team({ liveStatus: "SUSPENDED", status: "SUSPENDED", suspensionReason: "Fraud.", suspendedBy: { id: "s2", name: "Bisi" } }))).toMatchObject({ title: "Team suspended", body: "Fraud.", by: "Bisi" });
+    expect(
+      teamNotice(
+        team({
+          liveStatus: "REJECTED",
+          liveRejectionReason: "Add a website.",
+          liveReviewedBy: { id: "s1", name: "Ola" },
+        }),
+      ),
+    ).toMatchObject({ title: "Live request rejected", body: "Add a website.", by: "Ola" });
+    expect(
+      teamNotice(
+        team({
+          liveStatus: "SUSPENDED",
+          status: "SUSPENDED",
+          suspensionReason: "Fraud.",
+          suspendedBy: { id: "s2", name: "Bisi" },
+        }),
+      ),
+    ).toMatchObject({ title: "Team suspended", body: "Fraud.", by: "Bisi" });
   });
 
   it("draws the road to live, with who decided", () => {
-    expect(liveJourney(team({ liveStatus: "NOT_REQUESTED", liveRequestedAt: null })).map((s) => [s.label, s.state])).toEqual([
+    expect(
+      liveJourney(team({ liveStatus: "NOT_REQUESTED", liveRequestedAt: null })).map((s) => [s.label, s.state]),
+    ).toEqual([
       ["Signed up", "done"],
       ["Hasn't asked to go live", "todo"],
     ]);
     expect(liveJourney(team()).map((s) => s.state)).toEqual(["done", "done", "current"]);
-    const approved = liveJourney(team({ liveStatus: "APPROVED", liveReviewedBy: { id: "s1", name: "Ola Obi" }, liveReviewedAt: "2026-11-15T10:00:00Z" }));
+    const approved = liveJourney(
+      team({
+        liveStatus: "APPROVED",
+        liveReviewedBy: { id: "s1", name: "Ola Obi" },
+        liveReviewedAt: "2026-11-15T10:00:00Z",
+      }),
+    );
     expect(approved[2]).toMatchObject({ label: "Approved by Ola Obi", state: "done" });
     const suspended = liveJourney(team({ liveStatus: "SUSPENDED", liveSuspensionReason: "Chargebacks." }));
-    expect(suspended.map((s) => s.label)).toEqual(["Signed up", "Asked to go live", "Approved", "Live access suspended"]);
+    expect(suspended.map((s) => s.label)).toEqual([
+      "Signed up",
+      "Asked to go live",
+      "Approved",
+      "Live access suspended",
+    ]);
   });
 
   it("puts activity in words, naming staff only as staff", () => {
     expect(activitySentence(activity())).toBe("revoked the key Server");
     expect(activitySentence(activity({ event: "live.approved", target: null }))).toBe("approved live access");
     expect(activitySentence(activity({ event: "wallet.something_new", target: null }))).toBe("wallet something new");
-    expect(activityActor(activity({ actor: { id: "u1", name: "Ada Obi", email: "ada@acme.test" } }))).toEqual({ name: "Ada Obi", staff: false });
+    expect(activityActor(activity({ actor: { id: "u1", name: "Ada Obi", email: "ada@acme.test" } }))).toEqual({
+      name: "Ada Obi",
+      staff: false,
+    });
     expect(activityActor(activity({ staff: { id: "s1", name: "Ola Obi" } }))).toEqual({ name: "Ola Obi", staff: true });
     expect(activityActor(activity())).toEqual({ name: "Pickriders", staff: false });
   });
 
   it("groups activity by day, keeping order", () => {
-    const rows = [activity({ id: "1", createdAt: "2026-11-15T18:00:00Z" }), activity({ id: "2", createdAt: "2026-11-15T09:00:00Z" }), activity({ id: "3", createdAt: "2026-11-13T09:00:00Z" })];
+    const rows = [
+      activity({ id: "1", createdAt: "2026-11-15T18:00:00Z" }),
+      activity({ id: "2", createdAt: "2026-11-15T09:00:00Z" }),
+      activity({ id: "3", createdAt: "2026-11-13T09:00:00Z" }),
+    ];
     expect(groupByDay(rows).map((g) => g.rows.map((r) => r.id))).toEqual([["1", "2"], ["3"]]);
   });
 
   it("looks a request up by id in either mode, or filters within the page's mode", () => {
     const filters = { status: "failed", method: "POST", path: " /orders ", key: "", requestId: "" };
-    expect(requestLogQuery("live", filters)).toEqual({ livemode: "true", status: "failed", method: "POST", path: "/orders", key: "" });
+    expect(requestLogQuery("live", filters)).toEqual({
+      livemode: "true",
+      status: "failed",
+      method: "POST",
+      path: "/orders",
+      key: "",
+    });
     expect(requestLogQuery("test", { ...filters, requestId: " req_123 " })).toEqual({ request_id: "req_123" });
     expect(duration(312.4)).toBe("312 ms");
     expect(duration(2400)).toBe("2.4 s");
@@ -133,12 +219,20 @@ describe("developer team page rules", () => {
   it("colours statuses and reads endpoint health", () => {
     expect([200, 302, 404, 503, null].map(statusTone)).toEqual(["success", "info", "warning", "danger", "neutral"]);
     expect(endpointHealth({ status: "enabled", disabled_reason: null, failing_since: null }).label).toBe("Delivering");
-    expect(endpointHealth({ status: "enabled", disabled_reason: null, failing_since: "2026-11-14T09:00:00Z" }).tone).toBe("danger");
-    expect(endpointHealth({ status: "disabled", disabled_reason: "failing", failing_since: null }).label).toBe("Turned off: kept failing");
+    expect(
+      endpointHealth({ status: "enabled", disabled_reason: null, failing_since: "2026-11-14T09:00:00Z" }).tone,
+    ).toBe("danger");
+    expect(endpointHealth({ status: "disabled", disabled_reason: "failing", failing_since: null }).label).toBe(
+      "Turned off: kept failing",
+    );
   });
 
   it("formats keys, roles, purposes and bodies", () => {
-    const { working, old } = sortKeys([key({ id: "a", status: "revoked" }), key({ id: "b" }), key({ id: "c", status: "expiring" })]);
+    const { working, old } = sortKeys([
+      key({ id: "a", status: "revoked" }),
+      key({ id: "b" }),
+      key({ id: "c", status: "expiring" }),
+    ]);
     expect([working.map((k) => k.id), old.map((k) => k.id)]).toEqual([["b", "c"], ["a"]]);
     expect(roleLabel("TEAM_DEVELOPER")).toBe("Developer");
     expect(purposeLabel("order_payment")).toBe("Order payment");
@@ -182,7 +276,18 @@ describe("developer team page", () => {
   });
 
   it("shows a suspended team's notice with who suspended it, and only Restore", () => {
-    act(() => root.render(<TeamHeader team={team({ status: "SUSPENDED", suspensionReason: "Suspected fraud.", suspendedAt: "2026-11-15T10:00:00Z", suspendedBy: { id: "s1", name: "Ola Obi" } })} />));
+    act(() =>
+      root.render(
+        <TeamHeader
+          team={team({
+            status: "SUSPENDED",
+            suspensionReason: "Suspected fraud.",
+            suspendedAt: "2026-11-15T10:00:00Z",
+            suspendedBy: { id: "s1", name: "Ola Obi" },
+          })}
+        />,
+      ),
+    );
     expect(container.querySelector("[role='status']")?.textContent).toContain("by Ola Obi");
     expect(container.textContent).toContain("Suspected fraud.");
     expect(buttons()).toContain("Restore team");
@@ -190,7 +295,20 @@ describe("developer team page", () => {
   });
 
   it("badges staff actions and shows the reason the developer was given", () => {
-    act(() => root.render(<ol><ActivityItem row={activity({ event: "team.suspended", target: null, staff: { id: "s1", name: "Ola Obi" }, after: { status: "SUSPENDED", reason: "Suspected fraud." } })} /></ol>));
+    act(() =>
+      root.render(
+        <ol>
+          <ActivityItem
+            row={activity({
+              event: "team.suspended",
+              target: null,
+              staff: { id: "s1", name: "Ola Obi" },
+              after: { status: "SUSPENDED", reason: "Suspected fraud." },
+            })}
+          />
+        </ol>,
+      ),
+    );
     expect(container.textContent).toContain("Ola Obi");
     expect(container.textContent).toContain("Staff");
     expect(container.textContent).toContain("suspended the team");
@@ -198,7 +316,17 @@ describe("developer team page", () => {
   });
 
   it("lists the mode's working keys with revoke, and old ones on request", () => {
-    const keys = [key({ id: "w", label: "Server" }), key({ id: "r", label: "Old laptop", status: "revoked", revokedAt: "2026-11-10T09:00:00Z", revokedReason: "Leaked." }), key({ id: "l", label: "Live server", livemode: true })];
+    const keys = [
+      key({ id: "w", label: "Server" }),
+      key({
+        id: "r",
+        label: "Old laptop",
+        status: "revoked",
+        revokedAt: "2026-11-10T09:00:00Z",
+        revokedReason: "Leaked.",
+      }),
+      key({ id: "l", label: "Live server", livemode: true }),
+    ];
     act(() => root.render(<TeamKeys team={team({ keys })} mode="test" />));
     expect(container.textContent).toContain("Server");
     expect(container.textContent).not.toContain("Old laptop");

@@ -45,9 +45,7 @@ export const UserMenu = () => {
             {initials}
           </div>
           <div className="hidden min-w-0 text-left md:block">
-            <span className="block truncate font-semibold text-sm leading-tight">
-              {fullName}
-            </span>
+            <span className="block truncate font-semibold text-sm leading-tight">{fullName}</span>
             <p className="truncate text-xs text-ink-muted leading-tight">{formatEmail(data?.email)}</p>
           </div>
           <span className="hidden text-ink-muted md:inline">
@@ -68,9 +66,7 @@ export const UserMenu = () => {
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-semibold text-sm text-foreground">
-              {fullName || "Admin"}
-            </p>
+            <p className="truncate font-semibold text-sm text-foreground">{fullName || "Admin"}</p>
             <p className="truncate text-xs text-ink-muted">{formatEmail(data?.email)}</p>
           </div>
         </div>

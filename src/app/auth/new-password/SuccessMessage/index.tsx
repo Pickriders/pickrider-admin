@@ -34,16 +34,10 @@ export const SuccessMessage = () => {
         <motion.div variants={checkedIconVariants}>
           <CheckedIcon />
         </motion.div>
-        <motion.h4
-          variants={itemVariants}
-          className="text-2xl font-semibold font-clash-display text-[#32BA7C]"
-        >
+        <motion.h4 variants={itemVariants} className="text-2xl font-semibold font-clash-display text-[#32BA7C]">
           Password Reset!
         </motion.h4>
-        <motion.p
-          variants={itemVariants}
-          className="font-clash-display font-semibold text-primary-gray"
-        >
+        <motion.p variants={itemVariants} className="font-clash-display font-semibold text-primary-gray">
           Password has been reset successfully. You can proceed to login page
         </motion.p>
       </div>

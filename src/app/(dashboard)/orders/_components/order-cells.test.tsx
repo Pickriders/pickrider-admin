@@ -13,7 +13,16 @@ const push = jest.fn();
 jest.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href, prefetch: _prefetch, ...rest }: { children: React.ReactNode; href: string; prefetch?: boolean }) => (
+  default: ({
+    children,
+    href,
+    prefetch: _prefetch,
+    ...rest
+  }: {
+    children: React.ReactNode;
+    href: string;
+    prefetch?: boolean;
+  }) => (
     <a href={href} {...rest}>
       {children}
     </a>
@@ -29,7 +38,12 @@ function order(patch: Partial<OrderRow> = {}): OrderRow {
     status: "ON_GOING",
     channel: "APP",
     user: { _id: "c1", firstname: "Ada", lastname: "Obi", phone: "2348011111111" },
-    rider: { _id: "r1", firstname: LONG.split(" ")[0], lastname: LONG.split(" ").slice(1).join(" "), phone: "2348022222222" },
+    rider: {
+      _id: "r1",
+      firstname: LONG.split(" ")[0],
+      lastname: LONG.split(" ").slice(1).join(" "),
+      phone: "2348022222222",
+    },
     riderReleaseCount: 2,
     createdAt: "2026-11-10T09:00:00.000Z",
     ...patch,

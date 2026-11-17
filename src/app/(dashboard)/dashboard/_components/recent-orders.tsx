@@ -28,7 +28,10 @@ export function RecentOrders({ limit = 8 }: { limit?: number }) {
         title="Recent orders"
         subtitle="The latest activity across the platform"
         action={
-          <Link href="/orders" className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
+          <Link
+            href="/orders"
+            className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline"
+          >
             View all <ArrowRight size={13} />
           </Link>
         }
@@ -41,7 +44,12 @@ export function RecentOrders({ limit = 8 }: { limit?: number }) {
             ))}
           </div>
         ) : !rows.length ? (
-          <EmptyState compact icon={Package} title="No orders yet" description="New orders show up here as customers place them." />
+          <EmptyState
+            compact
+            icon={Package}
+            title="No orders yet"
+            description="New orders show up here as customers place them."
+          />
         ) : (
           <ul className="divide-y divide-line">
             {rows.map((order) => {
@@ -49,7 +57,10 @@ export function RecentOrders({ limit = 8 }: { limit?: number }) {
               const name = fullName(customer);
               return (
                 <li key={order._id}>
-                  <Link href={`/orders/${order._id}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface">
+                  <Link
+                    href={`/orders/${order._id}`}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface"
+                  >
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-surface text-xs font-black text-ink-muted">
                       {TYPE_LABEL[order.type]?.[0] ?? "O"}
                     </span>
@@ -60,7 +71,10 @@ export function RecentOrders({ limit = 8 }: { limit?: number }) {
                       </p>
                       <p className="truncate text-xs text-ink-muted">
                         {TYPE_LABEL[order.type] ?? order.type}
-                        {order.isScheduled ? ` · scheduled${order.scheduledFor ? ` for ${time(order.scheduledFor)}` : ""}` : ""} · {naira(order.totalAmountPayable)}
+                        {order.isScheduled
+                          ? ` · scheduled${order.scheduledFor ? ` for ${time(order.scheduledFor)}` : ""}`
+                          : ""}{" "}
+                        · {naira(order.totalAmountPayable)}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">

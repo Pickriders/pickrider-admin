@@ -1,6 +1,17 @@
 "use client";
 
-import { Activity, Ban, KeyRound, Rocket, Settings2, ShieldCheck, UserPlus, Users, Webhook, type LucideIcon } from "lucide-react";
+import {
+  Activity,
+  Ban,
+  KeyRound,
+  Rocket,
+  Settings2,
+  ShieldCheck,
+  UserPlus,
+  Users,
+  Webhook,
+  type LucideIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge, EmptyState, ErrorState, Panel, Skeleton, cx, type Tone } from "@/components/kit";
@@ -88,7 +99,12 @@ export function ActivityItem({ row, compact }: { row: DeveloperActivity; compact
   return (
     <li className="group/item relative flex gap-3.5 pb-5 last:pb-0">
       <span aria-hidden className="absolute bottom-0 left-[15px] top-9 w-px bg-line group-last/item:hidden" />
-      <span className={cx("relative grid h-8 w-8 shrink-0 place-items-center rounded-full ring-4 ring-card", ICON_TINT[area.tone])}>
+      <span
+        className={cx(
+          "relative grid h-8 w-8 shrink-0 place-items-center rounded-full ring-4 ring-card",
+          ICON_TINT[area.tone],
+        )}
+      >
         <area.icon size={14} aria-hidden />
       </span>
       <div className="min-w-0 flex-1 pt-1">
@@ -108,7 +124,9 @@ export function ActivityItem({ row, compact }: { row: DeveloperActivity; compact
           {row.actor?.email && !compact ? ` · ${row.actor.email}` : ""}
           <span className="ml-1.5 font-mono">{row.event}</span>
         </p>
-        {reason ? <p className="mt-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink">&ldquo;{reason}&rdquo;</p> : null}
+        {reason ? (
+          <p className="mt-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink">&ldquo;{reason}&rdquo;</p>
+        ) : null}
         {changed && !compact ? (
           <div className="mt-1.5">
             <Expandable summary="What changed">
@@ -160,9 +178,17 @@ export function TeamActivity({ teamId }: { teamId: string }) {
       <div className="flex flex-col gap-3 border-b border-line px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h3 className="text-sm font-bold text-ink">Activity</h3>
-          <p className="text-xs text-ink-muted">Everything the team and Pickriders staff changed. The developer sees staff actions as &ldquo;Pickriders&rdquo;.</p>
+          <p className="text-xs text-ink-muted">
+            Everything the team and Pickriders staff changed. The developer sees staff actions as
+            &ldquo;Pickriders&rdquo;.
+          </p>
         </div>
-        <Segmented label="Show" value={filter} onChange={setFilter} options={FILTERS.map((f) => ({ value: f.value, label: f.label }))} />
+        <Segmented
+          label="Show"
+          value={filter}
+          onChange={setFilter}
+          options={FILTERS.map((f) => ({ value: f.value, label: f.label }))}
+        />
       </div>
       <div className="px-5 py-5">
         {activity.isLoading ? (
@@ -178,9 +204,17 @@ export function TeamActivity({ teamId }: { teamId: string }) {
             ))}
           </div>
         ) : activity.isError ? (
-          <ErrorState message={errorMessage(activity.error, "Could not load the activity.")} onRetry={() => void activity.refetch()} />
+          <ErrorState
+            message={errorMessage(activity.error, "Could not load the activity.")}
+            onRetry={() => void activity.refetch()}
+          />
         ) : !groups.length ? (
-          <EmptyState compact icon={Activity} title="Nothing here yet" description={filter ? "No events of this kind." : "Changes to the team will show up here."} />
+          <EmptyState
+            compact
+            icon={Activity}
+            title="Nothing here yet"
+            description={filter ? "No events of this kind." : "Changes to the team will show up here."}
+          />
         ) : (
           <div className="space-y-6">
             {groups.map((group) => (
@@ -196,7 +230,13 @@ export function TeamActivity({ teamId }: { teamId: string }) {
           </div>
         )}
       </div>
-      <LoadMore hasMore={Boolean(activity.hasNextPage)} loading={activity.isFetchingNextPage} onMore={() => void activity.fetchNextPage()} shown={activity.rows.length} noun="events" />
+      <LoadMore
+        hasMore={Boolean(activity.hasNextPage)}
+        loading={activity.isFetchingNextPage}
+        onMore={() => void activity.fetchNextPage()}
+        shown={activity.rows.length}
+        noun="events"
+      />
     </Panel>
   );
 }

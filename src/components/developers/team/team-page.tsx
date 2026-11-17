@@ -33,7 +33,10 @@ export function defaultMode(team: Pick<DeveloperDetail, "liveStatus">): Mode {
 
 function Back() {
   return (
-    <Link href="/developers?tab=all" className="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink">
+    <Link
+      href="/developers?tab=all"
+      className="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+    >
       <ArrowLeft size={14} aria-hidden /> Developers
     </Link>
   );
@@ -50,14 +53,20 @@ export function DeveloperTeamPage({ teamId }: { teamId: string }) {
   const [tab, setTab] = useTabParam<Tab>("overview", TABS);
   const [modeParam, setModeParam] = useQueryParam("mode");
   const mode: Mode = modeParam === "live" || modeParam === "test" ? modeParam : team ? defaultMode(team) : "test";
-  const ordersScope = useMemo(() => ({ channel: "DEVELOPER_API", teamId, livemode: mode === "live" ? "true" : "false" }), [teamId, mode]);
+  const ordersScope = useMemo(
+    () => ({ channel: "DEVELOPER_API", teamId, livemode: mode === "live" ? "true" : "false" }),
+    [teamId, mode],
+  );
 
   if (detail.isError && !team) {
     return (
       <div className="space-y-4">
         <Back />
         <PageHeader title="Developer team" />
-        <ErrorState message={errorMessage(detail.error, "Could not load this team.")} onRetry={() => void detail.refetch()} />
+        <ErrorState
+          message={errorMessage(detail.error, "Could not load this team.")}
+          onRetry={() => void detail.refetch()}
+        />
       </div>
     );
   }
@@ -88,7 +97,11 @@ export function DeveloperTeamPage({ teamId }: { teamId: string }) {
         />
         {team && MODED.includes(tab) ? (
           <div className="shrink-0">
-            <ModeSwitch value={mode} onChange={(next) => setModeParam(next === defaultMode(team) ? null : next)} liveOn={team.liveStatus === "APPROVED"} />
+            <ModeSwitch
+              value={mode}
+              onChange={(next) => setModeParam(next === defaultMode(team) ? null : next)}
+              liveOn={team.liveStatus === "APPROVED"}
+            />
           </div>
         ) : null}
       </div>
@@ -98,7 +111,11 @@ export function DeveloperTeamPage({ teamId }: { teamId: string }) {
       ) : tab === "usage" ? (
         <TeamUsage teamId={team.id} mode={mode} />
       ) : tab === "orders" ? (
-        <OrdersTable scope={ordersScope} csvName={`developer-${team.handle}-orders`} emptyDescription={`Orders this team creates with its ${mode} keys show up here.`} />
+        <OrdersTable
+          scope={ordersScope}
+          csvName={`developer-${team.handle}-orders`}
+          emptyDescription={`Orders this team creates with its ${mode} keys show up here.`}
+        />
       ) : tab === "requests" ? (
         <TeamRequests team={team} mode={mode} />
       ) : tab === "webhooks" ? (

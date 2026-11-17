@@ -1,6 +1,19 @@
 "use client";
 
-import { AlertTriangle, BadgeCheck, Ban, CalendarDays, CircleSlash, Globe, Hash, Mail, Phone, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  BadgeCheck,
+  Ban,
+  CalendarDays,
+  CircleSlash,
+  Globe,
+  Hash,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { ActionMenu, Badge, Button, Panel, Skeleton, cx } from "@/components/kit";
@@ -10,7 +23,15 @@ import { count, day, when } from "@/lib/admin/format";
 import { useCan } from "@/lib/admin/use-can";
 
 import { DeveloperActionDialog } from "../developer-actions";
-import { ACTIONS, LiveStatusBadge, TeamSuspendedBadge, VOLUME_LABEL, availableActions, waited, type DeveloperActionId } from "../developer-ui";
+import {
+  ACTIONS,
+  LiveStatusBadge,
+  TeamSuspendedBadge,
+  VOLUME_LABEL,
+  availableActions,
+  waited,
+  type DeveloperActionId,
+} from "../developer-ui";
 
 function Logo({ team, size }: { team: DeveloperDetail; size: number }) {
   const letters = team.name
@@ -20,11 +41,24 @@ function Logo({ team, size }: { team: DeveloperDetail; size: number }) {
     .map((word) => word[0]?.toUpperCase())
     .join("");
   if (team.settings.logo) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={team.settings.logo} alt="" width={size} height={size} className="shrink-0 rounded-2xl border border-line bg-card object-cover" style={{ width: size, height: size }} />;
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={team.settings.logo}
+        alt=""
+        width={size}
+        height={size}
+        className="shrink-0 rounded-2xl border border-line bg-card object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
   }
   return (
-    <span aria-hidden style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }} className="grid shrink-0 place-items-center rounded-2xl bg-ink font-black tracking-tight text-card">
+    <span
+      aria-hidden
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}
+      className="grid shrink-0 place-items-center rounded-2xl bg-ink font-black tracking-tight text-card"
+    >
       {letters}
     </span>
   );
@@ -33,7 +67,10 @@ function Logo({ team, size }: { team: DeveloperDetail; size: number }) {
 function HeaderFact({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-card text-ink-muted">
+      <span
+        aria-hidden
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-card text-ink-muted"
+      >
         <Icon size={14} />
       </span>
       <div className="min-w-0 flex-1">
@@ -46,7 +83,9 @@ function HeaderFact({ icon: Icon, label, children }: { icon: LucideIcon; label: 
 
 export function Verified({ ok, label }: { ok: boolean; label: string }) {
   return (
-    <span className={cx("inline-flex items-center gap-1 text-[11px] font-semibold", ok ? "text-success" : "text-ink-faint")}>
+    <span
+      className={cx("inline-flex items-center gap-1 text-[11px] font-semibold", ok ? "text-success" : "text-ink-faint")}
+    >
       {ok ? <BadgeCheck size={12} aria-hidden /> : <CircleSlash size={12} aria-hidden />}
       {label} {ok ? "verified" : "not verified"}
     </span>
@@ -54,13 +93,33 @@ export function Verified({ ok, label }: { ok: boolean; label: string }) {
 }
 
 /** Why the team is held back, said at the top so nobody misses it. */
-export function teamNotice(team: DeveloperDetail): { title: string; body: string | null; at: string | null; by: string | null; extra: string } | null {
+export function teamNotice(
+  team: DeveloperDetail,
+): { title: string; body: string | null; at: string | null; by: string | null; extra: string } | null {
   if (team.status === "SUSPENDED")
-    return { title: "Team suspended", body: team.suspensionReason, at: team.suspendedAt, by: team.suspendedBy?.name ?? null, extra: "Every key, test and live, is refused with account_suspended." };
+    return {
+      title: "Team suspended",
+      body: team.suspensionReason,
+      at: team.suspendedAt,
+      by: team.suspendedBy?.name ?? null,
+      extra: "Every key, test and live, is refused with account_suspended.",
+    };
   if (team.liveStatus === "SUSPENDED")
-    return { title: "Live access suspended", body: team.liveSuspensionReason, at: team.liveReviewedAt, by: team.liveReviewedBy?.name ?? null, extra: "Live keys are refused. Test keys still work." };
+    return {
+      title: "Live access suspended",
+      body: team.liveSuspensionReason,
+      at: team.liveReviewedAt,
+      by: team.liveReviewedBy?.name ?? null,
+      extra: "Live keys are refused. Test keys still work.",
+    };
   if (team.liveStatus === "REJECTED")
-    return { title: "Live request rejected", body: team.liveRejectionReason, at: team.liveReviewedAt, by: team.liveReviewedBy?.name ?? null, extra: "They can fix this and ask again." };
+    return {
+      title: "Live request rejected",
+      body: team.liveRejectionReason,
+      at: team.liveReviewedAt,
+      by: team.liveReviewedBy?.name ?? null,
+      extra: "They can fix this and ask again.",
+    };
   return null;
 }
 
@@ -68,7 +127,10 @@ function Notice({ team }: { team: DeveloperDetail }) {
   const notice = teamNotice(team);
   if (!notice) return null;
   return (
-    <div role="status" className="mx-4 mb-4 flex gap-3 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 sm:mx-5">
+    <div
+      role="status"
+      className="mx-4 mb-4 flex gap-3 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 sm:mx-5"
+    >
       <AlertTriangle size={16} className="mt-0.5 shrink-0 text-danger" aria-hidden />
       <div className="min-w-0 text-sm">
         <p className="font-bold text-ink">
@@ -104,17 +166,27 @@ function ReviewCard({ team }: { team: DeveloperDetail }) {
       <div className="grid gap-4 px-4 py-3.5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">What they deliver</p>
-          <p className="mt-1 whitespace-pre-line text-sm leading-6 text-ink">{team.useCase || <span className="text-ink-faint">They didn&apos;t say.</span>}</p>
+          <p className="mt-1 whitespace-pre-line text-sm leading-6 text-ink">
+            {team.useCase || <span className="text-ink-faint">They didn&apos;t say.</span>}
+          </p>
           <p className="mt-2 text-xs text-ink-muted">
-            Expects {team.expectedMonthlyVolume ? VOLUME_LABEL[team.expectedMonthlyVolume].toLowerCase() : "an unknown volume"}
+            Expects{" "}
+            {team.expectedMonthlyVolume ? VOLUME_LABEL[team.expectedMonthlyVolume].toLowerCase() : "an unknown volume"}
             {" · "}
             {count(team.test.requests30d)} test requests and {count(team.test.orders.total)} test orders so far
           </p>
         </div>
         <ul className="space-y-1.5">
           {checks.map((check) => (
-            <li key={check.label} className={cx("flex items-center gap-2 text-sm", check.ok ? "text-ink" : "text-ink-muted")}>
-              {check.ok ? <BadgeCheck size={15} className="shrink-0 text-success" aria-hidden /> : <CircleSlash size={15} className="shrink-0 text-ink-faint" aria-hidden />}
+            <li
+              key={check.label}
+              className={cx("flex items-center gap-2 text-sm", check.ok ? "text-ink" : "text-ink-muted")}
+            >
+              {check.ok ? (
+                <BadgeCheck size={15} className="shrink-0 text-success" aria-hidden />
+              ) : (
+                <CircleSlash size={15} className="shrink-0 text-ink-faint" aria-hidden />
+              )}
               {check.label}
             </li>
           ))}
@@ -133,7 +205,17 @@ function Actions({ team }: { team: DeveloperDetail }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {main.map((id) => (
-        <Button key={id} variant={id === "approve" || id === "restoreTeam" || id === "unsuspendLive" ? "primary" : id === "reject" ? "outline" : "danger"} onClick={() => setAction(id)}>
+        <Button
+          key={id}
+          variant={
+            id === "approve" || id === "restoreTeam" || id === "unsuspendLive"
+              ? "primary"
+              : id === "reject"
+                ? "outline"
+                : "danger"
+          }
+          onClick={() => setAction(id)}
+        >
           {ACTIONS[id].label}
         </Button>
       ))}
@@ -141,7 +223,21 @@ function Actions({ team }: { team: DeveloperDetail }) {
         <ActionMenu
           iconOnly
           title="More actions"
-          sections={[{ id: "danger", items: [{ id: "suspendTeam", label: ACTIONS.suspendTeam.label, icon: Ban, tone: "danger", hint: "Stops every key, test and live", onSelect: () => setAction("suspendTeam") }] }]}
+          sections={[
+            {
+              id: "danger",
+              items: [
+                {
+                  id: "suspendTeam",
+                  label: ACTIONS.suspendTeam.label,
+                  icon: Ban,
+                  tone: "danger",
+                  hint: "Stops every key, test and live",
+                  onSelect: () => setAction("suspendTeam"),
+                },
+              ],
+            },
+          ]}
         />
       ) : null}
       <DeveloperActionDialog action={action} team={team} onClose={() => setAction(null)} />
@@ -181,11 +277,15 @@ export function TeamHeader({ team }: { team: DeveloperDetail }) {
         <div className="flex min-w-0 flex-1 items-start gap-3.5 sm:gap-4">
           <Logo team={team} size={64} />
           <div className="min-w-0 flex-1 pt-0.5">
-            <h1 className="line-clamp-2 text-xl font-black leading-tight tracking-tight text-ink [overflow-wrap:anywhere] sm:text-2xl">{team.name}</h1>
+            <h1 className="line-clamp-2 text-xl font-black leading-tight tracking-tight text-ink [overflow-wrap:anywhere] sm:text-2xl">
+              {team.name}
+            </h1>
             <p className="mt-1 text-sm text-ink-muted">
               <span className="font-mono">@{team.handle}</span>
               {team.companyName && team.companyName !== team.name ? ` · ${team.companyName}` : ""}
-              {team.settings.description ? <span className="block truncate text-ink-faint">{team.settings.description}</span> : null}
+              {team.settings.description ? (
+                <span className="block truncate text-ink-faint">{team.settings.description}</span>
+              ) : null}
             </p>
             <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
               <LiveStatusBadge status={team.liveStatus} />
@@ -221,11 +321,20 @@ export function TeamHeader({ team }: { team: DeveloperDetail }) {
           )}
         </HeaderFact>
         <HeaderFact icon={Phone} label="Support">
-          <span className="min-w-0 truncate">{team.supportPhone || team.supportEmail || owner?.phone || <span className="text-ink-faint">Not given</span>}</span>
+          <span className="min-w-0 truncate">
+            {team.supportPhone || team.supportEmail || owner?.phone || (
+              <span className="text-ink-faint">Not given</span>
+            )}
+          </span>
         </HeaderFact>
         <HeaderFact icon={Globe} label="Website">
           {team.website ? (
-            <a href={team.website} target="_blank" rel="noreferrer noopener" className="min-w-0 truncate text-brand-dark hover:underline">
+            <a
+              href={team.website}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="min-w-0 truncate text-brand-dark hover:underline"
+            >
               {team.website.replace(/^https?:\/\//, "")}
             </a>
           ) : (

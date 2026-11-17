@@ -1,6 +1,13 @@
 import axios from "axios";
 
-import { apiErrorBody, isLoginLocked, isStepUpRequired, lockoutSecondsLeft, waitLabel, type LockoutDetails } from "./auth-errors";
+import {
+  apiErrorBody,
+  isLoginLocked,
+  isStepUpRequired,
+  lockoutSecondsLeft,
+  waitLabel,
+  type LockoutDetails,
+} from "./auth-errors";
 
 /**
  * Error copy for anything the generated client rejects with. The client itself lives in
@@ -20,8 +27,13 @@ export function errorMessage(error: unknown, fallback = "Something went wrong.")
       const left = lockoutSecondsLeft(body?.details as LockoutDetails | undefined);
       return left > 0 ? `Too many attempts. Try again in ${waitLabel(left)}.` : "Too many attempts. Try again shortly.";
     }
-    if (error.response?.status === 403 && body?.code === "MFA_SETUP_REQUIRED") return "Set up your authenticator app to continue.";
-    if (error.response?.status === 403 && body?.code !== "WITHDRAWALS_FROZEN" && body?.code !== "WITHDRAWAL_RESTRICTED") {
+    if (error.response?.status === 403 && body?.code === "MFA_SETUP_REQUIRED")
+      return "Set up your authenticator app to continue.";
+    if (
+      error.response?.status === 403 &&
+      body?.code !== "WITHDRAWALS_FROZEN" &&
+      body?.code !== "WITHDRAWAL_RESTRICTED"
+    ) {
       return "Your role isn't allowed to do this. Ask a platform admin.";
     }
     const message = body?.message;

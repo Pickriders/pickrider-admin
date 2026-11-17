@@ -19,8 +19,18 @@ export const AUDIENCE_LABEL: Record<string, string> = Object.fromEntries(AUDIENC
 export const CHANNEL_TONE: Record<string, Tone> = { PUSH: "brand", EMAIL: "info", IN_APP: "neutral", SMS: "warning" };
 export const CHANNEL_LABEL: Record<string, string> = { PUSH: "Push", EMAIL: "Email", IN_APP: "In-app", SMS: "SMS" };
 
-export const BROADCAST_TONE: Record<string, Tone> = { QUEUED: "warning", SENDING: "info", SENT: "success", FAILED: "danger" };
-export const BROADCAST_LABEL: Record<string, string> = { QUEUED: "Queued", SENDING: "Sending", SENT: "Sent", FAILED: "Failed" };
+export const BROADCAST_TONE: Record<string, Tone> = {
+  QUEUED: "warning",
+  SENDING: "info",
+  SENT: "success",
+  FAILED: "danger",
+};
+export const BROADCAST_LABEL: Record<string, string> = {
+  QUEUED: "Queued",
+  SENDING: "Sending",
+  SENT: "Sent",
+  FAILED: "Failed",
+};
 
 export function ChannelBadges({ channels }: { channels: string[] | undefined }) {
   return (

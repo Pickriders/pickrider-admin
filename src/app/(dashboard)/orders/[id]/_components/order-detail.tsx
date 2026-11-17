@@ -3,7 +3,17 @@
 import { ExternalLink, Phone, Star } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  ErrorState,
+  KeyValue,
+  LinkButton,
+  PageHeader,
+  Panel,
+  PanelHeader,
+  Skeleton,
+} from "@/components/kit";
 import type { OrderParty, OrderRow } from "@/lib/admin/api";
 import type { OrderStackMode } from "@/services";
 import { ago, count, fullName, naira, orderPaymentDisplay, orderSource, percent, when } from "@/lib/admin/format";
@@ -36,16 +46,26 @@ function StackedWith({ ids, stackedAt, mode }: { ids?: string[]; stackedAt?: str
     <div className="mt-4 rounded-xl border border-line bg-surface px-3 py-2 text-xs">
       <p className="font-semibold text-ink">
         Stacked with
-        {modeLabel ? <span className="ml-1.5 rounded-full border border-line bg-card px-2 py-0.5 font-bold text-ink-muted">{modeLabel}</span> : null}
+        {modeLabel ? (
+          <span className="ml-1.5 rounded-full border border-line bg-card px-2 py-0.5 font-bold text-ink-muted">
+            {modeLabel}
+          </span>
+        ) : null}
       </p>
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
         {ids.map((id) => (
-          <Link key={id} href={`/orders/${id}`} className="rounded-full border border-line bg-card px-2 py-0.5 font-bold tabular-nums text-brand-dark hover:underline">
+          <Link
+            key={id}
+            href={`/orders/${id}`}
+            className="rounded-full border border-line bg-card px-2 py-0.5 font-bold tabular-nums text-brand-dark hover:underline"
+          >
             {orderNumber({ _id: id })}
           </Link>
         ))}
       </div>
-      {stackedAt ? <p className="mt-1.5 text-ink-muted">Given to the rider on top of these, {ago(stackedAt)}.</p> : null}
+      {stackedAt ? (
+        <p className="mt-1.5 text-ink-muted">Given to the rider on top of these, {ago(stackedAt)}.</p>
+      ) : null}
     </div>
   );
 }
@@ -83,7 +103,9 @@ function PartyCard({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold text-ink">{name || "Unnamed"}</p>
               {party.phone ? <p className="truncate text-xs text-ink-muted">{displayPhone(party.phone)}</p> : null}
-              {formatEmail(party.email) ? <p className="truncate text-xs text-ink-faint">{formatEmail(party.email)}</p> : null}
+              {formatEmail(party.email) ? (
+                <p className="truncate text-xs text-ink-faint">{formatEmail(party.email)}</p>
+              ) : null}
               {extra}
             </div>
             {party.phone ? (
@@ -129,7 +151,10 @@ export function OrderDetail({ orderId }: { orderId: string }) {
     return (
       <div>
         <PageHeader title="Order" breadcrumb={<Link href="/orders">Orders</Link>} />
-        <ErrorState message={query.isError ? errorMessage(query.error) : "Order not found."} onRetry={() => void query.refetch()} />
+        <ErrorState
+          message={query.isError ? errorMessage(query.error) : "Order not found."}
+          onRetry={() => void query.refetch()}
+        />
       </div>
     );
   }
@@ -160,8 +185,12 @@ export function OrderDetail({ orderId }: { orderId: string }) {
             <OrderPaymentBadge order={order} />
             <SourceBadge channel={order.channel} />
             <TypeBadge type={order.type} />
-            {order.isScheduled ? <Badge tone="brand">Scheduled {order.scheduledFor ? when(order.scheduledFor) : ""}</Badge> : null}
-            <span className="text-ink-muted">Placed {when(order.createdAt)}, {ago(order.createdAt)}</span>
+            {order.isScheduled ? (
+              <Badge tone="brand">Scheduled {order.scheduledFor ? when(order.scheduledFor) : ""}</Badge>
+            ) : null}
+            <span className="text-ink-muted">
+              Placed {when(order.createdAt)}, {ago(order.createdAt)}
+            </span>
           </span>
         }
         actions={<OrderActions order={order} />}
@@ -169,8 +198,8 @@ export function OrderDetail({ orderId }: { orderId: string }) {
 
       {stale ? (
         <div className="rounded-2xl border border-warning/40 bg-warning-soft px-4 py-3 text-sm text-warning">
-          Still waiting for a rider after {Math.round((Date.now() - new Date(order.createdAt).getTime()) / 60_000)} minutes.{" "}
-          {bids ? `${count(bids)} bid${bids === 1 ? "" : "s"} so far.` : "No bids yet."}
+          Still waiting for a rider after {Math.round((Date.now() - new Date(order.createdAt).getTime()) / 60_000)}{" "}
+          minutes. {bids ? `${count(bids)} bid${bids === 1 ? "" : "s"} so far.` : "No bids yet."}
         </div>
       ) : null}
 
@@ -205,11 +234,16 @@ export function OrderDetail({ orderId }: { orderId: string }) {
             title="Courier"
             party={rider}
             href={rider ? `/couriers/${rider._id}` : undefined}
-            empty={order.status === "INITIATED" ? `No rider yet. ${bids ? `${count(bids)} bid${bids === 1 ? "" : "s"} waiting below.` : "No bids so far."}` : "No rider was attached."}
+            empty={
+              order.status === "INITIATED"
+                ? `No rider yet. ${bids ? `${count(bids)} bid${bids === 1 ? "" : "s"} waiting below.` : "No bids so far."}`
+                : "No rider was attached."
+            }
             extra={
               rider?.reviews && rider.reviews.count > 0 ? (
                 <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-muted">
-                  <Star size={11} className="text-warning" /> {rider.reviews.average.toFixed(1)} from {count(rider.reviews.count)} review{rider.reviews.count === 1 ? "" : "s"}
+                  <Star size={11} className="text-warning" /> {rider.reviews.average.toFixed(1)} from{" "}
+                  {count(rider.reviews.count)} review{rider.reviews.count === 1 ? "" : "s"}
                 </p>
               ) : null
             }
@@ -229,7 +263,9 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                     { label: "Asking price", value: order.totalAmount ? naira(order.totalAmount) : undefined },
                     {
                       label: "Discount",
-                      value: order.discountAmount ? `${naira(order.discountAmount)}${order.discount && order.discountType === "PERCENTAGE" ? ` (${percent(order.discount, 0)})` : ""}` : "None",
+                      value: order.discountAmount
+                        ? `${naira(order.discountAmount)}${order.discount && order.discountType === "PERCENTAGE" ? ` (${percent(order.discount, 0)})` : ""}`
+                        : "None",
                     },
                     { label: "Payment", value: order.paymentStatus ? <OrderPaymentBadge order={order} /> : undefined },
                     { label: "Paid on", value: order.paidDate ? when(order.paidDate) : undefined },
@@ -262,12 +298,23 @@ export function OrderDetail({ orderId }: { orderId: string }) {
                 columns={2}
                 items={[
                   { label: "Placed", value: when(order.createdAt) },
-                  { label: "Scheduled for", value: order.isScheduled && order.scheduledFor ? when(order.scheduledFor) : undefined },
+                  {
+                    label: "Scheduled for",
+                    value: order.isScheduled && order.scheduledFor ? when(order.scheduledFor) : undefined,
+                  },
                   { label: "Rider accepted", value: order.acceptedAt ? when(order.acceptedAt) : undefined },
-                  { label: "Stacked", value: order.stackedWithOrderIds?.length && order.stackedAt ? when(order.stackedAt) : undefined },
+                  {
+                    label: "Stacked",
+                    value: order.stackedWithOrderIds?.length && order.stackedAt ? when(order.stackedAt) : undefined,
+                  },
                   { label: "Started", value: order.startedAt ? when(order.startedAt) : undefined },
                   { label: "Completed", value: order.completedAt ? when(order.completedAt) : undefined },
-                  { label: "Cancelled", value: order.cancelledAt ? `${when(order.cancelledAt)}${order.cancelledBy ? ` by ${order.cancelledBy.toLowerCase()}` : ""}` : undefined },
+                  {
+                    label: "Cancelled",
+                    value: order.cancelledAt
+                      ? `${when(order.cancelledAt)}${order.cancelledBy ? ` by ${order.cancelledBy.toLowerCase()}` : ""}`
+                      : undefined,
+                  },
                   { label: "Type", value: typeLabel(order.type) },
                   {
                     label: "Stops",

@@ -1,7 +1,20 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Banknote, Bike, Clock, Lock, Megaphone, Package, PauseCircle, ShieldCheck, Sparkles, Star, Trophy, Wifi } from "lucide-react";
+import {
+  Banknote,
+  Bike,
+  Clock,
+  Lock,
+  Megaphone,
+  Package,
+  PauseCircle,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Trophy,
+  Wifi,
+} from "lucide-react";
 import { Suspense, useMemo } from "react";
 
 import {
@@ -38,7 +51,10 @@ import { ratingDisplay } from "./lib";
  * deliveries and earnings on every row. Sorted by deliveries by default, with
  * quick chips for the other rankings and for licences waiting on review.
  */
-const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({ value, label: statusLabel(value) }));
+const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({
+  value,
+  label: statusLabel(value),
+}));
 const LICENCE_OPTIONS: { value: KycStatus; label: string }[] = [
   { value: "APPROVE", label: "Verified" },
   { value: "SUBMITTED", label: "Awaiting review" },
@@ -98,7 +114,10 @@ function RatingCell({ rating, className }: { rating: User["rating"]; className?:
   const shown = ratingDisplay(rating);
   if (!shown) return <span className={cx("text-xs text-ink-faint", className)}>No ratings</span>;
   return (
-    <span className={cx("inline-flex items-center gap-1 whitespace-nowrap tabular-nums", className)} title={shown.caption}>
+    <span
+      className={cx("inline-flex items-center gap-1 whitespace-nowrap tabular-nums", className)}
+      title={shown.caption}
+    >
       <Star size={13} aria-hidden className="shrink-0 fill-warning text-warning" />
       <span className="font-semibold text-ink">{shown.average}</span>
       <span className="text-xs text-ink-muted">({shown.reviews})</span>
@@ -123,7 +142,16 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
     header: "#",
     cell: ({ row }) => {
       const n = offset + row.index + 1;
-      return <span className={cx("grid h-6 w-6 place-items-center rounded-full text-xs font-bold tabular-nums", MEDAL[n] ?? "text-ink-faint")}>{n}</span>;
+      return (
+        <span
+          className={cx(
+            "grid h-6 w-6 place-items-center rounded-full text-xs font-bold tabular-nums",
+            MEDAL[n] ?? "text-ink-faint",
+          )}
+        >
+          {n}
+        </span>
+      );
     },
     meta: { width: "48px", skeleton: "line" } satisfies ColumnMeta,
   },
@@ -138,7 +166,10 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
           <span className="relative shrink-0">
             <Avatar src={u.photo} name={name} size={36} />
             <span
-              className={cx("absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card", u.isOnline ? "bg-success" : "bg-line-strong")}
+              className={cx(
+                "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card",
+                u.isOnline ? "bg-success" : "bg-line-strong",
+              )}
               aria-label={u.isOnline ? "Online" : "Offline"}
             />
           </span>
@@ -149,7 +180,10 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
         </div>
       );
     },
-    meta: { skeleton: "profile", csv: { key: "name", label: "Name", value: (r) => fullName(r as User) } } satisfies ColumnMeta,
+    meta: {
+      skeleton: "profile",
+      csv: { key: "name", label: "Name", value: (r) => fullName(r as User) },
+    } satisfies ColumnMeta,
   },
   {
     id: "status",
@@ -172,7 +206,11 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
   {
     id: "licence",
     header: "Licence",
-    cell: ({ row }) => <Badge tone={licenceTone(row.original.driversLicenseVerified)}>{shortLicence(row.original.driversLicenseVerified)}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={licenceTone(row.original.driversLicenseVerified)}>
+        {shortLicence(row.original.driversLicenseVerified)}
+      </Badge>
+    ),
     meta: { skeleton: "pill", csv: { key: "driversLicenseVerified", label: "Licence" } } satisfies ColumnMeta,
   },
   {
@@ -186,19 +224,33 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
       ) : (
         <span className="text-xs text-ink-faint">Ringing</span>
       ),
-    meta: { hideBelow: "lg", skeleton: "pill", csv: { key: "dispatchPaused", label: "Dispatch paused" } } satisfies ColumnMeta,
+    meta: {
+      hideBelow: "lg",
+      skeleton: "pill",
+      csv: { key: "dispatchPaused", label: "Dispatch paused" },
+    } satisfies ColumnMeta,
   },
   {
     id: "deliveries",
     header: "Deliveries",
-    cell: ({ row }) => <span className="font-semibold tabular-nums text-ink">{count(row.original.completedDeliveries)}</span>,
-    meta: { sortKey: "completedDeliveries", align: "right", csv: { key: "completedDeliveries", label: "Deliveries" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="font-semibold tabular-nums text-ink">{count(row.original.completedDeliveries)}</span>
+    ),
+    meta: {
+      sortKey: "completedDeliveries",
+      align: "right",
+      csv: { key: "completedDeliveries", label: "Deliveries" },
+    } satisfies ColumnMeta,
   },
   {
     id: "earned",
     header: "Earned",
     cell: ({ row }) => <span className="font-semibold tabular-nums text-ink">{naira(row.original.totalEarned)}</span>,
-    meta: { sortKey: "totalEarned", align: "right", csv: { key: "totalEarned", label: "Earned (kobo)" } } satisfies ColumnMeta,
+    meta: {
+      sortKey: "totalEarned",
+      align: "right",
+      csv: { key: "totalEarned", label: "Earned (kobo)" },
+    } satisfies ColumnMeta,
   },
   {
     id: "rating",
@@ -213,8 +265,16 @@ const buildColumns = (offset: number): ColumnDef<User, unknown>[] => [
   {
     id: "lastLogin",
     header: "Last seen",
-    cell: ({ row }) => <span className="whitespace-nowrap text-ink-muted">{row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}</span>,
-    meta: { sortKey: "lastLoginDate", hideBelow: "xl", csv: { key: "lastLoginDate", label: "Last login" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-ink-muted">
+        {row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}
+      </span>
+    ),
+    meta: {
+      sortKey: "lastLoginDate",
+      hideBelow: "xl",
+      csv: { key: "lastLoginDate", label: "Last login" },
+    } satisfies ColumnMeta,
   },
   {
     id: "joined",
@@ -230,7 +290,12 @@ function RiderCard({ row }: { row: User }) {
     <div className="flex items-start gap-3">
       <span className="relative shrink-0">
         <Avatar src={row.photo} name={name} size={40} />
-        <span className={cx("absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card", row.isOnline ? "bg-success" : "bg-line-strong")} />
+        <span
+          className={cx(
+            "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card",
+            row.isOnline ? "bg-success" : "bg-line-strong",
+          )}
+        />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
@@ -298,7 +363,14 @@ function CouriersList() {
     <div className="space-y-3">
       {/* Phones and small tablets: two compact menus instead of wrapping chip rows. */}
       <div className="grid grid-cols-2 gap-2 md:hidden">
-        <MenuSelect label="Sort" title="Top by" value={state.sortBy} options={SORTS} onChange={sortBy} placeholder="Custom" />
+        <MenuSelect
+          label="Sort"
+          title="Top by"
+          value={state.sortBy}
+          options={SORTS}
+          onChange={sortBy}
+          placeholder="Custom"
+        />
         <MenuFilters
           title="Quick filters"
           align="end"
@@ -323,7 +395,14 @@ function CouriersList() {
               active: pausedOnly,
               onToggle: togglePaused,
             },
-            { id: "restricted", label: "Withdrawals restricted", icon: Lock, tone: "warning", active: restrictedOnly, onToggle: toggleRestricted },
+            {
+              id: "restricted",
+              label: "Withdrawals restricted",
+              icon: Lock,
+              tone: "warning",
+              active: restrictedOnly,
+              onToggle: toggleRestricted,
+            },
           ]}
         />
       </div>
@@ -364,7 +443,11 @@ function CouriersList() {
         defaultSort={{ sortBy: "completedDeliveries", order: "DESC" }}
         emptyIcon={Bike}
         emptyTitle={table.activeFilterCount ? "No riders match" : "No riders yet"}
-        emptyDescription={table.activeFilterCount ? "Try clearing a filter or the search." : "Riders who sign up on the rider app appear here."}
+        emptyDescription={
+          table.activeFilterCount
+            ? "Try clearing a filter or the search."
+            : "Riders who sign up on the rider app appear here."
+        }
         rowHref={(row) => `/couriers/${row._id}/details`}
         mobileCard={(row) => <RiderCard row={row} />}
         mobileCardSkeleton={<ProfileCardSkeleton />}
@@ -386,11 +469,11 @@ function CouriersListFallback() {
   }));
   return (
     <div className="space-y-3" aria-busy="true">
-      <ChipBarSkeleton chips={["w-24", "w-20", "w-36", "w-20", "w-24", "w-24"]} filters={["w-36", "w-28", "w-40", "w-44"]} />
-      <DataTableSkeleton
-        columns={columns}
-        mobileCard={<ProfileCardSkeleton />}
+      <ChipBarSkeleton
+        chips={["w-24", "w-20", "w-36", "w-20", "w-24", "w-24"]}
+        filters={["w-36", "w-28", "w-40", "w-44"]}
       />
+      <DataTableSkeleton columns={columns} mobileCard={<ProfileCardSkeleton />} />
     </div>
   );
 }
@@ -398,7 +481,10 @@ function CouriersListFallback() {
 export default function CouriersPage() {
   return (
     <div>
-      <PageHeader title="Couriers" description="Riders ranked by what they deliver. Verify licences, pause dispatch and fix balances from here." />
+      <PageHeader
+        title="Couriers"
+        description="Riders ranked by what they deliver. Verify licences, pause dispatch and fix balances from here."
+      />
       <Suspense fallback={<CouriersListFallback />}>
         <CouriersList />
       </Suspense>

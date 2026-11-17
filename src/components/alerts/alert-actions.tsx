@@ -43,7 +43,13 @@ export function AlertActions({ alert, size = "sm" }: { alert: AdminAlert; size?:
   return (
     <span className="flex flex-wrap justify-end gap-1.5" onClick={(event) => event.stopPropagation()}>
       {!mine ? (
-        <Button size={size} variant={alert.status === "OPEN" ? "primary" : "outline"} icon={Hand} loading={claim.isPending} onClick={() => claim.mutate(alert.id)}>
+        <Button
+          size={size}
+          variant={alert.status === "OPEN" ? "primary" : "outline"}
+          icon={Hand}
+          loading={claim.isPending}
+          onClick={() => claim.mutate(alert.id)}
+        >
           {alert.status === "OPEN" ? "Claim" : "Take over"}
         </Button>
       ) : null}
@@ -61,7 +67,13 @@ export function AlertActions({ alert, size = "sm" }: { alert: AdminAlert; size?:
         loading={resolve.isPending}
       >
         <Field label="What was done (optional)" hint="Kept on the alert so the next person knows.">
-          <Textarea value={note} maxLength={500} onChange={(e) => setNote(e.target.value)} placeholder="Called the rider, they are safe and a new rider is on the way." className="min-h-20" />
+          <Textarea
+            value={note}
+            maxLength={500}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Called the rider, they are safe and a new rider is on the way."
+            className="min-h-20"
+          />
         </Field>
       </ConfirmDialog>
     </span>

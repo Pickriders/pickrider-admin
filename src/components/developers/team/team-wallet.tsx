@@ -13,7 +13,8 @@ import { errorMessage } from "@/lib/admin/http";
 import { CardTitle, Fact, LoadMore, Segmented, type Mode } from "./team-shared";
 
 /** "order_payment" → "Order payment". */
-export const purposeLabel = (purpose: string) => (purpose ? purpose.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase()) : "Other");
+export const purposeLabel = (purpose: string) =>
+  purpose ? purpose.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase()) : "Other";
 
 const FUNDING_TONE = { ACTIVE: "success", PENDING: "warning", FAILED: "danger" } as const;
 
@@ -21,7 +22,12 @@ function TransactionRow({ txn }: { txn: DeveloperTransaction }) {
   const credit = txn.type === "credit";
   return (
     <li className="flex items-center gap-3 px-5 py-3">
-      <span className={cx("grid h-8 w-8 shrink-0 place-items-center rounded-full", credit ? "bg-success-soft text-success" : "bg-surface text-ink-muted")}>
+      <span
+        className={cx(
+          "grid h-8 w-8 shrink-0 place-items-center rounded-full",
+          credit ? "bg-success-soft text-success" : "bg-surface text-ink-muted",
+        )}
+      >
         {credit ? <ArrowDownLeft size={14} aria-hidden /> : <ArrowUpRight size={14} aria-hidden />}
       </span>
       <div className="min-w-0 flex-1">
@@ -76,7 +82,10 @@ function Transactions({ teamId, mode }: { teamId: string; mode: Mode }) {
         </div>
       ) : txns.isError ? (
         <div className="p-5">
-          <ErrorState message={errorMessage(txns.error, "Could not load the wallet history.")} onRetry={() => void txns.refetch()} />
+          <ErrorState
+            message={errorMessage(txns.error, "Could not load the wallet history.")}
+            onRetry={() => void txns.refetch()}
+          />
         </div>
       ) : txns.rows.length ? (
         <ul className="divide-y divide-line">
@@ -85,9 +94,22 @@ function Transactions({ teamId, mode }: { teamId: string; mode: Mode }) {
           ))}
         </ul>
       ) : (
-        <EmptyState compact icon={Receipt} title="No transactions" description={mode === "live" ? "Nothing has moved in the live wallet yet." : "Nothing has moved in the test wallet yet."} />
+        <EmptyState
+          compact
+          icon={Receipt}
+          title="No transactions"
+          description={
+            mode === "live" ? "Nothing has moved in the live wallet yet." : "Nothing has moved in the test wallet yet."
+          }
+        />
       )}
-      <LoadMore hasMore={Boolean(txns.hasNextPage)} loading={txns.isFetchingNextPage} onMore={() => void txns.fetchNextPage()} shown={txns.rows.length} noun="transactions" />
+      <LoadMore
+        hasMore={Boolean(txns.hasNextPage)}
+        loading={txns.isFetchingNextPage}
+        onMore={() => void txns.fetchNextPage()}
+        shown={txns.rows.length}
+        noun="transactions"
+      />
     </Panel>
   );
 }
@@ -99,9 +121,29 @@ export function TeamWallet({ team, mode }: { team: DeveloperDetail; mode: Mode }
   return (
     <div className="space-y-4">
       <StatGrid columns={3}>
-        <StatCard label="Available" value={wallet ? naira(wallet.available) : "No wallet"} icon={Wallet} tone={mode === "live" && wallet ? "brand" : "default"} hint={mode === "test" ? "Test money; it never pays a rider" : wallet ? wallet.currency : "Opened when live access is approved"} />
-        <StatCard label="Held for orders" value={wallet ? naira(wallet.held) : "—"} hint="Reserved until each order finishes" />
-        <StatCard label="Balance" value={wallet ? naira(wallet.available + wallet.held) : "—"} hint="Available plus held" />
+        <StatCard
+          label="Available"
+          value={wallet ? naira(wallet.available) : "No wallet"}
+          icon={Wallet}
+          tone={mode === "live" && wallet ? "brand" : "default"}
+          hint={
+            mode === "test"
+              ? "Test money; it never pays a rider"
+              : wallet
+                ? wallet.currency
+                : "Opened when live access is approved"
+          }
+        />
+        <StatCard
+          label="Held for orders"
+          value={wallet ? naira(wallet.held) : "—"}
+          hint="Reserved until each order finishes"
+        />
+        <StatCard
+          label="Balance"
+          value={wallet ? naira(wallet.available + wallet.held) : "—"}
+          hint="Available plus held"
+        />
       </StatGrid>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -112,9 +154,15 @@ export function TeamWallet({ team, mode }: { team: DeveloperDetail; mode: Mode }
               <dl className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <Badge tone={FUNDING_TONE[funding.status]} dot>
-                    {funding.status === "ACTIVE" ? "Active" : funding.status === "PENDING" ? "Being set up" : "Setup failed"}
+                    {funding.status === "ACTIVE"
+                      ? "Active"
+                      : funding.status === "PENDING"
+                        ? "Being set up"
+                        : "Setup failed"}
                   </Badge>
-                  {funding.activatedAt ? <span className="text-xs text-ink-faint">since {when(funding.activatedAt)}</span> : null}
+                  {funding.activatedAt ? (
+                    <span className="text-xs text-ink-faint">since {when(funding.activatedAt)}</span>
+                  ) : null}
                 </div>
                 <Fact label="Account number" mono>
                   {funding.accountNumber ? (
@@ -126,7 +174,9 @@ export function TeamWallet({ team, mode }: { team: DeveloperDetail; mode: Mode }
                 </Fact>
                 <Fact label="Bank">{funding.bankName}</Fact>
                 <Fact label="Account name">{funding.accountName}</Fact>
-                {funding.failureReason ? <p className="rounded-lg bg-danger-soft px-3 py-2 text-xs text-danger">{funding.failureReason}</p> : null}
+                {funding.failureReason ? (
+                  <p className="rounded-lg bg-danger-soft px-3 py-2 text-xs text-danger">{funding.failureReason}</p>
+                ) : null}
               </dl>
             ) : (
               <p className="text-sm text-ink-muted">Not set up. They fund by card from the dashboard.</p>
@@ -148,15 +198,22 @@ export function TeamWallet({ team, mode }: { team: DeveloperDetail; mode: Mode }
               <p className="flex items-center gap-2 text-sm text-ink">
                 <CreditCard size={14} className="text-ink-faint" aria-hidden />
                 <span className="capitalize">{autoTopUp.card.brand ?? "Card"}</span> •••• {autoTopUp.card.last4}
-                {autoTopUp.card.expMonth ? <span className="text-xs text-ink-faint">exp {autoTopUp.card.expMonth}/{autoTopUp.card.expYear}</span> : null}
+                {autoTopUp.card.expMonth ? (
+                  <span className="text-xs text-ink-faint">
+                    exp {autoTopUp.card.expMonth}/{autoTopUp.card.expYear}
+                  </span>
+                ) : null}
               </p>
             ) : (
               <p className="text-xs text-ink-faint">No saved card.</p>
             )}
-            {autoTopUp.lastChargeAt ? <p className="text-xs text-ink-muted">Last charged {when(autoTopUp.lastChargeAt)}</p> : null}
+            {autoTopUp.lastChargeAt ? (
+              <p className="text-xs text-ink-muted">Last charged {when(autoTopUp.lastChargeAt)}</p>
+            ) : null}
             {autoTopUp.consecutiveFailures || autoTopUp.disabledReason ? (
               <p className="rounded-lg bg-danger-soft px-3 py-2 text-xs text-danger">
-                {autoTopUp.disabledReason ?? `${autoTopUp.consecutiveFailures} failed charge${autoTopUp.consecutiveFailures === 1 ? "" : "s"} in a row`}
+                {autoTopUp.disabledReason ??
+                  `${autoTopUp.consecutiveFailures} failed charge${autoTopUp.consecutiveFailures === 1 ? "" : "s"} in a row`}
                 {autoTopUp.lastFailureReason ? `: ${autoTopUp.lastFailureReason}` : ""}
               </p>
             ) : null}
@@ -164,11 +221,21 @@ export function TeamWallet({ team, mode }: { team: DeveloperDetail; mode: Mode }
         </Panel>
 
         <Panel>
-          <CardTitle title="Low-balance email" icon={BellRing} hint="Owners and finance members are emailed once, until money comes in." />
+          <CardTitle
+            title="Low-balance email"
+            icon={BellRing}
+            hint="Owners and finance members are emailed once, until money comes in."
+          />
           <div className="space-y-3 px-5 pb-5 pt-4">
-            <Fact label="When available drops below">{lowBalanceThreshold !== null ? naira(lowBalanceThreshold) : null}</Fact>
-            <Fact label="Last sent">{lowBalanceAlertedAt ? when(lowBalanceAlertedAt) : lowBalanceThreshold !== null ? "Not yet" : null}</Fact>
-            <Fact label="Also emails">{team.settings.notificationEmails.length ? team.settings.notificationEmails.join(", ") : null}</Fact>
+            <Fact label="When available drops below">
+              {lowBalanceThreshold !== null ? naira(lowBalanceThreshold) : null}
+            </Fact>
+            <Fact label="Last sent">
+              {lowBalanceAlertedAt ? when(lowBalanceAlertedAt) : lowBalanceThreshold !== null ? "Not yet" : null}
+            </Fact>
+            <Fact label="Also emails">
+              {team.settings.notificationEmails.length ? team.settings.notificationEmails.join(", ") : null}
+            </Fact>
           </div>
         </Panel>
       </div>

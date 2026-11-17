@@ -7,7 +7,11 @@ const TYPE_BY_SLUG: Record<string, string> = {
   "bulk pickup": "BULK",
 };
 
-export default function MoreOrderTypesRedirect({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
+export default function MoreOrderTypesRedirect({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const slug = searchParams?.["order-type"];
   const type = TYPE_BY_SLUG[String(Array.isArray(slug) ? slug[0] : (slug ?? "")).toLowerCase()];
   redirect(type ? `/orders?tab=all&type=${type}` : "/orders?tab=all");

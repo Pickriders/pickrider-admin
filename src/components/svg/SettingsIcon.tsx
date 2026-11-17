@@ -1,11 +1,5 @@
 export const SettingsIcon = () => (
-  <svg
-    width="106"
-    height="120"
-    viewBox="0 0 106 120"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="106" height="120" viewBox="0 0 106 120" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       className="redraw-path"
       d="M78.1667 57.5C78.1667 67.165 70.3317 75 60.6667 75C51.0017 75 43.1667 67.165 43.1667 57.5C43.1667 47.835 51.0017 40 60.6667 40C70.3317 40 78.1667 47.835 78.1667 57.5Z"

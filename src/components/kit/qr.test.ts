@@ -21,8 +21,12 @@ const hex = (bytes: number[]) => bytes.map((b) => b.toString(16).padStart(2, "0"
 /** Capacity tables for level M, versions 1..10 (ISO/IEC 18004 table 9). */
 describe("qr tables", () => {
   it("knows the total and data codewords per version", () => {
-    expect(Array.from({ length: 10 }, (_, i) => totalCodewords(i + 1))).toEqual([26, 44, 70, 100, 134, 172, 196, 242, 292, 346]);
-    expect(Array.from({ length: 10 }, (_, i) => dataCodewords(i + 1))).toEqual([16, 28, 44, 64, 86, 108, 124, 154, 182, 216]);
+    expect(Array.from({ length: 10 }, (_, i) => totalCodewords(i + 1))).toEqual([
+      26, 44, 70, 100, 134, 172, 196, 242, 292, 346,
+    ]);
+    expect(Array.from({ length: 10 }, (_, i) => dataCodewords(i + 1))).toEqual([
+      16, 28, 44, 64, 86, 108, 124, 154, 182, 216,
+    ]);
   });
 
   it("places alignment patterns where the standard does", () => {
@@ -124,7 +128,8 @@ function readCodewords(matrix: ReturnType<typeof encodeQr>) {
   const order = dataModuleOrder(matrix.version);
   const bits = order.map(([x, y]) => (matrix.modules[y][x] !== maskModule(matrix.mask, x, y) ? 1 : 0));
   const bytes: number[] = [];
-  for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(bits.slice(i, i + 8).reduce<number>((acc, b) => (acc << 1) | b, 0));
+  for (let i = 0; i + 8 <= bits.length; i += 8)
+    bytes.push(bits.slice(i, i + 8).reduce<number>((acc, b) => (acc << 1) | b, 0));
   return bytes;
 }
 
@@ -167,7 +172,8 @@ describe("encodeQr", () => {
   });
 
   it("places the codewords so they read back after unmasking", () => {
-    const text = "otpauth://totp/Pickriders%20Admin:ops@pickriders.com?secret=JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP&issuer=Pickriders%20Admin";
+    const text =
+      "otpauth://totp/Pickriders%20Admin:ops@pickriders.com?secret=JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP&issuer=Pickriders%20Admin";
     const qr = encodeQr(text);
     const { version, codewords } = buildCodewords(text);
     expect(qr.version).toBe(version);
@@ -193,7 +199,16 @@ describe("encodeQr", () => {
   });
 
   it("renders dark modules as path runs in module units", () => {
-    const path = qrPath({ size: 3, version: 1, mask: 0, modules: [[true, true, false], [false, false, false], [false, true, true]] });
+    const path = qrPath({
+      size: 3,
+      version: 1,
+      mask: 0,
+      modules: [
+        [true, true, false],
+        [false, false, false],
+        [false, true, true],
+      ],
+    });
     expect(path).toBe("M0 0h2v1h-2zM1 2h2v1h-2z");
   });
 });

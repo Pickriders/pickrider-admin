@@ -15,7 +15,16 @@ import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
 import type { LoginResult } from "@/lib/admin/api";
-import { apiErrorBody, apiErrorStatus, isLoginLocked, lockoutSecondsLeft, loginErrorMessage, mfaErrorMessage, waitLabel, type LockoutDetails } from "@/lib/admin/auth-errors";
+import {
+  apiErrorBody,
+  apiErrorStatus,
+  isLoginLocked,
+  lockoutSecondsLeft,
+  loginErrorMessage,
+  mfaErrorMessage,
+  waitLabel,
+  type LockoutDetails,
+} from "@/lib/admin/auth-errors";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -28,7 +37,10 @@ const FIELD_CLASS =
 /** Why the person is back at sign-in, set by the API client or the logout. */
 const REASONS: Record<string, { tone: "warning" | "danger" | "neutral"; text: string }> = {
   expired: { tone: "warning", text: "Your session ended. Sign in again to pick up where you left off." },
-  revoked: { tone: "danger", text: "This session was signed out, from another device or by a security action. Sign in again to continue." },
+  revoked: {
+    tone: "danger",
+    text: "This session was signed out, from another device or by a security action. Sign in again to continue.",
+  },
   "signed-out": { tone: "neutral", text: "You have been signed out." },
   secured: { tone: "warning", text: "Your account was secured. Sign in with your new password." },
 };
@@ -62,7 +74,11 @@ export const LoginForm = () => {
 
   const onTokens = (result: LoginResult) => {
     if (result.mfaRequired && result.mfaToken) {
-      setStage({ kind: "mfa", mfaToken: result.mfaToken, expiresAt: Date.now() + (result.mfaExpiresInSeconds ?? 300) * 1000 });
+      setStage({
+        kind: "mfa",
+        mfaToken: result.mfaToken,
+        expiresAt: Date.now() + (result.mfaExpiresInSeconds ?? 300) * 1000,
+      });
       return;
     }
     login(result, rememberMe, { quiet: Boolean(result.mfaSetupRestricted) });
@@ -105,18 +121,30 @@ function PasswordStep({
 
   const error = loginMutation.error;
   const locked = isLoginLocked(error) && lockoutLeft > 0;
-  const passwordResetRequired = Boolean((apiErrorBody(error)?.details as { passwordResetRequired?: boolean } | undefined)?.passwordResetRequired);
-  const errorText = error ? (locked ? `Too many attempts. Try again in ${waitLabel(lockoutLeft)}.` : loginErrorMessage(error)) : null;
+  const passwordResetRequired = Boolean(
+    (apiErrorBody(error)?.details as { passwordResetRequired?: boolean } | undefined)?.passwordResetRequired,
+  );
+  const errorText = error
+    ? locked
+      ? `Too many attempts. Try again in ${waitLabel(lockoutLeft)}.`
+      : loginErrorMessage(error)
+    : null;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: "easeOut" }}>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
       <AuthCard>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-dark">
           <ShieldCheck size={13} />
           Pickriders Admin
         </span>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-[2rem]">Welcome back</h1>
-        <p className="mt-2 text-[15px] font-medium text-muted-foreground">Sign in to manage orders, couriers, businesses and finances.</p>
+        <p className="mt-2 text-[15px] font-medium text-muted-foreground">
+          Sign in to manage orders, couriers, businesses and finances.
+        </p>
         {reason ? (
           <p
             role="status"
@@ -171,7 +199,10 @@ function PasswordStep({
           </div>
 
           {errorText ? (
-            <div role="alert" className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger">
+            <div
+              role="alert"
+              className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger"
+            >
               {errorText}
               {passwordResetRequired ? (
                 <Link href="/auth/reset-password" className="mt-1 block font-bold underline">
@@ -247,7 +278,11 @@ export function MfaChallenge({
   const mustRestart = expired || apiErrorStatus(error) === 401;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: "easeOut" }}>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
       <AuthCard>
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft text-brand-dark">
           {useRecovery ? <KeyRound size={22} /> : <Smartphone size={22} />}
@@ -281,19 +316,35 @@ export function MfaChallenge({
               className="h-12 rounded-xl px-4 font-mono text-[15px] font-semibold uppercase tracking-widest text-foreground bg-background"
             />
           ) : (
-            <CodeInput value={code} onChange={setCode} onComplete={(value) => submit(value)} autoFocus disabled={challenge.isPending || mustRestart} error={Boolean(error) && !locked} />
+            <CodeInput
+              value={code}
+              onChange={setCode}
+              onComplete={(value) => submit(value)}
+              autoFocus
+              disabled={challenge.isPending || mustRestart}
+              error={Boolean(error) && !locked}
+            />
           )}
 
           <label className="mt-5 flex cursor-pointer items-start gap-2">
-            <UI.Checkbox checked={trustDevice} onCheckedChange={(val) => setTrustDevice(Boolean(val))} className="mt-0.5" />
+            <UI.Checkbox
+              checked={trustDevice}
+              onCheckedChange={(val) => setTrustDevice(Boolean(val))}
+              className="mt-0.5"
+            />
             <span>
               <span className="block text-sm font-semibold text-foreground">Remember this device for 30 days</span>
-              <span className="block text-xs text-muted-foreground">Skip the code on this browser. Do not use on a shared computer.</span>
+              <span className="block text-xs text-muted-foreground">
+                Skip the code on this browser. Do not use on a shared computer.
+              </span>
             </span>
           </label>
 
           {errorText ? (
-            <div role="alert" className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger">
+            <div
+              role="alert"
+              className="mt-5 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2.5 text-sm font-semibold text-danger"
+            >
               {errorText}
             </div>
           ) : null}
@@ -326,7 +377,11 @@ export function MfaChallenge({
           >
             {useRecovery ? "Use my authenticator app instead" : "Use a recovery code"}
           </button>
-          <button type="button" onClick={onRestart} className="text-muted-foreground hover:text-foreground hover:underline">
+          <button
+            type="button"
+            onClick={onRestart}
+            className="text-muted-foreground hover:text-foreground hover:underline"
+          >
             Sign in as someone else
           </button>
         </div>

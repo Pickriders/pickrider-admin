@@ -47,7 +47,10 @@ const COLUMNS: ColumnDef<Broadcast, unknown>[] = [
   {
     id: "channels",
     header: "Channels",
-    meta: meta({ hideBelow: "md", csv: { key: "channels", label: "Channels", value: (row) => ((row as Broadcast).channels ?? []).join(" ") } }),
+    meta: meta({
+      hideBelow: "md",
+      csv: { key: "channels", label: "Channels", value: (row) => ((row as Broadcast).channels ?? []).join(" ") },
+    }),
     cell: ({ row }) => <ChannelBadges channels={row.original.channels} />,
   },
   {
@@ -64,7 +67,9 @@ const COLUMNS: ColumnDef<Broadcast, unknown>[] = [
       <span className="text-sm">
         <span className="font-semibold text-success">{count(row.original.sent)}</span>
         <span className="text-ink-faint"> / </span>
-        <span className={cx("font-semibold", row.original.failed ? "text-danger" : "text-ink-faint")}>{count(row.original.failed)}</span>
+        <span className={cx("font-semibold", row.original.failed ? "text-danger" : "text-ink-faint")}>
+          {count(row.original.failed)}
+        </span>
       </span>
     ),
   },
@@ -78,7 +83,11 @@ const COLUMNS: ColumnDef<Broadcast, unknown>[] = [
     id: "createdBy",
     header: "Sent by",
     meta: meta({ hideBelow: "xl", csv: { key: "createdBy", label: "Sent by" } }),
-    cell: ({ row }) => <span className="font-mono text-[11px] text-ink-muted">{shortId(typeof row.original.createdBy === "string" ? row.original.createdBy : row.original.createdBy?._id)}</span>,
+    cell: ({ row }) => (
+      <span className="font-mono text-[11px] text-ink-muted">
+        {shortId(typeof row.original.createdBy === "string" ? row.original.createdBy : row.original.createdBy?._id)}
+      </span>
+    ),
   },
 ];
 
@@ -94,7 +103,16 @@ export function HistoryTab() {
     if (!broadcasts.data) return undefined;
     const term = (table.state.search ?? "").trim().toLowerCase();
     if (!term) return broadcasts.data;
-    return { ...broadcasts.data, items: broadcasts.data.items.filter((b) => [b.subject, b.message, b.audience].some((v) => String(v ?? "").toLowerCase().includes(term))) };
+    return {
+      ...broadcasts.data,
+      items: broadcasts.data.items.filter((b) =>
+        [b.subject, b.message, b.audience].some((v) =>
+          String(v ?? "")
+            .toLowerCase()
+            .includes(term),
+        ),
+      ),
+    };
   }, [broadcasts.data, table.state.search]);
 
   return (
@@ -153,10 +171,17 @@ function BroadcastDrawerInner({ id, onClose }: { id?: string; onClose: () => voi
   const done = Math.min(recipients, sent + failed);
   const progress = recipients ? Math.round((done / recipients) * 100) : 0;
   const filters = (broadcast?.filters ?? {}) as Record<string, unknown>;
-  const filterItems = Object.entries(filters).filter(([, v]) => v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length));
+  const filterItems = Object.entries(filters).filter(
+    ([, v]) => v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length),
+  );
 
   return (
-    <Drawer open={Boolean(id)} onClose={onClose} title={broadcast?.subject ?? "Broadcast"} subtitle={broadcast ? when(broadcast.createdAt) : undefined}>
+    <Drawer
+      open={Boolean(id)}
+      onClose={onClose}
+      title={broadcast?.subject ?? "Broadcast"}
+      subtitle={broadcast ? when(broadcast.createdAt) : undefined}
+    >
       {detail.isError ? (
         <p className="text-sm font-semibold text-danger">{errorMessage(detail.error)}</p>
       ) : !broadcast ? (
@@ -179,17 +204,37 @@ function BroadcastDrawerInner({ id, onClose }: { id?: string; onClose: () => voi
               <span className={failed ? "font-semibold text-danger" : "text-ink-faint"}>{count(failed)} failed</span>
             </div>
             <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface">
-              <div className={cx("h-full rounded-full transition-all", broadcast.status === "FAILED" ? "bg-danger" : "bg-brand")} style={{ width: `${progress}%` }} />
+              <div
+                className={cx(
+                  "h-full rounded-full transition-all",
+                  broadcast.status === "FAILED" ? "bg-danger" : "bg-brand",
+                )}
+                style={{ width: `${progress}%` }}
+              />
             </div>
             <p className="mt-1 text-[11px] text-ink-faint">
-              {isRunning ? "Still sending, this refreshes on its own." : broadcast.completedAt ? `Finished ${when(broadcast.completedAt)}` : "Finished"}
+              {isRunning
+                ? "Still sending, this refreshes on its own."
+                : broadcast.completedAt
+                  ? `Finished ${when(broadcast.completedAt)}`
+                  : "Finished"}
             </p>
           </div>
           <KeyValue
             items={[
               { label: "Recipients", value: count(recipients) },
-              { label: "Sent by", value: <span className="font-mono text-xs">{typeof broadcast.createdBy === "string" ? broadcast.createdBy : broadcast.createdBy?._id}</span> },
-              ...filterItems.map(([key, value]) => ({ label: key.replace(/([A-Z])/g, " $1").toLowerCase(), value: Array.isArray(value) ? value.join(", ") : String(value) })),
+              {
+                label: "Sent by",
+                value: (
+                  <span className="font-mono text-xs">
+                    {typeof broadcast.createdBy === "string" ? broadcast.createdBy : broadcast.createdBy?._id}
+                  </span>
+                ),
+              },
+              ...filterItems.map(([key, value]) => ({
+                label: key.replace(/([A-Z])/g, " $1").toLowerCase(),
+                value: Array.isArray(value) ? value.join(", ") : String(value),
+              })),
             ]}
           />
           <div>
