@@ -18,11 +18,7 @@ interface BreadCrumbNavProps {
   pageLinks: Array<{ href: string; label: string }>;
 }
 
-export const BreadCrumbNav = ({
-  currentPage,
-  rootPageLink,
-  pageLinks,
-}: BreadCrumbNavProps) => {
+export const BreadCrumbNav = ({ currentPage, rootPageLink, pageLinks }: BreadCrumbNavProps) => {
   return (
     <div className="flex items-center justify-between">
       <Breadcrumb>

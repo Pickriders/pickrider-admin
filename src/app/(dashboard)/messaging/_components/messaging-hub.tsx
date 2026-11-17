@@ -17,7 +17,8 @@ type Tab = (typeof TABS)[number];
 
 const DESCRIPTION: Record<Tab, string> = {
   compose: "One message to customers, couriers or businesses, over push and email. Everyone also gets an in-app copy.",
-  announcements: "In-app popups that tell customers or couriers what's new, with a button that opens a screen or a link.",
+  announcements:
+    "In-app popups that tell customers or couriers what's new, with a button that opens a screen or a link.",
   history: "Every broadcast sent, with how far it got.",
   log: "Each notification the platform tried to deliver, and whether it landed.",
 };
@@ -38,7 +39,15 @@ export function MessagingHub() {
           { id: "log", label: "Log" },
         ]}
       />
-      {tab === "compose" ? <ComposeTab /> : tab === "announcements" ? <AnnouncementsTab /> : tab === "history" ? <HistoryTab /> : <LogTab />}
+      {tab === "compose" ? (
+        <ComposeTab />
+      ) : tab === "announcements" ? (
+        <AnnouncementsTab />
+      ) : tab === "history" ? (
+        <HistoryTab />
+      ) : (
+        <LogTab />
+      )}
     </div>
   );
 }

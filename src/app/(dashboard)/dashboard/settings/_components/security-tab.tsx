@@ -1,12 +1,34 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { KeyRound, Laptop, LogOut, MonitorSmartphone, RefreshCw, ShieldCheck, ShieldOff, Smartphone } from "lucide-react";
+import {
+  KeyRound,
+  Laptop,
+  LogOut,
+  MonitorSmartphone,
+  RefreshCw,
+  ShieldCheck,
+  ShieldOff,
+  Smartphone,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge, Button, ConfirmDialog, Drawer, EmptyState, ErrorState, Input, KeyValue, Panel, PanelHeader, Skeleton, cx } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  EmptyState,
+  ErrorState,
+  Input,
+  KeyValue,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  cx,
+} from "@/components/kit";
 import { CodeInput } from "@/components/kit/code-input";
 import { CopyButton, DownloadButton } from "@/components/security/copy-button";
 import { MfaSetupFlow, recoveryCodesText } from "@/components/security/mfa-setup";
@@ -32,11 +54,31 @@ function deviceIcon(session: AdminSession) {
 }
 
 /** A code (authenticator or recovery) typed into a dialog; the same input serves "Turn off" and "Regenerate". */
-function CodePrompt({ value, onChange, useRecovery, onToggle, autoFocus }: { value: string; onChange: (v: string) => void; useRecovery: boolean; onToggle: () => void; autoFocus?: boolean }) {
+function CodePrompt({
+  value,
+  onChange,
+  useRecovery,
+  onToggle,
+  autoFocus,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  useRecovery: boolean;
+  onToggle: () => void;
+  autoFocus?: boolean;
+}) {
   return (
     <div>
       {useRecovery ? (
-        <Input autoFocus={autoFocus} value={value} onChange={(e) => onChange(e.target.value)} placeholder="XXXXX-XXXXX" autoComplete="off" className="font-mono uppercase tracking-widest" aria-label="Recovery code" />
+        <Input
+          autoFocus={autoFocus}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="XXXXX-XXXXX"
+          autoComplete="off"
+          className="font-mono uppercase tracking-widest"
+          aria-label="Recovery code"
+        />
       ) : (
         <CodeInput value={value} onChange={onChange} autoFocus={autoFocus} />
       )}
@@ -117,7 +159,10 @@ export function AuthenticatorPanel() {
       />
       <div className="px-6 pb-6 pt-4">
         {status.isError ? (
-          <ErrorState message={errorMessage(status.error, "Could not load your authenticator status.")} onRetry={() => void status.refetch()} />
+          <ErrorState
+            message={errorMessage(status.error, "Could not load your authenticator status.")}
+            onRetry={() => void status.refetch()}
+          />
         ) : status.isLoading || !data ? (
           <Skeleton className="h-24 w-full" />
         ) : (
@@ -125,14 +170,22 @@ export function AuthenticatorPanel() {
             <KeyValue
               columns={3}
               items={[
-                { label: "Status", value: enabled ? `On since ${day(data.enabledAt)}` : data.pendingSetup ? "Setup started, not confirmed" : "Not set up" },
+                {
+                  label: "Status",
+                  value: enabled
+                    ? `On since ${day(data.enabledAt)}`
+                    : data.pendingSetup
+                      ? "Setup started, not confirmed"
+                      : "Not set up",
+                },
                 { label: "Recovery codes left", value: enabled ? `${data.recoveryCodesLeft} of 10` : undefined },
                 { label: "Remembered devices", value: enabled ? String(data.trustedDevices) : undefined },
               ]}
             />
             {enabled && data.recoveryCodesLeft <= 2 ? (
               <p className="mt-3 rounded-xl bg-warning-soft px-3 py-2 text-xs font-semibold text-warning">
-                Only {data.recoveryCodesLeft} recovery code{data.recoveryCodesLeft === 1 ? "" : "s"} left. Generate a new set before you run out.
+                Only {data.recoveryCodesLeft} recovery code{data.recoveryCodesLeft === 1 ? "" : "s"} left. Generate a
+                new set before you run out.
               </p>
             ) : null}
             <div className="mt-5 flex flex-wrap gap-2">
@@ -141,10 +194,20 @@ export function AuthenticatorPanel() {
                   <Button variant="outline" icon={RefreshCw} onClick={() => setRegenOpen(true)}>
                     Regenerate recovery codes
                   </Button>
-                  <Button variant="outline" icon={ShieldOff} className="text-danger" onClick={() => setDisableOpen(true)} disabled={data.required}>
+                  <Button
+                    variant="outline"
+                    icon={ShieldOff}
+                    className="text-danger"
+                    onClick={() => setDisableOpen(true)}
+                    disabled={data.required}
+                  >
                     Turn off
                   </Button>
-                  {data.required ? <span className="self-center text-xs text-ink-faint">Required for your role, so it cannot be turned off.</span> : null}
+                  {data.required ? (
+                    <span className="self-center text-xs text-ink-faint">
+                      Required for your role, so it cannot be turned off.
+                    </span>
+                  ) : null}
                 </>
               ) : (
                 <Button icon={ShieldCheck} onClick={() => setSetupOpen(true)}>
@@ -186,7 +249,13 @@ export function AuthenticatorPanel() {
         loading={disable.isPending}
         disabled={!codeReady(code, useRecovery)}
       >
-        <CodePrompt value={code} onChange={setCode} useRecovery={useRecovery} onToggle={() => setUseRecovery((v) => !v)} autoFocus />
+        <CodePrompt
+          value={code}
+          onChange={setCode}
+          useRecovery={useRecovery}
+          onToggle={() => setUseRecovery((v) => !v)}
+          autoFocus
+        />
       </ConfirmDialog>
 
       <ConfirmDialog
@@ -204,7 +273,13 @@ export function AuthenticatorPanel() {
         loading={regenerate.isPending}
         disabled={!codeReady(code, useRecovery)}
       >
-        <CodePrompt value={code} onChange={setCode} useRecovery={useRecovery} onToggle={() => setUseRecovery((v) => !v)} autoFocus />
+        <CodePrompt
+          value={code}
+          onChange={setCode}
+          useRecovery={useRecovery}
+          onToggle={() => setUseRecovery((v) => !v)}
+          autoFocus
+        />
       </ConfirmDialog>
 
       <Drawer
@@ -259,12 +334,17 @@ export function SessionsPanel() {
     onSuccess: () => setRevoking(null),
   });
   const revokeOthers = useAction(() => auth.revokeOtherSessions(), {
-    success: (data) => (data.revoked ? `Signed out ${data.revoked} other session${data.revoked === 1 ? "" : "s"}` : "No other sessions were open"),
+    success: (data) =>
+      data.revoked
+        ? `Signed out ${data.revoked} other session${data.revoked === 1 ? "" : "s"}`
+        : "No other sessions were open",
     invalidate: [["me", "sessions"]],
     onSuccess: () => setOthersOpen(false),
   });
 
-  const list = [...(sessions.data?.sessions ?? [])].sort((a, b) => Number(b.current) - Number(a.current) || b.lastSeenAt.localeCompare(a.lastSeenAt));
+  const list = [...(sessions.data?.sessions ?? [])].sort(
+    (a, b) => Number(b.current) - Number(a.current) || b.lastSeenAt.localeCompare(a.lastSeenAt),
+  );
   const others = list.filter((s) => !s.current).length;
 
   return (
@@ -282,28 +362,43 @@ export function SessionsPanel() {
       />
       <div className="px-6 pb-6 pt-4">
         {sessions.isError ? (
-          <ErrorState message={errorMessage(sessions.error, "Could not load your sessions.")} onRetry={() => void sessions.refetch()} />
+          <ErrorState
+            message={errorMessage(sessions.error, "Could not load your sessions.")}
+            onRetry={() => void sessions.refetch()}
+          />
         ) : sessions.isLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-16 w-full" />
             <Skeleton className="h-16 w-full" />
           </div>
         ) : !list.length ? (
-          <EmptyState compact icon={MonitorSmartphone} title="No sessions" description="Sessions appear here after you sign in." />
+          <EmptyState
+            compact
+            icon={MonitorSmartphone}
+            title="No sessions"
+            description="Sessions appear here after you sign in."
+          />
         ) : (
           <ul className="divide-y divide-line">
             {list.map((session) => {
               const Icon = deviceIcon(session);
               return (
                 <li key={session.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center">
-                  <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl", session.current ? "bg-brand-soft text-brand-dark" : "bg-surface text-ink-muted")}>
+                  <span
+                    className={cx(
+                      "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
+                      session.current ? "bg-brand-soft text-brand-dark" : "bg-surface text-ink-muted",
+                    )}
+                  >
                     <Icon size={18} />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink">
                       <span className="truncate">{deviceLabel(session)}</span>
                       {session.current ? <Badge tone="brand">This device</Badge> : null}
-                      {session.trustedUntil && new Date(session.trustedUntil).getTime() > Date.now() ? <Badge tone="neutral">Remembered</Badge> : null}
+                      {session.trustedUntil && new Date(session.trustedUntil).getTime() > Date.now() ? (
+                        <Badge tone="neutral">Remembered</Badge>
+                      ) : null}
                     </p>
                     <p className="mt-0.5 text-xs text-ink-muted">
                       {session.ip ? `${session.ip} · ` : ""}
@@ -332,7 +427,11 @@ export function SessionsPanel() {
         onConfirm={() => revoking && revoke.mutate(revoking.id)}
         tone="warning"
         title="Sign out this device?"
-        description={revoking ? `${deviceLabel(revoking)}${revoking.ip ? ` (${revoking.ip})` : ""} will be signed out immediately. It can sign in again with your password and a code.` : undefined}
+        description={
+          revoking
+            ? `${deviceLabel(revoking)}${revoking.ip ? ` (${revoking.ip})` : ""} will be signed out immediately. It can sign in again with your password and a code.`
+            : undefined
+        }
         confirmLabel="Sign out device"
         loading={revoke.isPending}
       />

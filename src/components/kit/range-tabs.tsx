@@ -24,7 +24,12 @@ const PRESETS = [
  * Calendar day in Lagos, not UTC: between midnight and 1am WAT `toISOString()` still says
  * yesterday, which dropped the current day from every "last N days" window.
  */
-const LAGOS_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos", year: "numeric", month: "2-digit", day: "2-digit" });
+const LAGOS_DAY = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Africa/Lagos",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 function isoDay(date: Date) {
   return LAGOS_DAY.format(date);
 }
@@ -115,11 +120,23 @@ export function RangeTabs({
         <div className="grid grid-cols-2 gap-2">
           <label className="text-[11px] font-semibold text-ink-muted">
             From
-            <Input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="mt-1" />
+            <Input
+              type="date"
+              value={from}
+              max={to || undefined}
+              onChange={(e) => setFrom(e.target.value)}
+              className="mt-1"
+            />
           </label>
           <label className="text-[11px] font-semibold text-ink-muted">
             To
-            <Input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="mt-1" />
+            <Input
+              type="date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => setTo(e.target.value)}
+              className="mt-1"
+            />
           </label>
         </div>
         <div className="mt-3 flex justify-end gap-2">
@@ -152,7 +169,15 @@ export function RangeTabs({
 }
 
 /** Compact from/to picker for table toolbars (the DataTable `dateFilter`); emits YYYY-MM-DD or undefined. */
-export function DateRangeButton({ from, to, onChange }: { from?: string; to?: string; onChange: (from?: string, to?: string) => void }) {
+export function DateRangeButton({
+  from,
+  to,
+  onChange,
+}: {
+  from?: string;
+  to?: string;
+  onChange: (from?: string, to?: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState(from ?? "");
   const [draftTo, setDraftTo] = useState(to ?? "");
@@ -185,11 +210,23 @@ export function DateRangeButton({ from, to, onChange }: { from?: string; to?: st
         <div className="grid grid-cols-2 gap-2">
           <label className="text-[11px] font-semibold text-ink-muted">
             From
-            <Input type="date" value={draftFrom} max={draftTo || undefined} onChange={(e) => setDraftFrom(e.target.value)} className="mt-1" />
+            <Input
+              type="date"
+              value={draftFrom}
+              max={draftTo || undefined}
+              onChange={(e) => setDraftFrom(e.target.value)}
+              className="mt-1"
+            />
           </label>
           <label className="text-[11px] font-semibold text-ink-muted">
             To
-            <Input type="date" value={draftTo} min={draftFrom || undefined} onChange={(e) => setDraftTo(e.target.value)} className="mt-1" />
+            <Input
+              type="date"
+              value={draftTo}
+              min={draftFrom || undefined}
+              onChange={(e) => setDraftTo(e.target.value)}
+              className="mt-1"
+            />
           </label>
         </div>
         <div className="mt-3 flex justify-end gap-2">

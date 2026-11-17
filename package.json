@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "prepare": "husky",
@@ -70,6 +72,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
     "sass": "^1.75.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^5"
@@ -82,7 +85,11 @@
   "lint-staged": {
     "*.ts?(x)": [
       "eslint --fix",
+      "prettier --write",
       "jest --findRelatedTests --passWithNoTests --coverage=false"
+    ],
+    "*.{js,mjs,cjs,css,json,md}": [
+      "prettier --write"
     ]
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

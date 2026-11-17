@@ -14,9 +14,7 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object({
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+  email: Yup.string().email("Invalid email address").required("Email is required"),
 });
 
 export const SendOtpForm = () => {
@@ -44,17 +42,11 @@ export const SendOtpForm = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.email}
-          className={`${
-            formik.touched.email && formik.errors.email
-              ? "focus-visible:ring-[#FF5244]/60"
-              : ""
-          }`}
+          className={`${formik.touched.email && formik.errors.email ? "focus-visible:ring-[#FF5244]/60" : ""}`}
           leftIcon={<SVG.Mail />}
         />
         {formik.touched.email && formik.errors.email ? (
-          <div className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1">
-            {formik.errors.email}
-          </div>
+          <div className="text-[#FF5244] text-xs font-montserrat font-semibold mt-1">{formik.errors.email}</div>
         ) : null}
         {error && (
           <p className="text-[#FF5244] text-xs font-semibold font-montserrat mt-2 text-center">
@@ -63,9 +55,7 @@ export const SendOtpForm = () => {
         )}
 
         <div className="mt-7 space-y-3">
-          <UI.PrimaryButton disabled={!formik.values.email}>
-            Send O.T.P
-          </UI.PrimaryButton>
+          <UI.PrimaryButton disabled={!formik.values.email}>Send O.T.P</UI.PrimaryButton>
           <UI.PrimaryButton variant="outline" asChild>
             <Link href={"/auth/login"}>Cancel</Link>
           </UI.PrimaryButton>

@@ -17,7 +17,16 @@ const MIN_PHOTOS = 2;
 
 type Draft = Omit<VehicleInput, "photos"> & { userId: string };
 
-const EMPTY: Draft = { userId: "", name: "", plateNumber: "", make: "", model: "", color: "", chasisNumber: "", engineNumber: "" };
+const EMPTY: Draft = {
+  userId: "",
+  name: "",
+  plateNumber: "",
+  make: "",
+  model: "",
+  color: "",
+  chasisNumber: "",
+  engineNumber: "",
+};
 
 function readAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -53,7 +62,7 @@ export function VehicleFormDrawer({
     if (!open) return;
     setFileError(null);
     setDraft({
-      userId: userId ?? (typeof vehicle?.userId === "string" ? vehicle.userId : vehicle?.userId?._id ?? ""),
+      userId: userId ?? (typeof vehicle?.userId === "string" ? vehicle.userId : (vehicle?.userId?._id ?? "")),
       name: vehicle?.name ?? "",
       plateNumber: vehicle?.plateNumber ?? "",
       make: vehicle?.make ?? "",
@@ -68,7 +77,8 @@ export function VehicleFormDrawer({
   }, [open, vehicle, userId]);
 
   const save = useAction(
-    (input: { userId: string; body: VehicleInput }) => vehicles.create(input.userId, input.body) as Promise<VehicleRecord>,
+    (input: { userId: string; body: VehicleInput }) =>
+      vehicles.create(input.userId, input.body) as Promise<VehicleRecord>,
     {
       success: vehicle ? "Vehicle updated. It is back in the review queue." : "Vehicle added and queued for review.",
       invalidate: ["vehicles", "stats", ...(vehicle ? [["vehicle", vehicle._id]] : [])],
@@ -79,7 +89,8 @@ export function VehicleFormDrawer({
     },
   );
 
-  const set = (key: keyof Draft) => (event: ChangeEvent<HTMLInputElement>) => setDraft((d) => ({ ...d, [key]: event.target.value }));
+  const set = (key: keyof Draft) => (event: ChangeEvent<HTMLInputElement>) =>
+    setDraft((d) => ({ ...d, [key]: event.target.value }));
 
   const addFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
@@ -148,7 +159,13 @@ export function VehicleFormDrawer({
     >
       <div className="space-y-4">
         {userId ? null : (
-          <UserPicker value={courier} onChange={setCourier} only="couriers" label="Courier" hint="Search by name, phone or email." />
+          <UserPicker
+            value={courier}
+            onChange={setCourier}
+            only="couriers"
+            label="Courier"
+            hint="Search by name, phone or email."
+          />
         )}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Name">
@@ -170,16 +187,26 @@ export function VehicleFormDrawer({
             <Input value={draft.engineNumber} onChange={set("engineNumber")} />
           </Field>
         </div>
-        <Field label="Chassis number" hint="15 to 20 characters." error={draft.chasisNumber && !chassisOk ? "Chassis numbers are 15 to 20 characters." : undefined}>
+        <Field
+          label="Chassis number"
+          hint="15 to 20 characters."
+          error={draft.chasisNumber && !chassisOk ? "Chassis numbers are 15 to 20 characters." : undefined}
+        >
           <Input value={draft.chasisNumber} onChange={set("chasisNumber")} />
         </Field>
         <div>
           <p className="mb-1.5 text-xs font-semibold text-ink-muted">
-            Photos <span className="font-normal text-ink-faint">({MIN_PHOTOS} to {MAX_PHOTOS})</span>
+            Photos{" "}
+            <span className="font-normal text-ink-faint">
+              ({MIN_PHOTOS} to {MAX_PHOTOS})
+            </span>
           </p>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {photos.map((src, index) => (
-              <div key={`${index}-${src.slice(0, 24)}`} className="group relative aspect-square overflow-hidden rounded-xl border border-line bg-surface">
+              <div
+                key={`${index}-${src.slice(0, 24)}`}
+                className="group relative aspect-square overflow-hidden rounded-xl border border-line bg-surface"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt="" className="h-full w-full object-cover" />
                 <button

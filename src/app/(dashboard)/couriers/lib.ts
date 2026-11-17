@@ -5,7 +5,11 @@ import type { RatingSummaryDto } from "@/services";
  * `rating { average, count }` on a rider row: the core's RatingSummaryDto without the star
  * distribution. Absent until the API sends it, null before any review.
  */
-export type RiderRating = Partial<Pick<RatingSummaryDto, "average" | "count">> | { average?: number | null; count?: number | null } | null | undefined;
+export type RiderRating =
+  | Partial<Pick<RatingSummaryDto, "average" | "count">>
+  | { average?: number | null; count?: number | null }
+  | null
+  | undefined;
 
 /**
  * What the leaderboard shows for a rider's rating: the average to one decimal, the number of
@@ -18,5 +22,9 @@ export function ratingDisplay(rating: RiderRating): { average: string; reviews: 
   const average = rating.average;
   if (reviews <= 0 || typeof average !== "number" || Number.isNaN(average)) return null;
   const shown = average.toFixed(1);
-  return { average: shown, reviews: count(reviews), caption: `${shown} out of 5 from ${count(reviews)} ${reviews === 1 ? "rating" : "ratings"}` };
+  return {
+    average: shown,
+    reviews: count(reviews),
+    caption: `${shown} out of 5 from ${count(reviews)} ${reviews === 1 ? "rating" : "ratings"}`,
+  };
 }

@@ -12,7 +12,17 @@ import { Avatar, Badge, Button, EmptyState, Panel, PanelHeader, Skeleton } from 
  * Riders ranked by completed deliveries in the window. The bar under each name
  * is relative to the top rider so the spread reads at a glance.
  */
-export function TopRiders({ query, limit = 6, exportable, subtitle }: { query: RangeQuery; limit?: number; exportable?: boolean; subtitle?: string }) {
+export function TopRiders({
+  query,
+  limit = 6,
+  exportable,
+  subtitle,
+}: {
+  query: RangeQuery;
+  limit?: number;
+  exportable?: boolean;
+  subtitle?: string;
+}) {
   const top = useTopRiders({ ...query, limit });
   const rows = top.data ?? [];
   const loading = top.isLoading && !top.data;
@@ -59,7 +69,10 @@ export function TopRiders({ query, limit = 6, exportable, subtitle }: { query: R
                 <span className="hidden sm:inline">Export CSV</span>
               </Button>
             ) : null}
-            <Link href="/couriers" className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
+            <Link
+              href="/couriers"
+              className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline"
+            >
               All riders <ArrowRight size={13} />
             </Link>
           </div>
@@ -73,14 +86,22 @@ export function TopRiders({ query, limit = 6, exportable, subtitle }: { query: R
             ))}
           </div>
         ) : !rows.length ? (
-          <EmptyState compact icon={Bike} title="No completed deliveries in this window" description="Riders appear here once they complete an order in the selected dates." />
+          <EmptyState
+            compact
+            icon={Bike}
+            title="No completed deliveries in this window"
+            description="Riders appear here once they complete an order in the selected dates."
+          />
         ) : (
           <ol className="divide-y divide-line">
             {rows.map((row, index) => {
               const name = fullName(row.rider) || "Unknown rider";
               return (
                 <li key={row.riderId}>
-                  <Link href={`/couriers/${row.riderId}/details`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface">
+                  <Link
+                    href={`/couriers/${row.riderId}/details`}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface"
+                  >
                     <span className="w-5 text-center text-xs font-black text-ink-faint">{index + 1}</span>
                     <Avatar src={row.rider?.photo} name={name} size={34} />
                     <div className="min-w-0 flex-1">
@@ -91,16 +112,23 @@ export function TopRiders({ query, limit = 6, exportable, subtitle }: { query: R
                             Online
                           </Badge>
                         ) : null}
-                        {row.rider?.status === "SUSPENDED" || row.rider?.status === "BANNED" ? <Badge tone="danger">{row.rider.status === "BANNED" ? "Banned" : "Suspended"}</Badge> : null}
+                        {row.rider?.status === "SUSPENDED" || row.rider?.status === "BANNED" ? (
+                          <Badge tone="danger">{row.rider.status === "BANNED" ? "Banned" : "Suspended"}</Badge>
+                        ) : null}
                       </div>
                       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-surface">
-                        <div className="h-full rounded-full bg-brand" style={{ width: `${Math.max(4, (row.deliveries / max) * 100)}%` }} />
+                        <div
+                          className="h-full rounded-full bg-brand"
+                          style={{ width: `${Math.max(4, (row.deliveries / max) * 100)}%` }}
+                        />
                       </div>
                     </div>
                     <div className="hidden shrink-0 text-right text-xs text-ink-muted sm:block">
                       <p>
                         <span className="font-semibold text-ink">{count(row.deliveries)}</span> delivered
-                        {row.cancelled ? <span className="text-danger"> · {count(row.cancelled)} cancelled</span> : null}
+                        {row.cancelled ? (
+                          <span className="text-danger"> · {count(row.cancelled)} cancelled</span>
+                        ) : null}
                       </p>
                       <p className="mt-0.5 inline-flex items-center gap-1">
                         <Star size={11} className={row.rating != null ? "text-warning" : "text-ink-faint"} />

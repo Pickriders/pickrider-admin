@@ -35,7 +35,9 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
         <Avatar src={businessLogo(row.original)} name={row.original.name} size={36} />
         <div className="min-w-0">
           <p className="truncate font-semibold text-ink">{row.original.name}</p>
-          <p className="truncate text-xs text-ink-muted">{row.original.businessHandle ? `@${row.original.businessHandle}` : formatEmail(row.original.email) || ""}</p>
+          <p className="truncate text-xs text-ink-muted">
+            {row.original.businessHandle ? `@${row.original.businessHandle}` : formatEmail(row.original.email) || ""}
+          </p>
         </div>
       </div>
     ),
@@ -54,7 +56,10 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
         </Link>
       );
     },
-    meta: { hideBelow: "md", csv: { key: "owner", label: "Owner", value: (r) => fullName((r as BusinessRow).owner) } } satisfies ColumnMeta,
+    meta: {
+      hideBelow: "md",
+      csv: { key: "owner", label: "Owner", value: (r) => fullName((r as BusinessRow).owner) },
+    } satisfies ColumnMeta,
   },
   {
     id: "isActive",
@@ -69,7 +74,9 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
           Active
         </Badge>
       ),
-    meta: { csv: { key: "isActive", label: "Active", value: (r) => ((r as BusinessRow).isActive === false ? "No" : "Yes") } } satisfies ColumnMeta,
+    meta: {
+      csv: { key: "isActive", label: "Active", value: (r) => ((r as BusinessRow).isActive === false ? "No" : "Yes") },
+    } satisfies ColumnMeta,
   },
   {
     id: "riders",
@@ -89,7 +96,9 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
     cell: ({ row }) => (
       <span>
         {count(row.original.orders)}
-        {row.original.orders ? <span className="text-xs text-ink-muted"> · {count(row.original.completedOrders)} done</span> : null}
+        {row.original.orders ? (
+          <span className="text-xs text-ink-muted"> · {count(row.original.completedOrders)} done</span>
+        ) : null}
       </span>
     ),
     meta: { align: "right", hideBelow: "md", csv: { key: "orders", label: "Orders" } } satisfies ColumnMeta,
@@ -103,7 +112,9 @@ const COLUMNS: ColumnDef<BusinessRow, unknown>[] = [
   {
     id: "wallet",
     header: "Wallet",
-    cell: ({ row }) => <span className="whitespace-nowrap font-semibold text-ink">{naira(row.original.walletBalance)}</span>,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap font-semibold text-ink">{naira(row.original.walletBalance)}</span>
+    ),
     meta: { align: "right", csv: { key: "walletBalance", label: "Wallet (kobo)" } } satisfies ColumnMeta,
   },
   {

@@ -14,7 +14,9 @@ describe("password change checks", () => {
       next: "Use at least 8 characters.",
       confirm: "The two passwords do not match.",
     });
-    expect(validatePasswordChange("same-pass", "same-pass", "same-pass")).toEqual({ next: "Pick a password you have not used here before." });
+    expect(validatePasswordChange("same-pass", "same-pass", "same-pass")).toEqual({
+      next: "Pick a password you have not used here before.",
+    });
     expect(validatePasswordChange("old-pass", "new-pass-1", "new-pass-1")).toEqual({});
   });
 
@@ -23,6 +25,11 @@ describe("password change checks", () => {
       Object.fromEntries(passwordRules(current, next, confirm).map((rule) => [rule.id, rule.met]));
     expect(met("old", "", "")).toEqual({ length: false, mixed: false, different: false, match: false });
     expect(met("old", "New-pass-1", "New-pass-1")).toEqual({ length: true, mixed: true, different: true, match: true });
-    expect(met("same-pass", "same-pass", "other")).toEqual({ length: true, mixed: false, different: false, match: false });
+    expect(met("same-pass", "same-pass", "other")).toEqual({
+      length: true,
+      mixed: false,
+      different: false,
+      match: false,
+    });
   });
 });

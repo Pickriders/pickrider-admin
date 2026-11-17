@@ -1,13 +1,34 @@
 "use client";
 
-import { ArrowLeftRight, ArrowRight, CalendarClock, Code2, Gavel, Globe, Info, Smartphone, Store, Undo2, UserRoundX } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ArrowRight,
+  CalendarClock,
+  Code2,
+  Gavel,
+  Globe,
+  Info,
+  Smartphone,
+  Store,
+  Undo2,
+  UserRoundX,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
 
 import { Avatar, Badge, cx, statusTone, type Tone } from "@/components/kit";
 import type { OrderParty, OrderRow } from "@/lib/admin/api";
-import { ORDER_SOURCE_LABEL, count, fullName, orderPaymentDisplay, orderSource, statusLabel, when, type OrderSource } from "@/lib/admin/format";
+import {
+  ORDER_SOURCE_LABEL,
+  count,
+  fullName,
+  orderPaymentDisplay,
+  orderSource,
+  statusLabel,
+  when,
+  type OrderSource,
+} from "@/lib/admin/format";
 
 import { displayPhone, orderNumber, paymentLabel, statusAt, typeLabel } from "../lib";
 
@@ -35,7 +56,10 @@ export function PartyCell({
   if (party.isErased) {
     return (
       <span className={cx("flex min-w-0 items-center gap-2.5", className)} title="This account was erased">
-        <span className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint" style={{ width: size, height: size }}>
+        <span
+          className="grid shrink-0 place-items-center rounded-full bg-surface text-ink-faint"
+          style={{ width: size, height: size }}
+        >
           <UserRoundX size={Math.round(size * 0.5)} />
         </span>
         <span className="truncate text-[13px] font-semibold italic text-ink-faint">{fullName(party)}</span>
@@ -47,10 +71,17 @@ export function PartyCell({
     <span className="flex min-w-0 items-center gap-2.5">
       <Avatar src={party.photo} name={name} size={size} />
       <span className="min-w-0 flex-1 leading-tight">
-        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark" title={name}>
+        <span
+          className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark"
+          title={name}
+        >
           {name}
         </span>
-        {party.phone ? <span className="mt-0.5 block truncate text-[11px] tabular-nums text-ink-muted">{displayPhone(party.phone)}</span> : null}
+        {party.phone ? (
+          <span className="mt-0.5 block truncate text-[11px] tabular-nums text-ink-muted">
+            {displayPhone(party.phone)}
+          </span>
+        ) : null}
       </span>
     </span>
   );
@@ -66,16 +97,38 @@ export function PartyCell({
  * Who the order is for: the customer, or for a Developer API order the team whose key created it,
  * linking to that team on the Developers page (its "customer" is a system account).
  */
-export function CustomerCell({ order, href, fallback = "Unknown", size = 28, className }: { order: Pick<OrderRow, "user" | "developerTeam">; href?: string; fallback?: string; size?: number; className?: string }) {
+export function CustomerCell({
+  order,
+  href,
+  fallback = "Unknown",
+  size = 28,
+  className,
+}: {
+  order: Pick<OrderRow, "user" | "developerTeam">;
+  href?: string;
+  fallback?: string;
+  size?: number;
+  className?: string;
+}) {
   const team = order.developerTeam;
   if (!team) return <PartyCell party={order.user} href={href} fallback={fallback} size={size} className={className} />;
   return (
-    <Link href={`/developers?tab=all&open=${team.id}`} onClick={stop} title="Created with this developer team's API key" className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}>
-      <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-warning-soft text-warning">
+    <Link
+      href={`/developers/${team.id}`}
+      onClick={stop}
+      title="Created with this developer team's API key"
+      className={cx("group/party flex min-w-0 items-center gap-2.5 rounded-lg", className)}
+    >
+      <span
+        style={{ width: size, height: size }}
+        className="grid shrink-0 place-items-center rounded-full bg-warning-soft text-warning"
+      >
         <Code2 size={Math.round(size * 0.5)} aria-hidden strokeWidth={2.5} />
       </span>
       <span className="min-w-0 flex-1 leading-tight">
-        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">{team.name}</span>
+        <span className="block truncate text-[13px] font-semibold text-ink group-hover/party:text-brand-dark">
+          {team.name}
+        </span>
         <span className="mt-0.5 block truncate text-[11px] text-ink-muted">Developer API</span>
       </span>
     </Link>
@@ -117,11 +170,20 @@ const PAYMENT_TEXT: Record<ReturnType<typeof orderPaymentDisplay>["tone"], strin
 };
 
 /** The payment state as one muted line, for places with no room for a badge. */
-export function PaymentLine({ order, className }: { order: Pick<OrderRow, "channel" | "status" | "paymentStatus">; className?: string }) {
+export function PaymentLine({
+  order,
+  className,
+}: {
+  order: Pick<OrderRow, "channel" | "status" | "paymentStatus">;
+  className?: string;
+}) {
   if (!order.paymentStatus) return null;
   const payment = orderPaymentDisplay(order);
   return (
-    <span className={cx("block truncate text-[11px] font-semibold", PAYMENT_TEXT[payment.tone], className)} title={payment.hint}>
+    <span
+      className={cx("block truncate text-[11px] font-semibold", PAYMENT_TEXT[payment.tone], className)}
+      title={payment.hint}
+    >
       {payment.label}
     </span>
   );
@@ -245,7 +307,13 @@ const plural = (n: number, word: string) => `${count(n)} ${word}${n === 1 ? "" :
  * "7 bids" that opens the order's bids panel. A span with link semantics rather than an <a>, so it
  * can sit inside a board card that is itself a link.
  */
-export function BidsChip({ order, prefix }: { order: Pick<OrderRow, "_id" | "offersCount" | "offers">; prefix?: string }) {
+export function BidsChip({
+  order,
+  prefix,
+}: {
+  order: Pick<OrderRow, "_id" | "offersCount" | "offers">;
+  prefix?: string;
+}) {
   const router = useRouter();
   const bids = bidsOf(order);
   const go = (event: MouseEvent | KeyboardEvent) => {
@@ -351,7 +419,10 @@ export function CourierCell({
   href,
   size = 28,
 }: {
-  order: Pick<OrderRow, "_id" | "rider" | "status" | "channel" | "offersCount" | "offers" | "riderReleaseCount" | "handoffCount">;
+  order: Pick<
+    OrderRow,
+    "_id" | "rider" | "status" | "channel" | "offersCount" | "offers" | "riderReleaseCount" | "handoffCount"
+  >;
   href?: string;
   size?: number;
 }) {
@@ -387,7 +458,10 @@ function CourierBody({
       </span>
     );
   }
-  if (!app) return <span className="text-xs text-ink-faint">{order.status === "INITIATED" ? "Finding a rider" : "No rider"}</span>;
+  if (!app)
+    return (
+      <span className="text-xs text-ink-faint">{order.status === "INITIATED" ? "Finding a rider" : "No rider"}</span>
+    );
   if (bids > 0) {
     return (
       <span className="flex flex-col items-start gap-1">

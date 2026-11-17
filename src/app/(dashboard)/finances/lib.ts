@@ -32,7 +32,10 @@ const PURPOSE_LABEL = new Map(TX_PURPOSES.map((p) => [p.value, p.label]));
 
 export function titleCase(value: string | null | undefined) {
   if (!value) return "";
-  return value.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  return value
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/^\w/, (c) => c.toUpperCase());
 }
 
 export function purposeLabel(purpose: string | null | undefined) {

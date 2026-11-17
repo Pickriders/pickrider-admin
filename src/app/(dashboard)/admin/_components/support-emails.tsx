@@ -60,7 +60,10 @@ export function SupportEmailsInput({
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-ink-muted">
-        {label} <span className="font-normal text-ink-faint">({value.length}/{SUPPORT_EMAILS_MAX})</span>
+        {label}{" "}
+        <span className="font-normal text-ink-faint">
+          ({value.length}/{SUPPORT_EMAILS_MAX})
+        </span>
       </label>
       <div
         className={cx(
@@ -70,7 +73,10 @@ export function SupportEmailsInput({
         )}
       >
         {value.map((email) => (
-          <span key={email} className="inline-flex max-w-full items-center gap-1 rounded-full bg-surface py-0.5 pl-2.5 pr-1 text-xs font-semibold text-ink">
+          <span
+            key={email}
+            className="inline-flex max-w-full items-center gap-1 rounded-full bg-surface py-0.5 pl-2.5 pr-1 text-xs font-semibold text-ink"
+          >
             <span className="truncate">{email}</span>
             <button
               type="button"
@@ -106,7 +112,11 @@ export function SupportEmailsInput({
           className="h-7 min-w-[10rem] flex-1 bg-transparent px-1 text-sm text-ink placeholder:text-ink-faint focus:outline-none disabled:cursor-not-allowed"
         />
       </div>
-      {error ? <span className="mt-1 block text-xs font-medium text-danger">{error}</span> : <span className="mt-1 block text-xs text-ink-faint">{hint}</span>}
+      {error ? (
+        <span className="mt-1 block text-xs font-medium text-danger">{error}</span>
+      ) : (
+        <span className="mt-1 block text-xs text-ink-faint">{hint}</span>
+      )}
     </div>
   );
 }
@@ -130,7 +140,15 @@ export function TestEmailButton({
   if (!canWrite) return null;
   return (
     <span className="inline-flex items-center gap-2">
-      <Button type="button" size="sm" variant="outline" icon={Send} loading={send.isPending} disabled={dirty} onClick={() => send.mutate(undefined)}>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        icon={Send}
+        loading={send.isPending}
+        disabled={dirty}
+        onClick={() => send.mutate(undefined)}
+      >
         Send test email
       </Button>
       {dirty ? (

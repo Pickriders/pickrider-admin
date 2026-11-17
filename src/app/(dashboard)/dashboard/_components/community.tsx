@@ -14,9 +14,27 @@ import { settingsHref } from "@/lib/admin/settings-tabs";
  * that matter for it. Lifetime counts; "new" is the selected window.
  */
 type Segment = { label: string; value: number; className: string };
-type Row = { key: string; icon: LucideIcon; title: string; total: number; href: string; segments: Segment[]; facts: { label: string; value: number; href?: string; tone?: "up" | "down" }[] };
+type Row = {
+  key: string;
+  icon: LucideIcon;
+  title: string;
+  total: number;
+  href: string;
+  segments: Segment[];
+  facts: { label: string; value: number; href?: string; tone?: "up" | "down" }[];
+};
 
-export function Community({ users, vehicles, loading, windowLabel }: { users?: Overview["users"]; vehicles?: Overview["vehicles"]; loading: boolean; windowLabel: string }) {
+export function Community({
+  users,
+  vehicles,
+  loading,
+  windowLabel,
+}: {
+  users?: Overview["users"];
+  vehicles?: Overview["vehicles"];
+  loading: boolean;
+  windowLabel: string;
+}) {
   const u = users ?? {};
   const v = vehicles ?? {};
   const rows: Row[] = [
@@ -28,10 +46,19 @@ export function Community({ users, vehicles, loading, windowLabel }: { users?: O
       href: "/customers",
       segments: [
         { label: "Active", value: u.customersActive ?? 0, className: "bg-brand" },
-        { label: "Inactive", value: Math.max(0, (u.customers ?? 0) - (u.customersActive ?? 0)), className: "bg-line-strong" },
+        {
+          label: "Inactive",
+          value: Math.max(0, (u.customers ?? 0) - (u.customersActive ?? 0)),
+          className: "bg-line-strong",
+        },
       ],
       facts: [
-        { label: `New, ${windowLabel}`, value: u.customersNew ?? 0, href: "/customers?sortBy=joined&order=DESC", tone: "up" },
+        {
+          label: `New, ${windowLabel}`,
+          value: u.customersNew ?? 0,
+          href: "/customers?sortBy=joined&order=DESC",
+          tone: "up",
+        },
         { label: "Active", value: u.customersActive ?? 0, href: "/customers?status=ACTIVE" },
       ],
     },
@@ -44,7 +71,11 @@ export function Community({ users, vehicles, loading, windowLabel }: { users?: O
       segments: [
         { label: "Licence approved", value: u.ridersLicenceApproved ?? 0, className: "bg-success" },
         { label: "Licence awaiting", value: u.ridersLicenceAwaiting ?? 0, className: "bg-warning" },
-        { label: "Other", value: Math.max(0, (u.riders ?? 0) - (u.ridersLicenceApproved ?? 0) - (u.ridersLicenceAwaiting ?? 0)), className: "bg-line-strong" },
+        {
+          label: "Other",
+          value: Math.max(0, (u.riders ?? 0) - (u.ridersLicenceApproved ?? 0) - (u.ridersLicenceAwaiting ?? 0)),
+          className: "bg-line-strong",
+        },
       ],
       facts: [
         { label: "Online now", value: u.ridersOnline ?? 0, href: "/couriers?isOnline=true", tone: "up" },
@@ -97,29 +128,54 @@ export function Community({ users, vehicles, loading, windowLabel }: { users?: O
                   <Icon size={18} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <Link href={row.href} className="group inline-flex items-center gap-1 text-sm font-bold text-ink hover:text-brand-dark">
+                  <Link
+                    href={row.href}
+                    className="group inline-flex items-center gap-1 text-sm font-bold text-ink hover:text-brand-dark"
+                  >
                     {row.title}
                     <ArrowRight size={13} className="text-ink-faint transition-transform group-hover:translate-x-0.5" />
                   </Link>
-                  <p className="text-[11px] text-ink-faint">{row.segments.map((s) => `${count(s.value)} ${s.label.toLowerCase()}`).join(" · ")}</p>
+                  <p className="text-[11px] text-ink-faint">
+                    {row.segments.map((s) => `${count(s.value)} ${s.label.toLowerCase()}`).join(" · ")}
+                  </p>
                 </div>
-                <span className="text-2xl font-black leading-none tracking-tight tabular-nums text-ink">{loading ? <Skeleton className="h-6 w-12" /> : count(row.total)}</span>
+                <span className="text-2xl font-black leading-none tracking-tight tabular-nums text-ink">
+                  {loading ? <Skeleton className="h-6 w-12" /> : count(row.total)}
+                </span>
               </div>
               <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-surface">
                 {row.segments.map((seg) =>
-                  seg.value ? <span key={seg.label} title={`${seg.label}: ${count(seg.value)}`} className={cx("h-full", seg.className)} style={{ width: `${(seg.value / segTotal) * 100}%` }} /> : null,
+                  seg.value ? (
+                    <span
+                      key={seg.label}
+                      title={`${seg.label}: ${count(seg.value)}`}
+                      className={cx("h-full", seg.className)}
+                      style={{ width: `${(seg.value / segTotal) * 100}%` }}
+                    />
+                  ) : null,
                 )}
               </div>
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
                 {row.facts.map((fact) => {
                   const body = (
                     <>
-                      <span className={cx("text-sm font-black tabular-nums", fact.tone === "up" ? "text-success" : fact.tone === "down" ? "text-danger" : "text-ink")}>{loading ? "…" : count(fact.value)}</span>
+                      <span
+                        className={cx(
+                          "text-sm font-black tabular-nums",
+                          fact.tone === "up" ? "text-success" : fact.tone === "down" ? "text-danger" : "text-ink",
+                        )}
+                      >
+                        {loading ? "…" : count(fact.value)}
+                      </span>
                       <span className="text-xs text-ink-muted">{fact.label}</span>
                     </>
                   );
                   return fact.href ? (
-                    <Link key={fact.label} href={fact.href} className="inline-flex items-baseline gap-1.5 hover:underline">
+                    <Link
+                      key={fact.label}
+                      href={fact.href}
+                      className="inline-flex items-baseline gap-1.5 hover:underline"
+                    >
                       {body}
                     </Link>
                   ) : (

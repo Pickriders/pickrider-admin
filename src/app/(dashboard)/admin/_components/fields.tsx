@@ -69,7 +69,11 @@ export function NumberInput({
           onChange={(e) => onChange(Number(e.target.value || 0))}
           className={cx(unit && "pr-12")}
         />
-        {unit ? <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-ink-faint">{unit}</span> : null}
+        {unit ? (
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-ink-faint">
+            {unit}
+          </span>
+        ) : null}
       </span>
     </Field>
   );
@@ -119,5 +123,11 @@ export function JsonView({ value, title }: { value: unknown; title?: ReactNode }
 export function pageFilter<T>(items: T[], search: string | undefined, pick: (row: T) => unknown[]) {
   const term = (search ?? "").trim().toLowerCase();
   if (!term) return items;
-  return items.filter((row) => pick(row).some((value) => String(value ?? "").toLowerCase().includes(term)));
+  return items.filter((row) =>
+    pick(row).some((value) =>
+      String(value ?? "")
+        .toLowerCase()
+        .includes(term),
+    ),
+  );
 }

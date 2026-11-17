@@ -22,6 +22,8 @@ describe("rider acceptance tile", () => {
   });
 
   it("explains that passing carries no penalty", () => {
-    expect(ACCEPTANCE_HELP).toBe("How often this rider takes the requests they're offered. Passing ('Not now') has no penalty.");
+    expect(ACCEPTANCE_HELP).toBe(
+      "How often this rider takes the requests they're offered. Passing ('Not now') has no penalty.",
+    );
   });
 });

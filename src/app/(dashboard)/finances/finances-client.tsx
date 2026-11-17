@@ -34,7 +34,10 @@ export function FinancesClient() {
 
   return (
     <div>
-      <PageHeader title="Finances" description="The platform wallet, what moved through it, and every transaction on the platform." />
+      <PageHeader
+        title="Finances"
+        description="The platform wallet, what moved through it, and every transaction on the platform."
+      />
       <Tabs value={active} onChange={setTab} items={items} className="mb-5" />
       {active === "overview" ? <OverviewTab onProviderFees={() => setTab("provider-fees")} /> : null}
       {active === "charges" ? <ChargesTab /> : null}

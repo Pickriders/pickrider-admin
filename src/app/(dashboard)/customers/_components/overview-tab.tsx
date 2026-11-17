@@ -1,10 +1,38 @@
 "use client";
 
-import { ArrowRight, BadgeCheck, Ban, PackageX, Repeat, ShoppingBag, Smartphone, Sparkles, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Ban,
+  PackageX,
+  Repeat,
+  ShoppingBag,
+  Smartphone,
+  Sparkles,
+  UserPlus,
+  Users,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { Avatar, Badge, ChartCard, DonutChart, EmptyState, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TrendChart, cx, statusTone } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  ChartCard,
+  DonutChart,
+  EmptyState,
+  Panel,
+  PanelHeader,
+  RangeTabs,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  TrendChart,
+  cx,
+  statusTone,
+} from "@/components/kit";
 import { phoneLabel } from "@/components/users/user-actions";
 import type { CustomerLeader } from "@/lib/admin/api";
 import { ago, count, fullName, naira, nairaCompact, percent, statusLabel, trend } from "@/lib/admin/format";
@@ -54,7 +82,11 @@ export function CustomersOverviewTab() {
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-ink-muted">{data ? `${count(data.base.total)} customers on the platform, ${count(data.base.everOrdered)} have ordered at least once` : "Loading the customer base"}</p>
+        <p className="text-sm text-ink-muted">
+          {data
+            ? `${count(data.base.total)} customers on the platform, ${count(data.base.everOrdered)} have ordered at least once`
+            : "Loading the customer base"}
+        </p>
         <RangeTabs value={range.value} onChange={range.setValue} />
       </div>
 
@@ -127,7 +159,13 @@ export function CustomersOverviewTab() {
         />
         <StatCard
           label="Phone verified"
-          value={loading ? "" : data?.base.total ? `${Math.round(((data.base.phoneVerified ?? 0) / data.base.total) * 100)}%` : "0%"}
+          value={
+            loading
+              ? ""
+              : data?.base.total
+                ? `${Math.round(((data.base.phoneVerified ?? 0) / data.base.total) * 100)}%`
+                : "0%"
+          }
           hint={loading ? "" : `${count(data?.base.phoneVerified)} of ${count(data?.base.total)} customers, all time`}
           icon={BadgeCheck}
           loading={loading}
@@ -136,7 +174,13 @@ export function CustomersOverviewTab() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Customers over time" subtitle={`Active and new customers per ${range.bucket}, ${range.label}`} height={300} loading={loading} empty={!series.some((p) => p.activeCustomers || p.newCustomers)}>
+          <ChartCard
+            title="Customers over time"
+            subtitle={`Active and new customers per ${range.bucket}, ${range.label}`}
+            height={300}
+            loading={loading}
+            empty={!series.some((p) => p.activeCustomers || p.newCustomers)}
+          >
             <TrendChart
               data={series}
               xKey="bucket"
@@ -150,7 +194,13 @@ export function CustomersOverviewTab() {
             />
           </ChartCard>
         </div>
-        <ChartCard title="How often they order" subtitle={loading ? "" : `${count(frequencyTotal)} active customers, ${range.label}`} height={300} loading={loading} empty={!frequencyTotal}>
+        <ChartCard
+          title="How often they order"
+          subtitle={loading ? "" : `${count(frequencyTotal)} active customers, ${range.label}`}
+          height={300}
+          loading={loading}
+          empty={!frequencyTotal}
+        >
           <div className="flex h-full flex-col">
             <div className="min-h-0 flex-1">
               <DonutChart data={frequency} format="count" centerValue={count(frequencyTotal)} centerLabel="customers" />
@@ -160,7 +210,9 @@ export function CustomersOverviewTab() {
                 <li key={item.name} className="flex items-center gap-1.5 text-[11px]">
                   <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
                   <span className="truncate text-ink-muted">{item.name}</span>
-                  <span className="ml-auto font-bold tabular-nums text-ink">{frequencyTotal ? Math.round((item.value / frequencyTotal) * 100) : 0}%</span>
+                  <span className="ml-auto font-bold tabular-nums text-ink">
+                    {frequencyTotal ? Math.round((item.value / frequencyTotal) * 100) : 0}%
+                  </span>
                 </li>
               ))}
             </ul>
@@ -170,7 +222,13 @@ export function CustomersOverviewTab() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Orders and cancellations" subtitle={`Per ${range.bucket}, ${range.label}`} height={260} loading={loading} empty={!series.some((p) => p.orders)}>
+          <ChartCard
+            title="Orders and cancellations"
+            subtitle={`Per ${range.bucket}, ${range.label}`}
+            height={260}
+            loading={loading}
+            empty={!series.some((p) => p.orders)}
+          >
             <TrendChart
               data={series}
               xKey="bucket"
@@ -194,17 +252,29 @@ export function CustomersOverviewTab() {
                 <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface">
                   {statuses.map((row) => {
                     const width = data?.base.total ? (row.count / data.base.total) * 100 : 0;
-                    return width ? <span key={row.key} className={cx("h-full", STATUS_BAR[row.key])} style={{ width: `${width}%` }} title={`${statusLabel(row.key)}: ${count(row.count)}`} /> : null;
+                    return width ? (
+                      <span
+                        key={row.key}
+                        className={cx("h-full", STATUS_BAR[row.key])}
+                        style={{ width: `${width}%` }}
+                        title={`${statusLabel(row.key)}: ${count(row.count)}`}
+                      />
+                    ) : null;
                   })}
                 </div>
                 <ul className="space-y-1.5">
                   {statuses.map((row) => (
                     <li key={row.key}>
-                      <Link href={`/customers?tab=list&status=${row.key}`} className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-surface">
+                      <Link
+                        href={`/customers?tab=list&status=${row.key}`}
+                        className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-surface"
+                      >
                         <span className={cx("h-2.5 w-2.5 rounded-full", STATUS_BAR[row.key])} />
                         <span className="flex-1 text-sm font-semibold text-ink">{statusLabel(row.key)}</span>
                         <span className="text-sm font-black tabular-nums text-ink">{count(row.count)}</span>
-                        <span className="w-10 text-right text-xs tabular-nums text-ink-faint">{data?.base.total ? Math.round((row.count / data.base.total) * 100) : 0}%</span>
+                        <span className="w-10 text-right text-xs tabular-nums text-ink-faint">
+                          {data?.base.total ? Math.round((row.count / data.base.total) * 100) : 0}%
+                        </span>
                       </Link>
                     </li>
                   ))}
@@ -216,8 +286,28 @@ export function CustomersOverviewTab() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <Leaderboard title="Biggest spenders" subtitle={`Completed orders, ${range.label}`} icon={Sparkles} rows={data?.topSpenders ?? []} loading={loading} metric={(row) => nairaCompact(row.spent)} metricLabel="spent" detail={(row) => `${count(row.orders)} orders`} tone="brand" />
-        <Leaderboard title="Most orders" subtitle={`Placed, ${range.label}`} icon={ShoppingBag} rows={data?.mostOrders ?? []} loading={loading} metric={(row) => count(row.orders)} metricLabel="orders" detail={(row) => `${count(row.completed)} completed, ${nairaCompact(row.spent)} spent`} tone="info" />
+        <Leaderboard
+          title="Biggest spenders"
+          subtitle={`Completed orders, ${range.label}`}
+          icon={Sparkles}
+          rows={data?.topSpenders ?? []}
+          loading={loading}
+          metric={(row) => nairaCompact(row.spent)}
+          metricLabel="spent"
+          detail={(row) => `${count(row.orders)} orders`}
+          tone="brand"
+        />
+        <Leaderboard
+          title="Most orders"
+          subtitle={`Placed, ${range.label}`}
+          icon={ShoppingBag}
+          rows={data?.mostOrders ?? []}
+          loading={loading}
+          metric={(row) => count(row.orders)}
+          metricLabel="orders"
+          detail={(row) => `${count(row.completed)} completed, ${nairaCompact(row.spent)} spent`}
+          tone="info"
+        />
         <Leaderboard
           title="Most cancellations"
           subtitle={`Cancelled orders, ${range.label}`}
@@ -226,7 +316,9 @@ export function CustomersOverviewTab() {
           loading={loading}
           metric={(row) => count(row.cancelled)}
           metricLabel="cancelled"
-          detail={(row) => `${count(row.cancelledByCustomer)} by them, ${row.orders ? Math.round((row.cancelled / row.orders) * 100) : 0}% of ${count(row.orders)} orders`}
+          detail={(row) =>
+            `${count(row.cancelledByCustomer)} by them, ${row.orders ? Math.round((row.cancelled / row.orders) * 100) : 0}% of ${count(row.orders)} orders`
+          }
           tone="danger"
           emptyTitle="No cancellations"
         />
@@ -235,7 +327,12 @@ export function CustomersOverviewTab() {
   );
 }
 
-const STATUS_BAR: Record<string, string> = { ACTIVE: "bg-brand", INACTIVE: "bg-line-strong", SUSPENDED: "bg-warning", BANNED: "bg-danger" };
+const STATUS_BAR: Record<string, string> = {
+  ACTIVE: "bg-brand",
+  INACTIVE: "bg-line-strong",
+  SUSPENDED: "bg-warning",
+  BANNED: "bg-danger",
+};
 
 function Leaderboard({
   title,
@@ -260,7 +357,11 @@ function Leaderboard({
   tone: "brand" | "info" | "danger";
   emptyTitle?: string;
 }) {
-  const chip = { brand: "bg-brand-soft text-brand-dark", info: "bg-info-soft text-info", danger: "bg-danger-soft text-danger" }[tone];
+  const chip = {
+    brand: "bg-brand-soft text-brand-dark",
+    info: "bg-info-soft text-info",
+    danger: "bg-danger-soft text-danger",
+  }[tone];
   const rank = { brand: "bg-brand text-brand-ink", info: "bg-info text-white", danger: "bg-danger text-white" }[tone];
   return (
     <Panel className="flex h-full flex-col">
@@ -288,13 +389,25 @@ function Leaderboard({
               const name = fullName(row.user) || formatEmail(row.user?.email) || "Customer";
               return (
                 <li key={row.userId}>
-                  <Link href={`/customers/${row.userId}`} className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-surface">
-                    <span className={cx("grid h-6 w-6 shrink-0 place-items-center rounded-lg text-[11px] font-black", index === 0 ? rank : "bg-surface text-ink-muted")}>{index + 1}</span>
+                  <Link
+                    href={`/customers/${row.userId}`}
+                    className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-surface"
+                  >
+                    <span
+                      className={cx(
+                        "grid h-6 w-6 shrink-0 place-items-center rounded-lg text-[11px] font-black",
+                        index === 0 ? rank : "bg-surface text-ink-muted",
+                      )}
+                    >
+                      {index + 1}
+                    </span>
                     <Avatar src={row.user?.photo} name={name} size={34} />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-1.5">
                         <span className="truncate text-sm font-bold text-ink group-hover:text-brand-dark">{name}</span>
-                        {row.user?.status && row.user.status !== "ACTIVE" ? <Badge tone={statusTone(row.user.status)}>{statusLabel(row.user.status)}</Badge> : null}
+                        {row.user?.status && row.user.status !== "ACTIVE" ? (
+                          <Badge tone={statusTone(row.user.status)}>{statusLabel(row.user.status)}</Badge>
+                        ) : null}
                       </span>
                       <span className="block truncate text-[11px] text-ink-muted">
                         {phoneLabel(row.user?.phone) || formatEmail(row.user?.email) || ""} · {detail(row)}
@@ -304,14 +417,19 @@ function Leaderboard({
                       <span className="block text-sm font-black tabular-nums text-ink">{metric(row)}</span>
                       <span className="block text-[11px] text-ink-faint">{metricLabel}</span>
                     </span>
-                    <ArrowRight size={14} className="hidden shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5 sm:block" />
+                    <ArrowRight
+                      size={14}
+                      className="hidden shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5 sm:block"
+                    />
                   </Link>
                 </li>
               );
             })}
           </ol>
         )}
-        {!loading && rows.length ? <p className="mt-1 px-2 text-[11px] text-ink-faint">Last order {ago(rows[0].lastOrderAt)} for the top row.</p> : null}
+        {!loading && rows.length ? (
+          <p className="mt-1 px-2 text-[11px] text-ink-faint">Last order {ago(rows[0].lastOrderAt)} for the top row.</p>
+        ) : null}
       </div>
     </Panel>
   );

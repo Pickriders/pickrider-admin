@@ -17,7 +17,15 @@ import { useAdminAlertEvents, type AlertEvent } from "@/lib/admin/realtime";
 import { useCan } from "@/lib/admin/use-can";
 
 import { useClaimAlert } from "./alert-actions";
-import { AlertEmailMeta, ClaimedBy, RiderUnpauseLink, alertHref, URGENT_ALERT_TYPES, alertTypeLabel, digestTitle } from "./alert-ui";
+import {
+  AlertEmailMeta,
+  ClaimedBy,
+  RiderUnpauseLink,
+  alertHref,
+  URGENT_ALERT_TYPES,
+  alertTypeLabel,
+  digestTitle,
+} from "./alert-ui";
 import { LiveAgo } from "@/components/handoffs/handoff-ui";
 
 /**
@@ -50,7 +58,10 @@ function AlertBellButton() {
   const onEvent = useCallback(
     (event: AlertEvent) => {
       if (event.kind === "raised") {
-        showAlertToast(event.alert, { onClaim: (id) => claim.mutate(id), onOpen: () => router.push(alertHref(event.alert.id)) });
+        showAlertToast(event.alert, {
+          onClaim: (id) => claim.mutate(id),
+          onOpen: () => router.push(alertHref(event.alert.id)),
+        });
         return;
       }
       if (event.kind === "updated") {
@@ -83,7 +94,11 @@ function AlertBellButton() {
         <button
           type="button"
           aria-label={badge ? `Alerts, ${badge.label} open${badge.urgent ? ", urgent" : ""}` : "Alerts"}
-          title={data ? `${count(data.open)} open · ${count(data.claimed)} being handled${data.urgent ? ` · ${count(data.urgent)} urgent` : ""}` : "Alerts"}
+          title={
+            data
+              ? `${count(data.open)} open · ${count(data.claimed)} being handled${data.urgent ? ` · ${count(data.urgent)} urgent` : ""}`
+              : "Alerts"
+          }
           className={cx(
             "relative grid h-9 w-9 place-items-center rounded-xl border bg-card transition-colors hover:text-ink",
             badge?.urgent ? "border-danger/40 text-danger" : "border-line text-ink-muted hover:border-brand/40",
@@ -102,15 +117,25 @@ function AlertBellButton() {
           ) : null}
         </button>
       </UI.PopoverTrigger>
-      <UI.PopoverContent align="end" sideOffset={10} collisionPadding={12} className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border-line bg-card p-0">
+      <UI.PopoverContent
+        align="end"
+        sideOffset={10}
+        collisionPadding={12}
+        className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border-line bg-card p-0"
+      >
         <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
           <div className="min-w-0">
             <p className="text-sm font-black tracking-tight text-ink">Alerts</p>
             <p className="mt-0.5 text-[11px] text-ink-muted">
               {data ? (
                 <>
-                  <span className={cx("font-semibold", data.open ? "text-warning" : "text-ink-muted")}>{count(data.open)} open</span> · {count(data.claimed)} being handled
-                  {data.urgent ? <span className="font-semibold text-danger">{` · ${count(data.urgent)} urgent`}</span> : null}
+                  <span className={cx("font-semibold", data.open ? "text-warning" : "text-ink-muted")}>
+                    {count(data.open)} open
+                  </span>{" "}
+                  · {count(data.claimed)} being handled
+                  {data.urgent ? (
+                    <span className="font-semibold text-danger">{` · ${count(data.urgent)} urgent`}</span>
+                  ) : null}
                 </>
               ) : (
                 "Loading"
@@ -119,7 +144,10 @@ function AlertBellButton() {
           </div>
           <span
             title={live.connected ? "Alerts arrive instantly" : "Live feed offline, checking every 20 seconds"}
-            className={cx("mt-0.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold", live.connected ? "bg-success-soft text-success" : "bg-surface text-ink-muted")}
+            className={cx(
+              "mt-0.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold",
+              live.connected ? "bg-success-soft text-success" : "bg-surface text-ink-muted",
+            )}
           >
             <span className={cx("h-1.5 w-1.5 rounded-full", live.connected ? "bg-success" : "bg-ink-faint")} />
             {live.connected ? "Live" : "Every 20s"}
@@ -143,24 +171,42 @@ function AlertBellButton() {
             <ul className="divide-y divide-line">
               {items.map((alert) => (
                 <li key={alert.id} className="flex gap-3 px-4 py-3">
-                  <span className={cx("mt-1.5 h-2 w-2 shrink-0 rounded-full", alert.severity === "URGENT" ? "bg-danger" : "bg-warning")} aria-hidden />
+                  <span
+                    className={cx(
+                      "mt-1.5 h-2 w-2 shrink-0 rounded-full",
+                      alert.severity === "URGENT" ? "bg-danger" : "bg-warning",
+                    )}
+                    aria-hidden
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="min-w-0 truncate text-[13px] font-bold text-ink">{alert.title}</p>
-                      <LiveAgo value={alert.lastOccurredAt ?? alert.createdAt} className="shrink-0 text-[11px] text-ink-faint" />
+                      <LiveAgo
+                        value={alert.lastOccurredAt ?? alert.createdAt}
+                        className="shrink-0 text-[11px] text-ink-faint"
+                      />
                     </div>
                     <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">{alert.message}</p>
                     <AlertEmailMeta alert={alert} className="mt-1" />
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       {alert.status === "OPEN" ? (
-                        <Button size="sm" className="h-7 px-2.5" loading={claim.isPending && claim.variables === alert.id} onClick={() => claim.mutate(alert.id)}>
+                        <Button
+                          size="sm"
+                          className="h-7 px-2.5"
+                          loading={claim.isPending && claim.variables === alert.id}
+                          onClick={() => claim.mutate(alert.id)}
+                        >
                           Claim
                         </Button>
                       ) : (
                         <ClaimedBy alert={alert} />
                       )}
                       {alert.orderId ? (
-                        <Link href={`/orders/${alert.orderId}`} onClick={() => setOpen(false)} className="text-[11px] font-semibold text-brand-dark hover:underline">
+                        <Link
+                          href={`/orders/${alert.orderId}`}
+                          onClick={() => setOpen(false)}
+                          className="text-[11px] font-semibold text-brand-dark hover:underline"
+                        >
                           {alert.orderNumber ? `Order #${alert.orderNumber}` : "Open order"}
                         </Link>
                       ) : null}
@@ -184,7 +230,9 @@ function AlertBellButton() {
                   className="inline-flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-[11px] font-semibold text-ink-muted hover:border-line-strong hover:text-ink"
                 >
                   {alertTypeLabel(row.type)}
-                  <span className={cx("tabular-nums", row.severity === "URGENT" ? "text-danger" : "text-warning")}>{row.open + row.claimed}</span>
+                  <span className={cx("tabular-nums", row.severity === "URGENT" ? "text-danger" : "text-warning")}>
+                    {row.open + row.claimed}
+                  </span>
                 </Link>
               ))}
           </div>
@@ -202,13 +250,21 @@ function AlertBellButton() {
 }
 
 /** One toast per new alert. URGENT ones chime and stay until claimed or closed. */
-export function showAlertToast(alert: AdminAlert, handlers: { onClaim: (alertId: string) => void; onOpen: () => void }) {
+export function showAlertToast(
+  alert: AdminAlert,
+  handlers: { onClaim: (alertId: string) => void; onOpen: () => void },
+) {
   const urgent = alert.severity === "URGENT";
   if (urgent) playUrgentChime();
   const show = urgent ? toast.error : toast.warning;
   show(alert.title, {
     id: alertToastId(alert.id),
-    description: [alert.message, alert.orderNumber && !alert.message.includes(alert.orderNumber) ? `Order #${alert.orderNumber}` : ""].filter(Boolean).join(" · "),
+    description: [
+      alert.message,
+      alert.orderNumber && !alert.message.includes(alert.orderNumber) ? `Order #${alert.orderNumber}` : "",
+    ]
+      .filter(Boolean)
+      .join(" · "),
     duration: urgent ? Infinity : 12_000,
     action: { label: "Claim", onClick: () => handlers.onClaim(alert.id) },
     cancel: { label: "View", onClick: handlers.onOpen },

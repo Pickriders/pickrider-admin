@@ -92,7 +92,11 @@ export function CodeInput({
   };
 
   return (
-    <div role="group" aria-label={label} className={cx("flex items-center justify-between gap-1.5 sm:gap-2", className)}>
+    <div
+      role="group"
+      aria-label={label}
+      className={cx("flex items-center justify-between gap-1.5 sm:gap-2", className)}
+    >
       {Array.from({ length }).map((_, index) => {
         const filled = digits[index] ?? "";
         // The next empty box is where typing goes; earlier boxes can be edited, later ones cannot be reached by click.
@@ -125,7 +129,11 @@ export function CodeInput({
             className={cx(
               "h-12 w-10 rounded-xl border bg-card text-center font-mono text-xl font-bold tabular-nums text-ink caret-brand transition-colors sm:h-14 sm:w-12 sm:text-2xl",
               "focus:outline-none focus:ring-2 focus:ring-brand/25 disabled:opacity-60",
-              error ? "border-danger" : focused === index || (active && focused === null) ? "border-brand" : "border-line",
+              error
+                ? "border-danger"
+                : focused === index || (active && focused === null)
+                  ? "border-brand"
+                  : "border-line",
             )}
           />
         );

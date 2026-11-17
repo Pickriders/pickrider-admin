@@ -99,7 +99,16 @@ export function normalizePhone(raw: string): string | null {
 
 /** Query keys refreshed after any user action. */
 export function userInvalidations(userId: string) {
-  return [["stats", "user-overview"], ["user", userId], ["user-wallets", userId], "customers", "users", "transactions", "orders", ["stats", "attention"]];
+  return [
+    ["stats", "user-overview"],
+    ["user", userId],
+    ["user-wallets", userId],
+    "customers",
+    "users",
+    "transactions",
+    "orders",
+    ["stats", "attention"],
+  ];
 }
 
 type ActionDef = {
@@ -112,7 +121,11 @@ type ActionDef = {
   className?: string;
 };
 
-const TONE_TEXT: Partial<Record<MenuTone, string>> = { warning: "text-warning", success: "text-success", danger: "text-danger" };
+const TONE_TEXT: Partial<Record<MenuTone, string>> = {
+  warning: "text-warning",
+  success: "text-success",
+  danger: "text-danger",
+};
 
 export function UserActions({
   user,
@@ -162,7 +175,12 @@ export function UserActions({
   }
   if (can("user.phone")) actions.push({ id: "phone", label: "Change phone", icon: Phone });
   if (user.photo && can("user.photo")) {
-    actions.push({ id: "photo", label: "Remove photo", icon: ImageOff, tone: isFailedUploadPhoto(user.photo) ? "warning" : undefined });
+    actions.push({
+      id: "photo",
+      label: "Remove photo",
+      icon: ImageOff,
+      tone: isFailedUploadPhoto(user.photo) ? "warning" : undefined,
+    });
   }
   const status: ActionDef | null = can("user.status")
     ? isActive
@@ -206,7 +224,11 @@ export function UserActions({
             <span>{action.label}</span>
           </Button>
         ))}
-        <ActionMenu sections={menuSections} iconOnly={inline.length > 0} title={`More actions for ${fullName(user) || "this user"}`} />
+        <ActionMenu
+          sections={menuSections}
+          iconOnly={inline.length > 0}
+          title={`More actions for ${fullName(user) || "this user"}`}
+        />
         {statusInline ? (
           <>
             <span className="mx-1 h-6 w-px shrink-0 bg-line" aria-hidden />
@@ -217,7 +239,9 @@ export function UserActions({
               onClick={() => setOpen("status")}
               className={cx(
                 "shrink-0",
-                statusInline.tone === "danger" ? "border-danger/40 text-danger hover:bg-danger-soft" : "border-success/40 text-success hover:bg-success-soft",
+                statusInline.tone === "danger"
+                  ? "border-danger/40 text-danger hover:bg-danger-soft"
+                  : "border-success/40 text-success hover:bg-success-soft",
               )}
             >
               {statusInline.label}
@@ -233,7 +257,12 @@ export function UserActions({
       {showDispatch ? <DispatchDialog user={user} open={open === "dispatch"} onClose={close} /> : null}
       <RemovePhotoDialog user={user} open={open === "photo"} onClose={close} />
       {restricted ? (
-        <LiftWithdrawalsDialog user={user} restriction={restriction ?? user.withdrawalRestriction} open={open === "withdrawals"} onClose={close} />
+        <LiftWithdrawalsDialog
+          user={user}
+          restriction={restriction ?? user.withdrawalRestriction}
+          open={open === "withdrawals"}
+          onClose={close}
+        />
       ) : showWithdrawals ? (
         <RestrictWithdrawalsDrawer user={user} open={open === "withdrawals"} onClose={close} />
       ) : null}
@@ -333,12 +362,15 @@ export function WalletDrawer({
   const valid = Number.isFinite(kobo) && kobo > 0 && reason.trim().length > 0 && !overdrawn;
   const next = type === "CREDIT" ? balance + kobo : balance - kobo;
 
-  const action = useAction((body: { amount: number; type: TransactionType; reason: string }) => users.adjustWallet(user._id, body), {
-    success: (_, vars) => `${vars.type === "CREDIT" ? "Credited" : "Debited"} ${naira(vars.amount)}`,
-    // Both legs are recorded: the user's wallet and the platform wallet move together.
-    invalidate: [...userInvalidations(user._id), ["finance", "platform-wallet"], "transactions"],
-    onSuccess: onClose,
-  });
+  const action = useAction(
+    (body: { amount: number; type: TransactionType; reason: string }) => users.adjustWallet(user._id, body),
+    {
+      success: (_, vars) => `${vars.type === "CREDIT" ? "Credited" : "Debited"} ${naira(vars.amount)}`,
+      // Both legs are recorded: the user's wallet and the platform wallet move together.
+      invalidate: [...userInvalidations(user._id), ["finance", "platform-wallet"], "transactions"],
+      onSuccess: onClose,
+    },
+  );
 
   return (
     <Drawer
@@ -367,7 +399,9 @@ export function WalletDrawer({
         <div className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
           <p className="text-xs font-semibold text-ink-muted">Current balance</p>
           <p className="mt-0.5 text-lg font-black tracking-tight text-ink">{naira(balance)}</p>
-          {wallet?.status ? <p className="mt-0.5 text-xs text-ink-faint">Wallet {String(wallet.status).toLowerCase()}</p> : null}
+          {wallet?.status ? (
+            <p className="mt-0.5 text-xs text-ink-faint">Wallet {String(wallet.status).toLowerCase()}</p>
+          ) : null}
         </div>
         <div className="grid grid-cols-2 gap-2">
           {(["CREDIT", "DEBIT"] as const).map((t) => (
@@ -387,13 +421,27 @@ export function WalletDrawer({
         </div>
         <Field
           label="Amount (naira)"
-          hint={kobo > 0 && !overdrawn ? `Balance after: ${naira(next)}` : "Type the amount in naira, for example 1500."}
+          hint={
+            kobo > 0 && !overdrawn ? `Balance after: ${naira(next)}` : "Type the amount in naira, for example 1500."
+          }
           error={overdrawn ? `Only ${naira(balance)} is available to debit.` : undefined}
         >
-          <Input type="number" min={0} step="0.01" inputMode="decimal" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <Input
+            type="number"
+            min={0}
+            step="0.01"
+            inputMode="decimal"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
         </Field>
         <Field label="Reason" hint="Required. Shown in the audit log.">
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Goodwill credit for a delayed order" />
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Goodwill credit for a delayed order"
+          />
         </Field>
       </div>
     </Drawer>
@@ -422,17 +470,20 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
   const refundable = useRefundableOrders(user._id, open, debounced);
   const orders = useMemo(() => refundable.data ?? [], [refundable.data]);
   const [chosen, setChosen] = useState<RefundableOrder | null>(null);
-  const selected = chosen && chosen._id === orderId ? chosen : orders.find((o) => o._id === orderId) ?? null;
+  const selected = chosen && chosen._id === orderId ? chosen : (orders.find((o) => o._id === orderId) ?? null);
   const kobo = amount ? Math.round(Number(amount) * 100) : undefined;
   const maxKobo = selected?.refundable ?? 0;
   const amountOk = kobo === undefined || (Number.isFinite(kobo) && kobo > 0 && kobo <= maxKobo);
   const valid = Boolean(selected) && maxKobo > 0 && reason.trim().length > 0 && amountOk;
 
-  const action = useAction((body: { orderId: string; amount?: number; reason: string }) => users.refund(user._id, body), {
-    success: (_, vars) => (vars.amount ? `Refunded ${naira(vars.amount)}` : "Order refunded in full"),
-    invalidate: [...userInvalidations(user._id), ["user", user._id, "refundable-orders"]],
-    onSuccess: onClose,
-  });
+  const action = useAction(
+    (body: { orderId: string; amount?: number; reason: string }) => users.refund(user._id, body),
+    {
+      success: (_, vars) => (vars.amount ? `Refunded ${naira(vars.amount)}` : "Order refunded in full"),
+      invalidate: [...userInvalidations(user._id), ["user", user._id, "refundable-orders"]],
+      onSuccess: onClose,
+    },
+  );
 
   const pick = (order: RefundableOrder) => {
     setChosen(order);
@@ -452,7 +503,11 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
           <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
             Cancel
           </Button>
-          <Button loading={action.isPending} disabled={!valid} onClick={() => action.mutate({ orderId, amount: kobo, reason: reason.trim() })}>
+          <Button
+            loading={action.isPending}
+            disabled={!valid}
+            onClick={() => action.mutate({ orderId, amount: kobo, reason: reason.trim() })}
+          >
             {kobo ? `Refund ${naira(kobo)}` : selected ? `Refund ${naira(maxKobo)}` : "Refund"}
           </Button>
         </div>
@@ -466,7 +521,9 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
               <Badge tone="neutral">{selected.type}</Badge>
               <span className="text-ink-muted">Paid {naira(selected.totalAmountPayable)}</span>
               {selected.refunded > 0 ? <Badge tone="warning">{naira(selected.refunded)} refunded</Badge> : null}
-              <Badge tone={selected.refundable > 0 ? "success" : "neutral"}>{naira(selected.refundable)} refundable</Badge>
+              <Badge tone={selected.refundable > 0 ? "success" : "neutral"}>
+                {naira(selected.refundable)} refundable
+              </Badge>
               <button
                 type="button"
                 onClick={() => {
@@ -481,7 +538,12 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
           </Field>
         ) : (
           <Field label="Order" hint="Type an order number to narrow the list. Paid orders only, newest first.">
-            <Input left={<Search size={15} />} value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Order number" />
+            <Input
+              left={<Search size={15} />}
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+              placeholder="Order number"
+            />
             <div className="mt-2 max-h-64 overflow-y-auto rounded-xl border border-line bg-surface">
               {refundable.isLoading ? (
                 <div className="space-y-2 p-3">
@@ -489,7 +551,9 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
                   <Skeleton className="h-8 w-2/3" />
                 </div>
               ) : !orders.length ? (
-                <p className="p-3 text-xs text-ink-muted">{debounced ? `No paid orders match “${debounced}”.` : "This customer has no paid orders to refund."}</p>
+                <p className="p-3 text-xs text-ink-muted">
+                  {debounced ? `No paid orders match “${debounced}”.` : "This customer has no paid orders to refund."}
+                </p>
               ) : (
                 <ul className="divide-y divide-line">
                   {orders.map((o) => (
@@ -509,7 +573,9 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
                             {o.refunded > 0 ? ` · ${naira(o.refunded)} already refunded` : ""}
                           </span>
                         </span>
-                        <Badge tone={o.refundable > 0 ? "success" : "neutral"}>{o.refundable > 0 ? `${naira(o.refundable)} left` : "Refunded"}</Badge>
+                        <Badge tone={o.refundable > 0 ? "success" : "neutral"}>
+                          {o.refundable > 0 ? `${naira(o.refundable)} left` : "Refunded"}
+                        </Badge>
                       </button>
                     </li>
                   ))}
@@ -520,10 +586,23 @@ export function RefundDrawer({ user, open, onClose }: { user: User; open: boolea
         )}
         <Field
           label="Amount (naira), optional"
-          hint={amountOk ? `Leave blank to refund everything still refundable${selected ? ` (${naira(maxKobo)})` : ""}.` : `Must be more than zero and at most ${naira(maxKobo)}.`}
+          hint={
+            amountOk
+              ? `Leave blank to refund everything still refundable${selected ? ` (${naira(maxKobo)})` : ""}.`
+              : `Must be more than zero and at most ${naira(maxKobo)}.`
+          }
           error={!amountOk ? "Check the amount" : undefined}
         >
-          <Input type="number" min={0} step="0.01" inputMode="decimal" placeholder={selected ? (maxKobo / 100).toFixed(2) : "0.00"} value={amount} onChange={(e) => setAmount(e.target.value)} disabled={!selected} />
+          <Input
+            type="number"
+            min={0}
+            step="0.01"
+            inputMode="decimal"
+            placeholder={selected ? (maxKobo / 100).toFixed(2) : "0.00"}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            disabled={!selected}
+          />
         </Field>
         <Field label="Reason" hint="Required. Shown in the audit log.">
           <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Rider never showed up" />
@@ -567,7 +646,11 @@ export function PhoneDrawer({ user, open, onClose }: { user: User; open: boolean
           <Button variant="ghost" onClick={onClose} disabled={action.isPending}>
             Cancel
           </Button>
-          <Button loading={action.isPending} disabled={!valid} onClick={() => normalized && action.mutate({ phone: normalized, reason: reason.trim() || undefined })}>
+          <Button
+            loading={action.isPending}
+            disabled={!valid}
+            onClick={() => normalized && action.mutate({ phone: normalized, reason: reason.trim() || undefined })}
+          >
             Save number
           </Button>
         </div>
@@ -592,10 +675,21 @@ export function PhoneDrawer({ user, open, onClose }: { user: User; open: boolean
           }
           error={phone.trim() && !normalized ? "Not a valid phone number" : undefined}
         >
-          <Input type="tel" inputMode="tel" placeholder="0803 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="off" />
+          <Input
+            type="tel"
+            inputMode="tel"
+            placeholder="0803 123 4567"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            autoComplete="off"
+          />
         </Field>
         <Field label="Reason" hint="Optional, kept in the audit log.">
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Lost access to the old SIM" />
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Lost access to the old SIM"
+          />
         </Field>
       </div>
     </Drawer>
@@ -612,7 +706,8 @@ export function DispatchDialog({ user, open, onClose }: { user: User; open: bool
   }, [open]);
 
   const action = useAction((body: { paused: boolean; reason?: string }) => users.setDispatch(user._id, body), {
-    success: (_, vars) => (vars.paused ? "This rider will not be rung for new orders" : "Dispatch resumed for this rider"),
+    success: (_, vars) =>
+      vars.paused ? "This rider will not be rung for new orders" : "Dispatch resumed for this rider",
     invalidate: userInvalidations(user._id),
     onSuccess: onClose,
   });
@@ -639,7 +734,11 @@ export function DispatchDialog({ user, open, onClose }: { user: User; open: bool
         </div>
       ) : (
         <Field label="Reason" hint="Shown on the rider's record and in the audit log.">
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Too many cancellations this week" />
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Too many cancellations this week"
+          />
         </Field>
       )}
     </ConfirmDialog>
@@ -677,9 +776,7 @@ export function RemovePhotoDialog({ user, open, onClose }: { user: User; open: b
         <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={user.photo} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
-          <p className="text-xs text-ink-muted">
-            {failed ? "Failed upload (orange placeholder)" : "Current photo"}
-          </p>
+          <p className="text-xs text-ink-muted">{failed ? "Failed upload (orange placeholder)" : "Current photo"}</p>
         </div>
       ) : null}
     </ConfirmDialog>
@@ -692,7 +789,12 @@ export function RemovePhotoDialog({ user, open, onClose }: { user: User; open: b
  * Each reason with the exact sentence the rider app shows for it. The backend owns the copy (it
  * sends `message` back on the restriction); these mirror it so the admin can preview before saving.
  */
-export const WITHDRAWAL_REASONS: { value: WithdrawalRestrictionReason; label: string; hint: string; message: string }[] = [
+export const WITHDRAWAL_REASONS: {
+  value: WithdrawalRestrictionReason;
+  label: string;
+  hint: string;
+  message: string;
+}[] = [
   {
     value: "KYC_REVIEW",
     label: "KYC review",
@@ -738,10 +840,16 @@ function RiderPreview({ message, note }: { message: string; note?: string }) {
           <div className="min-w-0">
             <p className="text-sm font-bold text-ink">Withdrawals paused</p>
             <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">{message}</p>
-            {note ? <p className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ink">{note}</p> : null}
+            {note ? (
+              <p className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface px-2.5 py-1.5 text-xs text-ink">
+                {note}
+              </p>
+            ) : null}
           </div>
         </div>
-        <div className="mt-3 h-9 rounded-xl bg-line/60 text-center text-xs font-semibold leading-9 text-ink-faint">Withdraw</div>
+        <div className="mt-3 h-9 rounded-xl bg-line/60 text-center text-xs font-semibold leading-9 text-ink-faint">
+          Withdraw
+        </div>
       </div>
     </div>
   );
@@ -845,7 +953,9 @@ export function RestrictWithdrawalsDrawer({ user, open, onClose }: { user: User;
         {picked ? (
           <RiderPreview message={picked.message} note={trimmed || undefined} />
         ) : (
-          <p className="rounded-xl bg-surface px-4 py-3 text-xs text-ink-muted">Pick a reason to preview what the rider will see.</p>
+          <p className="rounded-xl bg-surface px-4 py-3 text-xs text-ink-muted">
+            Pick a reason to preview what the rider will see.
+          </p>
         )}
       </div>
     </Drawer>
@@ -892,7 +1002,13 @@ export function LiftWithdrawalsDialog({
 }
 
 /** The amber banner on a profile while withdrawals are paused, with the lift action for those allowed. */
-export function WithdrawalRestrictionBanner({ user, restriction }: { user: User; restriction?: WithdrawalRestrictionView | null }) {
+export function WithdrawalRestrictionBanner({
+  user,
+  restriction,
+}: {
+  user: User;
+  restriction?: WithdrawalRestrictionView | null;
+}) {
   const [open, setOpen] = useState(false);
   const { can } = useCan();
   const view = restriction ?? user.withdrawalRestriction;
@@ -913,7 +1029,11 @@ export function WithdrawalRestrictionBanner({ user, restriction }: { user: User;
           </div>
         </div>
         {can("user.withdrawals") ? (
-          <button type="button" onClick={() => setOpen(true)} className="shrink-0 text-sm font-bold text-brand-dark hover:underline">
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="shrink-0 text-sm font-bold text-brand-dark hover:underline"
+          >
             Lift restriction
           </button>
         ) : null}

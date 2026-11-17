@@ -6,7 +6,16 @@ import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 
 import { AlertActions } from "@/components/alerts/alert-actions";
-import { ALERT_TYPE_OPTIONS, AlertEmailMeta, ClaimedBy, ResolvedBy, RiderUnpauseLink, SeverityBadge, alertTypeLabel, findAlert } from "@/components/alerts/alert-ui";
+import {
+  ALERT_TYPE_OPTIONS,
+  AlertEmailMeta,
+  ClaimedBy,
+  ResolvedBy,
+  RiderUnpauseLink,
+  SeverityBadge,
+  alertTypeLabel,
+  findAlert,
+} from "@/components/alerts/alert-ui";
 import { LiveAgo } from "@/components/handoffs/handoff-ui";
 import { Badge, DataTable, PageHeader, Panel, StatCard, StatGrid, Tabs, type ColumnMeta } from "@/components/kit";
 import type { AdminAlert, Paged } from "@/lib/admin/api";
@@ -54,7 +63,9 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
             ) : null}
           </span>
           <span className="mt-0.5 block text-xs text-ink-muted">{row.original.message}</span>
-          <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">{alertTypeLabel(row.original.type)}</span>
+          <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+            {alertTypeLabel(row.original.type)}
+          </span>
           <AlertEmailMeta alert={row.original} className="mt-1" />
         </span>
       ),
@@ -65,7 +76,10 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
       meta: meta({ hideBelow: "lg", csv: { key: "orderNumber", label: "Order" } }),
       cell: ({ row }) =>
         row.original.orderId ? (
-          <Link href={`/orders/${row.original.orderId}`} className="whitespace-nowrap text-[13px] font-bold tabular-nums text-ink hover:text-brand-dark hover:underline">
+          <Link
+            href={`/orders/${row.original.orderId}`}
+            className="whitespace-nowrap text-[13px] font-bold tabular-nums text-ink hover:text-brand-dark hover:underline"
+          >
             {row.original.orderNumber ? `#${row.original.orderNumber}` : "View order"}
           </Link>
         ) : (
@@ -79,7 +93,10 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
       cell: ({ row }) =>
         row.original.riderId ? (
           <span className="block leading-tight">
-            <Link href={`/couriers/${row.original.riderId}/details`} className="block max-w-[12rem] truncate text-[13px] font-semibold text-ink hover:text-brand-dark hover:underline">
+            <Link
+              href={`/couriers/${row.original.riderId}/details`}
+              className="block max-w-[12rem] truncate text-[13px] font-semibold text-ink hover:text-brand-dark hover:underline"
+            >
               {row.original.riderName || "Open rider"}
             </Link>
             <RiderUnpauseLink alert={row.original} className="mt-0.5 text-[11px]" />
@@ -100,7 +117,9 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
               last <LiveAgo value={row.original.lastOccurredAt} />
             </span>
           ) : (
-            <span className="mt-0.5 block whitespace-nowrap text-[11px] text-ink-faint">{when(row.original.createdAt)}</span>
+            <span className="mt-0.5 block whitespace-nowrap text-[11px] text-ink-faint">
+              {when(row.original.createdAt)}
+            </span>
           )}
         </span>
       ),
@@ -113,7 +132,11 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
           cell: ({ row }) => (
             <span className="block">
               <ResolvedBy alert={row.original} />
-              {row.original.resolvedAt ? <span className="mt-0.5 block text-[11px] tabular-nums text-ink-faint">{when(row.original.resolvedAt)}</span> : null}
+              {row.original.resolvedAt ? (
+                <span className="mt-0.5 block text-[11px] tabular-nums text-ink-faint">
+                  {when(row.original.resolvedAt)}
+                </span>
+              ) : null}
             </span>
           ),
         }
@@ -122,7 +145,11 @@ function columns(tab: Tab): ColumnDef<AlertRow, unknown>[] {
           header: "Handled by",
           meta: meta({ hideBelow: "md" }),
           cell: ({ row }) =>
-            row.original.status === "CLAIMED" ? <ClaimedBy alert={row.original} /> : <span className="text-xs font-semibold text-warning">Nobody yet</span>,
+            row.original.status === "CLAIMED" ? (
+              <ClaimedBy alert={row.original} />
+            ) : (
+              <span className="text-xs font-semibold text-warning">Nobody yet</span>
+            ),
         },
     {
       id: "actions",
@@ -159,7 +186,11 @@ function AlertCard({ alert }: { alert: AdminAlert }) {
         {alert.occurrences > 1 ? <span>{`${alert.occurrences}x`}</span> : null}
       </div>
       <AlertEmailMeta alert={alert} />
-      {alert.status === "RESOLVED" ? <ResolvedBy alert={alert} /> : alert.status === "CLAIMED" ? <ClaimedBy alert={alert} /> : null}
+      {alert.status === "RESOLVED" ? (
+        <ResolvedBy alert={alert} />
+      ) : alert.status === "CLAIMED" ? (
+        <ClaimedBy alert={alert} />
+      ) : null}
       <div className="flex justify-start">
         <AlertActions alert={alert} />
       </div>
@@ -189,7 +220,10 @@ function AlertsHub() {
   // view it is looked up among the latest alerts of every status.
   const linkedId = table.state.filters.alert;
   const onPage = findAlert(linkedId, list.data?.items);
-  const lookup = useAlerts({ status: "OPEN,CLAIMED,RESOLVED", limit: 200 }, Boolean(linkedId) && !list.isLoading && !onPage);
+  const lookup = useAlerts(
+    { status: "OPEN,CLAIMED,RESOLVED", limit: 200 },
+    Boolean(linkedId) && !list.isLoading && !onPage,
+  );
   const linked = onPage ?? findAlert(linkedId, lookup.data?.items);
   const pinRef = useRef<HTMLDivElement>(null);
   const scrolledTo = useRef<string | null>(null);
@@ -212,9 +246,15 @@ function AlertsHub() {
         actions={
           <span
             className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1.5 text-xs font-semibold text-ink-muted"
-            title={live.connected ? "New alerts arrive instantly with a toast" : "Live feed offline, refreshing every 20 seconds"}
+            title={
+              live.connected
+                ? "New alerts arrive instantly with a toast"
+                : "Live feed offline, refreshing every 20 seconds"
+            }
           >
-            <span className={live.connected ? "h-2 w-2 rounded-full bg-success" : "h-2 w-2 rounded-full bg-ink-faint"} />
+            <span
+              className={live.connected ? "h-2 w-2 rounded-full bg-success" : "h-2 w-2 rounded-full bg-ink-faint"}
+            />
             {live.connected ? "Live" : "Refreshing every 20s"}
           </span>
         }
@@ -230,7 +270,13 @@ function AlertsHub() {
             loading={summary.isLoading}
             hint="Open and unclaimed"
           />
-          <StatCard label="Being handled" value={data ? count(data.claimed) : ""} icon={Hand} loading={summary.isLoading} hint="Claimed by a teammate" />
+          <StatCard
+            label="Being handled"
+            value={data ? count(data.claimed) : ""}
+            icon={Hand}
+            loading={summary.isLoading}
+            hint="Claimed by a teammate"
+          />
           <StatCard
             label="Urgent"
             value={data ? <span className={data.urgent ? "text-danger" : undefined}>{count(data.urgent)}</span> : ""}
@@ -238,7 +284,13 @@ function AlertsHub() {
             loading={summary.isLoading}
             hint="Accidents, emailed to support after 2 min"
           />
-          <StatCard label="High" value={data ? count(data.high) : ""} icon={Siren} loading={summary.isLoading} hint="No rider, code lockouts" />
+          <StatCard
+            label="High"
+            value={data ? count(data.high) : ""}
+            icon={Siren}
+            loading={summary.isLoading}
+            hint="No rider, code lockouts"
+          />
         </StatGrid>
       </div>
 
@@ -247,7 +299,12 @@ function AlertsHub() {
           <Panel className="ring-2 ring-brand/60">
             <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-2.5">
               <p className="text-[11px] font-bold uppercase tracking-wide text-brand-dark">Linked alert</p>
-              <button type="button" onClick={closeLinked} aria-label="Close linked alert" className="grid h-6 w-6 place-items-center rounded-full text-ink-faint hover:bg-surface hover:text-ink">
+              <button
+                type="button"
+                onClick={closeLinked}
+                aria-label="Close linked alert"
+                className="grid h-6 w-6 place-items-center rounded-full text-ink-faint hover:bg-surface hover:text-ink"
+              >
                 <X size={14} />
               </button>
             </div>
@@ -257,7 +314,9 @@ function AlertsHub() {
               ) : list.isLoading || lookup.isLoading ? (
                 <p className="text-xs text-ink-muted">Finding the alert</p>
               ) : (
-                <p className="text-xs text-ink-muted">That alert is not among the latest 200. It may be old or the link may be wrong.</p>
+                <p className="text-xs text-ink-muted">
+                  That alert is not among the latest 200. It may be old or the link may be wrong.
+                </p>
               )}
             </div>
           </Panel>
@@ -288,7 +347,9 @@ function AlertsHub() {
         mobileCard={(row) => <AlertCard alert={row} />}
         rowClassName={(row) => (row.id === linkedId ? "bg-brand-soft/60" : undefined)}
         emptyIcon={CheckCircle2}
-        emptyTitle={tab === "resolved" ? "Nothing resolved yet" : tab === "mine" ? "You have nothing claimed" : "All clear"}
+        emptyTitle={
+          tab === "resolved" ? "Nothing resolved yet" : tab === "mine" ? "You have nothing claimed" : "All clear"
+        }
         emptyDescription={
           tab === "open"
             ? "No rider needs help right now. New alerts pop up here and as a toast with a sound for urgent ones."

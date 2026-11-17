@@ -8,7 +8,18 @@ import type { Review, ReviewCustomer, ReviewOrder } from "@/lib/admin/api";
 import { ago, count, fullName, naira, statusLabel, when } from "@/lib/admin/format";
 import { REVIEWS_FETCH_LIMIT, useOrderSummary, useRiderReviews, useUser } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
-import { Avatar, Badge, Button, EmptyState, ErrorState, Panel, Select, Skeleton, cx, statusTone } from "@/components/kit/primitives";
+import {
+  Avatar,
+  Badge,
+  Button,
+  EmptyState,
+  ErrorState,
+  Panel,
+  Select,
+  Skeleton,
+  cx,
+  statusTone,
+} from "@/components/kit/primitives";
 import { ScrollRow } from "@/components/kit/scroll-row";
 
 /**
@@ -22,8 +33,14 @@ const PER_PAGE = 8;
 const SORTS = {
   newest: { label: "Newest first", fn: (a: Review, b: Review) => +new Date(b.createdAt) - +new Date(a.createdAt) },
   oldest: { label: "Oldest first", fn: (a: Review, b: Review) => +new Date(a.createdAt) - +new Date(b.createdAt) },
-  highest: { label: "Highest rated", fn: (a: Review, b: Review) => b.rating - a.rating || +new Date(b.createdAt) - +new Date(a.createdAt) },
-  lowest: { label: "Lowest rated", fn: (a: Review, b: Review) => a.rating - b.rating || +new Date(b.createdAt) - +new Date(a.createdAt) },
+  highest: {
+    label: "Highest rated",
+    fn: (a: Review, b: Review) => b.rating - a.rating || +new Date(b.createdAt) - +new Date(a.createdAt),
+  },
+  lowest: {
+    label: "Lowest rated",
+    fn: (a: Review, b: Review) => a.rating - b.rating || +new Date(b.createdAt) - +new Date(a.createdAt),
+  },
 } as const;
 type SortId = keyof typeof SORTS;
 
@@ -36,9 +53,18 @@ export function ratingTone(rating: number): "success" | "warning" | "danger" {
 
 export function Stars({ value, size = 14, className }: { value: number; size?: number; className?: string }) {
   return (
-    <span className={cx("inline-flex items-center gap-0.5", className)} role="img" aria-label={`${value} out of 5 stars`}>
+    <span
+      className={cx("inline-flex items-center gap-0.5", className)}
+      role="img"
+      aria-label={`${value} out of 5 stars`}
+    >
       {[1, 2, 3, 4, 5].map((star) => (
-        <Star key={star} size={size} className={star <= Math.round(value) ? "fill-warning text-warning" : "fill-line text-line"} strokeWidth={1.5} />
+        <Star
+          key={star}
+          size={size}
+          className={star <= Math.round(value) ? "fill-warning text-warning" : "fill-line text-line"}
+          strokeWidth={1.5}
+        />
       ))}
     </span>
   );
@@ -129,7 +155,10 @@ function OrderView({ order: o }: { order: ReviewOrder }) {
           {o.completedAt ? ` · ${when(o.completedAt)}` : ""}
         </span>
       </span>
-      <ArrowRight size={13} className="ml-auto shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5" />
+      <ArrowRight
+        size={13}
+        className="ml-auto shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5"
+      />
     </Link>
   );
 }
@@ -219,27 +248,37 @@ export function RiderReviews({
           <h3 className="text-sm font-bold tracking-tight text-ink">Customer reviews</h3>
           <p className="mt-0.5 text-xs text-ink-muted">
             {loading
-            ? "Loading reviews…"
-            : total
-              ? `${count(total)} review${total === 1 ? "" : "s"}${average != null ? ` · ${average.toFixed(1)} average` : ""}${truncated ? ` · showing the latest ${count(all.length)}` : ""}`
-              : "Customers rate the rider after each delivery"}
+              ? "Loading reviews…"
+              : total
+                ? `${count(total)} review${total === 1 ? "" : "s"}${average != null ? ` · ${average.toFixed(1)} average` : ""}${truncated ? ` · showing the latest ${count(all.length)}` : ""}`
+                : "Customers rate the rider after each delivery"}
           </p>
         </div>
         {/* Fixed-width wrapper: the kit Select is w-full, so it fills this and no more. */}
         <span className="block w-36 shrink-0 sm:w-40">
-          <Select value={sort} onChange={(e) => setSort(e.target.value as SortId)} className="h-9 text-xs" aria-label="Sort reviews">
-          {(Object.keys(SORTS) as SortId[]).map((id) => (
-            <option key={id} value={id}>
-              {SORTS[id].label}
-            </option>
-          ))}
+          <Select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortId)}
+            className="h-9 text-xs"
+            aria-label="Sort reviews"
+          >
+            {(Object.keys(SORTS) as SortId[]).map((id) => (
+              <option key={id} value={id}>
+                {SORTS[id].label}
+              </option>
+            ))}
           </Select>
         </span>
       </div>
 
       {/* The scroll area sits inside the padding, so chips clip at the padding edge, not the card edge. */}
       <div className="mt-3 px-4">
-        <ScrollRow innerClassName="pb-1" label="Filter by rating" peekKey="rider-review-stars" activeKey={String(rating ?? "all")}>
+        <ScrollRow
+          innerClassName="pb-1"
+          label="Filter by rating"
+          peekKey="rider-review-stars"
+          activeKey={String(rating ?? "all")}
+        >
           <div className="flex w-max gap-1.5">
             <button
               type="button"
@@ -250,7 +289,10 @@ export function RiderReviews({
                 !rating ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
               )}
             >
-              All <span className={cx("ml-1 tabular-nums", !rating ? "text-card/70" : "text-ink-faint")}>{count(all.length)}</span>
+              All{" "}
+              <span className={cx("ml-1 tabular-nums", !rating ? "text-card/70" : "text-ink-faint")}>
+                {count(all.length)}
+              </span>
             </button>
             {[5, 4, 3, 2, 1].map((star) => {
               const active = rating === star;
@@ -264,11 +306,15 @@ export function RiderReviews({
                   disabled={!n && !active}
                   className={cx(
                     "inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                    active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:text-ink",
+                    active
+                      ? "border-transparent bg-ink text-card"
+                      : "border-line bg-card text-ink-muted hover:text-ink",
                   )}
                 >
                   {star} <Star size={11} className={active ? "fill-card text-card" : "fill-warning text-warning"} />
-                  <span className={cx("ml-0.5 tabular-nums", active ? "text-card/70" : "text-ink-faint")}>{count(n)}</span>
+                  <span className={cx("ml-0.5 tabular-nums", active ? "text-card/70" : "text-ink-faint")}>
+                    {count(n)}
+                  </span>
                 </button>
               );
             })}
@@ -278,7 +324,10 @@ export function RiderReviews({
 
       <div className="px-4 pb-4 pt-3">
         {reviews.isError ? (
-          <ErrorState message={errorMessage(reviews.error, "Could not load this rider's reviews.")} onRetry={() => void reviews.refetch()} />
+          <ErrorState
+            message={errorMessage(reviews.error, "Could not load this rider's reviews.")}
+            onRetry={() => void reviews.refetch()}
+          />
         ) : loading ? (
           <ul className="divide-y divide-line">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -301,7 +350,12 @@ export function RiderReviews({
             ))}
           </ul>
         ) : !all.length ? (
-          <EmptyState compact icon={Star} title="No reviews yet" description="Once a customer rates this rider after a delivery, the review shows up here with the order it was for." />
+          <EmptyState
+            compact
+            icon={Star}
+            title="No reviews yet"
+            description="Once a customer rates this rider after a delivery, the review shows up here with the order it was for."
+          />
         ) : !filtered.length ? (
           <EmptyState
             compact
@@ -325,7 +379,8 @@ export function RiderReviews({
               <div className="mt-2 flex flex-col-reverse items-center justify-between gap-3 border-t border-line pt-4 sm:flex-row">
                 <p className="text-xs text-ink-muted">
                   Showing <span className="font-semibold text-ink">{(page - 1) * PER_PAGE + 1}</span> to{" "}
-                  <span className="font-semibold text-ink">{Math.min(page * PER_PAGE, filtered.length)}</span> of <span className="font-semibold text-ink">{count(filtered.length)}</span>
+                  <span className="font-semibold text-ink">{Math.min(page * PER_PAGE, filtered.length)}</span> of{" "}
+                  <span className="font-semibold text-ink">{count(filtered.length)}</span>
                 </p>
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
@@ -334,7 +389,12 @@ export function RiderReviews({
                   <span className="text-xs tabular-nums text-ink-muted">
                     {page} / {totalPages}
                   </span>
-                  <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
                     Next
                   </Button>
                 </div>

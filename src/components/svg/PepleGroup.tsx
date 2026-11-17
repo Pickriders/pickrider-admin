@@ -1,12 +1,6 @@
 export const PepleGroup = () => {
   return (
-    <svg
-      width="23"
-      height="17"
-      viewBox="0 0 24 17"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="23" height="17" viewBox="0 0 24 17" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

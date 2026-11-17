@@ -62,8 +62,15 @@ export function StopsTimeline({ stops }: { stops: OrderStop[] }) {
         const lastAt = stop.completedAt ?? stop.cancelledAt ?? stop.arrivedAt ?? stop.startedAt;
         return (
           <li key={stop._id ?? index} className="relative flex gap-3 pb-5">
-            {!last ? <span className="absolute left-[13px] top-7 h-[calc(100%-1rem)] w-px bg-line" aria-hidden /> : null}
-            <span className={cx("mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black", DOT[stop.type ?? "DROPOFF"])}>
+            {!last ? (
+              <span className="absolute left-[13px] top-7 h-[calc(100%-1rem)] w-px bg-line" aria-hidden />
+            ) : null}
+            <span
+              className={cx(
+                "mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black",
+                DOT[stop.type ?? "DROPOFF"],
+              )}
+            >
               {String.fromCharCode(65 + index)}
             </span>
             <div className="min-w-0 flex-1">
@@ -83,7 +90,10 @@ export function StopsTimeline({ stops }: { stops: OrderStop[] }) {
                 <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
                   <span>{contact.name || (pickup ? "Sender" : "Recipient")}</span>
                   {contact.phone ? (
-                    <a href={phoneHref(contact.phone)} className="inline-flex items-center gap-1 font-semibold text-ink hover:underline">
+                    <a
+                      href={phoneHref(contact.phone)}
+                      className="inline-flex items-center gap-1 font-semibold text-ink hover:underline"
+                    >
                       <Phone size={11} /> {displayPhone(contact.phone)}
                     </a>
                   ) : null}
@@ -103,7 +113,9 @@ export function StopsTimeline({ stops }: { stops: OrderStop[] }) {
                     <li key={recipient._id ?? i} className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
                       <span className="font-semibold text-ink">{formatPersonName(recipient.name)}</span>
                       {recipient.phone ? <span>{displayPhone(recipient.phone)}</span> : null}
-                      <Badge tone={statusTone(recipient.status)}>{STOP_STATUS_LABEL[recipient.status] ?? recipient.status}</Badge>
+                      <Badge tone={statusTone(recipient.status)}>
+                        {STOP_STATUS_LABEL[recipient.status] ?? recipient.status}
+                      </Badge>
                     </li>
                   ))}
                 </ul>
@@ -119,7 +131,8 @@ export function StopsTimeline({ stops }: { stops: OrderStop[] }) {
 
               {lastAt ? (
                 <p className="mt-1.5 text-[11px] text-ink-faint">
-                  {stop.completedAt ? "Done" : stop.cancelledAt ? "Cancelled" : stop.arrivedAt ? "Arrived" : "Started"} {when(lastAt)}
+                  {stop.completedAt ? "Done" : stop.cancelledAt ? "Cancelled" : stop.arrivedAt ? "Arrived" : "Started"}{" "}
+                  {when(lastAt)}
                 </p>
               ) : null}
             </div>

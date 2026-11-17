@@ -31,7 +31,12 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export function CopyButton({ text, label = "Copy", copiedLabel = "Copied", ...props }: { text: string; label?: string; copiedLabel?: string } & Omit<ButtonProps, "onClick" | "children">) {
+export function CopyButton({
+  text,
+  label = "Copy",
+  copiedLabel = "Copied",
+  ...props
+}: { text: string; label?: string; copiedLabel?: string } & Omit<ButtonProps, "onClick" | "children">) {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (!copied) return;
@@ -68,9 +73,21 @@ export function downloadText(name: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-export function DownloadButton({ name, text, label = "Download", ...props }: { name: string; text: string; label?: string } & Omit<ButtonProps, "onClick" | "children">) {
+export function DownloadButton({
+  name,
+  text,
+  label = "Download",
+  ...props
+}: { name: string; text: string; label?: string } & Omit<ButtonProps, "onClick" | "children">) {
   return (
-    <Button type="button" variant="outline" size="sm" icon={Download} onClick={() => downloadText(name, text)} {...props}>
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      icon={Download}
+      onClick={() => downloadText(name, text)}
+      {...props}
+    >
       {label}
     </Button>
   );

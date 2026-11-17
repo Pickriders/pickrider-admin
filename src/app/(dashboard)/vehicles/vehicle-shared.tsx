@@ -64,7 +64,10 @@ export function VehicleThumb({ vehicle, size = 40 }: { vehicle: VehicleRecord; s
     return <img src={src} alt="" className="shrink-0 rounded-lg object-cover" style={{ width: size, height: size }} />;
   }
   return (
-    <span className="grid shrink-0 place-items-center rounded-lg bg-surface text-ink-faint" style={{ width: size, height: size }}>
+    <span
+      className="grid shrink-0 place-items-center rounded-lg bg-surface text-ink-faint"
+      style={{ width: size, height: size }}
+    >
       <Car size={18} />
     </span>
   );
@@ -84,7 +87,9 @@ export function vehicleColumns(options: { showBusiness?: boolean } = {}): Column
           <VehicleThumb vehicle={row.original} />
           <div className="min-w-0">
             <p className="truncate font-semibold text-ink">{row.original.name || "Unnamed vehicle"}</p>
-            <p className="truncate text-xs uppercase tracking-wide text-ink-muted">{row.original.plateNumber || "No plate"}</p>
+            <p className="truncate text-xs uppercase tracking-wide text-ink-muted">
+              {row.original.plateNumber || "No plate"}
+            </p>
           </div>
         </div>
       ),
@@ -105,7 +110,14 @@ export function vehicleColumns(options: { showBusiness?: boolean } = {}): Column
           <p className="truncate text-xs text-ink-muted">{row.original.model || ""}</p>
         </div>
       ),
-      meta: { hideBelow: "md", csv: { key: "make", label: "Make", value: (r) => `${(r as VehicleRecord).make ?? ""} ${(r as VehicleRecord).model ?? ""}`.trim() } } satisfies ColumnMeta,
+      meta: {
+        hideBelow: "md",
+        csv: {
+          key: "make",
+          label: "Make",
+          value: (r) => `${(r as VehicleRecord).make ?? ""} ${(r as VehicleRecord).model ?? ""}`.trim(),
+        },
+      } satisfies ColumnMeta,
     },
     {
       id: "type",
@@ -113,7 +125,9 @@ export function vehicleColumns(options: { showBusiness?: boolean } = {}): Column
       cell: ({ row }) => (
         <div className="min-w-0">
           <p className="text-ink">{VEHICLE_TYPE_LABEL}</p>
-          {row.original.color ? <p className="truncate text-xs capitalize text-ink-muted">{row.original.color}</p> : null}
+          {row.original.color ? (
+            <p className="truncate text-xs capitalize text-ink-muted">{row.original.color}</p>
+          ) : null}
         </div>
       ),
       meta: { hideBelow: "lg", csv: { key: "color", label: "Colour" } } satisfies ColumnMeta,
@@ -154,10 +168,15 @@ export function vehicleColumns(options: { showBusiness?: boolean } = {}): Column
       id: "business",
       header: "Business",
       cell: ({ row }) => {
-        const businessId = typeof row.original.businessId === "string" ? row.original.businessId : row.original.business?._id;
+        const businessId =
+          typeof row.original.businessId === "string" ? row.original.businessId : row.original.business?._id;
         if (!businessId) return <span className="text-ink-faint">Independent</span>;
         return (
-          <Link href={`/business/${businessId}/business-details`} onClick={stop} className="text-brand-dark hover:underline">
+          <Link
+            href={`/business/${businessId}/business-details`}
+            onClick={stop}
+            className="text-brand-dark hover:underline"
+          >
             {row.original.business?.name ?? "View business"}
           </Link>
         );
