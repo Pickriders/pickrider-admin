@@ -647,6 +647,15 @@ export const useDeveloperMonitoring = (enabled = true) =>
     enabled,
   });
 
+/** Status page incidents; polls every 30s so a colleague's update shows up. */
+export const useDeveloperIncidents = (enabled = true) =>
+  useQuery({
+    queryKey: ["developers", "incidents"],
+    queryFn: developers.incidents,
+    refetchInterval: 30_000,
+    enabled,
+  });
+
 // The developer team page. Everything sits under ["developers"], so a staff action refreshes it all.
 /** A Developer API cursor list ({ data, has_more }) as "load more" pages, flattened into `rows`. */
 function useCursorList<T extends { id: string }>(
