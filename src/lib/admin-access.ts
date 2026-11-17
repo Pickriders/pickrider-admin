@@ -96,6 +96,8 @@ export const ACTION_ROLES = {
   "alert.handle": OPS,
   // Developer API teams: live-access decisions, suspensions and key revokes (finance can only look)
   "developer.manage": OPS,
+  // The public status page: opening incidents and posting updates (finance can look)
+  "incident.manage": OPS,
   // Admin section
   "team.create": ADMINS,
   "settings.write": ADMINS,

@@ -7262,6 +7262,58 @@ export interface PingResponseDto {
   ok: boolean;
 }
 
+export interface StatusDayDto {
+  /**
+   * A day in Lagos time.
+   * @example "2026-11-17"
+   */
+  date: string;
+  /** The worst state that day, from incidents. */
+  status: "operational" | "degraded_performance" | "partial_outage" | "major_outage";
+}
+
+export interface StatusComponentDto {
+  id: "api" | "webhooks" | "dashboard";
+  /** @example "API" */
+  name: string;
+  status: "operational" | "degraded_performance" | "partial_outage" | "major_outage";
+  /** The last 90 days, oldest first. */
+  history: StatusDayDto[];
+}
+
+export interface StatusIncidentUpdateDto {
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  message: string;
+  /** @example "2026-11-17T10:04:00.000Z" */
+  at: string;
+}
+
+export interface StatusIncidentDto {
+  /** @example "inc_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  title: string;
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  impact: "minor" | "major" | "critical";
+  components: ("api" | "webhooks" | "dashboard")[];
+  started_at: string;
+  resolved_at: string | null;
+  /** Newest first. */
+  updates: StatusIncidentUpdateDto[];
+}
+
+export interface StatusDto {
+  object: "status";
+  /** The worst of the components. */
+  status: "operational" | "degraded_performance" | "partial_outage" | "major_outage";
+  components: StatusComponentDto[];
+  /** Incidents not resolved yet, newest first. */
+  incidents: StatusIncidentDto[];
+  /** Resolved in the last 14 days, newest first. */
+  recent_incidents: StatusIncidentDto[];
+  /** When this was worked out. */
+  updated_at: string;
+}
+
 export interface PublicAccountDto {
   /**
    * Always "account".
@@ -8657,6 +8709,12 @@ export interface DeveloperAccountDto {
   liveRejectionReason: string | null;
   /** Set while live access is SUSPENDED: why. */
   liveSuspensionReason: string | null;
+  /** The whole team. SUSPENDED: every API key, test and live, is refused with account_suspended, and the dashboard is read-only. */
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  /** Set while the team is SUSPENDED: why. */
+  suspensionReason: string | null;
+  /** @format date-time */
+  suspendedAt: string | null;
 }
 
 export interface DeveloperOnboardingDto {
@@ -9011,6 +9069,168 @@ export interface UsageDto {
   spend: UsageSpendDto;
   api: UsageApiDto;
   webhooks: UsageWebhooksDto;
+}
+
+export interface OverviewWalletDto {
+  /** Money you can spend now, kobo. */
+  available: number;
+  /** Reserved for orders in progress, kobo. */
+  held: number;
+  /** @example "NGN" */
+  currency: string;
+  /** Live mode: the low-balance email threshold you set, kobo. Null when none is set, and in test mode. */
+  low_balance_threshold: number | null;
+  /** Roughly how many days the available money lasts at your average daily spend over the last 14 days. Null with no recent spend. */
+  runway_days: number | null;
+}
+
+export interface OverviewInFlightDto {
+  /** Waiting for their scheduled dispatch time. */
+  scheduled: number;
+  /** Manual dispatch: waiting for you to dispatch them. */
+  awaiting_dispatch: number;
+  /** Looking for a rider. */
+  searching: number;
+  /** Of those searching, how many have looked for more than 10 minutes. */
+  searching_long: number;
+  /** A rider accepted and is heading to the pickup. */
+  rider_assigned: number;
+  /** Picking up or on the way to the drop-off. */
+  on_the_way: number;
+}
+
+export interface OverviewPeriodOrdersDto {
+  created: number;
+  delivered: number;
+  /** Pickriders couldn't deliver them. */
+  failed: number;
+  /** You cancelled them. */
+  cancelled: number;
+  /** delivered ÷ (delivered + failed), 0 to 1. */
+  success_rate: number | null;
+}
+
+export interface OverviewOrdersDto {
+  in_flight: OverviewInFlightDto;
+  /** Created today (Lagos time). */
+  today: number;
+  /** Created yesterday (Lagos time). */
+  yesterday: number;
+  /** Delivered today (Lagos time), whenever they were created. */
+  delivered_today: number;
+  /** The last 7 days, today included. */
+  last_7_days: OverviewPeriodOrdersDto;
+  /** The 7 days before those. */
+  previous_7_days: OverviewPeriodOrdersDto;
+  /** The last 14 days, oldest first, zeros included. */
+  per_day: UsageDayDto[];
+}
+
+export interface OverviewSpendDto {
+  /** Order payments less refunds over the last 7 days, kobo. */
+  last_7_days: number;
+  /** The 7 days before those, kobo. */
+  previous_7_days: number;
+  /** This calendar month so far (Lagos time), kobo. */
+  month_to_date: number;
+  /** @example "NGN" */
+  currency: string;
+}
+
+export interface OverviewHourDto {
+  /**
+   * The start of the hour.
+   * @example "2026-11-17T14:00:00.000Z"
+   */
+  hour: string;
+  requests: number;
+  /** Answered 400 or above. */
+  errors: number;
+}
+
+export interface OverviewErrorCodeDto {
+  /** @example "parameter_invalid" */
+  code: string;
+  /** @example 422 */
+  status: number;
+  count: number;
+}
+
+export interface OverviewApiDto {
+  /** Requests in the last 24 hours. */
+  requests: number;
+  /** Of those, answered 400 or above. */
+  errors: number;
+  /** Answered 500 or above: ours, not yours. */
+  server_errors: number;
+  /** errors ÷ requests, 0 to 1. */
+  error_rate: number | null;
+  /** Requests in the 24 hours before those. */
+  previous_requests: number;
+  /** The error rate in the 24 hours before. */
+  previous_error_rate: number | null;
+  /** 95th percentile response time, ms. Null with no requests. */
+  p95_ms: number | null;
+  /** Median response time, ms. */
+  p50_ms: number | null;
+  /** Each of the last 24 hours, oldest first. */
+  per_hour: OverviewHourDto[];
+  /** Your most frequent error codes, most first (5 at most). */
+  top_errors: OverviewErrorCodeDto[];
+  /** @format date-time */
+  last_request_at: string | null;
+}
+
+export interface OverviewWebhooksDto {
+  endpoints: number;
+  /** Turned on and not failing. */
+  healthy: number;
+  /** Turned on, every delivery failing. */
+  failing: number;
+  /** Turned off, by you or after 3 days of failures. */
+  disabled: number;
+  /** Deliveries in the last 24 hours, test pings left out. */
+  deliveries: number;
+  succeeded: number;
+  /** Gave up after every retry. */
+  failed: number;
+  /** Waiting for a first try or a retry, any age. */
+  pending: number;
+  /** succeeded ÷ (succeeded + failed), 0 to 1. */
+  success_rate: number | null;
+}
+
+export interface OverviewKeysDto {
+  /** Keys that work in this mode. */
+  active: number;
+  /** Of those, how many expire within 14 days. */
+  expiring_soon: number;
+  /**
+   * When the soonest of those expires.
+   * @format date-time
+   */
+  next_expiry_at: string | null;
+  /**
+   * The last time any key in this mode was used.
+   * @format date-time
+   */
+  last_used_at: string | null;
+}
+
+export interface OverviewDto {
+  livemode: boolean;
+  /**
+   * When these numbers were counted.
+   * @format date-time
+   */
+  generated_at: string;
+  /** Null when this mode has no wallet yet. */
+  wallet: OverviewWalletDto | null;
+  orders: OverviewOrdersDto;
+  spend: OverviewSpendDto;
+  api: OverviewApiDto;
+  webhooks: OverviewWebhooksDto;
+  keys: OverviewKeysDto;
 }
 
 export interface RequestLogKeyDto {
@@ -9470,6 +9690,57 @@ export interface DeveloperMonitoringDto {
   errorTeams: DeveloperErrorTeamDto[];
   /** What raises an alert */
   thresholds: DeveloperMonitoringThresholdsDto;
+}
+
+export interface AdminIncidentDto {
+  /** @example "inc_6560f0c2a1b2c3d4e5f60718" */
+  id: string;
+  title: string;
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  impact: "minor" | "major" | "critical";
+  components: ("api" | "webhooks" | "dashboard")[];
+  started_at: string;
+  resolved_at: string | null;
+  /** Newest first. */
+  updates: StatusIncidentUpdateDto[];
+  /** The record id, for staff routes. */
+  record_id: string;
+}
+
+export interface AdminIncidentListDto {
+  /** Open first, then the latest 50 resolved. */
+  data: AdminIncidentDto[];
+}
+
+export interface CreateIncidentRequestDto {
+  /**
+   * @minLength 5
+   * @maxLength 140
+   * @example "Slow order creation"
+   */
+  title: string;
+  impact: "minor" | "major" | "critical";
+  components: ("api" | "webhooks" | "dashboard")[];
+  /** @default "investigating" */
+  status?: "investigating" | "identified" | "monitoring" | "resolved";
+  /**
+   * The first public update: what people see and what to do.
+   * @minLength 10
+   * @maxLength 2000
+   */
+  message: string;
+}
+
+export interface IncidentUpdateRequestDto {
+  /** resolved closes the incident. */
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  /**
+   * @minLength 10
+   * @maxLength 2000
+   */
+  message: string;
+  /** Change how bad it is. */
+  impact?: "minor" | "major" | "critical";
 }
 
 export type GetHeartbeatData = any;
@@ -11468,6 +11739,16 @@ export interface DeveloperGetUsageParams {
 
 export type DeveloperGetUsageData = UsageDto;
 
+export interface DeveloperGetOverviewParams {
+  /**
+   * true for live mode.
+   * @default "false"
+   */
+  livemode?: "true" | "false";
+}
+
+export type DeveloperGetOverviewData = OverviewDto;
+
 export type DashboardListServiceAreasData = ServiceAreaListDto;
 
 export interface DashboardListOrdersParams {
@@ -11777,3 +12058,9 @@ export interface AdminListDeveloperTransactionsParams {
 export type AdminListDeveloperTransactionsData = AdminDeveloperTransactionListDto;
 
 export type AdminGetDeveloperMonitoringData = DeveloperMonitoringDto;
+
+export type AdminListDeveloperIncidentsData = AdminIncidentListDto;
+
+export type AdminCreateDeveloperIncidentData = AdminIncidentDto;
+
+export type AdminUpdateDeveloperIncidentData = AdminIncidentDto;
