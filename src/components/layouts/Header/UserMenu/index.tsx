@@ -4,7 +4,7 @@ import { useMe } from "@/lib/admin/hooks";
 import { formatEmail, formatPersonName } from "@/lib/admin/person";
 import { SVG } from "@/components/svg";
 import { UI } from "@/components/ui";
-import { useQueryModal } from "@/hooks";
+import { useSetQueryParam } from "@/hooks";
 import { settingsHref } from "@/lib/admin/settings-tabs";
 import { LogOut, UserRound, ShieldCheck, type LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export const ACCOUNT_LINKS: { label: string; href: string; icon: LucideIcon }[] 
 ];
 
 export const UserMenu = () => {
-  const { setParam } = useQueryModal();
+  const setParam = useSetQueryParam();
   const { data, isLoading } = useMe();
 
   if (isLoading) {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import * as React from "react";
 
 import { ACCOUNT_LINKS } from "../Header/UserMenu";
-import { useQueryModal } from "@/hooks";
+import { useSetQueryParam } from "@/hooks";
 import { useMe } from "@/lib/admin/hooks";
 import { formatEmail, formatPersonName } from "@/lib/admin/person";
 import { staffRoleLabel } from "@/lib/admin/roles";
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
  * Folds to the avatar and the icon on the collapsed rail.
  */
 export const SidebarAccount = ({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) => {
-  const { setParam } = useQueryModal();
+  const setParam = useSetQueryParam();
   const { data, isLoading } = useMe();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
