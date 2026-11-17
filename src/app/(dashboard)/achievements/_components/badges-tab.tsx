@@ -22,7 +22,9 @@ export function BadgesTab() {
   const rows = useMemo(() => {
     const needle = search.trim().toLowerCase();
     const list = (data ?? []).filter(
-      (row) => (category === "ALL" || row.category === category) && (!needle || row.title.toLowerCase().includes(needle) || row.description.toLowerCase().includes(needle)),
+      (row) =>
+        (category === "ALL" || row.category === category) &&
+        (!needle || row.title.toLowerCase().includes(needle) || row.description.toLowerCase().includes(needle)),
     );
     const by: Record<typeof sort, (a: AchievementDefinition, b: AchievementDefinition) => number> = {
       popular: (a, b) => b.unlockedCount - a.unlockedCount,
@@ -57,7 +59,13 @@ export function BadgesTab() {
       />
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="flex-1">
-          <Input left={<Search size={15} />} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search badges" aria-label="Search badges" />
+          <Input
+            left={<Search size={15} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search badges"
+            aria-label="Search badges"
+          />
         </div>
         <span className="block w-full sm:w-48">
           <Select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label="Sort badges">
@@ -77,11 +85,19 @@ export function BadgesTab() {
       ) : rows.length ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {rows.map((row) => (
-            <BadgeCard key={row.key} row={row} share={row.unlockedCount / topUnlocks} top={row.unlockedCount > 0 && row.unlockedCount === topUnlocks} />
+            <BadgeCard
+              key={row.key}
+              row={row}
+              share={row.unlockedCount / topUnlocks}
+              top={row.unlockedCount > 0 && row.unlockedCount === topUnlocks}
+            />
           ))}
         </div>
       ) : (
-        <EmptyState title={search ? "No badges match" : "No badges in this category"} description={search ? "Try another word." : undefined} />
+        <EmptyState
+          title={search ? "No badges match" : "No badges in this category"}
+          description={search ? "Try another word." : undefined}
+        />
       )}
     </div>
   );
@@ -92,7 +108,10 @@ function BadgeCard({ row, share, top }: { row: AchievementDefinition; share: num
   return (
     <Panel className={cx("flex flex-col p-5", top && "border-brand/40")}>
       <div className="flex items-start gap-3">
-        <span className={cx("grid h-11 w-11 shrink-0 place-items-center rounded-2xl", TIER_CHIP[row.tier] ?? TIER_CHIP[1])} aria-hidden>
+        <span
+          className={cx("grid h-11 w-11 shrink-0 place-items-center rounded-2xl", TIER_CHIP[row.tier] ?? TIER_CHIP[1])}
+          aria-hidden
+        >
           <Medal size={20} />
         </span>
         <div className="min-w-0 flex-1">
@@ -110,8 +129,14 @@ function BadgeCard({ row, share, top }: { row: AchievementDefinition; share: num
           Target: {count(row.target)} {row.unit}
         </span>
       </div>
-      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface" title="Unlocks relative to the most unlocked badge">
-        <div className={cx("h-full rounded-full", top ? "bg-brand" : "bg-brand/50")} style={{ width: `${Math.max(2, share * 100)}%` }} />
+      <div
+        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface"
+        title="Unlocks relative to the most unlocked badge"
+      >
+        <div
+          className={cx("h-full rounded-full", top ? "bg-brand" : "bg-brand/50")}
+          style={{ width: `${Math.max(2, share * 100)}%` }}
+        />
       </div>
       <dl className="mt-4 grid grid-cols-3 gap-3 border-t border-line pt-4">
         <Stat

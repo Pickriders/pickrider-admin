@@ -4,7 +4,19 @@ import { Award, BadgePercent, CalendarClock, ChevronRight, Receipt, Ticket, Wall
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { Badge, ChartCard, EmptyState, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TrendChart, cx } from "@/components/kit";
+import {
+  Badge,
+  ChartCard,
+  EmptyState,
+  Panel,
+  PanelHeader,
+  RangeTabs,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  TrendChart,
+  cx,
+} from "@/components/kit";
 import { count, naira, nairaCompact, percent, trend } from "@/lib/admin/format";
 import { useCouponsSummary } from "@/lib/admin/hooks";
 
@@ -29,7 +41,9 @@ export function OverviewTab() {
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-ink-muted">{data ? `${count(data.active)} coupons live out of ${count(data.total)} created` : "Loading the programme"}</p>
+        <p className="text-sm text-ink-muted">
+          {data ? `${count(data.active)} coupons live out of ${count(data.total)} created` : "Loading the programme"}
+        </p>
         <RangeTabs value={range.value} onChange={range.setValue} />
       </div>
 
@@ -89,8 +103,21 @@ export function OverviewTab() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Redemptions" subtitle={`Per day, ${range.label}. Discount given is on the tile above.`} height={280} loading={loading} empty={!data?.daily.some((d) => d.count)}>
-            <TrendChart data={data?.daily ?? []} xKey="date" kind="area" xFormat={range.xf} series={[{ key: "count", label: "Redemptions", format: "count" }]} yFormat="count" />
+          <ChartCard
+            title="Redemptions"
+            subtitle={`Per day, ${range.label}. Discount given is on the tile above.`}
+            height={280}
+            loading={loading}
+            empty={!data?.daily.some((d) => d.count)}
+          >
+            <TrendChart
+              data={data?.daily ?? []}
+              xKey="date"
+              kind="area"
+              xFormat={range.xf}
+              series={[{ key: "count", label: "Redemptions", format: "count" }]}
+              yFormat="count"
+            />
           </ChartCard>
         </div>
         <Panel className="flex h-full flex-col">
@@ -98,7 +125,10 @@ export function OverviewTab() {
             title="Most used coupons"
             subtitle={`By redemptions, ${range.label}`}
             action={
-              <Link href="/coupons?tab=coupons" className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
+              <Link
+                href="/coupons?tab=coupons"
+                className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline"
+              >
                 All <ChevronRight size={13} />
               </Link>
             }
@@ -116,15 +146,28 @@ export function OverviewTab() {
                   const top = data.topCoupons[0]?.count || 1;
                   return (
                     <li key={row.code}>
-                      <Link href={`/coupons?tab=coupons&search=${row.code}`} className="flex items-center gap-3 rounded-2xl border border-line p-3 transition-colors hover:bg-surface">
-                        <span className={cx("grid h-8 w-8 shrink-0 place-items-center rounded-lg text-xs font-black", index === 0 ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>{index + 1}</span>
+                      <Link
+                        href={`/coupons?tab=coupons&search=${row.code}`}
+                        className="flex items-center gap-3 rounded-2xl border border-line p-3 transition-colors hover:bg-surface"
+                      >
+                        <span
+                          className={cx(
+                            "grid h-8 w-8 shrink-0 place-items-center rounded-lg text-xs font-black",
+                            index === 0 ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted",
+                          )}
+                        >
+                          {index + 1}
+                        </span>
                         <span className="min-w-0 flex-1">
                           <span className="flex items-baseline justify-between gap-3">
                             <span className="truncate font-mono text-xs font-bold text-ink">{row.code}</span>
                             <Badge tone="brand">{count(row.count)}×</Badge>
                           </span>
                           <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-surface">
-                            <span className={cx("block h-full rounded-full", index === 0 ? "bg-brand" : "bg-brand/50")} style={{ width: `${Math.max(4, (row.count / top) * 100)}%` }} />
+                            <span
+                              className={cx("block h-full rounded-full", index === 0 ? "bg-brand" : "bg-brand/50")}
+                              style={{ width: `${Math.max(4, (row.count / top) * 100)}%` }}
+                            />
                           </span>
                           <span className="mt-1 block truncate text-[11px] text-ink-faint">
                             {row.name || "No name"} · {naira(row.discount)} given
@@ -136,7 +179,12 @@ export function OverviewTab() {
                 })}
               </ol>
             ) : (
-              <EmptyState compact icon={Ticket} title="No redemptions in this window" description="Coupons appear here once customers apply them at checkout." />
+              <EmptyState
+                compact
+                icon={Ticket}
+                title="No redemptions in this window"
+                description="Coupons appear here once customers apply them at checkout."
+              />
             )}
           </div>
         </Panel>

@@ -11,7 +11,9 @@ const TZ = "Africa/Lagos";
 
 export function naira(kobo: number | null | undefined, digits = 0) {
   const value = (kobo ?? 0) / 100;
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: digits }).format(value);
+  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: digits }).format(
+    value,
+  );
 }
 
 export function nairaCompact(kobo: number | null | undefined) {
@@ -43,8 +45,21 @@ export function trend(current: number, previous: number): number | null {
   return Math.round(((current - previous) / previous) * 1000) / 10;
 }
 
-const dateTime = new Intl.DateTimeFormat("en-NG", { timeZone: TZ, day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
-const dateTimeYear = new Intl.DateTimeFormat("en-NG", { timeZone: TZ, day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" });
+const dateTime = new Intl.DateTimeFormat("en-NG", {
+  timeZone: TZ,
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  minute: "2-digit",
+});
+const dateTimeYear = new Intl.DateTimeFormat("en-NG", {
+  timeZone: TZ,
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+});
 const dateOnly = new Intl.DateTimeFormat("en-NG", { timeZone: TZ, day: "numeric", month: "short", year: "numeric" });
 const timeOnly = new Intl.DateTimeFormat("en-NG", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
 
@@ -92,7 +107,9 @@ export function minutes(value: number | null | undefined) {
 }
 
 /** A person's display name, cased by formatPersonName ("ADA obi" -> "Ada Obi"). */
-export function fullName(user: { firstname?: string | null; lastname?: string | null; isErased?: boolean } | null | undefined) {
+export function fullName(
+  user: { firstname?: string | null; lastname?: string | null; isErased?: boolean } | null | undefined,
+) {
   // The core sends `{ firstname: "Erased user", lastname: "", isErased: true }` for a tombstone; keep its casing.
   if (user?.isErased) return ERASED_USER_LABEL;
   return formatPersonName([user?.firstname, user?.lastname].filter(Boolean).join(" "));
@@ -101,7 +118,12 @@ export function fullName(user: { firstname?: string | null; lastname?: string | 
 export const ERASED_USER_LABEL = "Erased user";
 
 export function initials(name: string | null | undefined) {
-  return (name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
+  return (name ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 export function maskAccount(value: string | null | undefined) {
@@ -118,7 +140,13 @@ export const ORDER_STATUS_LABEL: Record<string, string> = {
 
 export function statusLabel(status: string | null | undefined) {
   if (!status) return "";
-  return ORDER_STATUS_LABEL[status] ?? status.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  return (
+    ORDER_STATUS_LABEL[status] ??
+    status
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .replace(/^\w/, (c) => c.toUpperCase())
+  );
 }
 
 /**
@@ -143,7 +171,8 @@ export function orderSource(channel: string | null | undefined): OrderSource {
 
 export const ORDER_SOURCE_LABEL: Record<OrderSource, string> = { APP: "App", STORE: "Store", WEB: "Web", API: "API" };
 
-export const STOREFRONT_REFUND_HINT = "Paid and refunded through the storefront (Paystack). No core wallet money moved.";
+export const STOREFRONT_REFUND_HINT =
+  "Paid and refunded through the storefront (Paystack). No core wallet money moved.";
 export const STOREFRONT_PREPAID_HINT = "The customer paid on the storefront (Paystack) before the delivery was booked.";
 
 const PAYMENT_STATUS_LABEL: Record<string, string> = {
@@ -158,7 +187,11 @@ const PAYMENT_STATUS_LABEL: Record<string, string> = {
  * sees them, so "Paid" there means "Storefront prepaid"; a cancelled storefront order was refunded
  * on the storefront (newer ones carry REFUNDED, older ones still say PAID with status CANCELLED).
  */
-export function orderPaymentDisplay(order: { channel?: string | null; status?: string | null; paymentStatus?: string | null }): {
+export function orderPaymentDisplay(order: {
+  channel?: string | null;
+  status?: string | null;
+  paymentStatus?: string | null;
+}): {
   label: string;
   tone: "neutral" | "success" | "warning" | "danger" | "info";
   hint?: string;
@@ -171,6 +204,15 @@ export function orderPaymentDisplay(order: { channel?: string | null; status?: s
     if (status === "PAID") return { label: "Storefront prepaid", tone: "success", hint: STOREFRONT_PREPAID_HINT };
   }
   const label = PAYMENT_STATUS_LABEL[status] ?? statusLabel(status);
-  const tone = status === "PAID" ? "success" : status === "FAILED" ? "danger" : status === "PENDING" ? "warning" : status === "REFUNDED" ? "info" : "neutral";
+  const tone =
+    status === "PAID"
+      ? "success"
+      : status === "FAILED"
+        ? "danger"
+        : status === "PENDING"
+          ? "warning"
+          : status === "REFUNDED"
+            ? "info"
+            : "neutral";
   return { label, tone };
 }

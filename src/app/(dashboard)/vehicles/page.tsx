@@ -32,7 +32,10 @@ function VehiclesList() {
   const attention = useAttention();
   const { can } = useCan();
 
-  const query = useMemo(() => ({ ...table.query, vehicleSearch: table.state.search }), [table.query, table.state.search]);
+  const query = useMemo(
+    () => ({ ...table.query, vehicleSearch: table.state.search }),
+    [table.query, table.state.search],
+  );
   const data = useVehicles(query);
   const columns = useMemo(() => vehicleColumns({ showBusiness: true }), []);
   const activeStatus = table.state.filters.status ?? "";
@@ -53,7 +56,13 @@ function VehiclesList() {
         }
       />
 
-      <ScrollRow className="-mx-1 mb-4" innerClassName="px-1 pb-1" label="Vehicle status" peekKey="vehicles-status-chips" activeKey={activeStatus}>
+      <ScrollRow
+        className="-mx-1 mb-4"
+        innerClassName="px-1 pb-1"
+        label="Vehicle status"
+        peekKey="vehicles-status-chips"
+        activeKey={activeStatus}
+      >
         <div className="flex w-max gap-2">
           {CHIPS.map((chip) => {
             const active = activeStatus === chip.value;
@@ -66,12 +75,21 @@ function VehiclesList() {
                 onClick={() => table.setFilter("status", chip.value || undefined)}
                 className={cx(
                   "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
-                  active ? "border-transparent bg-ink text-card" : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
+                  active
+                    ? "border-transparent bg-ink text-card"
+                    : "border-line bg-card text-ink-muted hover:border-line-strong hover:text-ink",
                 )}
               >
                 {chip.label}
                 {count != null && count > 0 ? (
-                  <span className={cx("rounded-full px-1.5 text-[11px]", active ? "bg-card/20 text-card" : "bg-warning-soft text-warning")}>{count}</span>
+                  <span
+                    className={cx(
+                      "rounded-full px-1.5 text-[11px]",
+                      active ? "bg-card/20 text-card" : "bg-warning-soft text-warning",
+                    )}
+                  >
+                    {count}
+                  </span>
                 ) : null}
               </button>
             );

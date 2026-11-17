@@ -45,7 +45,11 @@ const COLUMNS: ColumnDef<Order, unknown>[] = [
         <p className="truncate font-semibold text-ink">#{row.original.orderNumber ?? row.original._id.slice(-6)}</p>
         <p className="truncate text-xs capitalize text-ink-muted">
           {row.original.type?.toLowerCase()}
-          {row.original.isScheduled ? <Badge tone="info" className="ml-1.5">Scheduled</Badge> : null}
+          {row.original.isScheduled ? (
+            <Badge tone="info" className="ml-1.5">
+              Scheduled
+            </Badge>
+          ) : null}
         </p>
       </div>
     ),
@@ -64,19 +68,35 @@ const COLUMNS: ColumnDef<Order, unknown>[] = [
   {
     id: "pickup",
     header: "Pickup",
-    cell: ({ row }) => <span className="block max-w-[16rem] truncate text-ink-muted">{row.original.pickup?.address ?? row.original.locations?.[0]?.address ?? ""}</span>,
-    meta: { hideBelow: "xl", csv: { key: "pickup", label: "Pickup", value: (r) => (r as Order).pickup?.address ?? "" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="block max-w-[16rem] truncate text-ink-muted">
+        {row.original.pickup?.address ?? row.original.locations?.[0]?.address ?? ""}
+      </span>
+    ),
+    meta: {
+      hideBelow: "xl",
+      csv: { key: "pickup", label: "Pickup", value: (r) => (r as Order).pickup?.address ?? "" },
+    } satisfies ColumnMeta,
   },
   {
     id: "rider",
     header: "Rider",
-    cell: ({ row }) => <span className="text-ink-muted">{person(row.original.riderId) || (row.original.riderId ? "Assigned" : "None yet")}</span>,
-    meta: { hideBelow: "lg", csv: { key: "rider", label: "Rider", value: (r) => person((r as Order).riderId) } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="text-ink-muted">
+        {person(row.original.riderId) || (row.original.riderId ? "Assigned" : "None yet")}
+      </span>
+    ),
+    meta: {
+      hideBelow: "lg",
+      csv: { key: "rider", label: "Rider", value: (r) => person((r as Order).riderId) },
+    } satisfies ColumnMeta,
   },
   {
     id: "amount",
     header: "Amount",
-    cell: ({ row }) => <span className="whitespace-nowrap font-semibold text-ink">{naira(row.original.totalAmountPayable)}</span>,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap font-semibold text-ink">{naira(row.original.totalAmountPayable)}</span>
+    ),
     meta: { align: "right", csv: { key: "totalAmountPayable", label: "Amount (kobo)" } } satisfies ColumnMeta,
   },
   {
@@ -121,9 +141,12 @@ export function OrdersTab({ businessId }: { businessId: string }) {
             <p className="font-semibold text-ink">#{row.orderNumber ?? row._id.slice(-6)}</p>
             <Badge tone={orderTone(row.status)}>{statusLabel(row.status)}</Badge>
           </div>
-          <p className="mt-0.5 truncate text-xs text-ink-muted">{row.pickup?.address ?? row.locations?.[0]?.address ?? ""}</p>
+          <p className="mt-0.5 truncate text-xs text-ink-muted">
+            {row.pickup?.address ?? row.locations?.[0]?.address ?? ""}
+          </p>
           <p className="mt-1 text-xs text-ink-muted">
-            <span className="font-semibold text-ink">{naira(row.totalAmountPayable)}</span> · {row.type?.toLowerCase()} · {when(row.createdAt)}
+            <span className="font-semibold text-ink">{naira(row.totalAmountPayable)}</span> · {row.type?.toLowerCase()}{" "}
+            · {when(row.createdAt)}
           </p>
         </div>
       )}

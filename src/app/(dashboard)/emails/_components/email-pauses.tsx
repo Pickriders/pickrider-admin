@@ -45,7 +45,8 @@ function useNow(ticking: boolean) {
   return now;
 }
 
-const write = (kind: PauseKind) => (kind === "marketing" ? emailControls.pauseMarketing : emailControls.pauseNonEssential);
+const write = (kind: PauseKind) =>
+  kind === "marketing" ? emailControls.pauseMarketing : emailControls.pauseNonEssential;
 
 function StaffName({ id }: { id: string | null | undefined }) {
   const staff = useStaffName(id && id !== "SYSTEM" ? id : null);
@@ -77,7 +78,13 @@ export function EmailPausesPanel({ canManage }: { canManage: boolean }) {
     <div className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
       {(["marketing", "nonEssential"] as const).map((kind) =>
         data ? (
-          <PauseCard key={kind} kind={kind} pause={kind === "marketing" ? data.pauseMarketing : data.pauseNonEssential} now={now} canManage={canManage} />
+          <PauseCard
+            key={kind}
+            kind={kind}
+            pause={kind === "marketing" ? data.pauseMarketing : data.pauseNonEssential}
+            now={now}
+            canManage={canManage}
+          />
         ) : (
           <Panel key={kind} className="space-y-2 p-4">
             <Skeleton className="h-5 w-1/2" />
@@ -90,7 +97,17 @@ export function EmailPausesPanel({ canManage }: { canManage: boolean }) {
   );
 }
 
-function PauseCard({ kind, pause, now, canManage }: { kind: PauseKind; pause: EmailPause; now: number; canManage: boolean }) {
+function PauseCard({
+  kind,
+  pause,
+  now,
+  canManage,
+}: {
+  kind: PauseKind;
+  pause: EmailPause;
+  now: number;
+  canManage: boolean;
+}) {
   const [pauseOpen, setPauseOpen] = useState(false);
   const [liftOpen, setLiftOpen] = useState(false);
   const active = pauseInEffect(pause, now);
@@ -102,7 +119,12 @@ function PauseCard({ kind, pause, now, canManage }: { kind: PauseKind; pause: Em
     <Panel className={cx("p-4", active && "border-warning/50 bg-warning-soft/40")}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-xl", active ? "bg-warning-soft text-warning" : "bg-surface text-ink-faint")}>
+          <span
+            className={cx(
+              "grid h-9 w-9 shrink-0 place-items-center rounded-xl",
+              active ? "bg-warning-soft text-warning" : "bg-surface text-ink-faint",
+            )}
+          >
             <Icon size={17} aria-hidden />
           </span>
           <div className="min-w-0">
@@ -132,7 +154,8 @@ function PauseCard({ kind, pause, now, canManage }: { kind: PauseKind; pause: Em
             <Clock3 size={13} aria-hidden />
             {pause.until ? (
               <>
-                Lifts {countdown ? <span className="font-bold tabular-nums text-ink">in {countdown}</span> : "any moment now"}
+                Lifts{" "}
+                {countdown ? <span className="font-bold tabular-nums text-ink">in {countdown}</span> : "any moment now"}
                 <span className="text-ink-faint">({when(pause.until)})</span>
               </>
             ) : (
@@ -148,10 +171,7 @@ function PauseCard({ kind, pause, now, canManage }: { kind: PauseKind; pause: Em
         <p className="mt-3 text-xs text-ink-faint">
           Last pause lifted {when(pause.liftedAt)}
           {pause.liftedBy ? (
-            <>
-              {" "}
-              by {pause.liftedBy === "SYSTEM" ? liftedByLabel("SYSTEM") : <StaffName id={pause.liftedBy} />}
-            </>
+            <> by {pause.liftedBy === "SYSTEM" ? liftedByLabel("SYSTEM") : <StaffName id={pause.liftedBy} />}</>
           ) : null}
           .
         </p>
@@ -179,7 +199,8 @@ function PauseCard({ kind, pause, now, canManage }: { kind: PauseKind; pause: Em
 
 type UntilChoice = "none" | QuickPick | "custom";
 const UNTIL_CHOICES: UntilChoice[] = ["none", "1h", "2h", "tomorrow8", "custom"];
-const untilChoiceLabel = (choice: UntilChoice) => (choice === "none" ? "No end" : choice === "custom" ? "Custom" : QUICK_PICK_LABEL[choice]);
+const untilChoiceLabel = (choice: UntilChoice) =>
+  choice === "none" ? "No end" : choice === "custom" ? "Custom" : QUICK_PICK_LABEL[choice];
 
 function PauseDialog({ kind, open, onClose }: { kind: PauseKind; open: boolean; onClose: () => void }) {
   const [reason, setReason] = useState("");
@@ -194,14 +215,20 @@ function PauseDialog({ kind, open, onClose }: { kind: PauseKind; open: boolean; 
     setCustom(lagosInputValue(new Date(Date.now() + 2 * HOUR)));
   }, [open]);
 
-  const until = choice === "none" ? null : choice === "custom" ? parseLagosInput(custom) ?? new Date(Number.NaN) : quickPickUntil(choice, now);
+  const until =
+    choice === "none"
+      ? null
+      : choice === "custom"
+        ? (parseLagosInput(custom) ?? new Date(Number.NaN))
+        : quickPickUntil(choice, now);
   const parsed = pauseBody({ reason, until }, now);
   const untilError = choice === "custom" && !parsed.ok && reason.trim().length >= 3 ? parsed.error : undefined;
 
   const save = useControlsWrite(
     () => {
       // Quick picks count from the moment of sending, not from when the dialog opened.
-      const sendUntil = choice === "none" ? null : choice === "custom" ? parseLagosInput(custom) : quickPickUntil(choice);
+      const sendUntil =
+        choice === "none" ? null : choice === "custom" ? parseLagosInput(custom) : quickPickUntil(choice);
       const body = pauseBody({ reason, until: sendUntil });
       if (!body.ok) return Promise.reject(new Error(body.error));
       return write(kind)(body.body) as Promise<EmailControls>;
@@ -226,7 +253,10 @@ function PauseDialog({ kind, open, onClose }: { kind: PauseKind; open: boolean; 
       disabled={!parsed.ok}
     >
       <div className="space-y-4">
-        <Field label="Reason" hint={`Shown to staff on every page while the pause lasts, and kept in the audit log. ${reason.length}/${MAX_CONTROL_REASON}`}>
+        <Field
+          label="Reason"
+          hint={`Shown to staff on every page while the pause lasts, and kept in the audit log. ${reason.length}/${MAX_CONTROL_REASON}`}
+        >
           <Textarea
             value={reason}
             onChange={(event) => setReason(event.target.value.slice(0, MAX_CONTROL_REASON))}
@@ -245,7 +275,12 @@ function PauseDialog({ kind, open, onClose }: { kind: PauseKind; open: boolean; 
           </div>
           {choice === "custom" ? (
             <Field className="mt-3" label="Lift at (Lagos time)" error={untilError}>
-              <Input type="datetime-local" value={custom} onChange={(event) => setCustom(event.target.value)} min={lagosInputValue(new Date(now))} />
+              <Input
+                type="datetime-local"
+                value={custom}
+                onChange={(event) => setCustom(event.target.value)}
+                min={lagosInputValue(new Date(now))}
+              />
             </Field>
           ) : null}
           <p className="mt-2 text-xs text-ink-faint">
@@ -288,7 +323,12 @@ function LiftDialog({ kind, open, onClose }: { kind: PauseKind; open: boolean; o
       disabled={text.length < 3}
     >
       <Field label="Reason" hint={`Kept in the audit log. ${reason.length}/${MAX_CONTROL_REASON}`}>
-        <Textarea value={reason} onChange={(event) => setReason(event.target.value.slice(0, MAX_CONTROL_REASON))} placeholder="e.g. Provider recovered" className="min-h-20" />
+        <Textarea
+          value={reason}
+          onChange={(event) => setReason(event.target.value.slice(0, MAX_CONTROL_REASON))}
+          placeholder="e.g. Provider recovered"
+          className="min-h-20"
+        />
       </Field>
     </ConfirmDialog>
   );

@@ -21,7 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       showToggle,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [inputType, setInputType] = React.useState(type);
     const toggleViewPassword = () => {
@@ -31,20 +31,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-y-1.5 ">
         {labelValue && (
-          <label
-            htmlFor={id}
-            className={cn(
-              "text-primary-gray font-montserrat font-semibold text-xs",
-              labelClassName
-            )}
-          >
+          <label htmlFor={id} className={cn("text-primary-gray font-montserrat font-semibold text-xs", labelClassName)}>
             {labelValue}
           </label>
         )}
         <div className="relative">
-          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2">
-            {leftIcon}
-          </span>
+          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2">{leftIcon}</span>
           <input
             type={inputType}
             className={cn(
@@ -52,7 +44,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className,
               leftIcon ? "pl-10" : "",
               rightIcon && "pr-14",
-              errorMessage ? "focus-visible:ring-destructive" : ""
+              errorMessage ? "focus-visible:ring-destructive" : "",
             )}
             ref={ref}
             id={id}
@@ -68,20 +60,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {inputType === "password" ? <Eye size={18} /> : <EyeOff size={18} />}
             </Button>
           )}
-          {rightIcon && (
-            <span className=" absolute right-2 top-1/2 -translate-y-1/2">
-              {rightIcon}
-            </span>
-          )}
+          {rightIcon && <span className=" absolute right-2 top-1/2 -translate-y-1/2">{rightIcon}</span>}
         </div>
-        {errorMessage && (
-          <span className="text-destructive font-montserrat text-xs font-semibold">
-            {errorMessage}
-          </span>
-        )}
+        {errorMessage && <span className="text-destructive font-montserrat text-xs font-semibold">{errorMessage}</span>}
       </div>
     );
-  }
+  },
 );
 Input.displayName = "Input";
 

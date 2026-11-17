@@ -2,13 +2,7 @@ import { SvgProps } from "./Svg.type";
 
 export const PersonAcceptFillIcon = ({ height = 19, width = 19 }: SvgProps) => {
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 19 19"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={width} height={height} viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

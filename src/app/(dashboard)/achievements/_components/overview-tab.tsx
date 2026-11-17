@@ -4,7 +4,19 @@ import { Award, ChevronRight, Gift, Medal, Trophy, Users, Wallet } from "lucide-
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { Badge, ChartCard, EmptyState, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TrendChart, cx } from "@/components/kit";
+import {
+  Badge,
+  ChartCard,
+  EmptyState,
+  Panel,
+  PanelHeader,
+  RangeTabs,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  TrendChart,
+  cx,
+} from "@/components/kit";
 import type { AchievementBadgeRollup } from "@/lib/admin/api";
 import { count, naira, nairaCompact, percent, trend } from "@/lib/admin/format";
 import { useAchievementsSummary } from "@/lib/admin/hooks";
@@ -35,7 +47,9 @@ export function OverviewTab() {
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-ink-muted">
-          {data ? `${count(data.customersWithBadges)} customers hold at least one of ${count(data.badges)} badges` : "Loading the programme"}
+          {data
+            ? `${count(data.customersWithBadges)} customers hold at least one of ${count(data.badges)} badges`
+            : "Loading the programme"}
         </p>
         <RangeTabs value={range.value} onChange={range.setValue} />
       </div>
@@ -93,8 +107,21 @@ export function OverviewTab() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Unlocks over time" subtitle={`Per day, ${range.label}`} height={280} loading={loading} empty={!daily.some((d) => d.count)}>
-            <TrendChart data={daily} xKey="date" kind="area" xFormat={range.xf} series={[{ key: "count", label: "Unlocks", format: "count" }]} yFormat="count" />
+          <ChartCard
+            title="Unlocks over time"
+            subtitle={`Per day, ${range.label}`}
+            height={280}
+            loading={loading}
+            empty={!daily.some((d) => d.count)}
+          >
+            <TrendChart
+              data={daily}
+              xKey="date"
+              kind="area"
+              xFormat={range.xf}
+              series={[{ key: "count", label: "Unlocks", format: "count" }]}
+              yFormat="count"
+            />
           </ChartCard>
         </div>
         <RewardRules
@@ -111,7 +138,17 @@ export function OverviewTab() {
 }
 
 /** The three tiers as a ladder, so what a badge pays is obvious at a glance. */
-function RewardRules({ tiers, cap, validityDays, loading }: { tiers?: Record<string, number>; cap?: number; validityDays?: number; loading: boolean }) {
+function RewardRules({
+  tiers,
+  cap,
+  validityDays,
+  loading,
+}: {
+  tiers?: Record<string, number>;
+  cap?: number;
+  validityDays?: number;
+  loading: boolean;
+}) {
   const ladder = [
     { tier: 3, tone: "bg-brand text-brand-ink", label: "Tier 3", hint: "The hardest to earn, so they pay the most" },
     { tier: 2, tone: "bg-info-soft text-info", label: "Tier 2", hint: "Milestones a regular customer reaches" },
@@ -127,7 +164,11 @@ function RewardRules({ tiers, cap, validityDays, loading }: { tiers?: Record<str
           <ul className="space-y-2">
             {ladder.map((step) => (
               <li key={step.tier} className="flex items-center gap-3 rounded-2xl border border-line p-3">
-                <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-black", step.tone)}>{step.tier}</span>
+                <span
+                  className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-black", step.tone)}
+                >
+                  {step.tier}
+                </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold text-ink">{step.label} badges</span>
                   <span className="block text-xs text-ink-muted">{step.hint}</span>
@@ -158,7 +199,17 @@ function RewardRules({ tiers, cap, validityDays, loading }: { tiers?: Record<str
  * a bar relative to the top badge, the change against the window before, how
  * many of those rewards got used, and the lifetime total for context.
  */
-function MostUnlocked({ rows, loading, windowLabel, allTime }: { rows: AchievementBadgeRollup[]; loading: boolean; windowLabel: string; allTime?: boolean }) {
+function MostUnlocked({
+  rows,
+  loading,
+  windowLabel,
+  allTime,
+}: {
+  rows: AchievementBadgeRollup[];
+  loading: boolean;
+  windowLabel: string;
+  allTime?: boolean;
+}) {
   const active = rows.filter((row) => row.unlocks > 0);
   const quiet = rows.filter((row) => row.unlocks === 0);
   const top = active[0]?.unlocks || 1;
@@ -168,9 +219,18 @@ function MostUnlocked({ rows, loading, windowLabel, allTime }: { rows: Achieveme
     <Panel>
       <PanelHeader
         title="Most unlocked badges"
-        subtitle={loading ? "" : active.length ? `${count(totalUnlocks)} unlocks across ${count(active.length)} badges, ${windowLabel}` : `No badge was unlocked ${windowLabel}`}
+        subtitle={
+          loading
+            ? ""
+            : active.length
+              ? `${count(totalUnlocks)} unlocks across ${count(active.length)} badges, ${windowLabel}`
+              : `No badge was unlocked ${windowLabel}`
+        }
         action={
-          <Link href="/achievements?tab=badges" className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
+          <Link
+            href="/achievements?tab=badges"
+            className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline"
+          >
             Catalogue <ChevronRight size={13} />
           </Link>
         }
@@ -183,7 +243,12 @@ function MostUnlocked({ rows, loading, windowLabel, allTime }: { rows: Achieveme
             ))}
           </div>
         ) : !active.length ? (
-          <EmptyState compact icon={Medal} title="Nothing unlocked in this window" description="Widen the window, or check back once customers complete more deliveries." />
+          <EmptyState
+            compact
+            icon={Medal}
+            title="Nothing unlocked in this window"
+            description="Widen the window, or check back once customers complete more deliveries."
+          />
         ) : (
           <ol className="space-y-2">
             {active.map((row, index) => {
@@ -196,7 +261,13 @@ function MostUnlocked({ rows, loading, windowLabel, allTime }: { rows: Achieveme
                     href={`/achievements?tab=unlocks&key=${row.key}`}
                     className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl border border-line p-3 transition-colors hover:bg-surface sm:grid-cols-[auto_1fr_auto_auto_auto] sm:gap-4"
                   >
-                    <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl", TIER_CHIP[row.tier] ?? TIER_CHIP[1])} aria-hidden>
+                    <span
+                      className={cx(
+                        "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
+                        TIER_CHIP[row.tier] ?? TIER_CHIP[1],
+                      )}
+                      aria-hidden
+                    >
                       <Medal size={18} />
                     </span>
                     <span className="min-w-0">
@@ -205,14 +276,19 @@ function MostUnlocked({ rows, loading, windowLabel, allTime }: { rows: Achieveme
                         <TierBadge tier={row.tier} percent={0} compact />
                       </span>
                       <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-surface">
-                        <span className={cx("block h-full rounded-full", index === 0 ? "bg-brand" : "bg-brand/50")} style={{ width: `${Math.max(3, (row.unlocks / top) * 100)}%` }} />
+                        <span
+                          className={cx("block h-full rounded-full", index === 0 ? "bg-brand" : "bg-brand/50")}
+                          style={{ width: `${Math.max(3, (row.unlocks / top) * 100)}%` }}
+                        />
                       </span>
                       <span className="mt-1 block text-[11px] text-ink-faint">
                         {CATEGORY_LABEL[row.category] ?? row.category} · {count(row.lifetime)} all time
                       </span>
                     </span>
                     <span className="text-right">
-                      <span className="block text-xl font-black leading-none tabular-nums text-ink">{count(row.unlocks)}</span>
+                      <span className="block text-xl font-black leading-none tabular-nums text-ink">
+                        {count(row.unlocks)}
+                      </span>
                       <span className="block text-[11px] text-ink-faint">unlocks</span>
                     </span>
                     <span className="hidden text-right sm:block">

@@ -1,11 +1,7 @@
 import { cn } from "@/lib/utils";
 import { SvgProps } from "./Svg.type";
 
-export const UserSwitch = ({
-  className,
-  height = 24,
-  width = 24,
-}: SvgProps) => {
+export const UserSwitch = ({ className, height = 24, width = 24 }: SvgProps) => {
   return (
     <svg
       width={width}

@@ -150,7 +150,12 @@ export function Popover({
   if (phone && typeof document !== "undefined") {
     return createPortal(
       <div className="fixed inset-0 z-[55]" data-popover="sheet">
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] admin-fade-in" onClick={onClose} aria-hidden data-popover-backdrop />
+        <div
+          className="absolute inset-0 bg-black/40 backdrop-blur-[2px] admin-fade-in"
+          onClick={onClose}
+          aria-hidden
+          data-popover-backdrop
+        />
         <div
           ref={panelRef}
           role="dialog"

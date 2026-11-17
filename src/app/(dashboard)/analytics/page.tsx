@@ -23,8 +23,18 @@ import { useStatsRange } from "../dashboard/_components/use-stats-range";
 type MetricId = "volume" | "orders" | "outcomes" | "serviceCharge" | "riderFees" | "signups" | "money";
 
 const METRICS: Record<MetricId, { label: string; title: string; yFormat: "naira" | "count"; series: SeriesSpec[] }> = {
-  volume: { label: "Order volume", title: "Order volume", yFormat: "naira", series: [{ key: "volume", label: "Volume", format: "naira" }] },
-  orders: { label: "Orders placed", title: "Orders placed", yFormat: "count", series: [{ key: "orders", label: "Orders", format: "count" }] },
+  volume: {
+    label: "Order volume",
+    title: "Order volume",
+    yFormat: "naira",
+    series: [{ key: "volume", label: "Volume", format: "naira" }],
+  },
+  orders: {
+    label: "Orders placed",
+    title: "Orders placed",
+    yFormat: "count",
+    series: [{ key: "orders", label: "Orders", format: "count" }],
+  },
   outcomes: {
     label: "Completed vs cancelled",
     title: "Completed vs cancelled",
@@ -34,8 +44,18 @@ const METRICS: Record<MetricId, { label: string; title: string; yFormat: "naira"
       { key: "cancelled", label: "Cancelled", format: "count", color: "hsl(var(--chart-6))" },
     ],
   },
-  serviceCharge: { label: "Platform revenue", title: "Platform revenue (service charge)", yFormat: "naira", series: [{ key: "serviceCharge", label: "Service charge", format: "naira", color: "hsl(var(--chart-3))" }] },
-  riderFees: { label: "Rider fees", title: "Rider fees", yFormat: "naira", series: [{ key: "riderFees", label: "Rider fees", format: "naira", color: "hsl(var(--chart-4))" }] },
+  serviceCharge: {
+    label: "Platform revenue",
+    title: "Platform revenue (service charge)",
+    yFormat: "naira",
+    series: [{ key: "serviceCharge", label: "Service charge", format: "naira", color: "hsl(var(--chart-3))" }],
+  },
+  riderFees: {
+    label: "Rider fees",
+    title: "Rider fees",
+    yFormat: "naira",
+    series: [{ key: "riderFees", label: "Rider fees", format: "naira", color: "hsl(var(--chart-4))" }],
+  },
   signups: {
     label: "New customers vs riders",
     title: "New signups",
@@ -91,8 +111,14 @@ function Analytics() {
   const spec = METRICS[metric];
   const hasMetric = points.some((p) => spec.series.some((s) => (p[s.key as keyof SeriesPoint] as number) > 0));
 
-  const typeDonut = useMemo(() => Object.entries(cur?.byType ?? {}).map(([type, n]) => ({ name: TYPE_LABEL[type] ?? type, value: n })), [cur?.byType]);
-  const statusDonut = useMemo(() => Object.entries(cur?.byStatus ?? {}).map(([status, n]) => ({ name: statusLabel(status), value: n })), [cur?.byStatus]);
+  const typeDonut = useMemo(
+    () => Object.entries(cur?.byType ?? {}).map(([type, n]) => ({ name: TYPE_LABEL[type] ?? type, value: n })),
+    [cur?.byType],
+  );
+  const statusDonut = useMemo(
+    () => Object.entries(cur?.byStatus ?? {}).map(([status, n]) => ({ name: statusLabel(status), value: n })),
+    [cur?.byStatus],
+  );
   const moneyDonut = useMemo(() => {
     const t = o?.transactions;
     if (!t) return [];
@@ -108,7 +134,10 @@ function Analytics() {
     return (
       <>
         <PageHeader title="Analytics" description="Platform-wide trends across orders, money and people." />
-        <ErrorState message={errorMessage(overview.error, "Could not load analytics.")} onRetry={() => void overview.refetch()} />
+        <ErrorState
+          message={errorMessage(overview.error, "Could not load analytics.")}
+          onRetry={() => void overview.refetch()}
+        />
       </>
     );
   }
@@ -176,7 +205,12 @@ function Analytics() {
         loading={seriesLoading}
         empty={!hasMetric}
         action={
-          <Select value={metric} onChange={(e) => setMetric(e.target.value as MetricId)} className="h-9 w-auto min-w-[12rem] text-xs" aria-label="Metric">
+          <Select
+            value={metric}
+            onChange={(e) => setMetric(e.target.value as MetricId)}
+            className="h-9 w-auto min-w-[12rem] text-xs"
+            aria-label="Metric"
+          >
             {METRIC_IDS.map((id) => (
               <option key={id} value={id}>
                 {METRICS[id].label}
@@ -185,12 +219,25 @@ function Analytics() {
           </Select>
         }
       >
-        <TrendChart data={points as unknown as Record<string, unknown>[]} xKey="bucket" xFormat={range.xf} kind={spec.series.length > 1 ? "line" : "area"} yFormat={spec.yFormat} series={spec.series} />
+        <TrendChart
+          data={points as unknown as Record<string, unknown>[]}
+          xKey="bucket"
+          xFormat={range.xf}
+          kind={spec.series.length > 1 ? "line" : "area"}
+          yFormat={spec.yFormat}
+          series={spec.series}
+        />
       </ChartCard>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Orders by type over time" subtitle={`Single, batch and bulk per ${range.bucket}`} height={280} loading={seriesLoading} empty={!points.some((p) => p.orders)}>
+          <ChartCard
+            title="Orders by type over time"
+            subtitle={`Single, batch and bulk per ${range.bucket}`}
+            height={280}
+            loading={seriesLoading}
+            empty={!points.some((p) => p.orders)}
+          >
             <BarsChart
               data={points as unknown as Record<string, unknown>[]}
               xKey="bucket"
@@ -204,19 +251,53 @@ function Analytics() {
             />
           </ChartCard>
         </div>
-        <ChartCard title="Order types" subtitle="Share of orders in the window" height={280} loading={loading} empty={!cur?.orders}>
+        <ChartCard
+          title="Order types"
+          subtitle="Share of orders in the window"
+          height={280}
+          loading={loading}
+          empty={!cur?.orders}
+        >
           <DonutChart data={typeDonut} format="count" centerValue={count(cur?.orders)} centerLabel="orders" />
         </ChartCard>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-        <ChartCard title="Order status" subtitle="Where orders in the window ended up" height={260} loading={loading} empty={!cur?.orders}>
-          <DonutChart data={statusDonut} format="count" centerValue={percent(cur?.completionRate, 0)} centerLabel="completed" />
+        <ChartCard
+          title="Order status"
+          subtitle="Where orders in the window ended up"
+          height={260}
+          loading={loading}
+          empty={!cur?.orders}
+        >
+          <DonutChart
+            data={statusDonut}
+            format="count"
+            centerValue={percent(cur?.completionRate, 0)}
+            centerLabel="completed"
+          />
         </ChartCard>
-        <ChartCard title="Transaction mix" subtitle={`Successful, by category. ${count(o?.transactions?.count)} transactions.`} height={260} loading={loading} empty={!moneyDonut.some((d) => d.value)}>
-          <DonutChart data={moneyDonut} format="naira" centerValue={nairaCompact(o?.transactions?.volume)} centerLabel="moved" />
+        <ChartCard
+          title="Transaction mix"
+          subtitle={`Successful, by category. ${count(o?.transactions?.count)} transactions.`}
+          height={260}
+          loading={loading}
+          empty={!moneyDonut.some((d) => d.value)}
+        >
+          <DonutChart
+            data={moneyDonut}
+            format="naira"
+            centerValue={nairaCompact(o?.transactions?.volume)}
+            centerLabel="moved"
+          />
         </ChartCard>
-        <ChartCard title="New signups" subtitle={`Customers and riders per ${range.bucket}`} height={260} loading={seriesLoading} empty={!points.some((p) => p.newCustomers || p.newRiders)}>
+        <ChartCard
+          title="New signups"
+          subtitle={`Customers and riders per ${range.bucket}`}
+          height={260}
+          loading={seriesLoading}
+          empty={!points.some((p) => p.newCustomers || p.newRiders)}
+        >
           <BarsChart
             data={points as unknown as Record<string, unknown>[]}
             xKey="bucket"

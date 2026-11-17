@@ -1,14 +1,52 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Archive, ArrowUpRight, Eye, MousePointerClick, Pause, Pencil, Play, Plus, Sparkles, Trash2, Users } from "lucide-react";
+import {
+  Archive,
+  ArrowUpRight,
+  Eye,
+  MousePointerClick,
+  Pause,
+  Pencil,
+  Play,
+  Plus,
+  Sparkles,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Avatar, Badge, Button, ConfirmDialog, DataTable, Drawer, KeyValue, Pager, Skeleton, StatCard, cx, type ColumnMeta, type Tone } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  Button,
+  ConfirmDialog,
+  DataTable,
+  Drawer,
+  KeyValue,
+  Pager,
+  Skeleton,
+  StatCard,
+  cx,
+  type ColumnMeta,
+  type Tone,
+} from "@/components/kit";
 import { ScrollRow } from "@/components/kit/scroll-row";
-import { AnnouncementActionType, AnnouncementAudience, AnnouncementStatus, announcements, type Announcement } from "@/lib/admin/api";
+import {
+  AnnouncementActionType,
+  AnnouncementAudience,
+  AnnouncementStatus,
+  announcements,
+  type Announcement,
+} from "@/lib/admin/api";
 import { count, fullName, percent, when } from "@/lib/admin/format";
-import { useAction, useAnnouncement, useAnnouncementReceipts, useAnnouncements, useAnnouncementsSummary } from "@/lib/admin/hooks";
+import {
+  useAction,
+  useAnnouncement,
+  useAnnouncementReceipts,
+  useAnnouncements,
+  useAnnouncementsSummary,
+} from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 import { useCan } from "@/lib/admin/use-can";
@@ -83,19 +121,29 @@ const BASE_COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
   {
     id: "action",
     header: "Button",
-    meta: meta({ hideBelow: "lg", csv: { key: "action", label: "Button", value: (row) => (row as Announcement).action?.target ?? "" } }),
+    meta: meta({
+      hideBelow: "lg",
+      csv: { key: "action", label: "Button", value: (row) => (row as Announcement).action?.target ?? "" },
+    }),
     cell: ({ row }) => <ActionCell action={row.original.action} />,
   },
   {
     id: "reached",
     header: "Reached",
-    meta: meta({ align: "right", csv: { key: "reached", label: "Reached", value: (row) => (row as Announcement).stats?.reached ?? 0 } }),
+    meta: meta({
+      align: "right",
+      csv: { key: "reached", label: "Reached", value: (row) => (row as Announcement).stats?.reached ?? 0 },
+    }),
     cell: ({ row }) => <span className="text-sm font-semibold text-ink">{count(row.original.stats?.reached)}</span>,
   },
   {
     id: "acted",
     header: "Acted / got it",
-    meta: meta({ align: "right", hideBelow: "md", csv: { key: "acted", label: "Acted", value: (row) => (row as Announcement).stats?.acted ?? 0 } }),
+    meta: meta({
+      align: "right",
+      hideBelow: "md",
+      csv: { key: "acted", label: "Acted", value: (row) => (row as Announcement).stats?.acted ?? 0 },
+    }),
     cell: ({ row }) => (
       <span className="text-sm">
         <span className="font-semibold text-success">{count(row.original.stats?.acted)}</span>
@@ -107,7 +155,11 @@ const BASE_COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
   {
     id: "later",
     header: "Later",
-    meta: meta({ align: "right", hideBelow: "xl", csv: { key: "later", label: "Later", value: (row) => (row as Announcement).stats?.later ?? 0 } }),
+    meta: meta({
+      align: "right",
+      hideBelow: "xl",
+      csv: { key: "later", label: "Later", value: (row) => (row as Announcement).stats?.later ?? 0 },
+    }),
     cell: ({ row }) => <span className="text-sm text-ink-muted">{count(row.original.stats?.later)}</span>,
   },
   {
@@ -120,12 +172,20 @@ const BASE_COLUMNS: ColumnDef<AnnouncementRow, unknown>[] = [
     id: "publishedAt",
     header: "Live since",
     meta: meta({ hideBelow: "lg", csv: { key: "publishedAt", label: "Live since" } }),
-    cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink-muted">{row.original.publishedAt ? when(row.original.publishedAt) : "Not published"}</span>,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-sm text-ink-muted">
+        {row.original.publishedAt ? when(row.original.publishedAt) : "Not published"}
+      </span>
+    ),
   },
 ];
 
 /** Row-level edit so a slip in the copy is one click away, whatever the status. */
-function withEditColumn(columns: ColumnDef<AnnouncementRow, unknown>[], onEdit: (a: Announcement) => void, canManage: boolean) {
+function withEditColumn(
+  columns: ColumnDef<AnnouncementRow, unknown>[],
+  onEdit: (a: Announcement) => void,
+  canManage: boolean,
+) {
   if (!canManage) return columns;
   return [
     ...columns,
@@ -164,13 +224,22 @@ export function AnnouncementsTab() {
   const table = useTableState({ limit: 20 });
   const selectedId = table.state.filters.id ?? "";
   const status = table.state.filters.status ?? "";
-  const [composer, setComposer] = useState<{ open: boolean; editing: Announcement | null }>({ open: false, editing: null });
+  const [composer, setComposer] = useState<{ open: boolean; editing: Announcement | null }>({
+    open: false,
+    editing: null,
+  });
   const openEditor = (editing: Announcement | null) => setComposer({ open: true, editing });
   const columns = useMemo(() => withEditColumn(BASE_COLUMNS, openEditor, canManage), [canManage]);
 
   const query = useMemo(() => {
     const { page, limit } = table.query;
-    return { page, limit, status: status || undefined, audience: table.state.filters.audience || undefined, search: table.state.search || undefined };
+    return {
+      page,
+      limit,
+      status: status || undefined,
+      audience: table.state.filters.audience || undefined,
+      search: table.state.search || undefined,
+    };
   }, [table.query, status, table.state.filters.audience, table.state.search]);
   const list = useAnnouncements(query);
   const summary = useAnnouncementsSummary();
@@ -181,10 +250,34 @@ export function AnnouncementsTab() {
   return (
     <>
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Live now" value={summary.data ? count(summary.data.active) : ""} hint={summary.data ? `${count(summary.data.drafts)} drafts` : undefined} icon={Sparkles} loading={summary.isLoading} />
-        <StatCard label="People reached" value={summary.data ? count(summary.data.reached) : ""} hint="Across live announcements" icon={Users} loading={summary.isLoading} />
-        <StatCard label="Took the action" value={summary.data ? count(summary.data.acted) : ""} hint={summary.data ? `${count(summary.data.confirmed)} just closed it` : undefined} icon={MousePointerClick} loading={summary.isLoading} />
-        <StatCard label="Action rate" value={summary.data ? percent(summary.data.actionRate, 0) : ""} hint="Of everyone who closed one" icon={Eye} loading={summary.isLoading} />
+        <StatCard
+          label="Live now"
+          value={summary.data ? count(summary.data.active) : ""}
+          hint={summary.data ? `${count(summary.data.drafts)} drafts` : undefined}
+          icon={Sparkles}
+          loading={summary.isLoading}
+        />
+        <StatCard
+          label="People reached"
+          value={summary.data ? count(summary.data.reached) : ""}
+          hint="Across live announcements"
+          icon={Users}
+          loading={summary.isLoading}
+        />
+        <StatCard
+          label="Took the action"
+          value={summary.data ? count(summary.data.acted) : ""}
+          hint={summary.data ? `${count(summary.data.confirmed)} just closed it` : undefined}
+          icon={MousePointerClick}
+          loading={summary.isLoading}
+        />
+        <StatCard
+          label="Action rate"
+          value={summary.data ? percent(summary.data.actionRate, 0) : ""}
+          hint="Of everyone who closed one"
+          icon={Eye}
+          loading={summary.isLoading}
+        />
       </div>
 
       <DataTable<AnnouncementRow>
@@ -222,7 +315,9 @@ export function AnnouncementsTab() {
                     onClick={() => table.update({ status: chip.value || undefined })}
                     className={cx(
                       "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
-                      status === chip.value ? "border-transparent bg-ink text-card" : "border-line text-ink-muted hover:bg-surface",
+                      status === chip.value
+                        ? "border-transparent bg-ink text-card"
+                        : "border-line text-ink-muted hover:bg-surface",
                     )}
                   >
                     {chip.label}
@@ -230,7 +325,13 @@ export function AnnouncementsTab() {
                 ))}
               </div>
             </ScrollRow>
-            <Button icon={Plus} size="md" disabled={!canManage} onClick={() => openEditor(null)} className="w-full sm:w-auto">
+            <Button
+              icon={Plus}
+              size="md"
+              disabled={!canManage}
+              onClick={() => openEditor(null)}
+              className="w-full sm:w-auto"
+            >
               New announcement
             </Button>
           </div>
@@ -283,7 +384,13 @@ function AnnouncementDetailDrawer({
 
   const setStatus = useAction((status: AnnouncementStatus) => announcements.setStatus(id, status), {
     success: (saved, status) =>
-      saved.status === AnnouncementStatus.ACTIVE ? "Announcement is live" : saved.status === AnnouncementStatus.ARCHIVED ? "Archived" : status === AnnouncementStatus.DRAFT && isArchived ? "Restored as a draft" : "Paused. It no longer pops",
+      saved.status === AnnouncementStatus.ACTIVE
+        ? "Announcement is live"
+        : saved.status === AnnouncementStatus.ARCHIVED
+          ? "Archived"
+          : status === AnnouncementStatus.DRAFT && isArchived
+            ? "Restored as a draft"
+            : "Paused. It no longer pops",
     invalidate,
     onSuccess: () => setConfirm(null),
   });
@@ -306,7 +413,11 @@ function AnnouncementDetailDrawer({
       onClose={onClose}
       width="lg"
       title={a ? a.title : "Announcement"}
-      subtitle={a ? `${AUDIENCE_LABEL[a.audience]} · ${STATUS_LABEL[a.status]}${a.publishedAt ? ` · live since ${when(a.publishedAt)}` : ""}` : undefined}
+      subtitle={
+        a
+          ? `${AUDIENCE_LABEL[a.audience]} · ${STATUS_LABEL[a.status]}${a.publishedAt ? ` · live since ${when(a.publishedAt)}` : ""}`
+          : undefined
+      }
       footer={
         a && canManage ? (
           <div className="flex flex-wrap justify-end gap-2">
@@ -360,7 +471,13 @@ function AnnouncementDetailDrawer({
             <KeyValue
               items={[
                 { label: "Button", value: <ActionCell action={a.action} /> },
-                { label: "Window", value: a.startsAt || a.endsAt ? `${a.startsAt ? when(a.startsAt) : "now"} → ${a.endsAt ? when(a.endsAt) : "until archived"}` : "Always, while live" },
+                {
+                  label: "Window",
+                  value:
+                    a.startsAt || a.endsAt
+                      ? `${a.startsAt ? when(a.startsAt) : "now"} → ${a.endsAt ? when(a.endsAt) : "until archived"}`
+                      : "Always, while live",
+                },
                 { label: "Created", value: when(a.createdAt) },
                 { label: "Updated", value: when(a.updatedAt) },
               ]}
@@ -369,25 +486,34 @@ function AnnouncementDetailDrawer({
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-xs font-semibold text-ink-muted">Who saw it</p>
-                {receipts.data ? <span className="text-[11px] text-ink-faint">{count(receipts.data.total)} people</span> : null}
+                {receipts.data ? (
+                  <span className="text-[11px] text-ink-faint">{count(receipts.data.total)} people</span>
+                ) : null}
               </div>
               {receipts.isLoading ? (
                 <Skeleton className="h-24 w-full" />
               ) : !receipts.data?.items.length ? (
-                <p className="rounded-xl border border-dashed border-line p-4 text-center text-xs text-ink-faint">Nobody has been shown this yet.</p>
+                <p className="rounded-xl border border-dashed border-line p-4 text-center text-xs text-ink-faint">
+                  Nobody has been shown this yet.
+                </p>
               ) : (
                 <ul className="divide-y divide-line rounded-xl border border-line">
                   {receipts.data.items.map((r) => (
                     <li key={r._id} className="flex items-center gap-3 px-3 py-2">
                       <Avatar src={r.user?.photo} name={fullName(r.user)} size={30} />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold text-ink">{fullName(r.user) || r.userId}</span>
+                        <span className="block truncate text-sm font-semibold text-ink">
+                          {fullName(r.user) || r.userId}
+                        </span>
                         <span className="block truncate text-[11px] text-ink-muted">
-                          shown {count(r.impressions)}× · later {count(r.later)}× · last {r.lastSeenAt ? when(r.lastSeenAt) : "never"}
+                          shown {count(r.impressions)}× · later {count(r.later)}× · last{" "}
+                          {r.lastSeenAt ? when(r.lastSeenAt) : "never"}
                         </span>
                       </span>
                       {r.acknowledgedAt ? (
-                        <Badge tone={r.outcome === "ACTED" ? "success" : "neutral"}>{r.outcome === "ACTED" ? "Acted" : "Got it"}</Badge>
+                        <Badge tone={r.outcome === "ACTED" ? "success" : "neutral"}>
+                          {r.outcome === "ACTED" ? "Acted" : "Got it"}
+                        </Badge>
                       ) : (
                         <Badge tone="warning">Still popping</Badge>
                       )}
@@ -403,7 +529,14 @@ function AnnouncementDetailDrawer({
             </div>
           </div>
           <div>
-            <AnnouncementPreview emoji={a.emoji} title={a.title} body={a.body} imageUrl={a.imageUrl} audience={a.audience} action={a.action} />
+            <AnnouncementPreview
+              emoji={a.emoji}
+              title={a.title}
+              body={a.body}
+              imageUrl={a.imageUrl}
+              audience={a.audience}
+              action={a.action}
+            />
           </div>
         </div>
       )}
@@ -434,7 +567,11 @@ function AnnouncementDetailDrawer({
         onConfirm={() => setStatus.mutate(AnnouncementStatus.ACTIVE)}
         loading={setStatus.isPending}
         title="Publish this announcement?"
-        description={a ? `It pops for every ${AUDIENCE_LABEL[a.audience].toLowerCase()} the next time they open the app.` : undefined}
+        description={
+          a
+            ? `It pops for every ${AUDIENCE_LABEL[a.audience].toLowerCase()} the next time they open the app.`
+            : undefined
+        }
         confirmLabel="Publish"
       />
       <ConfirmDialog

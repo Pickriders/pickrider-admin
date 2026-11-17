@@ -6,7 +6,14 @@ import type { StateConfig } from "@/lib/admin/api";
  * so a state that never set them shows what is actually applied.
  */
 export type ReleaseKnobs = Required<
-  Pick<StateConfig, "releaseFreePerDay" | "releaseAlertWeekly" | "releasePauseWeekly" | "releaseDeprioritizeWeekly" | "releaseDeprioritizeDelaySec">
+  Pick<
+    StateConfig,
+    | "releaseFreePerDay"
+    | "releaseAlertWeekly"
+    | "releasePauseWeekly"
+    | "releaseDeprioritizeWeekly"
+    | "releaseDeprioritizeDelaySec"
+  >
 >;
 
 export function releaseKnobs(c: StateConfig): ReleaseKnobs {
@@ -26,8 +33,10 @@ export function releaseKnobErrors(c: ReleaseKnobs): string[] {
   if (!whole(c.releaseFreePerDay, 0, 10)) out.push("Free releases per day must be a whole number from 0 to 10.");
   if (!whole(c.releaseAlertWeekly, 1, 50)) out.push("Alert staff at must be a whole number from 1 to 50.");
   if (!whole(c.releasePauseWeekly, 1, 100)) out.push("Pause the rider at must be a whole number from 1 to 100.");
-  else if (c.releasePauseWeekly < c.releaseAlertWeekly) out.push("Pause the rider at the alert number or later, not before staff are alerted.");
+  else if (c.releasePauseWeekly < c.releaseAlertWeekly)
+    out.push("Pause the rider at the alert number or later, not before staff are alerted.");
   if (!whole(c.releaseDeprioritizeWeekly, 1, 50)) out.push("Ring later from must be a whole number from 1 to 50.");
-  if (!whole(c.releaseDeprioritizeDelaySec, 1, 300)) out.push("Ring them after must be a whole number of seconds from 1 to 300.");
+  if (!whole(c.releaseDeprioritizeDelaySec, 1, 300))
+    out.push("Ring them after must be a whole number of seconds from 1 to 300.");
   return out;
 }

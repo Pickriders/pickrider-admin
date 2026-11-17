@@ -43,10 +43,16 @@ export function DangerZone({ user, listHref, kind }: { user: User; listHref: str
           <div className="text-sm">
             <p className="font-bold text-ink">Erase account</p>
             <p className="text-ink-muted">
-              Deletes the {kind}&apos;s record and personal data. Orders, payments and wallet history stay for the books, pointing at an anonymous tombstone.
+              Deletes the {kind}&apos;s record and personal data. Orders, payments and wallet history stay for the
+              books, pointing at an anonymous tombstone.
             </p>
           </div>
-          <Button variant="outline" icon={Trash2} className="shrink-0 border-danger/40 text-danger hover:bg-danger-soft" onClick={() => setOpen(true)}>
+          <Button
+            variant="outline"
+            icon={Trash2}
+            className="shrink-0 border-danger/40 text-danger hover:bg-danger-soft"
+            onClick={() => setOpen(true)}
+          >
             Erase account
           </Button>
         </div>
@@ -59,7 +65,11 @@ export function DangerZone({ user, listHref, kind }: { user: User; listHref: str
 function ChecklistLine({ check }: { check: ErasureCheck }) {
   return (
     <li className="flex items-start gap-2.5 py-2">
-      {check.ok ? <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-success" /> : <CircleX size={16} className="mt-0.5 shrink-0 text-danger" />}
+      {check.ok ? (
+        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-success" />
+      ) : (
+        <CircleX size={16} className="mt-0.5 shrink-0 text-danger" />
+      )}
       <div className="min-w-0 text-sm">
         <p className={cx("font-semibold", check.ok ? "text-ink" : "text-danger")}>{check.label}</p>
         {check.detail ? <p className="text-xs text-ink-muted">{check.detail}</p> : null}
@@ -68,7 +78,19 @@ function ChecklistLine({ check }: { check: ErasureCheck }) {
   );
 }
 
-export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: User; open: boolean; onClose: () => void; listHref: string; kind: "customer" | "courier" }) {
+export function EraseDrawer({
+  user,
+  open,
+  onClose,
+  listHref,
+  kind,
+}: {
+  user: User;
+  open: boolean;
+  onClose: () => void;
+  listHref: string;
+  kind: "customer" | "courier";
+}) {
   const router = useRouter();
   const client = useQueryClient();
   const blockers = useErasureBlockers(user._id, open);
@@ -133,7 +155,13 @@ export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: Use
             <Button variant="ghost" onClick={onClose} disabled={erase.isPending}>
               Cancel
             </Button>
-            <Button variant="danger" icon={UserRoundX} loading={erase.isPending} disabled={!ready} onClick={() => erase.mutate()}>
+            <Button
+              variant="danger"
+              icon={UserRoundX}
+              loading={erase.isPending}
+              disabled={!ready}
+              onClick={() => erase.mutate()}
+            >
               Erase account
             </Button>
           </div>
@@ -147,7 +175,8 @@ export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: Use
             <div>
               <p className="font-bold text-ink">{done.message}</p>
               <p className="text-ink-muted">
-                Records that referred to this account now point at tombstone <span className="font-mono text-xs">{done.tombstoneId}</span> and read &quot;Erased user&quot;.
+                Records that referred to this account now point at tombstone{" "}
+                <span className="font-mono text-xs">{done.tombstoneId}</span> and read &quot;Erased user&quot;.
               </p>
             </div>
           </div>
@@ -170,7 +199,8 @@ export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: Use
           <div className="flex items-start gap-3 rounded-xl border border-danger/40 bg-danger-soft px-4 py-3 text-sm">
             <AlertTriangle size={18} className="mt-0.5 shrink-0 text-danger" />
             <p className="text-ink">
-              The person is emailed that their account was erased, their sign-in stops working at once, and the same email or phone cannot open a new account for 30 days.
+              The person is emailed that their account was erased, their sign-in stops working at once, and the same
+              email or phone cannot open a new account for 30 days.
             </p>
           </div>
 
@@ -183,7 +213,9 @@ export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: Use
                 ))}
               </div>
             ) : blockers.isError ? (
-              <p className="text-sm font-semibold text-danger">{errorMessage(blockers.error, "Could not check this account.")}</p>
+              <p className="text-sm font-semibold text-danger">
+                {errorMessage(blockers.error, "Could not check this account.")}
+              </p>
             ) : (
               <ul className="divide-y divide-line rounded-xl border border-line px-3">
                 {checklist.map((check) => (
@@ -191,21 +223,42 @@ export function EraseDrawer({ user, open, onClose, listHref, kind }: { user: Use
                 ))}
               </ul>
             )}
-            {blockers.data && !canErase ? <p className="mt-2 text-xs font-semibold text-danger">Resolve the items marked above, then try again.</p> : null}
+            {blockers.data && !canErase ? (
+              <p className="mt-2 text-xs font-semibold text-danger">Resolve the items marked above, then try again.</p>
+            ) : null}
           </div>
 
           {canErase ? (
             <>
-              <Field label={`Type the ${target?.label ?? "identifier"} to confirm`} hint={target ? `${target.value}` : "This account has no phone or email on record."}>
-                <Input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={target?.value} autoComplete="off" disabled={!target} />
+              <Field
+                label={`Type the ${target?.label ?? "identifier"} to confirm`}
+                hint={target ? `${target.value}` : "This account has no phone or email on record."}
+              >
+                <Input
+                  value={typed}
+                  onChange={(e) => setTyped(e.target.value)}
+                  placeholder={target?.value}
+                  autoComplete="off"
+                  disabled={!target}
+                />
               </Field>
               <Field label="Reason" hint="Kept on the tombstone and the audit trail. 3 to 280 characters.">
-                <Input value={reason} onChange={(e) => setReason(e.target.value.slice(0, 280))} placeholder="e.g. Data deletion request from the person" />
+                <Input
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value.slice(0, 280))}
+                  placeholder="e.g. Data deletion request from the person"
+                />
               </Field>
               <Field label="Internal note" hint="Optional, for the audit trail only.">
-                <Textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 1000))} placeholder="Ticket number, who asked, anything the next admin should know" />
+                <Textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value.slice(0, 1000))}
+                  placeholder="Ticket number, who asked, anything the next admin should know"
+                />
               </Field>
-              <p className="text-xs text-ink-faint">You will be asked for a code from your authenticator app before this goes through.</p>
+              <p className="text-xs text-ink-faint">
+                You will be asked for a code from your authenticator app before this goes through.
+              </p>
             </>
           ) : null}
         </div>

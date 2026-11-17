@@ -5,48 +5,19 @@ import Link from "next/link";
 import * as React from "react";
 
 import { ACCOUNT_LINKS } from "../Header/UserMenu";
-import { useQueryModal } from "@/hooks";
+import { useSetQueryParam } from "@/hooks";
 import { useMe } from "@/lib/admin/hooks";
 import { formatEmail, formatPersonName } from "@/lib/admin/person";
 import { staffRoleLabel } from "@/lib/admin/roles";
 import { cn } from "@/lib/utils";
 
-type SidebarAccountProps = { collapsed?: boolean; onNavigate?: () => void };
-
 /**
  * Who is signed in, pinned to the bottom of the sidebar (and the mobile drawer), like the
  * storefront admin: avatar, name and role open the account shortcuts; the icon logs out.
  * Folds to the avatar and the icon on the collapsed rail.
- *
- * Logging out goes through the `?logout=true` query param, and reading the URL's search params
- * needs a Suspense boundary or `next build` cannot prerender any page under the dashboard
- * layout. The boundary lives here so every place that mounts the card gets it; the fallback
- * draws the same frame, so nothing shifts when the real card takes over.
  */
-export const SidebarAccount = (props: SidebarAccountProps) => (
-  <React.Suspense fallback={<AccountFrame collapsed={props.collapsed} />}>
-    <SidebarAccountCard {...props} />
-  </React.Suspense>
-);
-
-const AccountFrame = ({ collapsed = false, children }: { collapsed?: boolean; children?: React.ReactNode }) => (
-  <div className="shrink-0 border-t border-line p-2.5">
-    <div className={cn("flex items-center", collapsed ? "flex-col gap-2" : "gap-1.5")}>
-      {children ?? (
-        <>
-          <div className={cn("flex items-center", collapsed ? "justify-center p-1" : "flex-1 gap-3 p-1.5")}>
-            <span className="size-9 shrink-0 rounded-full bg-ink/10" aria-hidden />
-            {!collapsed ? <span className="h-3 w-24 rounded bg-ink/10" aria-hidden /> : null}
-          </div>
-          <span className="size-9 shrink-0" aria-hidden />
-        </>
-      )}
-    </div>
-  </div>
-);
-
-const SidebarAccountCard = ({ collapsed = false, onNavigate }: SidebarAccountProps) => {
-  const { setParam } = useQueryModal();
+export const SidebarAccount = ({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) => {
+  const setParam = useSetQueryParam();
   const { data, isLoading } = useMe();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -76,83 +47,85 @@ const SidebarAccountCard = ({ collapsed = false, onNavigate }: SidebarAccountPro
   };
 
   return (
-    <AccountFrame collapsed={collapsed}>
-      <div ref={ref} className={cn("relative min-w-0", !collapsed && "flex-1")}>
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          aria-haspopup="menu"
-          aria-expanded={open}
-          title={collapsed ? fullName : undefined}
-          aria-label={collapsed ? `Account: ${fullName}` : undefined}
-          className={cn(
-            "flex w-full min-w-0 items-center rounded-xl text-left transition-colors hover:bg-surface",
-            collapsed ? "justify-center p-1" : "gap-3 p-1.5",
-          )}
-        >
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-sm font-semibold uppercase text-card">
-            {isLoading ? "" : initials}
-          </span>
-          {!collapsed ? (
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="block truncate text-sm font-bold text-ink">{isLoading ? "Loading" : fullName}</span>
-              <span className="block truncate text-[11px] text-ink-faint">{role ?? formatEmail(data?.email)}</span>
-            </span>
-          ) : null}
-        </button>
-
-        {open ? (
-          <div
-            role="menu"
+    <div className="shrink-0 border-t border-line p-2.5">
+      <div className={cn("flex items-center", collapsed ? "flex-col gap-2" : "gap-1.5")}>
+        <div ref={ref} className={cn("relative min-w-0", !collapsed && "flex-1")}>
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            title={collapsed ? fullName : undefined}
+            aria-label={collapsed ? `Account: ${fullName}` : undefined}
             className={cn(
-              "absolute bottom-full z-40 mb-2 overflow-hidden rounded-xl border border-line bg-card p-1 shadow-card",
-              collapsed ? "left-0 w-52" : "inset-x-0",
+              "flex w-full min-w-0 items-center rounded-xl text-left transition-colors hover:bg-surface",
+              collapsed ? "justify-center p-1" : "gap-3 p-1.5",
             )}
           >
-            <div className="px-2.5 pb-2 pt-1.5">
-              <p className="truncate text-sm font-semibold text-ink">{fullName}</p>
-              <p className="truncate text-xs text-ink-muted">{formatEmail(data?.email)}</p>
-            </div>
-            <div className="my-1 h-px bg-line" />
-            {ACCOUNT_LINKS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  role="menuitem"
-                  onClick={() => {
-                    setOpen(false);
-                    onNavigate?.();
-                  }}
-                  className="flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-ink hover:bg-surface"
-                >
-                  <Icon size={15} className="text-ink-muted" />
-                  {item.label}
-                </Link>
-              );
-            })}
-            <button
-              type="button"
-              role="menuitem"
-              onClick={logout}
-              className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-danger hover:bg-danger-soft"
-            >
-              <LogOut size={15} /> Log out
-            </button>
-          </div>
-        ) : null}
-      </div>
+            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-sm font-semibold uppercase text-card">
+              {isLoading ? "" : initials}
+            </span>
+            {!collapsed ? (
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block truncate text-sm font-bold text-ink">{isLoading ? "Loading" : fullName}</span>
+                <span className="block truncate text-[11px] text-ink-faint">{role ?? formatEmail(data?.email)}</span>
+              </span>
+            ) : null}
+          </button>
 
-      <button
-        type="button"
-        onClick={logout}
-        title="Log out"
-        aria-label="Log out"
-        className="grid size-9 shrink-0 place-items-center rounded-xl text-ink-faint transition-colors hover:bg-danger-soft hover:text-danger"
-      >
-        <LogOut size={17} />
-      </button>
-    </AccountFrame>
+          {open ? (
+            <div
+              role="menu"
+              className={cn(
+                "absolute bottom-full z-40 mb-2 overflow-hidden rounded-xl border border-line bg-card p-1 shadow-card",
+                collapsed ? "left-0 w-52" : "inset-x-0",
+              )}
+            >
+              <div className="px-2.5 pb-2 pt-1.5">
+                <p className="truncate text-sm font-semibold text-ink">{fullName}</p>
+                <p className="truncate text-xs text-ink-muted">{formatEmail(data?.email)}</p>
+              </div>
+              <div className="my-1 h-px bg-line" />
+              {ACCOUNT_LINKS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    role="menuitem"
+                    onClick={() => {
+                      setOpen(false);
+                      onNavigate?.();
+                    }}
+                    className="flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-ink hover:bg-surface"
+                  >
+                    <Icon size={15} className="text-ink-muted" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={logout}
+                className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-danger hover:bg-danger-soft"
+              >
+                <LogOut size={15} /> Log out
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        <button
+          type="button"
+          onClick={logout}
+          title="Log out"
+          aria-label="Log out"
+          className="grid size-9 shrink-0 place-items-center rounded-xl text-ink-faint transition-colors hover:bg-danger-soft hover:text-danger"
+        >
+          <LogOut size={17} />
+        </button>
+      </div>
+    </div>
   );
 };

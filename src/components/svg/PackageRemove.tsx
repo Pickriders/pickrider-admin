@@ -1,12 +1,6 @@
 export const PackageRemove = () => {
   return (
-    <svg
-      width="25"
-      height="24"
-      viewBox="0 0 25 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M11.9854 22C11.1672 22 10.3855 21.6698 8.82228 21.0095C4.93099 19.3657 2.98535 18.5438 2.98535 17.1613C2.98535 16.7742 2.98535 10.0645 2.98535 7M11.9854 22V11.3548M11.9854 22C12.6021 22 13.1054 21.8124 13.9854 21.4372M20.9854 7V12"
         stroke="white"
@@ -27,20 +21,8 @@ export const PackageRemove = () => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M5.98535 12L7.98535 13"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M16.9854 4L6.98535 9"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M5.98535 12L7.98535 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16.9854 4L6.98535 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-}
+};

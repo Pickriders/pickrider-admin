@@ -27,7 +27,13 @@ export default function RootLayout({
     >
       <head>
         {/* The default interface font is self-hosted (globals.css); preload its latin file. */}
-        <link rel="preload" href="/assets/fonts/urbanist/urbanist-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href="/assets/fonts/urbanist/urbanist-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {/* Storefront-matched selectable fonts for the header font switcher. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

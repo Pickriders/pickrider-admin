@@ -22,7 +22,12 @@ export function QrCode({ value, className, label = "QR code" }: { value: string;
   }, [value]);
   if (!encoded) {
     return (
-      <div className={cx("grid aspect-square place-items-center rounded-2xl border border-dashed border-line bg-surface p-4 text-center text-xs text-ink-muted", className)}>
+      <div
+        className={cx(
+          "grid aspect-square place-items-center rounded-2xl border border-dashed border-line bg-surface p-4 text-center text-xs text-ink-muted",
+          className,
+        )}
+      >
         This code is too long to draw. Enter the key manually.
       </div>
     );

@@ -1,21 +1,40 @@
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from "axios";
 
-import { isLoginLocked, isSessionRevoked, isStepUpRequired, lockoutSecondsLeft, loginErrorMessage, mfaErrorMessage, waitLabel } from "./auth-errors";
+import {
+  isLoginLocked,
+  isSessionRevoked,
+  isStepUpRequired,
+  lockoutSecondsLeft,
+  loginErrorMessage,
+  mfaErrorMessage,
+  waitLabel,
+} from "./auth-errors";
 
 function apiError(status: number, body: Record<string, unknown>) {
   const config = { headers: new AxiosHeaders() } as InternalAxiosRequestConfig;
-  return new AxiosError("Request failed", String(status), config, {}, { status, statusText: "", headers: {}, config, data: body });
+  return new AxiosError(
+    "Request failed",
+    String(status),
+    config,
+    {},
+    { status, statusText: "", headers: {}, config, data: body },
+  );
 }
 
 describe("auth error copy", () => {
   it("says the same thing for an unknown email, a wrong password and a non-staff account", () => {
-    expect(loginErrorMessage(apiError(400, { message: "Wrong email or password", code: "BAD_REQUEST" }))).toBe("Wrong email or password.");
+    expect(loginErrorMessage(apiError(400, { message: "Wrong email or password", code: "BAD_REQUEST" }))).toBe(
+      "Wrong email or password.",
+    );
     expect(loginErrorMessage(apiError(401, { message: "Unauthorized" }))).toBe("Wrong email or password.");
   });
 
   it("shows the server's wait on a lockout, whether it came as 429 or 423", () => {
     const now = Date.now();
-    const locked = apiError(429, { code: "LOGIN_LOCKED", details: { retryAfterSeconds: 120, lockedUntil: new Date(now + 120_000).toISOString() } });
+    const locked = apiError(429, {
+      code: "LOGIN_LOCKED",
+      details: { retryAfterSeconds: 120, lockedUntil: new Date(now + 120_000).toISOString() },
+    });
     expect(isLoginLocked(locked)).toBe(true);
     expect(loginErrorMessage(locked)).toMatch(/^Too many attempts\. Try again in 2 minutes\.$/);
     const legacy = apiError(423, { code: "LOGIN_LOCKED", details: { retryAfterSeconds: 45 } });
@@ -31,7 +50,11 @@ describe("auth error copy", () => {
   it("recognises the session and step-up codes", () => {
     expect(isSessionRevoked(apiError(401, { code: "SESSION_REVOKED" }))).toBe(true);
     expect(isSessionRevoked(apiError(401, { code: "UNAUTHORIZED" }))).toBe(false);
-    expect(isStepUpRequired(apiError(428, { code: "MFA_STEP_UP_REQUIRED", details: { mfaEnabled: true, header: "X-MFA-Code" } }))).toBe(true);
+    expect(
+      isStepUpRequired(
+        apiError(428, { code: "MFA_STEP_UP_REQUIRED", details: { mfaEnabled: true, header: "X-MFA-Code" } }),
+      ),
+    ).toBe(true);
     expect(isStepUpRequired(apiError(400, { code: "MFA_CODE_INVALID" }))).toBe(false);
   });
 

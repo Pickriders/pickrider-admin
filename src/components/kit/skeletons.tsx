@@ -12,16 +12,7 @@ import { Panel, Skeleton, cx } from "@/components/kit/primitives";
 
 /** What a column's cells look like, so its skeleton has the same height and shape. */
 export type CellSkeleton =
-  | "line"
-  | "lines"
-  | "order"
-  | "stat"
-  | "person"
-  | "profile"
-  | "badge"
-  | "pill"
-  | "button"
-  | "none";
+  "line" | "lines" | "order" | "stat" | "person" | "profile" | "badge" | "pill" | "button" | "none";
 
 export const HIDE_BELOW = {
   sm: "hidden sm:table-cell",

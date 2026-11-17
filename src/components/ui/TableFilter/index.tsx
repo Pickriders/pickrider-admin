@@ -3,14 +3,7 @@
 import { SVG } from "@/components/svg";
 import { Popover, PopoverContent, PopoverTrigger } from "../Popup";
 import { Checkbox } from "../Checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../Select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../Select";
 import { Button } from "../Button";
 import React from "react";
 
@@ -23,26 +16,18 @@ export const TableFilter = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent sideOffset={10} className="mr-2 sm:mr-10 p-0 w-[92vw] sm:w-[19rem] max-w-[19rem]">
-        <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">
-          Filter Customers
-        </h4>
+        <h4 className="text-sm font-clash-display font-semibold py-3 border-b px-3">Filter Customers</h4>
         <div className="py-4 px-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-2">
               <Checkbox id="have balance" />{" "}
-              <label
-                htmlFor="have balance"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="have balance" className="text-primary-gray text-xs font-montserrat font-semibold">
                 Have Balance
               </label>
             </div>
             <div className="flex items-center gap-x-2">
               <Checkbox id="KYC Verified" />{" "}
-              <label
-                htmlFor="KYC Verified"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="KYC Verified" className="text-primary-gray text-xs font-montserrat font-semibold">
                 KYC Verified
               </label>
             </div>
@@ -50,10 +35,7 @@ export const TableFilter = () => {
 
           <div className="mt-4 flex items-center justify-between">
             <div>
-              <label
-                htmlFor="TYPE"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="TYPE" className="text-primary-gray text-xs font-montserrat font-semibold">
                 TYPE
               </label>
               <Select defaultValue="all">
@@ -70,10 +52,7 @@ export const TableFilter = () => {
               </Select>
             </div>
             <div>
-              <label
-                htmlFor="STATUS"
-                className="text-primary-gray text-xs font-montserrat font-semibold"
-              >
+              <label htmlFor="STATUS" className="text-primary-gray text-xs font-montserrat font-semibold">
                 STATUS
               </label>
               <Select defaultValue="all">

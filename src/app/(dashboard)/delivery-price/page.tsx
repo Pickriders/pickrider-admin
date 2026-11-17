@@ -3,7 +3,27 @@
 import { Bike, Calculator, Fuel, MapPin, Share2 } from "lucide-react";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
-import { BarsChart, Button, ChartCard, EmptyState, Field, Input, KeyValue, PageHeader, Panel, PanelHeader, RangeTabs, Skeleton, StatCard, StatGrid, TableScroll, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
+import {
+  BarsChart,
+  Button,
+  ChartCard,
+  EmptyState,
+  Field,
+  Input,
+  KeyValue,
+  PageHeader,
+  Panel,
+  PanelHeader,
+  RangeTabs,
+  Skeleton,
+  StatCard,
+  StatGrid,
+  TableScroll,
+  TrendChart,
+  presetRange,
+  rangeToQuery,
+  type RangeValue,
+} from "@/components/kit";
 import { deliveryPrice } from "@/lib/admin/api";
 import { count, percent } from "@/lib/admin/format";
 import { useAction, useDeliveryPriceAnalytics, useDeliveryPriceConfig } from "@/lib/admin/hooks";
@@ -82,14 +102,19 @@ function DeliveryPriceView() {
   const feedback = data?.feedback;
   const feedbackTotal = feedback?.total ?? 0;
 
-  const perDay = useMemo(() => (quotes?.perDay ?? []).map((d) => ({ date: d.date, count: d.count, fuel: d.fuel })), [quotes?.perDay]);
+  const perDay = useMemo(
+    () => (quotes?.perDay ?? []).map((d) => ({ date: d.date, count: d.count, fuel: d.fuel })),
+    [quotes?.perDay],
+  );
   const fuelTrend = useMemo(() => perDay.filter((d) => d.fuel > 0), [perDay]);
-  const xf = (value: string) => new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "Africa/Lagos" });
+  const xf = (value: string) =>
+    new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "Africa/Lagos" });
 
   const bandRows = useMemo(() => {
     if (!feedback) return [];
     return BANDS.map((band) => {
-      const get = (verdict: string) => feedback.byBand.find((r) => r._id.band === band && r._id.verdict === verdict)?.count ?? 0;
+      const get = (verdict: string) =>
+        feedback.byBand.find((r) => r._id.band === band && r._id.verdict === verdict)?.count ?? 0;
       const low = get("too_low");
       const fair = get("fair");
       const high = get("too_high");
@@ -102,7 +127,8 @@ function DeliveryPriceView() {
   const segmentRows = useMemo(() => {
     if (!feedback) return [];
     return SEGMENTS.map(({ key, label }) => {
-      const get = (verdict: string) => feedback.bySegment.find((r) => r._id.segment === key && r._id.verdict === verdict)?.count ?? 0;
+      const get = (verdict: string) =>
+        feedback.bySegment.find((r) => r._id.segment === key && r._id.verdict === verdict)?.count ?? 0;
       const low = get("too_low");
       const fair = get("fair");
       const high = get("too_high");
@@ -119,35 +145,99 @@ function DeliveryPriceView() {
       />
 
       <StatGrid columns={4}>
-        <StatCard tone="brand" label="Quotes fetched" value={count(quotes?.total)} hint={`Average ${quotes?.avgDistanceKm ?? 0} km per quote`} icon={Calculator} loading={loading} />
-        <StatCard label="Average price" value={nairaWhole(quotes?.avgPrice)} hint={`Fuel now ${nairaWhole(data?.currentFuelPrice)} per litre`} icon={Fuel} loading={loading} />
-        <StatCard label="Shared / booked" value={`${engagement?.shareRate ?? 0}% / ${engagement?.bookRate ?? 0}%`} hint={`${count(engagement?.share)} shares, ${count(engagement?.copy)} copies, ${count(engagement?.book)} bookings`} icon={Share2} loading={loading} />
-        <StatCard label="Batch usage" value={percent(quotes?.batchRate, 0)} hint="Quotes with more than one drop-off" icon={Bike} loading={loading} />
+        <StatCard
+          tone="brand"
+          label="Quotes fetched"
+          value={count(quotes?.total)}
+          hint={`Average ${quotes?.avgDistanceKm ?? 0} km per quote`}
+          icon={Calculator}
+          loading={loading}
+        />
+        <StatCard
+          label="Average price"
+          value={nairaWhole(quotes?.avgPrice)}
+          hint={`Fuel now ${nairaWhole(data?.currentFuelPrice)} per litre`}
+          icon={Fuel}
+          loading={loading}
+        />
+        <StatCard
+          label="Shared / booked"
+          value={`${engagement?.shareRate ?? 0}% / ${engagement?.bookRate ?? 0}%`}
+          hint={`${count(engagement?.share)} shares, ${count(engagement?.copy)} copies, ${count(engagement?.book)} bookings`}
+          icon={Share2}
+          loading={loading}
+        />
+        <StatCard
+          label="Batch usage"
+          value={percent(quotes?.batchRate, 0)}
+          hint="Quotes with more than one drop-off"
+          icon={Bike}
+          loading={loading}
+        />
       </StatGrid>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <ChartCard title="Quotes per day" subtitle="Are people using it?" height={260} loading={loading} empty={!perDay.some((d) => d.count)}>
-            <TrendChart data={perDay} xKey="date" xFormat={xf} kind="area" series={[{ key: "count", label: "Quotes", format: "count" }]} />
+          <ChartCard
+            title="Quotes per day"
+            subtitle="Are people using it?"
+            height={260}
+            loading={loading}
+            empty={!perDay.some((d) => d.count)}
+          >
+            <TrendChart
+              data={perDay}
+              xKey="date"
+              xFormat={xf}
+              kind="area"
+              series={[{ key: "count", label: "Quotes", format: "count" }]}
+            />
           </ChartCard>
         </div>
-        <ChartCard title="Distance bands" subtitle="How far people send" height={260} loading={loading} empty={!quotes?.distanceBands?.length}>
-          <BarsChart data={(quotes?.distanceBands ?? []).map((b) => ({ band: `${b.band} km`, count: b.count }))} xKey="band" series={[{ key: "count", label: "Quotes", format: "count", color: "hsl(var(--chart-2))" }]} />
+        <ChartCard
+          title="Distance bands"
+          subtitle="How far people send"
+          height={260}
+          loading={loading}
+          empty={!quotes?.distanceBands?.length}
+        >
+          <BarsChart
+            data={(quotes?.distanceBands ?? []).map((b) => ({ band: `${b.band} km`, count: b.count }))}
+            xKey="band"
+            series={[{ key: "count", label: "Quotes", format: "count", color: "hsl(var(--chart-2))" }]}
+          />
         </ChartCard>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <AreaPanel title="Top pickup areas" subtitle="Where demand starts" rows={quotes?.topPickups} loading={loading} />
-        <AreaPanel title="Top delivery areas" subtitle="Where parcels go" rows={quotes?.topDropoffs} loading={loading} />
+        <AreaPanel
+          title="Top pickup areas"
+          subtitle="Where demand starts"
+          rows={quotes?.topPickups}
+          loading={loading}
+        />
+        <AreaPanel
+          title="Top delivery areas"
+          subtitle="Where parcels go"
+          rows={quotes?.topDropoffs}
+          loading={loading}
+        />
       </div>
 
       <Panel>
-        <PanelHeader title="Is the price fair?" subtitle={`${count(feedbackTotal)} responses. A read-only signal, it never changes pricing on its own.`} />
+        <PanelHeader
+          title="Is the price fair?"
+          subtitle={`${count(feedbackTotal)} responses. A read-only signal, it never changes pricing on its own.`}
+        />
         <div className="p-5 pt-3">
           {loading ? (
             <Skeleton className="h-40 w-full" />
           ) : !feedbackTotal || !feedback ? (
-            <EmptyState compact title="No feedback yet" description="Verdicts appear here once people rate a quote on the website." />
+            <EmptyState
+              compact
+              title="No feedback yet"
+              description="Verdicts appear here once people rate a quote on the website."
+            />
           ) : (
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-3">
@@ -159,21 +249,41 @@ function DeliveryPriceView() {
               <FairnessTable
                 caption="By distance"
                 head={["Distance", "Too low", "Fair", "Too high", "Median suggested"]}
-                rows={bandRows.map((r) => [`${r.band} km`, `${share(r.low, r.total)}%`, `${share(r.fair, r.total)}%`, `${share(r.high, r.total)}%`, r.median ? nairaWhole(r.median) : "n/a"])}
+                rows={bandRows.map((r) => [
+                  `${r.band} km`,
+                  `${share(r.low, r.total)}%`,
+                  `${share(r.fair, r.total)}%`,
+                  `${share(r.high, r.total)}%`,
+                  r.median ? nairaWhole(r.median) : "n/a",
+                ])}
               />
               {segmentRows.length ? (
                 <FairnessTable
                   caption="By who is asking"
                   head={["Segment", "Too low", "Fair", "Too high", "Votes"]}
-                  rows={segmentRows.map((r) => [r.label, `${share(r.low, r.total)}%`, `${share(r.fair, r.total)}%`, `${share(r.high, r.total)}%`, count(r.total)])}
+                  rows={segmentRows.map((r) => [
+                    r.label,
+                    `${share(r.low, r.total)}%`,
+                    `${share(r.fair, r.total)}%`,
+                    `${share(r.high, r.total)}%`,
+                    count(r.total),
+                  ])}
                 />
               ) : null}
 
               {fuelTrend.length > 1 ? (
                 <div>
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">Fuel price over time (naira per litre)</p>
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint">
+                    Fuel price over time (naira per litre)
+                  </p>
                   <div className="h-44">
-                    <TrendChart data={fuelTrend} xKey="date" xFormat={xf} kind="line" series={[{ key: "fuel", label: "Fuel", format: "count", color: "hsl(var(--chart-3))" }]} />
+                    <TrendChart
+                      data={fuelTrend}
+                      xKey="date"
+                      xFormat={xf}
+                      kind="line"
+                      series={[{ key: "fuel", label: "Fuel", format: "count", color: "hsl(var(--chart-3))" }]}
+                    />
                   </div>
                 </div>
               ) : null}
@@ -187,7 +297,17 @@ function DeliveryPriceView() {
   );
 }
 
-function AreaPanel({ title, subtitle, rows, loading }: { title: string; subtitle: string; rows?: { area: string; count: number }[]; loading: boolean }) {
+function AreaPanel({
+  title,
+  subtitle,
+  rows,
+  loading,
+}: {
+  title: string;
+  subtitle: string;
+  rows?: { area: string; count: number }[];
+  loading: boolean;
+}) {
   const max = Math.max(1, ...(rows ?? []).map((r) => r.count));
   return (
     <Panel>
@@ -234,7 +354,10 @@ function FairnessTable({ caption, head, rows }: { caption: string; head: string[
           <thead>
             <tr>
               {head.map((h, i) => (
-                <th key={h} className={`border-b border-line py-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint ${i ? "text-right" : ""}`}>
+                <th
+                  key={h}
+                  className={`border-b border-line py-2 text-[11px] font-bold uppercase tracking-wide text-ink-faint ${i ? "text-right" : ""}`}
+                >
                   {h}
                 </th>
               ))}
@@ -244,7 +367,10 @@ function FairnessTable({ caption, head, rows }: { caption: string; head: string[
             {rows.map((row) => (
               <tr key={row[0]} className="border-b border-line last:border-0">
                 {row.map((cell, i) => (
-                  <td key={i} className={`py-2 text-ink ${i ? "text-right" : "font-semibold"} ${i === row.length - 1 ? "font-semibold" : ""}`}>
+                  <td
+                    key={i}
+                    className={`py-2 text-ink ${i ? "text-right" : "font-semibold"} ${i === row.length - 1 ? "font-semibold" : ""}`}
+                  >
                     {cell}
                   </td>
                 ))}
@@ -260,11 +386,17 @@ function FairnessTable({ caption, head, rows }: { caption: string; head: string[
 function SettingsPanel() {
   const config = useDeliveryPriceConfig();
   const data = config.data as CalcConfig | undefined;
-  const [form, setForm] = useState<{ maxExtraStops: string; staleDays: string; batchDiscountPercent: string } | null>(null);
+  const [form, setForm] = useState<{ maxExtraStops: string; staleDays: string; batchDiscountPercent: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (data && !form) {
-      setForm({ maxExtraStops: String(data.maxExtraStops ?? 3), staleDays: String(data.staleDays ?? 7), batchDiscountPercent: String(data.batchDiscountPercent ?? 0) });
+      setForm({
+        maxExtraStops: String(data.maxExtraStops ?? 3),
+        staleDays: String(data.staleDays ?? 7),
+        batchDiscountPercent: String(data.batchDiscountPercent ?? 0),
+      });
     }
   }, [data, form]);
 
@@ -274,7 +406,11 @@ function SettingsPanel() {
   });
 
   const dirty =
-    !!form && !!data && (Number(form.maxExtraStops) !== data.maxExtraStops || Number(form.staleDays) !== data.staleDays || Number(form.batchDiscountPercent) !== data.batchDiscountPercent);
+    !!form &&
+    !!data &&
+    (Number(form.maxExtraStops) !== data.maxExtraStops ||
+      Number(form.staleDays) !== data.staleDays ||
+      Number(form.batchDiscountPercent) !== data.batchDiscountPercent);
 
   return (
     <Panel>
@@ -309,20 +445,39 @@ function SettingsPanel() {
         ) : (
           <>
             <Field label="Max extra stops" hint="Drop-offs allowed beyond the first (0 to 10)">
-              <Input type="number" min={0} max={10} value={form.maxExtraStops} onChange={(e) => setForm({ ...form, maxExtraStops: e.target.value })} />
+              <Input
+                type="number"
+                min={0}
+                max={10}
+                value={form.maxExtraStops}
+                onChange={(e) => setForm({ ...form, maxExtraStops: e.target.value })}
+              />
             </Field>
             <Field label="Quote stale after (days)" hint="Older shared quotes show a refresh banner">
-              <Input type="number" min={1} value={form.staleDays} onChange={(e) => setForm({ ...form, staleDays: e.target.value })} />
+              <Input
+                type="number"
+                min={1}
+                value={form.staleDays}
+                onChange={(e) => setForm({ ...form, staleDays: e.target.value })}
+              />
             </Field>
             <Field label="Batch discount (%)" hint="Extra taken off multi-stop totals">
-              <Input type="number" min={0} max={100} value={form.batchDiscountPercent} onChange={(e) => setForm({ ...form, batchDiscountPercent: e.target.value })} />
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={form.batchDiscountPercent}
+                onChange={(e) => setForm({ ...form, batchDiscountPercent: e.target.value })}
+              />
             </Field>
           </>
         )}
       </div>
       {data?.corePricing ? (
         <div className="mx-5 mb-5 rounded-xl border border-line bg-surface p-4">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-wide text-ink-faint">Base pricing from the core config (read only)</p>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wide text-ink-faint">
+            Base pricing from the core config (read only)
+          </p>
           <KeyValue
             columns={3}
             items={[

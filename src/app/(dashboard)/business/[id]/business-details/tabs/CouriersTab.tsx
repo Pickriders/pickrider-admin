@@ -20,13 +20,22 @@ import { formatEmail } from "@/lib/admin/person";
  */
 type Pending = { kind: "suspend" | "unsuspend" | "remove"; user: User } | null;
 
-const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({ value, label: value.charAt(0) + value.slice(1).toLowerCase() }));
+const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({
+  value,
+  label: value.charAt(0) + value.slice(1).toLowerCase(),
+}));
 
 function licenceBadge(user: User) {
   const status = user.driversLicenseVerified;
   if (!status) return <span className="text-xs text-ink-faint">No licence</span>;
-  const tone = status === "APPROVE" ? "success" : status === "DISAPPROVE" || status === "SUSPENDED" ? "danger" : "warning";
-  const label = status === "APPROVE" ? "Approved" : status === "DISAPPROVE" ? "Rejected" : status.charAt(0) + status.slice(1).toLowerCase();
+  const tone =
+    status === "APPROVE" ? "success" : status === "DISAPPROVE" || status === "SUSPENDED" ? "danger" : "warning";
+  const label =
+    status === "APPROVE"
+      ? "Approved"
+      : status === "DISAPPROVE"
+        ? "Rejected"
+        : status.charAt(0) + status.slice(1).toLowerCase();
   return <Badge tone={tone}>{label}</Badge>;
 }
 
@@ -38,9 +47,21 @@ export function CouriersTab({ businessId }: { businessId: string }) {
 
   const invalidate = [["business", businessId], "users", "stats"];
   const close = () => setPending(null);
-  const suspend = useAction((userId: string) => businesses.suspendUser(businessId, userId), { success: "Courier suspended for this business.", invalidate, onSuccess: close });
-  const unsuspend = useAction((userId: string) => businesses.unsuspendUser(businessId, userId), { success: "Courier restored.", invalidate, onSuccess: close });
-  const remove = useAction((userId: string) => businesses.removeUser(businessId, userId), { success: "Courier removed from the business.", invalidate, onSuccess: close });
+  const suspend = useAction((userId: string) => businesses.suspendUser(businessId, userId), {
+    success: "Courier suspended for this business.",
+    invalidate,
+    onSuccess: close,
+  });
+  const unsuspend = useAction((userId: string) => businesses.unsuspendUser(businessId, userId), {
+    success: "Courier restored.",
+    invalidate,
+    onSuccess: close,
+  });
+  const remove = useAction((userId: string) => businesses.removeUser(businessId, userId), {
+    success: "Courier removed from the business.",
+    invalidate,
+    onSuccess: close,
+  });
   const busy = suspend.isPending || unsuspend.isPending || remove.isPending;
 
   const { can } = useCan();
@@ -57,7 +78,9 @@ export function CouriersTab({ businessId }: { businessId: string }) {
               <Avatar src={row.original.photo} name={name} size={36} />
               <div className="min-w-0">
                 <p className="truncate font-semibold text-ink">{name}</p>
-                <p className="truncate text-xs text-ink-muted">{row.original.phone || formatEmail(row.original.email) || ""}</p>
+                <p className="truncate text-xs text-ink-muted">
+                  {row.original.phone || formatEmail(row.original.email) || ""}
+                </p>
               </div>
             </div>
           );
@@ -75,7 +98,9 @@ export function CouriersTab({ businessId }: { businessId: string }) {
         header: "Status",
         cell: ({ row }) => (
           <div className="flex flex-wrap items-center gap-1.5">
-            <Badge tone={statusTone(row.original.status?.toLowerCase())}>{row.original.status?.toLowerCase() ?? "unknown"}</Badge>
+            <Badge tone={statusTone(row.original.status?.toLowerCase())}>
+              {row.original.status?.toLowerCase() ?? "unknown"}
+            </Badge>
             {row.original.isOnline ? (
               <Badge tone="success" dot>
                 Online
@@ -94,14 +119,26 @@ export function CouriersTab({ businessId }: { businessId: string }) {
       {
         id: "lastLogin",
         header: "Last seen",
-        cell: ({ row }) => <span className="whitespace-nowrap text-ink-muted">{row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}</span>,
-        meta: { hideBelow: "lg", sortKey: "lastLoginDate", csv: { key: "lastLoginDate", label: "Last login" } } satisfies ColumnMeta,
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-ink-muted">
+            {row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}
+          </span>
+        ),
+        meta: {
+          hideBelow: "lg",
+          sortKey: "lastLoginDate",
+          csv: { key: "lastLoginDate", label: "Last login" },
+        } satisfies ColumnMeta,
       },
       {
         id: "joined",
         header: "Joined",
         cell: ({ row }) => <span className="whitespace-nowrap text-ink-muted">{when(row.original.createdAt)}</span>,
-        meta: { hideBelow: "xl", sortKey: "createdAt", csv: { key: "createdAt", label: "Joined" } } satisfies ColumnMeta,
+        meta: {
+          hideBelow: "xl",
+          sortKey: "createdAt",
+          csv: { key: "createdAt", label: "Joined" },
+        } satisfies ColumnMeta,
       },
       {
         id: "actions",
@@ -120,7 +157,13 @@ export function CouriersTab({ businessId }: { businessId: string }) {
               >
                 {suspended ? "Unsuspend" : "Suspend"}
               </Button>
-              <Button size="sm" variant="ghost" icon={UserMinus} className="text-danger hover:text-danger" onClick={() => setPending({ kind: "remove", user })}>
+              <Button
+                size="sm"
+                variant="ghost"
+                icon={UserMinus}
+                className="text-danger hover:text-danger"
+                onClick={() => setPending({ kind: "remove", user })}
+              >
                 Remove
               </Button>
             </div>
@@ -172,14 +215,23 @@ export function CouriersTab({ businessId }: { businessId: string }) {
                 </div>
                 <p className="truncate text-xs text-ink-muted">{row.phone || formatEmail(row.email) || ""}</p>
                 {canManage ? (
-                <div className="mt-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
-                  <Button size="sm" variant="outline" onClick={() => setPending({ kind: suspended ? "unsuspend" : "suspend", user: row })}>
-                    {suspended ? "Unsuspend" : "Suspend"}
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-danger" onClick={() => setPending({ kind: "remove", user: row })}>
-                    Remove
-                  </Button>
-                </div>
+                  <div className="mt-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setPending({ kind: suspended ? "unsuspend" : "suspend", user: row })}
+                    >
+                      {suspended ? "Unsuspend" : "Suspend"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-danger"
+                      onClick={() => setPending({ kind: "remove", user: row })}
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 ) : null}
               </div>
             </div>

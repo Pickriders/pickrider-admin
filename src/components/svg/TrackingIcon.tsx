@@ -19,22 +19,14 @@ export const TrackingIcon = () => {
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <path
-        d="M18 16H18.009"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M18 16H18.009" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M2 8L2.96154 5.69231C3.70726 3.90257 4.08013 3.0077 4.8359 2.50385C5.59167 2 6.56112 2 8.5 2H15.5C17.4389 2 18.4083 2 19.1641 2.50385C19.9199 3.0077 20.2927 3.90257 21.0385 5.69231L22 8"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
       <path d="M12 8V2" strokeWidth="1.5" strokeLinecap="round" />
-      <path
-        d="M9.56 19.5V13L10.13 13.59H8.08V12.5H10.86V19.5H9.56Z"
-        fill="#505582"
-      />
+      <path d="M9.56 19.5V13L10.13 13.59H8.08V12.5H10.86V19.5H9.56Z" fill="#505582" />
     </svg>
   );
 };

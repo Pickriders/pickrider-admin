@@ -179,14 +179,25 @@ export function CouponFormDrawer({
               hint="At least 8 characters; stored uppercase."
               error={draft.code && !codeOk ? "Codes are at least 8 characters." : undefined}
             >
-              <Input value={draft.code} onChange={set("code")} disabled={editing} placeholder="WELCOME10" className="font-mono uppercase" />
+              <Input
+                value={draft.code}
+                onChange={set("code")}
+                disabled={editing}
+                placeholder="WELCOME10"
+                className="font-mono uppercase"
+              />
             </Field>
             <Field label="Name" hint="Shown to customers in the app.">
               <Input value={draft.name} onChange={set("name")} placeholder="Welcome offer" />
             </Field>
           </div>
           <Field label="Description">
-            <Textarea value={draft.description} onChange={set("description")} rows={2} placeholder="10% off your first delivery." />
+            <Textarea
+              value={draft.description}
+              onChange={set("description")}
+              rows={2}
+              placeholder="10% off your first delivery."
+            />
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label="Type">
@@ -195,16 +206,31 @@ export function CouponFormDrawer({
                 <option value="FIXED">Fixed amount</option>
               </Select>
             </Field>
-            <Field label={draft.type === "PERCENTAGE" ? "Percent off" : "Amount off (₦)"} error={draft.value && !percentOk ? "Percentages are 1 to 100." : undefined}>
+            <Field
+              label={draft.type === "PERCENTAGE" ? "Percent off" : "Amount off (₦)"}
+              error={draft.value && !percentOk ? "Percentages are 1 to 100." : undefined}
+            >
               <Input type="number" min={1} value={draft.value} onChange={set("value")} disabled={editing} />
             </Field>
             {draft.type === "PERCENTAGE" ? (
               <Field label="Cap (₦)" hint="Most it can take off. Optional.">
-                <Input type="number" min={1} value={draft.maxDiscount} onChange={set("maxDiscount")} placeholder="2000" />
+                <Input
+                  type="number"
+                  min={1}
+                  value={draft.maxDiscount}
+                  onChange={set("maxDiscount")}
+                  placeholder="2000"
+                />
               </Field>
             ) : (
               <Field label="Currency">
-                <Input value={draft.currency} onChange={set("currency")} disabled={editing} maxLength={3} className="uppercase" />
+                <Input
+                  value={draft.currency}
+                  onChange={set("currency")}
+                  disabled={editing}
+                  maxLength={3}
+                  className="uppercase"
+                />
               </Field>
             )}
           </div>
@@ -229,7 +255,12 @@ export function CouponFormDrawer({
             onChange={(next) => setDraft((d) => ({ ...d, isOneTime: next === "once" }))}
             options={[
               { id: "once", icon: UserRound, label: "Once per customer", hint: "Each customer can redeem it one time" },
-              { id: "repeat", icon: Repeat, label: "Reusable", hint: "The same customer can redeem it again, until the total runs out" },
+              {
+                id: "repeat",
+                icon: Repeat,
+                label: "Reusable",
+                hint: "The same customer can redeem it again, until the total runs out",
+              },
             ]}
           />
         </Section>
@@ -241,7 +272,12 @@ export function CouponFormDrawer({
             onChange={(next) => setDraft((d) => ({ ...d, isGeneral: next === "everyone" }))}
             options={[
               { id: "everyone", icon: Globe, label: "Everyone", hint: "Any customer can apply it at checkout" },
-              { id: "group", icon: Users, label: "Group members only", hint: "Add it to a group on the Groups tab; only its members see it" },
+              {
+                id: "group",
+                icon: Users,
+                label: "Group members only",
+                hint: "Add it to a group on the Groups tab; only its members see it",
+              },
             ]}
           />
         </Section>
@@ -252,7 +288,12 @@ export function CouponFormDrawer({
             value={draft.isActive ? "active" : "paused"}
             onChange={(next) => setDraft((d) => ({ ...d, isActive: next === "active" }))}
             options={[
-              { id: "active", icon: Play, label: "Active", hint: editing ? "Redeemable right away" : "Live as soon as it is created" },
+              {
+                id: "active",
+                icon: Play,
+                label: "Active",
+                hint: editing ? "Redeemable right away" : "Live as soon as it is created",
+              },
               { id: "paused", icon: Pause, label: "Paused", hint: "Saved, but nobody can redeem it yet" },
             ]}
           />
@@ -267,7 +308,9 @@ function Section({ step, title, hint, children }: { step: number; title: string;
   return (
     <section className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-ink text-xs font-black text-card">{step}</span>
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-ink text-xs font-black text-card">
+          {step}
+        </span>
         <div className="min-w-0">
           <h3 className="text-sm font-bold text-ink">{title}</h3>
           <p className="text-xs text-ink-muted">{hint}</p>
@@ -312,14 +355,25 @@ function Choice<T extends string>({
                 active ? "border-brand bg-brand-soft/60" : "border-line bg-card hover:bg-surface",
               )}
             >
-              <span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-xl", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+              <span
+                className={cx(
+                  "grid h-9 w-9 shrink-0 place-items-center rounded-xl",
+                  active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted",
+                )}
+              >
                 <Icon size={16} />
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-bold text-ink">{option.label}</span>
                 <span className="block text-[11px] leading-snug text-ink-muted">{option.hint}</span>
               </span>
-              <span className={cx("ml-auto mt-1 h-4 w-4 shrink-0 rounded-full border-2", active ? "border-brand bg-brand" : "border-line-strong")} aria-hidden>
+              <span
+                className={cx(
+                  "ml-auto mt-1 h-4 w-4 shrink-0 rounded-full border-2",
+                  active ? "border-brand bg-brand" : "border-line-strong",
+                )}
+                aria-hidden
+              >
                 {active ? <span className="block h-full w-full scale-50 rounded-full bg-card" /> : null}
               </span>
             </button>

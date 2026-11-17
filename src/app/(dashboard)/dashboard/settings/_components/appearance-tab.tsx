@@ -87,11 +87,18 @@ export function AppearanceTab() {
                   >
                     <ModeSwatch mode={option.id} />
                     <span className="flex items-center gap-2.5">
-                      <span className={cx("grid h-8 w-8 shrink-0 place-items-center rounded-lg", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+                      <span
+                        className={cx(
+                          "grid h-8 w-8 shrink-0 place-items-center rounded-lg",
+                          active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted",
+                        )}
+                      >
                         <Icon size={15} />
                       </span>
                       <span className="min-w-0">
-                        <span className={cx("block text-sm font-bold", active ? "text-brand-dark" : "text-ink")}>{option.label}</span>
+                        <span className={cx("block text-sm font-bold", active ? "text-brand-dark" : "text-ink")}>
+                          {option.label}
+                        </span>
                         <span className="block text-[11px] text-ink-faint">{option.hint}</span>
                       </span>
                     </span>
@@ -120,7 +127,10 @@ export function AppearanceTab() {
       </div>
 
       <Panel className="lg:col-span-2">
-        <PanelHeader title="Preview" subtitle={`${showing === "dark" ? "Dark" : "Light"} theme, ${font.label.replace(" (default)", "")}`} />
+        <PanelHeader
+          title="Preview"
+          subtitle={`${showing === "dark" ? "Dark" : "Light"} theme, ${font.label.replace(" (default)", "")}`}
+        />
         <div className="p-5 pt-4">
           {/* Drawn with the live tokens: it is the admin as it looks right now. */}
           <div data-testid="appearance-preview" className="overflow-hidden rounded-2xl border border-line bg-surface">
@@ -150,7 +160,9 @@ export function AppearanceTab() {
                 <p className="text-sm text-ink-muted">The quick brown rider jumps over the lazy order.</p>
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-lg bg-brand px-3 py-1.5 text-xs font-bold text-brand-ink">Primary</span>
-                  <span className="rounded-lg border border-line px-3 py-1.5 text-xs font-bold text-ink">Secondary</span>
+                  <span className="rounded-lg border border-line px-3 py-1.5 text-xs font-bold text-ink">
+                    Secondary
+                  </span>
                 </div>
               </div>
             </div>

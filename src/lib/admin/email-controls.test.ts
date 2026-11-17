@@ -45,7 +45,9 @@ describe("kind", () => {
     expect(kindHint({ essential: true, marketing: false, essentialReason: "One-time verification code" })).toBe(
       "Always sends: One-time verification code. It cannot be turned off or paused.",
     );
-    expect(kindHint({ essential: true, marketing: false, essentialReason: null })).toBe("Always sends. It cannot be turned off or paused.");
+    expect(kindHint({ essential: true, marketing: false, essentialReason: null })).toBe(
+      "Always sends. It cannot be turned off or paused.",
+    );
     expect(kindHint({ essential: false, marketing: true })).toMatch(/marketing emails are paused/);
     expect(kindHint({ essential: false, marketing: false })).toMatch(/non-essential pause/);
   });
@@ -53,18 +55,29 @@ describe("kind", () => {
 
 describe("essential lock", () => {
   it("locks essential emails for everyone, super admin included, with the core's reason", () => {
-    const essential = row({ key: "verification-code", essential: true, essentialReason: "One-time verification code", lockedReason: "Essential: One-time verification code" });
+    const essential = row({
+      key: "verification-code",
+      essential: true,
+      essentialReason: "One-time verification code",
+      lockedReason: "Essential: One-time verification code",
+    });
     expect(switchLock(essential, true)).toEqual({ locked: true, reason: "Essential: One-time verification code" });
     expect(switchLock(essential, false)).toEqual({ locked: true, reason: "Essential: One-time verification code" });
   });
 
   it("still locks an essential row when the core sent no lockedReason", () => {
-    expect(switchLock(row({ essential: true, essentialReason: "Password reset code" }), true)).toEqual({ locked: true, reason: "Essential: Password reset code" });
+    expect(switchLock(row({ essential: true, essentialReason: "Password reset code" }), true)).toEqual({
+      locked: true,
+      reason: "Essential: Password reset code",
+    });
     expect(switchLock(row({ essential: true }), true)).toEqual({ locked: true, reason: "Essential: always sends" });
   });
 
   it("locks push-only rows", () => {
-    expect(switchLock(row({ emailChannel: false, lockedReason: "Not sent by email (push only)" }), true)).toEqual({ locked: true, reason: "Not sent by email (push only)" });
+    expect(switchLock(row({ emailChannel: false, lockedReason: "Not sent by email (push only)" }), true)).toEqual({
+      locked: true,
+      reason: "Not sent by email (push only)",
+    });
     expect(switchLock(row({ emailChannel: false }), true).locked).toBe(true);
   });
 
@@ -75,7 +88,10 @@ describe("essential lock", () => {
   });
 
   it("needs a reason to turn off, not to turn back on", () => {
-    expect(templateSwitchBody(false, "  Copy is being rewritten ")).toEqual({ ok: true, body: { enabled: false, reason: "Copy is being rewritten" } });
+    expect(templateSwitchBody(false, "  Copy is being rewritten ")).toEqual({
+      ok: true,
+      body: { enabled: false, reason: "Copy is being rewritten" },
+    });
     expect(templateSwitchBody(false, "")).toEqual({ ok: false, error: "Say why this email is being turned off." });
     expect(templateSwitchBody(false, "no")).toMatchObject({ ok: false });
     expect(templateSwitchBody(true, "")).toEqual({ ok: true, body: { enabled: true } });
@@ -91,13 +107,23 @@ describe("status line", () => {
 
   it("says who turned it off and why", () => {
     const off = row({ enabled: false, skipReason: "DISABLED_BY_ADMIN", disabledReason: "Rewriting", disabledBy: "a1" });
-    expect(emailStatusLine(off, "Ada Obi")).toEqual({ text: "Off: Rewriting by Ada Obi", tone: "danger", skipping: true });
+    expect(emailStatusLine(off, "Ada Obi")).toEqual({
+      text: "Off: Rewriting by Ada Obi",
+      tone: "danger",
+      skipping: true,
+    });
     expect(emailStatusLine(off).text).toBe("Off: Rewriting by an admin");
-    expect(emailStatusLine(row({ enabled: false, skipReason: "DISABLED_BY_ADMIN" }), "Ada").text).toBe("Off: turned off by Ada");
+    expect(emailStatusLine(row({ enabled: false, skipReason: "DISABLED_BY_ADMIN" }), "Ada").text).toBe(
+      "Off: turned off by Ada",
+    );
   });
 
   it("names the pause holding it back", () => {
-    expect(emailStatusLine(row({ marketing: true, skipReason: "PAUSED_MARKETING" }))).toEqual({ text: "Paused: marketing", tone: "warning", skipping: true });
+    expect(emailStatusLine(row({ marketing: true, skipReason: "PAUSED_MARKETING" }))).toEqual({
+      text: "Paused: marketing",
+      tone: "warning",
+      skipping: true,
+    });
     expect(emailStatusLine(row({ skipReason: "PAUSED_NON_ESSENTIAL" })).text).toBe("Paused: all non-essential");
   });
 
@@ -156,11 +182,19 @@ describe("pause countdown", () => {
     const pauses = activePauses(controls, now);
     expect(pauses.map((p) => p.kind)).toEqual(["nonEssential", "marketing"]);
     expect(pauseBannerText(pauses)).toBe("Non-essential emails are paused platform-wide.");
-    expect(pauseBannerText(activePauses({ pauseMarketing: controls.pauseMarketing }, now))).toBe("Marketing emails are paused platform-wide.");
+    expect(pauseBannerText(activePauses({ pauseMarketing: controls.pauseMarketing }, now))).toBe(
+      "Marketing emails are paused platform-wide.",
+    );
     expect(pauseBannerText([])).toBe("");
-    expect(activePauses({ pauseMarketing: { active: false }, pauseNonEssential: { active: true, until: at(-1) } }, now)).toEqual([]);
-    expect(pauseDismissKey("marketing", controls.pauseMarketing)).toBe("email-pause-dismissed:marketing:2026-11-16T10:00:00.000Z");
-    expect(pauseDismissKey("marketing", controls.pauseMarketing)).not.toBe(pauseDismissKey("nonEssential", controls.pauseMarketing));
+    expect(
+      activePauses({ pauseMarketing: { active: false }, pauseNonEssential: { active: true, until: at(-1) } }, now),
+    ).toEqual([]);
+    expect(pauseDismissKey("marketing", controls.pauseMarketing)).toBe(
+      "email-pause-dismissed:marketing:2026-11-16T10:00:00.000Z",
+    );
+    expect(pauseDismissKey("marketing", controls.pauseMarketing)).not.toBe(
+      pauseDismissKey("nonEssential", controls.pauseMarketing),
+    );
   });
 
   it("words who lifted the last pause", () => {
@@ -203,13 +237,19 @@ describe("quick picks and the custom time, in Lagos", () => {
 
   it("builds the pause body: reason required, until optional and in the future", () => {
     const now = Date.UTC(2026, 10, 16, 12, 0);
-    expect(pauseBody({ reason: " SMTP reputation recovery " }, now)).toEqual({ ok: true, body: { active: true, reason: "SMTP reputation recovery" } });
+    expect(pauseBody({ reason: " SMTP reputation recovery " }, now)).toEqual({
+      ok: true,
+      body: { active: true, reason: "SMTP reputation recovery" },
+    });
     expect(pauseBody({ reason: "SMTP down", until: new Date(now + 3_600_000) }, now)).toEqual({
       ok: true,
       body: { active: true, reason: "SMTP down", until: "2026-11-16T13:00:00.000Z" },
     });
     expect(pauseBody({ reason: "" }, now)).toEqual({ ok: false, error: "Say why emails are being paused." });
-    expect(pauseBody({ reason: "SMTP down", until: new Date(now - 1) }, now)).toEqual({ ok: false, error: "Pick a time in the future." });
+    expect(pauseBody({ reason: "SMTP down", until: new Date(now - 1) }, now)).toEqual({
+      ok: false,
+      error: "Pick a time in the future.",
+    });
     expect(pauseBody({ reason: "SMTP down", until: new Date(Number.NaN) }, now)).toMatchObject({ ok: false });
     expect(pauseBody({ reason: "x".repeat(281) }, now)).toMatchObject({ ok: false });
   });

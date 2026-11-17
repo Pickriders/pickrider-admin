@@ -3,7 +3,18 @@
 import { Ban, Gift, Play, Scale, UserMinus, UserPlus, type LucideIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-import { ActionMenu, Button, ConfirmDialog, Field, Input, Select, Textarea, UserPicker, cx, type PickedUser } from "@/components/kit";
+import {
+  ActionMenu,
+  Button,
+  ConfirmDialog,
+  Field,
+  Input,
+  Select,
+  Textarea,
+  UserPicker,
+  cx,
+  type PickedUser,
+} from "@/components/kit";
 import { HandoffBonusAction, HandoffReason, HandoffReviewDecision, handoffs, type Handoff } from "@/lib/admin/api";
 import { fullName, naira } from "@/lib/admin/format";
 import { useAction } from "@/lib/admin/hooks";
@@ -39,9 +50,17 @@ export function HandoffActions({
   if (!can("handoff.manage")) return null;
 
   const live = isLive(handoff);
-  const items: { id: Exclude<Dialog, null>; label: string; icon: LucideIcon; tone?: "danger" | "warning"; primary?: boolean }[] = [];
-  if (handoff.status === "AWAITING_SUPPORT") items.push({ id: "search", label: "Start search", icon: Play, primary: true });
-  if (handoff.status === "SEARCHING" || handoff.status === "AWAITING_SUPPORT") items.push({ id: "assign", label: "Assign rider", icon: UserPlus, primary: handoff.status === "SEARCHING" });
+  const items: {
+    id: Exclude<Dialog, null>;
+    label: string;
+    icon: LucideIcon;
+    tone?: "danger" | "warning";
+    primary?: boolean;
+  }[] = [];
+  if (handoff.status === "AWAITING_SUPPORT")
+    items.push({ id: "search", label: "Start search", icon: Play, primary: true });
+  if (handoff.status === "SEARCHING" || handoff.status === "AWAITING_SUPPORT")
+    items.push({ id: "assign", label: "Assign rider", icon: UserPlus, primary: handoff.status === "SEARCHING" });
   if (live) items.push({ id: "bonus", label: "Raise bonus", icon: Gift });
   if (handoff.status === "ACCEPTED") items.push({ id: "drop", label: "Drop rider", icon: UserMinus, tone: "warning" });
   if (live) items.push({ id: "cancel", label: "Cancel handoff", icon: Ban, tone: "danger" });
@@ -61,8 +80,32 @@ export function HandoffActions({
               iconOnly
               title="Handoff actions"
               sections={[
-                { id: "main", kind: "action" as const, items: items.filter((item) => item.tone !== "danger").map((item) => ({ id: item.id, label: item.label, icon: item.icon, tone: item.tone ?? ("neutral" as const), onSelect: () => open(item.id) })) },
-                { id: "danger", kind: "action" as const, items: items.filter((item) => item.tone === "danger").map((item) => ({ id: item.id, label: item.label, icon: item.icon, tone: "danger" as const, onSelect: () => open(item.id) })) },
+                {
+                  id: "main",
+                  kind: "action" as const,
+                  items: items
+                    .filter((item) => item.tone !== "danger")
+                    .map((item) => ({
+                      id: item.id,
+                      label: item.label,
+                      icon: item.icon,
+                      tone: item.tone ?? ("neutral" as const),
+                      onSelect: () => open(item.id),
+                    })),
+                },
+                {
+                  id: "danger",
+                  kind: "action" as const,
+                  items: items
+                    .filter((item) => item.tone === "danger")
+                    .map((item) => ({
+                      id: item.id,
+                      label: item.label,
+                      icon: item.icon,
+                      tone: "danger" as const,
+                      onSelect: () => open(item.id),
+                    })),
+                },
               ].filter((section) => section.items.length)}
             />
           </span>
@@ -83,7 +126,13 @@ export function HandoffActions({
           </div>
         )
       ) : null}
-      <HandoffDialogs handoff={handoff} dialog={dialog} onClose={() => setDialog(null)} decision={decision} onDecision={setDecision} />
+      <HandoffDialogs
+        handoff={handoff}
+        dialog={dialog}
+        onClose={() => setDialog(null)}
+        decision={decision}
+        onDecision={setDecision}
+      />
     </>
   );
 }
@@ -106,15 +155,37 @@ export function ReviewButtons({ handoff }: { handoff: Handoff }) {
       <Button size="sm" variant="outline" className="text-success" onClick={() => pick(HandoffReviewDecision.WAIVE)}>
         Waive
       </Button>
-      <HandoffDialogs handoff={handoff} dialog={open ? "review" : null} onClose={() => setOpen(false)} decision={decision} onDecision={setDecision} />
+      <HandoffDialogs
+        handoff={handoff}
+        dialog={open ? "review" : null}
+        onClose={() => setOpen(false)}
+        decision={decision}
+        onDecision={setDecision}
+      />
     </span>
   );
 }
 
-function NoteField({ value, onChange, label = "Note (optional)", hint }: { value: string; onChange: (value: string) => void; label?: string; hint?: ReactNode }) {
+function NoteField({
+  value,
+  onChange,
+  label = "Note (optional)",
+  hint,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label?: string;
+  hint?: ReactNode;
+}) {
   return (
     <Field label={label} hint={hint ?? "Kept on the handoff and in the audit log."}>
-      <Textarea value={value} maxLength={300} onChange={(e) => onChange(e.target.value)} placeholder="What happened?" className="min-h-20" />
+      <Textarea
+        value={value}
+        maxLength={300}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="What happened?"
+        className="min-h-20"
+      />
     </Field>
   );
 }
@@ -152,14 +223,32 @@ function HandoffDialogs({
   const trimmed = note.trim() || undefined;
   const options = { invalidate: HANDOFF_INVALIDATE, onSuccess: done };
 
-  const search = useAction(() => handoffs.startSearch(handoff.id, trimmed), { ...options, success: "Search started. Nearby riders are being rung." });
-  const assign = useAction((riderId: string) => handoffs.assign(handoff.id, riderId), { ...options, success: (data) => `${riderName(data.toRider, "The rider")} is taking over. They have been told to meet ${a}.` });
-  const bonus = useAction((amount: number) => handoffs.raiseBonus(handoff.id, amount), { ...options, success: (data) => `Bonus raised to ${naira(data.bonusAmount)}.` });
-  const drop = useAction(() => handoffs.dropRider(handoff.id, trimmed), { ...options, success: `${b} was dropped. Searching again.` });
-  const cancel = useAction(() => handoffs.cancel(handoff.id, trimmed), { ...options, success: `Handoff cancelled. ${a} keeps the order.` });
+  const search = useAction(() => handoffs.startSearch(handoff.id, trimmed), {
+    ...options,
+    success: "Search started. Nearby riders are being rung.",
+  });
+  const assign = useAction((riderId: string) => handoffs.assign(handoff.id, riderId), {
+    ...options,
+    success: (data) => `${riderName(data.toRider, "The rider")} is taking over. They have been told to meet ${a}.`,
+  });
+  const bonus = useAction((amount: number) => handoffs.raiseBonus(handoff.id, amount), {
+    ...options,
+    success: (data) => `Bonus raised to ${naira(data.bonusAmount)}.`,
+  });
+  const drop = useAction(() => handoffs.dropRider(handoff.id, trimmed), {
+    ...options,
+    success: `${b} was dropped. Searching again.`,
+  });
+  const cancel = useAction(() => handoffs.cancel(handoff.id, trimmed), {
+    ...options,
+    success: `Handoff cancelled. ${a} keeps the order.`,
+  });
   const review = useAction(
     () => handoffs.review(handoff.id, { decision, bonus: bonusAction || undefined, note: trimmed }),
-    { ...options, success: decision === HandoffReviewDecision.COUNT ? "Counted against the rider." : "Waived. It does not count." },
+    {
+      ...options,
+      success: decision === HandoffReviewDecision.COUNT ? "Counted against the rider." : "Waived. It does not count.",
+    },
   );
 
   const close = (pending: boolean) => () => (pending ? undefined : done());
@@ -193,8 +282,16 @@ function HandoffDialogs({
         loading={assign.isPending}
         disabled={!rider || rider._id === handoff.fromRider?.id}
       >
-        <UserPicker value={rider} onChange={setRider} only="couriers" label="Rider" hint="Name or phone. Pick someone close to the meeting point." />
-        {rider && rider._id === handoff.fromRider?.id ? <p className="mt-2 text-xs font-semibold text-danger">That is the rider handing the order over.</p> : null}
+        <UserPicker
+          value={rider}
+          onChange={setRider}
+          only="couriers"
+          label="Rider"
+          hint="Name or phone. Pick someone close to the meeting point."
+        />
+        {rider && rider._id === handoff.fromRider?.id ? (
+          <p className="mt-2 text-xs font-semibold text-danger">That is the rider handing the order over.</p>
+        ) : null}
       </ConfirmDialog>
 
       <ConfirmDialog
@@ -208,7 +305,10 @@ function HandoffDialogs({
         loading={bonus.isPending}
         disabled={!bonusValid}
       >
-        <Field label="New bonus" error={bonusNaira && !bonusValid ? `Must be more than ${naira(handoff.bonusAmount)}.` : undefined}>
+        <Field
+          label="New bonus"
+          error={bonusNaira && !bonusValid ? `Must be more than ${naira(handoff.bonusAmount)}.` : undefined}
+        >
           <Input
             type="number"
             inputMode="decimal"
@@ -286,16 +386,23 @@ function HandoffDialogs({
                   )}
                 >
                   <span className="block text-sm font-bold">{option.label}</span>
-                  <span className={cx("block text-[11px]", active ? "text-card/70" : "text-ink-muted")}>{option.hint}</span>
+                  <span className={cx("block text-[11px]", active ? "text-card/70" : "text-ink-muted")}>
+                    {option.hint}
+                  </span>
                 </button>
               );
             })}
           </div>
           {held ? (
-            <Field label="Held bonus" hint="Leave it held to decide later. Releasing pays it now if the order is finished, otherwise with the order.">
+            <Field
+              label="Held bonus"
+              hint="Leave it held to decide later. Releasing pays it now if the order is finished, otherwise with the order."
+            >
               <Select value={bonusAction} onChange={(e) => setBonusAction(e.target.value as "" | HandoffBonusAction)}>
                 <option value="">Leave held</option>
-                <option value={HandoffBonusAction.RELEASE}>Release {naira(handoff.bonusAmount)} to {b}</option>
+                <option value={HandoffBonusAction.RELEASE}>
+                  Release {naira(handoff.bonusAmount)} to {b}
+                </option>
                 <option value={HandoffBonusAction.FORFEIT}>Forfeit it</option>
               </Select>
             </Field>
@@ -308,13 +415,26 @@ function HandoffDialogs({
 }
 
 /** Staff start a handoff for a rider who called in (the rider app has its own button). */
-export function StartHandoffDialog({ orderId, riderName: holder, open, onClose }: { orderId: string; riderName: string; open: boolean; onClose: () => void }) {
+export function StartHandoffDialog({
+  orderId,
+  riderName: holder,
+  open,
+  onClose,
+}: {
+  orderId: string;
+  riderName: string;
+  open: boolean;
+  onClose: () => void;
+}) {
   const [reason, setReason] = useState<HandoffReason | "">("");
   const [note, setNote] = useState("");
   const start = useAction(
     () => handoffs.start({ orderId, reason: reason as HandoffReason, note: note.trim() || undefined }),
     {
-      success: (data) => (data.status === "AWAITING_SUPPORT" ? "Handoff opened. Start the search once the rider is safe." : "Handoff started. Nearby riders are being rung."),
+      success: (data) =>
+        data.status === "AWAITING_SUPPORT"
+          ? "Handoff opened. Start the search once the rider is safe."
+          : "Handoff started. Nearby riders are being rung.",
       invalidate: HANDOFF_INVALIDATE,
       onSuccess: () => {
         setReason("");
@@ -336,7 +456,12 @@ export function StartHandoffDialog({ orderId, riderName: holder, open, onClose }
       disabled={!reason}
     >
       <div className="space-y-3">
-        <Field label="Reason" hint={reason === HandoffReason.ACCIDENT ? "Accidents do not ring anyone until you start the search." : undefined}>
+        <Field
+          label="Reason"
+          hint={
+            reason === HandoffReason.ACCIDENT ? "Accidents do not ring anyone until you start the search." : undefined
+          }
+        >
           <Select value={reason} onChange={(e) => setReason(e.target.value as HandoffReason | "")} autoFocus>
             <option value="">Choose a reason</option>
             {Object.values(HandoffReason).map((value) => (

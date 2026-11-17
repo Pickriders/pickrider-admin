@@ -110,7 +110,10 @@ export const SIDEBAR_LINKS = NAV_GROUPS.flatMap((group) => group.items);
  * The one nav item to highlight: the longest href the path sits under, so
  * /dashboard/settings lights up Settings and not Dashboard as well.
  */
-export function activeNavHref(pathname: string, hrefs: string[] = SIDEBAR_LINKS.map((item) => item.href)): string | undefined {
+export function activeNavHref(
+  pathname: string,
+  hrefs: string[] = SIDEBAR_LINKS.map((item) => item.href),
+): string | undefined {
   return hrefs
     .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
     .sort((a, b) => b.length - a.length)[0];
@@ -147,9 +150,13 @@ export const SidebarNav = ({ onNavigate, collapsed = false }: { onNavigate?: () 
         return (
           <div key={group.title}>
             {collapsed ? (
-              groupIndex > 0 ? <span aria-hidden className="mx-auto mb-3 block h-px w-6 bg-line" /> : null
+              groupIndex > 0 ? (
+                <span aria-hidden className="mx-auto mb-3 block h-px w-6 bg-line" />
+              ) : null
             ) : (
-              <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">{group.title}</p>
+              <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+                {group.title}
+              </p>
             )}
             <ul className="space-y-0.5">
               {items.map((item) => {

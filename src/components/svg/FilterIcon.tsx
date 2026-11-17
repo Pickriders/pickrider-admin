@@ -1,10 +1,6 @@
 import { SvgProps } from "./Svg.type";
 
-export const FilterIcon = ({
-  className,
-  height = 16,
-  width = 18,
-}: SvgProps) => {
+export const FilterIcon = ({ className, height = 16, width = 18 }: SvgProps) => {
   return (
     <svg
       className={className}

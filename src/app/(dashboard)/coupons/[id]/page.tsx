@@ -55,7 +55,9 @@ const USAGE_COLUMNS: ColumnDef<CouponUsage, unknown>[] = [
         <span className="block text-sm font-semibold text-ink">
           {fullName(row.original.user) || formatEmail(row.original.user?.email) || "Unknown"}
         </span>
-        <span className="block text-[11px] text-ink-muted">{row.original.user?.phone || formatEmail(row.original.user?.email)}</span>
+        <span className="block text-[11px] text-ink-muted">
+          {row.original.user?.phone || formatEmail(row.original.user?.email)}
+        </span>
       </Link>
     ),
   },

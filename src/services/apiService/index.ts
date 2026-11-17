@@ -1,9 +1,22 @@
 import type { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
 import { BASE_URL } from "@/constant";
-import { apiErrorDetails, isMfaSetupRequired, isSessionRevoked, isStepUpRequired, type StepUpDetails } from "@/lib/admin/auth-errors";
+import {
+  apiErrorDetails,
+  isMfaSetupRequired,
+  isSessionRevoked,
+  isStepUpRequired,
+  type StepUpDetails,
+} from "@/lib/admin/auth-errors";
 import { createRefreshQueue } from "@/lib/admin/refresh";
-import { clearSession, getAccessToken, getDeviceId, getRefreshToken, saveSession, signOutUrl } from "@/lib/admin/session";
+import {
+  clearSession,
+  getAccessToken,
+  getDeviceId,
+  getRefreshToken,
+  saveSession,
+  signOutUrl,
+} from "@/lib/admin/session";
 import { requestStepUp } from "@/lib/admin/step-up";
 import { Api } from "./Api";
 import type { AdminLoginResponseDto } from "./data-contracts";
@@ -31,7 +44,12 @@ export const MFA_CODE_HEADER = "X-MFA-Code";
 export const MFA_SETUP_PATH = "/security/setup";
 
 /** Sign-in routes answer 401 for their own reasons (a wrong code, an expired mfaToken); never refresh for them. */
-const PUBLIC_AUTH_PATHS = ["/auth/admins/login", "/auth/admins/mfa/challenge", "/auth/admins/refresh", "/auth/admins/security/confirm"];
+const PUBLIC_AUTH_PATHS = [
+  "/auth/admins/login",
+  "/auth/admins/mfa/challenge",
+  "/auth/admins/refresh",
+  "/auth/admins/security/confirm",
+];
 
 export function isPublicAuthUrl(url: string | undefined) {
   return Boolean(url && PUBLIC_AUTH_PATHS.some((path) => url.includes(path)));

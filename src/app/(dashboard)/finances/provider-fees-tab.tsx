@@ -69,7 +69,9 @@ const FLOW_ICON: Record<ProviderFeeFlowKey, LucideIcon> = {
 
 function shortDay(value: string) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "Africa/Lagos" });
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "Africa/Lagos" });
 }
 
 function windowLabel(range: RangeValue) {
@@ -93,7 +95,8 @@ export function ProviderFeesTab() {
 
   const pickFlow = (next: ProviderFeeFlowKey) => {
     setFlow((current) => (current === next ? "" : next));
-    if (typeof document !== "undefined") document.getElementById("provider-fee-rows")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (typeof document !== "undefined")
+      document.getElementById("provider-fee-rows")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const donut = useMemo(
@@ -109,7 +112,9 @@ export function ProviderFeesTab() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-base font-black tracking-tight text-ink">Provider fees</h2>
-          <p className="text-xs text-ink-muted">Exactly what Paystack takes from every payment, payout and refund. In naira, Lagos time.</p>
+          <p className="text-xs text-ink-muted">
+            Exactly what Paystack takes from every payment, payout and refund. In naira, Lagos time.
+          </p>
         </div>
         <RangeTabs value={range} onChange={setRange} />
       </div>
@@ -135,7 +140,13 @@ export function ProviderFeesTab() {
                 </Button>
               ) : null}
             </div>
-            <ScrollRow className="-mx-1" innerClassName="px-1 pb-1" label="Money flows" peekKey="provider-fee-flows" activeSelector="">
+            <ScrollRow
+              className="-mx-1"
+              innerClassName="px-1 pb-1"
+              label="Money flows"
+              peekKey="provider-fee-flows"
+              activeSelector=""
+            >
               <div className="flex w-max gap-3 sm:grid sm:w-full sm:grid-cols-2 xl:grid-cols-3">
                 {loading
                   ? FLOW_META.map((m) => <FlowCardSkeleton key={m.key} />)
@@ -168,11 +179,22 @@ export function ProviderFeesTab() {
                   stacked
                   yFormat="naira"
                   xFormat={shortDay}
-                  series={FLOW_META.filter((m) => m.key !== "REFUND").map((m) => ({ key: m.key, label: m.label, color: m.color, format: "naira" as const }))}
+                  series={FLOW_META.filter((m) => m.key !== "REFUND").map((m) => ({
+                    key: m.key,
+                    label: m.label,
+                    color: m.color,
+                    format: "naira" as const,
+                  }))}
                 />
               </ChartCard>
             </div>
-            <ChartCard title="Where the fees went" subtitle="Share of Paystack fees" loading={loading} empty={!loading && !donut.length} height={300}>
+            <ChartCard
+              title="Where the fees went"
+              subtitle="Share of Paystack fees"
+              loading={loading}
+              empty={!loading && !donut.length}
+              height={300}
+            >
               <DonutChart data={donut} format="naira" centerLabel="Fees" centerValue={nairaCompact(cur?.totals.fees)} />
             </ChartCard>
           </div>
@@ -211,13 +233,31 @@ function TrendChip({ current, previous, onDark }: { current: number; previous: n
   );
 }
 
-function FeesHero({ data, loading, label, className }: { data?: ProviderFees; loading: boolean; label: string; className?: string }) {
+function FeesHero({
+  data,
+  loading,
+  label,
+  className,
+}: {
+  data?: ProviderFees;
+  loading: boolean;
+  label: string;
+  className?: string;
+}) {
   const totals = data?.current.totals;
   const prev = data?.previous.totals;
   const spark = useMemo(() => (data?.series ?? []).map((p) => ({ value: p.fees })), [data?.series]);
   return (
-    <Panel className={cx("relative overflow-hidden border-transparent bg-gradient-to-br from-brand to-brand-dark p-6 text-white", className)}>
-      <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden />
+    <Panel
+      className={cx(
+        "relative overflow-hidden border-transparent bg-gradient-to-br from-brand to-brand-dark p-6 text-white",
+        className,
+      )}
+    >
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl"
+        aria-hidden
+      />
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-white/75">Paystack fees, {label}</p>
@@ -232,7 +272,11 @@ function FeesHero({ data, loading, label, className }: { data?: ProviderFees; lo
                 <TrendChip current={totals?.fees ?? 0} previous={prev?.fees ?? 0} onDark />
                 <span>
                   vs {naira(prev?.fees, 2)} the period before
-                  {totals && prev && totals.fees > prev.fees ? ", more taken" : totals && prev && totals.fees < prev.fees ? ", less taken" : ""}
+                  {totals && prev && totals.fees > prev.fees
+                    ? ", more taken"
+                    : totals && prev && totals.fees < prev.fees
+                      ? ", less taken"
+                      : ""}
                 </span>
               </>
             )}
@@ -262,7 +306,9 @@ function HeroFigure({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="min-w-0 rounded-xl bg-white/10 px-3 py-2.5">
       <p className="truncate text-[11px] font-semibold text-white/70">{label}</p>
-      <div className="mt-0.5 truncate text-base font-black tabular-nums">{value === null ? <Skeleton className="mt-1 h-4 w-14 bg-white/20" /> : value}</div>
+      <div className="mt-0.5 truncate text-base font-black tabular-nums">
+        {value === null ? <Skeleton className="mt-1 h-4 w-14 bg-white/20" /> : value}
+      </div>
     </div>
   );
 }
@@ -296,9 +342,15 @@ function KeptPanel({ data, loading, className }: { data?: ProviderFees; loading:
       ) : (
         <>
           <p className="mt-5 text-[11px] font-bold uppercase tracking-wide text-ink-faint">Received</p>
-          <p className="mt-1 text-[28px] font-black leading-none tracking-tight tabular-nums text-ink">{naira(t?.moneyIn)}</p>
+          <p className="mt-1 text-[28px] font-black leading-none tracking-tight tabular-nums text-ink">
+            {naira(t?.moneyIn)}
+          </p>
 
-          <div className="mt-4 flex h-3 w-full overflow-hidden rounded-full bg-surface" role="img" aria-label={`Kept ${split.kept}%, Paystack ${split.fees}%`}>
+          <div
+            className="mt-4 flex h-3 w-full overflow-hidden rounded-full bg-surface"
+            role="img"
+            aria-label={`Kept ${split.kept}%, Paystack ${split.fees}%`}
+          >
             <span className="h-full bg-success transition-[width] duration-500" style={{ width: `${split.kept}%` }} />
             <span className="h-full bg-danger transition-[width] duration-500" style={{ width: `${split.fees}%` }} />
           </div>
@@ -311,7 +363,8 @@ function KeptPanel({ data, loading, className }: { data?: ProviderFees; loading:
             <div className="rounded-xl bg-danger-soft px-3 py-2.5">
               <p className="text-[11px] font-semibold text-danger">Paystack took</p>
               <p className="mt-0.5 truncate text-base font-black tabular-nums text-ink">
-                {naira(t?.moneyInFees, 2)} <span className="text-xs font-semibold text-ink-muted">{ratePercent(inRate)}</span>
+                {naira(t?.moneyInFees, 2)}{" "}
+                <span className="text-xs font-semibold text-ink-muted">{ratePercent(inRate)}</span>
               </p>
             </div>
           </div>
@@ -359,12 +412,17 @@ function FlowCard({
       aria-pressed={active}
       className={cx(
         "group w-[264px] shrink-0 rounded-2xl border bg-card p-5 text-left transition-all sm:w-auto",
-        active ? "border-brand shadow-pop ring-2 ring-brand/30" : "border-line hover:border-line-strong hover:shadow-pop",
+        active
+          ? "border-brand shadow-pop ring-2 ring-brand/30"
+          : "border-line hover:border-line-strong hover:shadow-pop",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${m.color} 16%, transparent)`, color: m.color }}>
+          <span
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl"
+            style={{ backgroundColor: `color-mix(in srgb, ${m.color} 16%, transparent)`, color: m.color }}
+          >
             <Icon size={18} />
           </span>
           <div className="min-w-0">
@@ -372,7 +430,12 @@ function FlowCard({
             <p className="truncate text-[11px] text-ink-muted">{m.hint}</p>
           </div>
         </div>
-        <span className={cx("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide", m.direction === "in" ? "bg-success-soft text-success" : "bg-surface text-ink-muted")}>
+        <span
+          className={cx(
+            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+            m.direction === "in" ? "bg-success-soft text-success" : "bg-surface text-ink-muted",
+          )}
+        >
           {m.direction === "in" ? "In" : "Out"}
         </span>
       </div>
@@ -380,7 +443,9 @@ function FlowCard({
       {flow.feesReported ? (
         <>
           <div className="mt-4 flex items-end justify-between gap-2">
-            <p className="text-2xl font-black leading-none tracking-tight tabular-nums text-ink">{naira(flow.fees, 2)}</p>
+            <p className="text-2xl font-black leading-none tracking-tight tabular-nums text-ink">
+              {naira(flow.fees, 2)}
+            </p>
             <TrendChip current={flow.fees} previous={previous?.fees ?? 0} />
           </div>
           <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface">
@@ -391,7 +456,9 @@ function FlowCard({
       ) : (
         <div className="mt-4 flex items-start gap-2 rounded-xl bg-surface px-3 py-2.5 text-[11px] leading-snug text-ink-muted">
           <Info size={14} className="mt-px shrink-0" />
-          <span>Paystack reports no refund fee. The fee on the original payment is not returned and is counted there.</span>
+          <span>
+            Paystack reports no refund fee. The fee on the original payment is not returned and is counted there.
+          </span>
         </div>
       )}
 
@@ -462,7 +529,12 @@ function FeeRowsTable({
   const table = useTableState({ limit: 20 });
   const [selected, setSelected] = useState<ProviderFeeRow | null>(null);
   // Only what this endpoint reads: other tabs' URL filters must not leak in.
-  const data = useProviderFeeRows({ ...rangeQuery, page: table.state.page, limit: table.state.limit, flow: flow || undefined });
+  const data = useProviderFeeRows({
+    ...rangeQuery,
+    page: table.state.page,
+    limit: table.state.limit,
+    flow: flow || undefined,
+  });
 
   const columns = useMemo<ColumnDef<ProviderFeeRow, unknown>[]>(
     () => [
@@ -476,37 +548,63 @@ function FeeRowsTable({
         id: "flow",
         header: "Flow",
         cell: ({ row }) => <FlowTag flow={row.original.flow} />,
-        meta: meta({ skeleton: "badge", csv: { key: "flow", label: "Flow", value: (r) => flowMeta((r as ProviderFeeRow).flow).label } }),
+        meta: meta({
+          skeleton: "badge",
+          csv: { key: "flow", label: "Flow", value: (r) => flowMeta((r as ProviderFeeRow).flow).label },
+        }),
       },
       {
         id: "person",
         header: "Whose money",
         cell: ({ row }) => <PersonInline person={row.original.owner} fallback="Not linked" />,
-        meta: meta({ hideBelow: "md", skeleton: "person", csv: { key: "owner", label: "Whose money", value: (r) => (r as ProviderFeeRow).owner?.name ?? "" } }),
+        meta: meta({
+          hideBelow: "md",
+          skeleton: "person",
+          csv: { key: "owner", label: "Whose money", value: (r) => (r as ProviderFeeRow).owner?.name ?? "" },
+        }),
       },
       {
         id: "reference",
         header: "Reference",
-        cell: ({ row }) => <span className="block max-w-[180px] truncate font-mono text-xs text-ink-muted">{row.original.reference}</span>,
+        cell: ({ row }) => (
+          <span className="block max-w-[180px] truncate font-mono text-xs text-ink-muted">
+            {row.original.reference}
+          </span>
+        ),
         meta: meta({ hideBelow: "xl", skeleton: "line", csv: { key: "reference", label: "Reference" } }),
       },
       {
         id: "gross",
         header: "Gross",
-        cell: ({ row }) => <span className="whitespace-nowrap tabular-nums text-ink">{row.original.gross != null ? naira(row.original.gross, 2) : "Not found"}</span>,
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap tabular-nums text-ink">
+            {row.original.gross != null ? naira(row.original.gross, 2) : "Not found"}
+          </span>
+        ),
         meta: meta({ align: "right", hideBelow: "lg", skeleton: "line", csv: { key: "gross", label: "Gross (kobo)" } }),
       },
       {
         id: "fee",
         header: "Fee",
-        cell: ({ row }) => <span className="whitespace-nowrap font-black tabular-nums text-danger">-{naira(row.original.fee, 2)}</span>,
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap font-black tabular-nums text-danger">-{naira(row.original.fee, 2)}</span>
+        ),
         meta: meta({ align: "right", skeleton: "line", csv: { key: "fee", label: "Fee (kobo)" } }),
       },
       {
         id: "rate",
         header: "Rate",
-        cell: ({ row }) => <span className="text-xs tabular-nums text-ink-muted">{row.original.effectiveRate != null ? ratePercent(row.original.effectiveRate) : ""}</span>,
-        meta: meta({ align: "right", hideBelow: "lg", skeleton: "line", csv: { key: "effectiveRate", label: "Rate (%)" } }),
+        cell: ({ row }) => (
+          <span className="text-xs tabular-nums text-ink-muted">
+            {row.original.effectiveRate != null ? ratePercent(row.original.effectiveRate) : ""}
+          </span>
+        ),
+        meta: meta({
+          align: "right",
+          hideBelow: "lg",
+          skeleton: "line",
+          csv: { key: "effectiveRate", label: "Rate (%)" },
+        }),
       },
     ],
     [],
@@ -549,7 +647,9 @@ function FeeRowsTable({
           </label>
         }
         emptyIcon={Coins}
-        emptyTitle={flow ? `No ${flowMeta(flow).label.toLowerCase()} fees in this window` : "No Paystack fees in this window"}
+        emptyTitle={
+          flow ? `No ${flowMeta(flow).label.toLowerCase()} fees in this window` : "No Paystack fees in this window"
+        }
         emptyDescription="Fees land here as Paystack settles payments and transfers."
         mobileCard={(row) => (
           <div className="flex items-center justify-between gap-3">
@@ -561,7 +661,9 @@ function FeeRowsTable({
             </div>
             <div className="text-right">
               <p className="text-sm font-black tabular-nums text-danger">-{naira(row.fee, 2)}</p>
-              <p className="text-[11px] tabular-nums text-ink-faint">{row.gross != null ? `of ${nairaCompact(row.gross)}` : ""}</p>
+              <p className="text-[11px] tabular-nums text-ink-faint">
+                {row.gross != null ? `of ${nairaCompact(row.gross)}` : ""}
+              </p>
             </div>
           </div>
         )}
@@ -610,7 +712,9 @@ function FeeDrawer({ row, onClose }: { row: ProviderFeeRow | null; onClose: () =
           {row.owner ? (
             <PersonCard person={row.owner} label={m.direction === "in" ? "Paid in by" : "Paid out to"} />
           ) : (
-            <p className="rounded-xl bg-surface px-4 py-4 text-xs text-ink-muted">The payment or transfer for this fee could not be found.</p>
+            <p className="rounded-xl bg-surface px-4 py-4 text-xs text-ink-muted">
+              The payment or transfer for this fee could not be found.
+            </p>
           )}
 
           <KeyValue
@@ -621,14 +725,21 @@ function FeeDrawer({ row, onClose }: { row: ProviderFeeRow | null; onClose: () =
               { label: "Fee row", value: <span className="font-mono text-xs">{row._id}</span> },
               {
                 label: "Charged on",
-                value: row.sourceTransactionId ? <span className="font-mono text-xs">{row.sourceTransactionId}</span> : "Not found",
+                value: row.sourceTransactionId ? (
+                  <span className="font-mono text-xs">{row.sourceTransactionId}</span>
+                ) : (
+                  "Not found"
+                ),
               },
               ...(row.orderId
                 ? [
                     {
                       label: "Order",
                       value: (
-                        <Link href={`/orders/${row.orderId}`} className="text-xs font-bold text-brand-dark hover:underline">
+                        <Link
+                          href={`/orders/${row.orderId}`}
+                          className="text-xs font-bold text-brand-dark hover:underline"
+                        >
                           View order
                         </Link>
                       ),

@@ -29,7 +29,11 @@ import { isStepUpCancelled } from "@/services";
  * copy at once (the banner and gallery update without a refetch) and the gallery list, which
  * carries `enabled` too, is refetched. A dismissed step-up prompt is not an error worth a toast.
  */
-export function useControlsWrite<TVars>(fn: (vars: TVars) => Promise<EmailControls>, success: (vars: TVars) => string, onDone?: () => void) {
+export function useControlsWrite<TVars>(
+  fn: (vars: TVars) => Promise<EmailControls>,
+  success: (vars: TVars) => string,
+  onDone?: () => void,
+) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: fn,
@@ -51,7 +55,10 @@ export function KindChip({ control, onDark }: { control: ControlLike; onDark?: b
   const hint = kindHint(control);
   return (
     <span title={hint} className="inline-flex">
-      <Badge tone={onDark ? "neutral" : EMAIL_KIND_TONE[kind]} className={onDark ? "border-transparent bg-card/15 text-card" : undefined}>
+      <Badge
+        tone={onDark ? "neutral" : EMAIL_KIND_TONE[kind]}
+        className={onDark ? "border-transparent bg-card/15 text-card" : undefined}
+      >
         {kind === "essential" ? <Lock size={10} aria-hidden /> : null}
         {EMAIL_KIND_LABEL[kind]}
         <span className="sr-only">. {hint}</span>
@@ -78,12 +85,26 @@ const TEXT: Record<string, string> = {
 };
 
 /** "Sending" / "Off: <reason> by <name>" / "Paused: marketing", from the core's skipReason. */
-export function StatusLine({ control, onDark, className }: { control: ControlLike; onDark?: boolean; className?: string }) {
+export function StatusLine({
+  control,
+  onDark,
+  className,
+}: {
+  control: ControlLike;
+  onDark?: boolean;
+  className?: string;
+}) {
   const byId = control.skipReason === "DISABLED_BY_ADMIN" ? control.disabledBy : null;
   const staff = useStaffName(byId);
   const line = emailStatusLine(control, fullName(staff.data) || null);
   return (
-    <span className={cx("flex min-w-0 items-center gap-1.5 text-[11px] font-semibold", onDark ? "text-card/80" : TEXT[line.tone], className)}>
+    <span
+      className={cx(
+        "flex min-w-0 items-center gap-1.5 text-[11px] font-semibold",
+        onDark ? "text-card/80" : TEXT[line.tone],
+        className,
+      )}
+    >
       <span className={cx("h-1.5 w-1.5 shrink-0 rounded-full", DOT[line.tone])} aria-hidden />
       <span className="truncate" title={line.text}>
         {line.text}
@@ -97,7 +118,15 @@ export function StatusLine({ control, onDark, className }: { control: ControlLik
  * entirely unless the viewer can manage (super admin). Turning off asks for a reason first;
  * turning back on goes straight through. The core asks for an authenticator code either way.
  */
-export function TemplateSwitch({ control, canManage, withLabel }: { control: ControlLike; canManage: boolean; withLabel?: boolean }) {
+export function TemplateSwitch({
+  control,
+  canManage,
+  withLabel,
+}: {
+  control: ControlLike;
+  canManage: boolean;
+  withLabel?: boolean;
+}) {
   const [offOpen, setOffOpen] = useState(false);
   const [reason, setReason] = useState("");
   const lock = switchLock(control, canManage);
@@ -130,7 +159,12 @@ export function TemplateSwitch({ control, canManage, withLabel }: { control: Con
           size={withLabel ? "md" : "sm"}
           checked={control.enabled}
           disabled={lock.locked || write.isPending}
-          title={lock.reason ?? (control.enabled ? `Turn the ${title.toLowerCase()} email off` : `Turn the ${title.toLowerCase()} email back on`)}
+          title={
+            lock.reason ??
+            (control.enabled
+              ? `Turn the ${title.toLowerCase()} email off`
+              : `Turn the ${title.toLowerCase()} email back on`)
+          }
           ariaLabel={`${title} email ${control.enabled ? "on" : "off"}${lock.reason ? `. Locked: ${lock.reason}` : ""}`}
           label={label}
           onChange={(next) => {
@@ -157,7 +191,10 @@ export function TemplateSwitch({ control, canManage, withLabel }: { control: Con
         loading={write.isPending}
         disabled={!parsed.ok}
       >
-        <Field label="Reason" hint={`Shown on this page and kept in the audit log. ${reason.length}/${MAX_CONTROL_REASON}`}>
+        <Field
+          label="Reason"
+          hint={`Shown on this page and kept in the audit log. ${reason.length}/${MAX_CONTROL_REASON}`}
+        >
           <Textarea
             value={reason}
             autoFocus

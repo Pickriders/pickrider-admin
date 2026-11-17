@@ -51,7 +51,12 @@ export function StepUpDialog() {
   return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end justify-center p-3 sm:items-center">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[3px]" onClick={() => settleStepUp(null)} />
-      <div role="alertdialog" aria-modal="true" aria-labelledby="step-up-title" className="relative w-full max-w-md overflow-hidden rounded-3xl border border-line bg-card shadow-pop admin-fade-up">
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="step-up-title"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-line bg-card shadow-pop admin-fade-up"
+      >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-brand/15 to-transparent" />
         <div className="relative px-6 pb-6 pt-6">
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft text-brand-dark">
@@ -100,7 +105,11 @@ export function StepUpDialog() {
               ) : (
                 <CodeInput value={code} onChange={setCode} onComplete={(value) => submit(value)} autoFocus />
               )}
-              <button type="button" onClick={() => setUseRecovery((v) => !v)} className="mt-3 text-xs font-bold text-brand-dark hover:underline">
+              <button
+                type="button"
+                onClick={() => setUseRecovery((v) => !v)}
+                className="mt-3 text-xs font-bold text-brand-dark hover:underline"
+              >
                 {useRecovery ? "Use my authenticator app instead" : "Use a recovery code"}
               </button>
               <div className={cx("mt-5 grid grid-cols-2 gap-2")}>

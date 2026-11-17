@@ -35,9 +35,21 @@ describe("provider fees helpers", () => {
 
   it("flattens the series so each flow is its own bar", () => {
     const rows = chartPoints([
-      { bucket: "2026-09-01T23:00:00.000Z", fees: 10_000, gross: 800_000, feeCount: 3, byFlow: { WITHDRAWAL: 5_000, PLATFORM_PAYOUT: 5_000 } },
+      {
+        bucket: "2026-09-01T23:00:00.000Z",
+        fees: 10_000,
+        gross: 800_000,
+        feeCount: 3,
+        byFlow: { WITHDRAWAL: 5_000, PLATFORM_PAYOUT: 5_000 },
+      },
     ]);
-    expect(rows[0]).toMatchObject({ bucket: "2026-09-01T23:00:00.000Z", fees: 10_000, WITHDRAWAL: 5_000, PLATFORM_PAYOUT: 5_000, WALLET_DEPOSIT: 0 });
+    expect(rows[0]).toMatchObject({
+      bucket: "2026-09-01T23:00:00.000Z",
+      fees: 10_000,
+      WITHDRAWAL: 5_000,
+      PLATFORM_PAYOUT: 5_000,
+      WALLET_DEPOSIT: 0,
+    });
     expect(chartPoints(undefined)).toEqual([]);
   });
 

@@ -1,0 +1,9 @@
+# Generated or vendored: never hand-formatted.
+.next
+out
+coverage
+node_modules
+yarn.lock
+public
+src/services/apiService/*
+!src/services/apiService/index.ts

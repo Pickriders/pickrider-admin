@@ -62,9 +62,12 @@ export function apiErrorDetails<T extends Record<string, unknown>>(error: unknow
   return details && typeof details === "object" ? (details as T) : undefined;
 }
 
-export const isSessionRevoked = (error: unknown) => apiErrorStatus(error) === 401 && apiErrorCode(error) === "SESSION_REVOKED";
-export const isStepUpRequired = (error: unknown) => apiErrorStatus(error) === 428 || apiErrorCode(error) === "MFA_STEP_UP_REQUIRED";
-export const isMfaSetupRequired = (error: unknown) => apiErrorStatus(error) === 403 && apiErrorCode(error) === "MFA_SETUP_REQUIRED";
+export const isSessionRevoked = (error: unknown) =>
+  apiErrorStatus(error) === 401 && apiErrorCode(error) === "SESSION_REVOKED";
+export const isStepUpRequired = (error: unknown) =>
+  apiErrorStatus(error) === 428 || apiErrorCode(error) === "MFA_STEP_UP_REQUIRED";
+export const isMfaSetupRequired = (error: unknown) =>
+  apiErrorStatus(error) === 403 && apiErrorCode(error) === "MFA_SETUP_REQUIRED";
 /** The core answers a locked sign-in with 429 LOGIN_LOCKED (older builds used 423); the code is what matters. */
 export const isLoginLocked = (error: unknown) => {
   const status = apiErrorStatus(error);
@@ -120,7 +123,8 @@ export function loginErrorMessage(error: unknown): string {
     if (body?.code === "ACCOUNT_PENDING_ERASURE") return "This account is scheduled for erasure and cannot sign in.";
     return "This account cannot sign in right now. Ask a platform admin.";
   }
-  if (axios.isAxiosError(error) && !error.response) return "Could not reach Pickriders. Check your connection and try again.";
+  if (axios.isAxiosError(error) && !error.response)
+    return "Could not reach Pickriders. Check your connection and try again.";
   const message = body?.message;
   if (Array.isArray(message)) return message.join(", ");
   return typeof message === "string" && message ? message : "Something went wrong. Try again.";
@@ -131,7 +135,8 @@ export function mfaErrorMessage(error: unknown): string {
   if (isLoginLocked(error)) return loginErrorMessage(error);
   const status = apiErrorStatus(error);
   const code = apiErrorCode(error);
-  if (status === 401 && code !== "MFA_CODE_INVALID") return "This sign-in attempt expired. Start again from your password.";
+  if (status === 401 && code !== "MFA_CODE_INVALID")
+    return "This sign-in attempt expired. Start again from your password.";
   if (status === 400 || status === 401 || code === "MFA_CODE_INVALID") return WRONG_CODE;
   return loginErrorMessage(error);
 }

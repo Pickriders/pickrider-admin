@@ -38,7 +38,17 @@ export const CHANNEL_CHIP: Record<string, { label: string; tone: Tone }> = {
 const VIEWS = ["email", "text"] as const;
 type View = (typeof VIEWS)[number];
 
-function Segmented<T extends string>({ value, onChange, items, label }: { value: T; onChange: (next: T) => void; items: { id: T; label: string; icon: typeof Sun }[]; label: string }) {
+function Segmented<T extends string>({
+  value,
+  onChange,
+  items,
+  label,
+}: {
+  value: T;
+  onChange: (next: T) => void;
+  items: { id: T; label: string; icon: typeof Sun }[];
+  label: string;
+}) {
   return (
     <div role="group" aria-label={label} className="inline-flex rounded-xl border border-line bg-surface p-0.5">
       {items.map((item) => {
@@ -108,7 +118,11 @@ export function EmailPreviewPanel({
       <Panel className="p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <button type="button" onClick={onBack} className="mb-2 inline-flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink lg:hidden">
+            <button
+              type="button"
+              onClick={onBack}
+              className="mb-2 inline-flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink lg:hidden"
+            >
               <ArrowLeft size={14} aria-hidden />
               All emails
             </button>
@@ -126,7 +140,9 @@ export function EmailPreviewPanel({
           <KindChip control={control} />
           <Badge tone="brand">{EMAIL_AUDIENCE_LABEL[template.audience] ?? template.audience}</Badge>
           <Badge>{EMAIL_CATEGORY_LABEL[template.category] ?? template.category}</Badge>
-          <Badge tone={template.purpose === "SECURITY" ? "warning" : "neutral"}>{MESSAGE_PURPOSE_LABEL[template.purpose] ?? template.purpose}</Badge>
+          <Badge tone={template.purpose === "SECURITY" ? "warning" : "neutral"}>
+            {MESSAGE_PURPOSE_LABEL[template.purpose] ?? template.purpose}
+          </Badge>
           {template.respectsEmailPreference ? <Badge tone="info">Skipped when email is turned off</Badge> : null}
         </div>
         <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
@@ -160,7 +176,12 @@ export function EmailPreviewPanel({
         {!emailed ? (
           <p className="mt-3 flex items-start gap-1.5 rounded-xl bg-surface px-3 py-2 text-xs text-ink-muted">
             <Info size={14} className="mt-px shrink-0" aria-hidden />
-            Not emailed today: it goes out as {template.channels.map((c) => CHANNEL_CHIP[c]?.label ?? c).join(" and ").toLowerCase()}. This is the email layout it has in the registry.
+            Not emailed today: it goes out as{" "}
+            {template.channels
+              .map((c) => CHANNEL_CHIP[c]?.label ?? c)
+              .join(" and ")
+              .toLowerCase()}
+            . This is the email layout it has in the registry.
           </p>
         ) : null}
       </Panel>
@@ -210,7 +231,13 @@ export function EmailPreviewPanel({
                 />
               </>
             ) : null}
-            <Button size="sm" variant={editing ? "secondary" : "outline"} icon={Braces} onClick={() => setEditing((v) => !v)} aria-expanded={editing}>
+            <Button
+              size="sm"
+              variant={editing ? "secondary" : "outline"}
+              icon={Braces}
+              onClick={() => setEditing((v) => !v)}
+              aria-expanded={editing}
+            >
               Sample data{custom ? " (edited)" : ""}
             </Button>
           </div>
@@ -229,8 +256,13 @@ export function EmailPreviewPanel({
 
         {preview.isError ? (
           <div className="p-4">
-            <ErrorState message={errorMessage(preview.error)} onRetry={custom ? () => setCustom(null) : () => void preview.refetch()} />
-            {custom ? <p className="mt-2 text-center text-xs text-ink-muted">Try again resets to the sample data.</p> : null}
+            <ErrorState
+              message={errorMessage(preview.error)}
+              onRetry={custom ? () => setCustom(null) : () => void preview.refetch()}
+            />
+            {custom ? (
+              <p className="mt-2 text-center text-xs text-ink-muted">Try again resets to the sample data.</p>
+            ) : null}
           </div>
         ) : view === "text" ? (
           <div className="p-4">
@@ -241,19 +273,35 @@ export function EmailPreviewPanel({
             ) : (
               <Skeleton className="h-80 w-full" />
             )}
-            <p className="mt-2 text-[11px] text-ink-faint">Sent alongside the HTML. Mail apps that cannot show HTML, and some screen readers, use this part.</p>
+            <p className="mt-2 text-[11px] text-ink-faint">
+              Sent alongside the HTML. Mail apps that cannot show HTML, and some screen readers, use this part.
+            </p>
           </div>
         ) : (
           <div>
-            <div className={cx("admin-scroll overflow-x-auto px-3 py-5 transition-colors sm:px-5", scheme === "dark" ? "bg-[#111113]" : "bg-surface")}>
-              <div className={cx("mx-auto overflow-hidden rounded-xl border shadow-card", scheme === "dark" ? "border-white/10" : "border-line")} style={{ width: PREVIEW_WIDTH[device], maxWidth: device === "mobile" ? "100%" : undefined }}>
+            <div
+              className={cx(
+                "admin-scroll overflow-x-auto px-3 py-5 transition-colors sm:px-5",
+                scheme === "dark" ? "bg-[#111113]" : "bg-surface",
+              )}
+            >
+              <div
+                className={cx(
+                  "mx-auto overflow-hidden rounded-xl border shadow-card",
+                  scheme === "dark" ? "border-white/10" : "border-line",
+                )}
+                style={{ width: PREVIEW_WIDTH[device], maxWidth: device === "mobile" ? "100%" : undefined }}
+              >
                 {srcDoc ? (
                   <iframe
                     title={`${templateTitle(template.key)} email preview, ${scheme} mode, ${device} width`}
                     srcDoc={srcDoc}
                     sandbox="allow-popups allow-popups-to-escape-sandbox"
                     referrerPolicy="no-referrer"
-                    className={cx("block h-[70vh] min-h-[480px] w-full border-0 transition-opacity", preview.isFetching && "opacity-60")}
+                    className={cx(
+                      "block h-[70vh] min-h-[480px] w-full border-0 transition-opacity",
+                      preview.isFetching && "opacity-60",
+                    )}
                     style={{ colorScheme: scheme }}
                   />
                 ) : (
@@ -291,7 +339,16 @@ function ControlState({ control, canManage }: { control: ControlLike; canManage:
   const essential = emailKind(control) === "essential";
   const off = control.skipReason === "DISABLED_BY_ADMIN";
   return (
-    <div className={cx("mt-3 rounded-xl border px-3 py-2.5", off ? "border-danger/30 bg-danger-soft/50" : control.skipReason ? "border-warning/40 bg-warning-soft/50" : "border-line bg-surface/60")}>
+    <div
+      className={cx(
+        "mt-3 rounded-xl border px-3 py-2.5",
+        off
+          ? "border-danger/30 bg-danger-soft/50"
+          : control.skipReason
+            ? "border-warning/40 bg-warning-soft/50"
+            : "border-line bg-surface/60",
+      )}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <StatusLine control={control} className="text-xs" />
         <TemplateSwitch control={control} canManage={canManage} withLabel />
@@ -299,9 +356,7 @@ function ControlState({ control, canManage }: { control: ControlLike; canManage:
       {essential ? (
         <p className="mt-1.5 flex items-start gap-1.5 text-xs text-ink-muted">
           <Lock size={12} className="mt-0.5 shrink-0" aria-hidden />
-          <span>
-            Essential: {control.essentialReason || "always sends"}. It cannot be turned off or paused.
-          </span>
+          <span>Essential: {control.essentialReason || "always sends"}. It cannot be turned off or paused.</span>
         </p>
       ) : lock.locked && lock.reason && canManage ? (
         <p className="mt-1.5 flex items-start gap-1.5 text-xs text-ink-muted">
@@ -309,7 +364,9 @@ function ControlState({ control, canManage }: { control: ControlLike; canManage:
           <span>{lock.reason}</span>
         </p>
       ) : null}
-      {off && control.disabledAt ? <p className="mt-1 text-[11px] text-ink-faint">Turned off {when(control.disabledAt)}</p> : null}
+      {off && control.disabledAt ? (
+        <p className="mt-1 text-[11px] text-ink-faint">Turned off {when(control.disabledAt)}</p>
+      ) : null}
     </div>
   );
 }
@@ -346,7 +403,9 @@ function SampleDataEditor({
   return (
     <div className="border-b border-line bg-surface/60 px-4 py-4">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-semibold text-ink-muted">Variables as JSON. Applying renders the email again with these values.</p>
+        <p className="text-xs font-semibold text-ink-muted">
+          Variables as JSON. Applying renders the email again with these values.
+        </p>
         <span className="flex items-center gap-1.5">
           <Button
             size="sm"
@@ -384,7 +443,10 @@ function SampleDataEditor({
         spellCheck={false}
         aria-label="Sample data JSON"
         aria-invalid={!parsed.ok}
-        className={cx("min-h-56 font-mono text-xs leading-relaxed", !parsed.ok && "border-danger focus:border-danger focus:ring-danger/25")}
+        className={cx(
+          "min-h-56 font-mono text-xs leading-relaxed",
+          !parsed.ok && "border-danger focus:border-danger focus:ring-danger/25",
+        )}
       />
       {!parsed.ok ? (
         <p className="mt-1.5 text-xs font-medium text-danger">{parsed.error}</p>
@@ -393,7 +455,9 @@ function SampleDataEditor({
           Not in this data, so they render empty: <span className="font-mono">{missing.join(", ")}</span>
         </p>
       ) : (
-        <p className="mt-1.5 text-xs text-ink-faint">Values are escaped by the server, so HTML in a value shows as text.</p>
+        <p className="mt-1.5 text-xs text-ink-faint">
+          Values are escaped by the server, so HTML in a value shows as text.
+        </p>
       )}
     </div>
   );

@@ -12,7 +12,8 @@ export function RiderHandoffs({ riderId }: { riderId: string }) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-ink-muted">
-        Handed over: this rider asked another rider to finish the order. Took over: they finished someone else&apos;s. Counted handoffs also show in the insights as cancellations.
+        Handed over: this rider asked another rider to finish the order. Took over: they finished someone else&apos;s.
+        Counted handoffs also show in the insights as cancellations.
       </p>
       <HandoffsTable mode="all" riderId={riderId} csvName={`rider-${riderId}-handoffs`} />
     </div>

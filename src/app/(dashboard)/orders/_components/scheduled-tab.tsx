@@ -166,7 +166,9 @@ export function ScheduledTab() {
         cell: ({ row }) => (
           <span className="block min-w-0 max-w-[220px] leading-tight">
             <span className="flex items-center gap-2">
-              <span className="text-[13px] font-bold tabular-nums tracking-tight text-ink">{orderNumber(row.original)}</span>
+              <span className="text-[13px] font-bold tabular-nums tracking-tight text-ink">
+                {orderNumber(row.original)}
+              </span>
               <SourcePill channel={row.original.channel} size="badge" />
               <TypeBadge type={row.original.type} />
             </span>
@@ -202,7 +204,12 @@ export function ScheduledTab() {
       {
         id: "amount",
         header: "Paid",
-        meta: meta({ align: "right", hideBelow: "lg", skeleton: "lines", csv: { key: "totalAmountPayable", label: "Amount (kobo)" } }),
+        meta: meta({
+          align: "right",
+          hideBelow: "lg",
+          skeleton: "lines",
+          csv: { key: "totalAmountPayable", label: "Amount (kobo)" },
+        }),
         cell: ({ row }) => (
           <span className="block text-right">
             <span className="block text-sm font-semibold text-ink">{naira(row.original.totalAmountPayable)}</span>
@@ -213,7 +220,10 @@ export function ScheduledTab() {
       {
         id: "phase",
         header: "Rider search",
-        meta: meta({ skeleton: "badge", csv: { key: "phase", label: "Rider search", value: (r) => PHASE_LABEL[phaseOf(r as OrderRow)] } }),
+        meta: meta({
+          skeleton: "badge",
+          csv: { key: "phase", label: "Rider search", value: (r) => PHASE_LABEL[phaseOf(r as OrderRow)] },
+        }),
         cell: ({ row }) => {
           const p = phaseOf(row.original);
           const o = row.original;
@@ -226,8 +236,7 @@ export function ScheduledTab() {
                 <span className="mt-1 block text-[11px] text-ink-muted">
                   Since {ago(o.scheduleDispatchedAt)} · {count(o.scheduleRingCount ?? 1)} ring
                   {(o.scheduleRingCount ?? 1) === 1 ? "" : "s"}
-                  {o.scheduleLastRungAt ? ` · last ${ago(o.scheduleLastRungAt)}` : ""} ·{" "}
-                  {count(bidsOf(o))} bids
+                  {o.scheduleLastRungAt ? ` · last ${ago(o.scheduleLastRungAt)}` : ""} · {count(bidsOf(o))} bids
                 </span>
               ) : null}
               {(o.riderReleaseCount ?? 0) > 0 ? (
@@ -256,7 +265,13 @@ export function ScheduledTab() {
 
   return (
     <div className="space-y-4">
-      <ScrollRow className="-mx-1" innerClassName="px-1 pb-1" label="Scheduled phase" peekKey="scheduled-phase-chips" activeKey={phase}>
+      <ScrollRow
+        className="-mx-1"
+        innerClassName="px-1 pb-1"
+        label="Scheduled phase"
+        peekKey="scheduled-phase-chips"
+        activeKey={phase}
+      >
         <div className="flex w-max gap-2">
           {(["all", "ringing", "waiting", "unpaid", "overdue"] as const).map((id) => {
             const active = phase === id;
@@ -311,7 +326,9 @@ export function ScheduledTab() {
           <div className="space-y-2.5">
             <div className="flex items-start justify-between gap-3">
               <span className="min-w-0 leading-tight">
-                <span className="block text-[13px] font-bold tabular-nums tracking-tight text-ink">{orderNumber(row)}</span>
+                <span className="block text-[13px] font-bold tabular-nums tracking-tight text-ink">
+                  {orderNumber(row)}
+                </span>
                 <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] text-ink-muted">
                   <SourcePill channel={row.channel} />
                   <span className="truncate">

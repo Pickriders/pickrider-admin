@@ -48,7 +48,11 @@ const REJECT_REASONS = [
   "Vehicle documents are not valid",
 ];
 
-const SUSPEND_REASONS = ["Vehicle registration has expired", "Vehicle is no longer in use", "Vehicle details need to be updated"];
+const SUSPEND_REASONS = [
+  "Vehicle registration has expired",
+  "Vehicle is no longer in use",
+  "Vehicle details need to be updated",
+];
 
 function ReasonDrawer({
   open,
@@ -111,10 +115,17 @@ function ReasonDrawer({
                 onClick={() => setPreset(active ? "" : item)}
                 className={cx(
                   "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors",
-                  active ? "border-brand bg-brand-soft text-brand-dark" : "border-line bg-card text-ink hover:bg-surface",
+                  active
+                    ? "border-brand bg-brand-soft text-brand-dark"
+                    : "border-line bg-card text-ink hover:bg-surface",
                 )}
               >
-                <span className={cx("h-4 w-4 shrink-0 rounded-full border-2", active ? "border-brand bg-brand" : "border-line-strong")} />
+                <span
+                  className={cx(
+                    "h-4 w-4 shrink-0 rounded-full border-2",
+                    active ? "border-brand bg-brand" : "border-line-strong",
+                  )}
+                />
                 {item}
               </button>
             );
@@ -125,14 +136,28 @@ function ReasonDrawer({
           hint={`The courier sees this. At least ${MIN_REASON} characters in total.`}
           error={reason && !valid ? `${MIN_REASON - reason.length} more characters needed.` : undefined}
         >
-          <Textarea value={details} onChange={(e) => setDetails(e.target.value)} placeholder="Anything specific to this vehicle" />
+          <Textarea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            placeholder="Anything specific to this vehicle"
+          />
         </Field>
       </div>
     </Drawer>
   );
 }
 
-function Lightbox({ photos, index, onClose, onIndex }: { photos: string[]; index: number | null; onClose: () => void; onIndex: (i: number) => void }) {
+function Lightbox({
+  photos,
+  index,
+  onClose,
+  onIndex,
+}: {
+  photos: string[];
+  index: number | null;
+  onClose: () => void;
+  onIndex: (i: number) => void;
+}) {
   const step = useCallback(
     (delta: number) => {
       if (index == null || !photos.length) return;
@@ -155,7 +180,12 @@ function Lightbox({ photos, index, onClose, onIndex }: { photos: string[]; index
   if (index == null) return null;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4" onClick={onClose}>
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20">
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"
+      >
         <X size={18} />
       </button>
       {photos.length > 1 ? (
@@ -185,7 +215,12 @@ function Lightbox({ photos, index, onClose, onIndex }: { photos: string[]; index
         </>
       ) : null}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photos[index]} alt="" className="max-h-[90vh] max-w-full rounded-xl object-contain" onClick={(e) => e.stopPropagation()} />
+      <img
+        src={photos[index]}
+        alt=""
+        className="max-h-[90vh] max-w-full rounded-xl object-contain"
+        onClick={(e) => e.stopPropagation()}
+      />
       <span className="absolute bottom-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
         {index + 1} of {photos.length}
       </span>
@@ -198,7 +233,7 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
   const router = useRouter();
   const query = useVehicle(vehicleId);
   const vehicle = query.data as VehicleRecord | undefined;
-  const courierId = typeof vehicle?.userId === "string" ? vehicle.userId : vehicle?.userId?._id ?? "";
+  const courierId = typeof vehicle?.userId === "string" ? vehicle.userId : (vehicle?.userId?._id ?? "");
   const businessId = typeof vehicle?.businessId === "string" ? vehicle.businessId : "";
   const courier = useUser(courierId);
   const business = useBusiness(businessId);
@@ -208,9 +243,21 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
   const close = () => setDialog(null);
 
   const invalidate = [["vehicle", vehicleId], "vehicles", "stats"];
-  const verify = useAction(() => vehicles.verify(vehicleId, courierId), { success: "Vehicle verified. The courier has been told.", invalidate, onSuccess: close });
-  const reject = useAction((reason: string) => vehicles.reject(vehicleId, courierId, { reason }), { success: "Vehicle rejected.", invalidate, onSuccess: close });
-  const suspend = useAction((reason: string) => vehicles.suspend(vehicleId, courierId, { reason }), { success: "Vehicle suspended.", invalidate, onSuccess: close });
+  const verify = useAction(() => vehicles.verify(vehicleId, courierId), {
+    success: "Vehicle verified. The courier has been told.",
+    invalidate,
+    onSuccess: close,
+  });
+  const reject = useAction((reason: string) => vehicles.reject(vehicleId, courierId, { reason }), {
+    success: "Vehicle rejected.",
+    invalidate,
+    onSuccess: close,
+  });
+  const suspend = useAction((reason: string) => vehicles.suspend(vehicleId, courierId, { reason }), {
+    success: "Vehicle suspended.",
+    invalidate,
+    onSuccess: close,
+  });
   const remove = useAction(() => vehicles.remove(vehicleId), {
     success: "Vehicle deleted.",
     invalidate: ["vehicles", "stats"],
@@ -254,7 +301,11 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
             <Skeleton className="h-8 w-56" />
           )
         }
-        description={vehicle ? `${[vehicle.make, vehicle.model].filter(Boolean).join(" ") || VEHICLE_TYPE_LABEL} · ${vehicle.plateNumber || "no plate"}` : undefined}
+        description={
+          vehicle
+            ? `${[vehicle.make, vehicle.model].filter(Boolean).join(" ") || VEHICLE_TYPE_LABEL} · ${vehicle.plateNumber || "no plate"}`
+            : undefined
+        }
         actions={
           vehicle ? (
             <>
@@ -279,7 +330,12 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                 </Button>
               ) : null}
               {can("vehicle.delete") ? (
-                <Button icon={Trash2} variant="danger" onClick={() => setDialog("delete")} disabled={Boolean(vehicle.isDeleted)}>
+                <Button
+                  icon={Trash2}
+                  variant="danger"
+                  onClick={() => setDialog("delete")}
+                  disabled={Boolean(vehicle.isDeleted)}
+                >
                   Delete
                 </Button>
               ) : null}
@@ -315,7 +371,11 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                       className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-line bg-surface"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-[1.03]" />
+                      <img
+                        src={src}
+                        alt=""
+                        className="h-full w-full object-cover transition-transform group-hover:scale-[1.03]"
+                      />
                       <span className="absolute bottom-2 right-2 grid h-8 w-8 place-items-center rounded-lg bg-ink/80 text-card opacity-0 transition-opacity group-hover:opacity-100">
                         <Expand size={14} />
                       </span>
@@ -349,10 +409,28 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                     { label: "Name", value: vehicle?.name },
                     { label: "Make", value: vehicle?.make },
                     { label: "Model", value: vehicle?.model },
-                    { label: "Colour", value: vehicle?.color ? <span className="capitalize">{vehicle.color}</span> : undefined },
-                    { label: "Plate number", value: vehicle?.plateNumber ? <span className="font-mono uppercase">{vehicle.plateNumber}</span> : undefined },
-                    { label: "Engine number", value: vehicle?.engineNumber ? <span className="font-mono">{vehicle.engineNumber}</span> : undefined },
-                    { label: "Chassis number", value: vehicle?.chasisNumber ? <span className="font-mono">{vehicle.chasisNumber}</span> : undefined },
+                    {
+                      label: "Colour",
+                      value: vehicle?.color ? <span className="capitalize">{vehicle.color}</span> : undefined,
+                    },
+                    {
+                      label: "Plate number",
+                      value: vehicle?.plateNumber ? (
+                        <span className="font-mono uppercase">{vehicle.plateNumber}</span>
+                      ) : undefined,
+                    },
+                    {
+                      label: "Engine number",
+                      value: vehicle?.engineNumber ? (
+                        <span className="font-mono">{vehicle.engineNumber}</span>
+                      ) : undefined,
+                    },
+                    {
+                      label: "Chassis number",
+                      value: vehicle?.chasisNumber ? (
+                        <span className="font-mono">{vehicle.chasisNumber}</span>
+                      ) : undefined,
+                    },
                   ]}
                 />
               )}
@@ -403,11 +481,17 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                     <Avatar src={courier.data?.photo} name={courierName} size={44} />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-ink">{courierName}</p>
-                      <p className="truncate text-xs text-ink-muted">{courier.data?.phone || formatEmail(courier.data?.email) || ""}</p>
+                      <p className="truncate text-xs text-ink-muted">
+                        {courier.data?.phone || formatEmail(courier.data?.email) || ""}
+                      </p>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {courier.data?.status ? <Badge tone={statusTone(courier.data.status.toLowerCase())}>{courier.data.status.toLowerCase()}</Badge> : null}
+                    {courier.data?.status ? (
+                      <Badge tone={statusTone(courier.data.status.toLowerCase())}>
+                        {courier.data.status.toLowerCase()}
+                      </Badge>
+                    ) : null}
                     {courier.data?.isOnline ? (
                       <Badge tone="success" dot>
                         Online
@@ -415,7 +499,10 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
                     ) : null}
                     {courier.data?.driversLicenseVerified ? (
                       <Badge tone={courier.data.driversLicenseVerified === "APPROVE" ? "success" : "warning"}>
-                        Licence {courier.data.driversLicenseVerified === "APPROVE" ? "approved" : courier.data.driversLicenseVerified.toLowerCase()}
+                        Licence{" "}
+                        {courier.data.driversLicenseVerified === "APPROVE"
+                          ? "approved"
+                          : courier.data.driversLicenseVerified.toLowerCase()}
                       </Badge>
                     ) : null}
                   </div>
@@ -439,10 +526,18 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
               ) : (
                 <div>
                   <div className="flex items-center gap-3">
-                    <Avatar src={(business.data?.photo as string | undefined) ?? business.data?.logo} name={business.data?.name} size={40} />
+                    <Avatar
+                      src={(business.data?.photo as string | undefined) ?? business.data?.logo}
+                      name={business.data?.name}
+                      size={40}
+                    />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-ink">{business.data?.name}</p>
-                      <p className="truncate text-xs text-ink-muted">{business.data?.businessHandle ? `@${business.data.businessHandle}` : formatEmail(business.data?.email)}</p>
+                      <p className="truncate text-xs text-ink-muted">
+                        {business.data?.businessHandle
+                          ? `@${business.data.businessHandle}`
+                          : formatEmail(business.data?.email)}
+                      </p>
                     </div>
                   </div>
                   <LinkButton href={`/business/${businessId}/business-details`} size="sm" className="mt-4 w-full">
@@ -500,7 +595,12 @@ function VehicleVerification({ vehicleId }: { vehicleId: string }) {
         confirmLabel="Delete"
       />
 
-      <VehicleFormDrawer open={dialog === "edit"} onClose={close} vehicle={vehicle ?? null} userId={courierId || undefined} />
+      <VehicleFormDrawer
+        open={dialog === "edit"}
+        onClose={close}
+        vehicle={vehicle ?? null}
+        userId={courierId || undefined}
+      />
     </div>
   );
 }

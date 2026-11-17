@@ -38,8 +38,12 @@ describe("urgent chime", () => {
   it("synthesises the two-tone chime and wakes a suspended context", () => {
     expect(playUrgentChime(100_000)).toBe(true);
     expect(oscillators).toHaveLength(CHIME_NOTES.length);
-    expect(oscillators.map((osc) => osc.frequency.setValueAtTime.mock.calls[0][0])).toEqual(CHIME_NOTES.map((note) => note.frequency));
-    expect(oscillators.every((osc) => osc.start.mock.calls.length === 1 && osc.stop.mock.calls.length === 1)).toBe(true);
+    expect(oscillators.map((osc) => osc.frequency.setValueAtTime.mock.calls[0][0])).toEqual(
+      CHIME_NOTES.map((note) => note.frequency),
+    );
+    expect(oscillators.every((osc) => osc.start.mock.calls.length === 1 && osc.stop.mock.calls.length === 1)).toBe(
+      true,
+    );
     expect(resume).toHaveBeenCalled();
   });
 

@@ -164,7 +164,10 @@ Query, or browser APIs needs `"use client"`. Keep the boundary as low in the tre
 **Feedback** — Sonner for toasts, `PageLoading` / `TableLoading` / `Skeleton` for loading
 states. Don't invent new spinner patterns.
 
-**Formatting** — Prettier: `trailingComma: all`, print width 120. Run `yarn lint`.
+**Formatting** — Prettier (`.prettierrc`: `trailingComma: all`, print width 120). Run `yarn format`; CI
+runs `yarn format:check`, and the pre-commit hook formats staged files. The generated API client is
+ignored (`.prettierignore`). Use the repo's prettier (`yarn format`), never `npx prettier`, which can
+fetch a different version.
 
 ---
 
@@ -213,9 +216,9 @@ yarn test
 
 All three clean. Jest (`jest.config.js`, via `next/jest`) runs `src/**/*.test.ts(x)`; the
 route-contract test in `src/lib/admin/api.test.ts` is the one that catches API drift. The
-pre-commit hook (`.husky/pre-commit`) runs `tsc`, then lint-staged: `eslint --fix` and
-`jest --findRelatedTests` on the staged files — the same shape as backend-api's hook. CI
-(`.github/workflows/ci.yml`) runs all three on every push and PR.
+pre-commit hook (`.husky/pre-commit`) runs `tsc`, then lint-staged: `eslint --fix`, `prettier --write`
+and `jest --findRelatedTests` on the staged files — the same shape as backend-api's hook. CI
+(`.github/workflows/ci.yml`) runs all three, plus `yarn format:check`, on every push and PR.
 
 Still review your own diff for what tooling can't catch: money conversions, permission checks,
 and destructive actions without confirmation.
@@ -236,7 +239,7 @@ Two GitHub Actions workflows in `.github/workflows/` run this:
 - **`release-pr.yml`** — when a PR merges into `dev` it opens or refreshes
   **`release: staging ← dev`**; when a PR merges into `staging` it opens or refreshes
   **`release: main ← staging`**. It never opens a duplicate — if the release PR is already
-  open, it regenerates the description instead. Only *merged* PRs promote; closing one without
+  open, it regenerates the description instead. Only _merged_ PRs promote; closing one without
   merging does nothing. It can also be run by hand from the Actions tab (`workflow_dispatch`)
   to refresh either chain.
 - **`ci.yml`** — type-checks (`npx tsc --noEmit`), lints and runs `yarn test` on **every branch

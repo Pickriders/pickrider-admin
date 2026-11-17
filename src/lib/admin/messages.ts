@@ -35,7 +35,16 @@ export function messagesRange(state: Pick<TableState, "from" | "to">): { dateFro
 }
 
 /** URL filters the list endpoint reads. Anything else in the URL (`id` for the drawer, `tab`) stays out. */
-export const MESSAGE_FILTER_KEYS = ["channel", "status", "skipReason", "provider", "purpose", "template", "userId", "orderId"] as const;
+export const MESSAGE_FILTER_KEYS = [
+  "channel",
+  "status",
+  "skipReason",
+  "provider",
+  "purpose",
+  "template",
+  "userId",
+  "orderId",
+] as const;
 
 /**
  * URL state to the GET admins/messages query. The table's search box is the recipient search
@@ -56,8 +65,18 @@ export function messagesQuery(state: TableState): Record<string, string | number
 export const MESSAGE_CHANNEL_LABEL: Record<string, string> = { SMS: "SMS", EMAIL: "Email" };
 export const MESSAGE_CHANNEL_TONE: Record<string, Tone> = { SMS: "warning", EMAIL: "info" };
 
-export const MESSAGE_STATUS_LABEL: Record<string, string> = { QUEUED: "Queued", SENT: "Sent", FAILED: "Failed", SKIPPED: "Skipped" };
-export const MESSAGE_STATUS_TONE: Record<string, Tone> = { QUEUED: "warning", SENT: "success", FAILED: "danger", SKIPPED: "neutral" };
+export const MESSAGE_STATUS_LABEL: Record<string, string> = {
+  QUEUED: "Queued",
+  SENT: "Sent",
+  FAILED: "Failed",
+  SKIPPED: "Skipped",
+};
+export const MESSAGE_STATUS_TONE: Record<string, Tone> = {
+  QUEUED: "warning",
+  SENT: "success",
+  FAILED: "danger",
+  SKIPPED: "neutral",
+};
 
 /** Why the admin email controls held a SKIPPED message back (nothing reached the provider). */
 export const MESSAGE_SKIP_REASON_LABEL: Record<string, string> = {
@@ -71,7 +90,9 @@ export function skipLine(row: { status?: string | null; skipReason?: string | nu
   if (row.status !== "SKIPPED") return "";
   if (!row.skipReason) return "Held back by the email controls";
   const known = MESSAGE_SKIP_REASON_LABEL[row.skipReason];
-  const reason = known ? known.charAt(0).toLowerCase() + known.slice(1) : row.skipReason.toLowerCase().replace(/_/g, " ");
+  const reason = known
+    ? known.charAt(0).toLowerCase() + known.slice(1)
+    : row.skipReason.toLowerCase().replace(/_/g, " ");
   return `Held back: ${reason}`;
 }
 
@@ -85,15 +106,25 @@ export const MESSAGE_PURPOSE_LABEL: Record<string, string> = {
   TEST: "Test send",
 };
 
-export const label = (map: Record<string, string>, value: string | null | undefined) => (value ? map[value] ?? value : "");
+export const label = (map: Record<string, string>, value: string | null | undefined) =>
+  value ? (map[value] ?? value) : "";
 
 /** Sent / failed / queued / skipped for one channel out of the summary; zeros when the channel had nothing. */
 export function channelCounts(
-  byChannel: { channel: string; queued: number; sent: number; failed: number; skipped?: number; total: number }[] | null | undefined,
+  byChannel:
+    | { channel: string; queued: number; sent: number; failed: number; skipped?: number; total: number }[]
+    | null
+    | undefined,
   channel: "SMS" | "EMAIL",
 ) {
   const row = (byChannel ?? []).find((entry) => entry.channel === channel);
-  return { queued: row?.queued ?? 0, sent: row?.sent ?? 0, failed: row?.failed ?? 0, skipped: row?.skipped ?? 0, total: row?.total ?? 0 };
+  return {
+    queued: row?.queued ?? 0,
+    sent: row?.sent ?? 0,
+    failed: row?.failed ?? 0,
+    skipped: row?.skipped ?? 0,
+    total: row?.total ?? 0,
+  };
 }
 
 /** Share that failed, as a whole percent, or null when nothing finished. */
@@ -112,7 +143,9 @@ export function termiiBalanceLabel(balance: { balance: number; currency?: string
   const currency = balance.currency?.trim().toUpperCase();
   if (currency && /^[A-Z]{3}$/.test(currency)) {
     try {
-      return new Intl.NumberFormat("en-NG", { style: "currency", currency, maximumFractionDigits: 2 }).format(balance.balance);
+      return new Intl.NumberFormat("en-NG", { style: "currency", currency, maximumFractionDigits: 2 }).format(
+        balance.balance,
+      );
     } catch {
       /* not an ISO code Intl knows: fall through */
     }

@@ -24,7 +24,9 @@ export function erasureChecklist(blockers: ErasureBlocker[] | undefined): Erasur
     if (!blocker) return { code, label, ok: true };
     return { code, label, ok: false, detail: blockerDetail(blocker) };
   });
-  const unknown = (blockers ?? []).filter((b) => !ERASURE_CHECKS.some((c) => c.code === b.code)).map((b) => ({ code: b.code, label: b.message || b.code, ok: false, detail: blockerDetail(b) }));
+  const unknown = (blockers ?? [])
+    .filter((b) => !ERASURE_CHECKS.some((c) => c.code === b.code))
+    .map((b) => ({ code: b.code, label: b.message || b.code, ok: false, detail: blockerDetail(b) }));
   return [...known, ...unknown];
 }
 
@@ -49,7 +51,9 @@ export function erasureConfirmMatches(typed: string, target: { label: string; va
     const a = typed.replace(/\D/g, "");
     const b = target.value.replace(/\D/g, "");
     if (!a || !b) return false;
-    return a === b || (a.startsWith("0") && a.length === 11 && b.endsWith(a.slice(1))) || (a.length >= 10 && b.endsWith(a));
+    return (
+      a === b || (a.startsWith("0") && a.length === 11 && b.endsWith(a.slice(1))) || (a.length >= 10 && b.endsWith(a))
+    );
   }
   return typed.trim().toLowerCase() === target.value.trim().toLowerCase();
 }

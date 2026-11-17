@@ -7,9 +7,19 @@ import { playUrgentChime } from "@/lib/admin/chime";
 import type { AdminAlert } from "@/lib/admin/api";
 
 import { alertToastId, bellBadge, showAlertToast } from "./alert-bell";
-import { ALERT_TYPE_OPTIONS, alertEmailMeta, alertHref, alertTypeLabel, digestTitle, findAlert, riderUnpauseHref } from "./alert-ui";
+import {
+  ALERT_TYPE_OPTIONS,
+  alertEmailMeta,
+  alertHref,
+  alertTypeLabel,
+  digestTitle,
+  findAlert,
+  riderUnpauseHref,
+} from "./alert-ui";
 
-jest.mock("sonner", () => ({ toast: { error: jest.fn(), warning: jest.fn(), success: jest.fn(), dismiss: jest.fn() } }));
+jest.mock("sonner", () => ({
+  toast: { error: jest.fn(), warning: jest.fn(), success: jest.fn(), dismiss: jest.fn() },
+}));
 jest.mock("@/lib/admin/chime", () => ({ playUrgentChime: jest.fn(() => true) }));
 jest.mock("next/navigation", () => ({ useRouter: () => ({ push: jest.fn() }) }));
 
@@ -94,11 +104,15 @@ describe("alert emails", () => {
   });
 
   it("a digest-only alert says In digest and nothing else", () => {
-    expect(alertEmailMeta(alert({ emailDigestAt: "2026-11-10T09:45:00.000Z" })).map((m) => m.label)).toEqual(["In digest"]);
+    expect(alertEmailMeta(alert({ emailDigestAt: "2026-11-10T09:45:00.000Z" })).map((m) => m.label)).toEqual([
+      "In digest",
+    ]);
   });
 
   it("one inbox reads singular", () => {
-    expect(alertEmailMeta(alert({ emailedAt: "2026-11-10T09:42:00.000Z", emailRecipientsCount: 1 }))[0].title).toMatch(/^Emailed 1 support inbox at /);
+    expect(alertEmailMeta(alert({ emailedAt: "2026-11-10T09:42:00.000Z", emailRecipientsCount: 1 }))[0].title).toMatch(
+      /^Emailed 1 support inbox at /,
+    );
   });
 });
 
@@ -122,7 +136,14 @@ describe("alert toasts", () => {
   const handlers = { onClaim: jest.fn(), onOpen: jest.fn() };
 
   it("an URGENT alert chimes and stays until claimed or closed", () => {
-    showAlertToast(alert({ severity: "URGENT" as AdminAlert["severity"], type: "HANDOFF_ACCIDENT", title: "Rider reported an accident" }), handlers);
+    showAlertToast(
+      alert({
+        severity: "URGENT" as AdminAlert["severity"],
+        type: "HANDOFF_ACCIDENT",
+        title: "Rider reported an accident",
+      }),
+      handlers,
+    );
     expect(playUrgentChime).toHaveBeenCalledTimes(1);
     expect(toast.error).toHaveBeenCalledTimes(1);
     const [title, options] = (toast.error as jest.Mock).mock.calls[0];

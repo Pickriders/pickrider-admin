@@ -18,7 +18,10 @@ import { formatEmail } from "@/lib/admin/person";
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 
 export function roleLabel(role: string) {
-  return role.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return role
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export function ProfileTab() {
@@ -28,7 +31,12 @@ export function ProfileTab() {
   const loading = profile.isLoading && !user;
 
   if (profile.error && !user) {
-    return <ErrorState message={errorMessage(profile.error, "Could not load your profile.")} onRetry={() => void profile.refetch()} />;
+    return (
+      <ErrorState
+        message={errorMessage(profile.error, "Could not load your profile.")}
+        onRetry={() => void profile.refetch()}
+      />
+    );
   }
 
   return (
@@ -52,7 +60,9 @@ export function ProfileTab() {
                 { label: "Phone", value: user?.phone },
                 {
                   label: "Status",
-                  value: user?.status ? <Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>{roleLabel(user.status)}</Badge> : undefined,
+                  value: user?.status ? (
+                    <Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>{roleLabel(user.status)}</Badge>
+                  ) : undefined,
                 },
               ]}
             />
@@ -132,7 +142,11 @@ function PhotoBlock({ name, photo, loading }: { name: string; photo?: string; lo
   return (
     <div className="flex items-center gap-4">
       <div className="relative shrink-0">
-        {loading ? <Skeleton className="h-20 w-20 rounded-full" /> : <Avatar src={preview ?? photo} name={name} size={80} />}
+        {loading ? (
+          <Skeleton className="h-20 w-20 rounded-full" />
+        ) : (
+          <Avatar src={preview ?? photo} name={name} size={80} />
+        )}
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -142,11 +156,27 @@ function PhotoBlock({ name, photo, loading }: { name: string; photo?: string; lo
         >
           <Camera size={14} />
         </button>
-        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => onPick(e.target.files?.[0])} />
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => onPick(e.target.files?.[0])}
+        />
       </div>
       <div className="min-w-0">
-        <div className="truncate text-lg font-black tracking-tight text-ink">{loading ? <Skeleton className="h-6 w-32" /> : name || "Admin"}</div>
-        <Button variant="outline" size="sm" icon={Camera} loading={upload.isPending} onClick={() => inputRef.current?.click()} disabled={loading} className="mt-2">
+        <div className="truncate text-lg font-black tracking-tight text-ink">
+          {loading ? <Skeleton className="h-6 w-32" /> : name || "Admin"}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          icon={Camera}
+          loading={upload.isPending}
+          onClick={() => inputRef.current?.click()}
+          disabled={loading}
+          className="mt-2"
+        >
           {photo ? "Change photo" : "Upload photo"}
         </Button>
         <p className="mt-1.5 text-[11px] text-ink-faint">JPG or PNG, up to 2 MB.</p>

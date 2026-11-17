@@ -23,10 +23,7 @@ export function cx(...parts: Array<string | false | null | undefined>) {
 
 export function Panel({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cx("rounded-2xl border border-line bg-card shadow-card", className)}
-      {...props}
-    >
+    <div className={cx("rounded-2xl border border-line bg-card shadow-card", className)} {...props}>
       {children}
     </div>
   );
@@ -311,11 +308,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   );
 });
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
-  function Textarea({ className, ...props }, ref) {
-    return <textarea ref={ref} className={cx(FIELD, "h-auto min-h-24 py-2", className)} {...props} />;
-  },
-);
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea(
+  { className, ...props },
+  ref,
+) {
+  return <textarea ref={ref} className={cx(FIELD, "h-auto min-h-24 py-2", className)} {...props} />;
+});
 
 export function Switch({
   checked,
@@ -446,8 +444,17 @@ export function Avatar({ src, name, size = 36 }: { src?: string | null; name?: s
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
   if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="" width={size} height={size} className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
   }
   return (
     <span
@@ -511,14 +518,22 @@ export function Tabs<T extends string>({
   );
 }
 
-export function KeyValue({ items, columns = 2 }: { items: { label: ReactNode; value: ReactNode }[]; columns?: 1 | 2 | 3 | 4 }) {
+export function KeyValue({
+  items,
+  columns = 2,
+}: {
+  items: { label: ReactNode; value: ReactNode }[];
+  columns?: 1 | 2 | 3 | 4;
+}) {
   const cols = { 1: "sm:grid-cols-1", 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-4" }[columns];
   return (
     <dl className={cx("grid grid-cols-1 gap-x-6 gap-y-3", cols)}>
       {items.map((item, index) => (
         <div key={index} className="min-w-0">
           <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">{item.label}</dt>
-          <dd className="mt-0.5 truncate text-sm font-medium text-ink">{item.value ?? <span className="text-ink-faint">Not set</span>}</dd>
+          <dd className="mt-0.5 truncate text-sm font-medium text-ink">
+            {item.value ?? <span className="text-ink-faint">Not set</span>}
+          </dd>
         </div>
       ))}
     </dl>

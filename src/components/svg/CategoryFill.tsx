@@ -2,13 +2,7 @@ import { SvgProps } from "./Svg.type";
 
 export const CategoryFill = ({ height = 18, width = 18 }: SvgProps) => {
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 18 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

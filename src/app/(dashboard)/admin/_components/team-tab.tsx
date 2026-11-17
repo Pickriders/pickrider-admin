@@ -4,7 +4,21 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Building2, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 
-import { Avatar, Badge, Button, DataTable, Drawer, Field, Input, KeyValue, Select, cx, type ColumnMeta, type FilterSpec, type Tone } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  Button,
+  DataTable,
+  Drawer,
+  Field,
+  Input,
+  KeyValue,
+  Select,
+  cx,
+  type ColumnMeta,
+  type FilterSpec,
+  type Tone,
+} from "@/components/kit";
 import { StatusDrawer, normalizePhone, phoneLabel } from "@/components/users/user-actions";
 import { asArray, users, type Team, type User } from "@/lib/admin/api";
 import { PLATFORM_STAFF_ROLES } from "@/lib/admin-access";
@@ -25,7 +39,12 @@ import { ROLE_LABEL } from "@/lib/admin/roles";
  */
 const STAFF = PLATFORM_STAFF_ROLES as readonly string[];
 
-const STATUS_TONE: Record<string, Tone> = { ACTIVE: "success", INACTIVE: "neutral", SUSPENDED: "warning", BANNED: "danger" };
+const STATUS_TONE: Record<string, Tone> = {
+  ACTIVE: "success",
+  INACTIVE: "neutral",
+  SUSPENDED: "warning",
+  BANNED: "danger",
+};
 
 /** Non-staff accounts the console can create; staff roles come from PLATFORM_STAFF_ROLES. */
 const CREATABLE_ROLES = ["USER", "PLATFORM_RIDER", "DEVELOPER"] as const;
@@ -36,7 +55,10 @@ const FILTERS: FilterSpec[] = [
   {
     key: "status",
     label: "Status",
-    options: ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({ value, label: ROLE_LABEL[value] ?? value.charAt(0) + value.slice(1).toLowerCase() })),
+    options: ["ACTIVE", "INACTIVE", "SUSPENDED", "BANNED"].map((value) => ({
+      value,
+      label: ROLE_LABEL[value] ?? value.charAt(0) + value.slice(1).toLowerCase(),
+    })),
   },
   { key: "role", label: "Role", options: STAFF.map((value) => ({ value, label: ROLE_LABEL[value] ?? value })) },
 ];
@@ -77,8 +99,13 @@ const STAFF_COLUMNS: ColumnDef<User, unknown>[] = [
   {
     id: "phone",
     header: "Phone",
-    meta: meta({ hideBelow: "lg", csv: { key: "phone", label: "Phone", value: (row) => phoneLabel((row as User).phone) } }),
-    cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink-muted">{phoneLabel(row.original.phone)}</span>,
+    meta: meta({
+      hideBelow: "lg",
+      csv: { key: "phone", label: "Phone", value: (row) => phoneLabel((row as User).phone) },
+    }),
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-sm text-ink-muted">{phoneLabel(row.original.phone)}</span>
+    ),
   },
   {
     id: "status",
@@ -94,7 +121,11 @@ const STAFF_COLUMNS: ColumnDef<User, unknown>[] = [
     id: "lastLogin",
     header: "Last login",
     meta: meta({ sortKey: "lastLoginDate", hideBelow: "md", csv: { key: "lastLoginDate", label: "Last login" } }),
-    cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink-muted">{row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}</span>,
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-sm text-ink-muted">
+        {row.original.lastLoginDate ? ago(row.original.lastLoginDate) : "Never"}
+      </span>
+    ),
   },
   {
     id: "createdAt",
@@ -123,7 +154,11 @@ const TEAM_COLUMNS: ColumnDef<Team, unknown>[] = [
     id: "entityType",
     header: "Type",
     meta: meta({ csv: { key: "entityType", label: "Type" } }),
-    cell: ({ row }) => <Badge tone={row.original.entityType === "BUSINESS" ? "info" : "brand"}>{row.original.entityType === "BUSINESS" ? "Business" : "Developer"}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={row.original.entityType === "BUSINESS" ? "info" : "brand"}>
+        {row.original.entityType === "BUSINESS" ? "Business" : "Developer"}
+      </Badge>
+    ),
   },
   {
     id: "contact",
@@ -132,7 +167,9 @@ const TEAM_COLUMNS: ColumnDef<Team, unknown>[] = [
     cell: ({ row }) => (
       <span className="min-w-0">
         <span className="block truncate text-sm text-ink">{String(row.original.contactPersonEmail ?? "")}</span>
-        <span className="block text-[11px] text-ink-muted">{phoneLabel(row.original.contactPersonPhone as string | undefined)}</span>
+        <span className="block text-[11px] text-ink-muted">
+          {phoneLabel(row.original.contactPersonPhone as string | undefined)}
+        </span>
       </span>
     ),
   },
@@ -163,7 +200,8 @@ export function TeamTab() {
   const view = table.state.filters.view === "teams" ? "teams" : "staff";
   const memberId = table.state.filters.member;
   const adding = table.state.filters.add === "1";
-  const setView = (next: "staff" | "teams") => table.update({ view: next === "staff" ? undefined : next, status: undefined, role: undefined });
+  const setView = (next: "staff" | "teams") =>
+    table.update({ view: next === "staff" ? undefined : next, status: undefined, role: undefined });
 
   return (
     <div className="space-y-4">
@@ -196,7 +234,11 @@ export function TeamTab() {
         ) : null}
       </div>
 
-      {view === "staff" ? <StaffTable onOpen={(id) => table.update({ member: id }, { resetPage: false })} /> : <TeamsTable />}
+      {view === "staff" ? (
+        <StaffTable onOpen={(id) => table.update({ member: id }, { resetPage: false })} />
+      ) : (
+        <TeamsTable />
+      )}
       {view === "staff" ? <LockoutsPanel /> : null}
 
       <MemberDrawer userId={memberId} onClose={() => table.update({ member: undefined }, { resetPage: false })} />
@@ -214,7 +256,16 @@ function StaffTable({ onOpen }: { onOpen: (id: string) => void }) {
     void _member;
     void _add;
     const { page, limit, sortBy, order, dateRange } = table.query;
-    return { page, limit, sortBy, order, dateRange, ...filters, role: role || STAFF.join(","), userSearch: table.state.search };
+    return {
+      page,
+      limit,
+      sortBy,
+      order,
+      dateRange,
+      ...filters,
+      role: role || STAFF.join(","),
+      userSearch: table.state.search,
+    };
   }, [table.query, table.state.filters, table.state.search]);
   const staff = useUsers(query);
 
@@ -269,7 +320,13 @@ function TeamsTable() {
   const teams = useTeams(query);
   // The teams endpoint has no text search, so the box filters the loaded page.
   const data = useMemo(
-    () => (teams.data ? { ...teams.data, items: pageFilter(teams.data.items, table.state.search, (t) => [t.name, t.handle, t.contactPersonEmail]) } : undefined),
+    () =>
+      teams.data
+        ? {
+            ...teams.data,
+            items: pageFilter(teams.data.items, table.state.search, (t) => [t.name, t.handle, t.contactPersonEmail]),
+          }
+        : undefined,
     [teams.data, table.state.search],
   );
 
@@ -292,7 +349,9 @@ function TeamsTable() {
             <p className="truncate text-sm font-bold text-ink">{row.name}</p>
             <p className="truncate text-[11px] text-ink-muted">{String(row.contactPersonEmail ?? "")}</p>
           </div>
-          <Badge tone={row.entityType === "BUSINESS" ? "info" : "brand"}>{row.entityType === "BUSINESS" ? "Business" : "Developer"}</Badge>
+          <Badge tone={row.entityType === "BUSINESS" ? "info" : "brand"}>
+            {row.entityType === "BUSINESS" ? "Business" : "Developer"}
+          </Badge>
         </div>
       )}
     />
@@ -312,7 +371,12 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
   const canChangeStatus = can("user.status") && !isSelf && (!targetIsOwner || iAmOwner);
 
   return (
-    <Drawer open={Boolean(userId)} onClose={onClose} title={member ? fullName(member) || "Team member" : "Team member"} subtitle={formatEmail(member?.email) || undefined}>
+    <Drawer
+      open={Boolean(userId)}
+      onClose={onClose}
+      title={member ? fullName(member) || "Team member" : "Team member"}
+      subtitle={formatEmail(member?.email) || undefined}
+    >
       {user.isError ? (
         <p className="text-sm font-semibold text-danger">{errorMessage(user.error)}</p>
       ) : !member ? (
@@ -347,12 +411,20 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
               { label: "Email", value: formatEmail(member.email) || undefined },
               { label: "Phone", value: phoneLabel(member.phone) },
               { label: "All roles", value: (member.roles ?? []).map((r) => ROLE_LABEL[r] ?? r).join(", ") },
-              { label: "Country", value: member.country ? String((member.country as { name?: string }).name ?? member.country) : undefined },
+              {
+                label: "Country",
+                value: member.country
+                  ? String((member.country as { name?: string }).name ?? member.country)
+                  : undefined,
+              },
               { label: "Last login", value: member.lastLoginDate ? when(member.lastLoginDate) : "Never" },
               { label: "Added", value: when(member.createdAt) },
             ]}
           />
-          <p className="text-xs text-ink-faint">Profile fields are read only: the core API has no admin endpoint to edit another user&apos;s details or roles.</p>
+          <p className="text-xs text-ink-faint">
+            Profile fields are read only: the core API has no admin endpoint to edit another user&apos;s details or
+            roles.
+          </p>
           {canChangeStatus ? (
             <div className="flex flex-wrap gap-2">
               <Button variant={member.status === "ACTIVE" ? "danger" : "primary"} onClick={() => setStatusOpen(true)}>
@@ -371,8 +443,24 @@ function MemberDrawer({ userId, onClose }: { userId?: string; onClose: () => voi
   );
 }
 
-type AddForm = { firstname: string; lastname: string; email: string; phone: string; password: string; role: string; countryCode: string };
-const EMPTY: AddForm = { firstname: "", lastname: "", email: "", phone: "", password: "", role: "USER", countryCode: "NG" };
+type AddForm = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  password: string;
+  role: string;
+  countryCode: string;
+};
+const EMPTY: AddForm = {
+  firstname: "",
+  lastname: "",
+  email: "",
+  phone: "",
+  password: "",
+  role: "USER",
+  countryCode: "NG",
+};
 
 function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [form, setForm] = useState<AddForm>(EMPTY);
@@ -392,7 +480,8 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const phone = normalizePhone(form.phone);
-    if (form.firstname.trim().length < 3 || form.lastname.trim().length < 3) return setError("First and last name need at least 3 characters.");
+    if (form.firstname.trim().length < 3 || form.lastname.trim().length < 3)
+      return setError("First and last name need at least 3 characters.");
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return setError("Enter a valid email.");
     if (STAFF.includes(form.role) && !form.email.trim().toLowerCase().endsWith(`@${STAFF_EMAIL_DOMAIN}`)) {
       return setError(`Staff accounts need an @${STAFF_EMAIL_DOMAIN} email.`);
@@ -408,7 +497,11 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
       phone,
       password: form.password,
       role: form.role,
-      country: { name: country?.name ?? "Nigeria", code: country?.code ?? "NG", currency: String(country?.currencyCode ?? country?.currency ?? "NGN") },
+      country: {
+        name: country?.name ?? "Nigeria",
+        code: country?.code ?? "NG",
+        currency: String(country?.currencyCode ?? country?.currency ?? "NGN"),
+      },
     });
   };
 
@@ -445,10 +538,18 @@ function AddMemberDrawer({ open, onClose }: { open: boolean; onClose: () => void
           <Input type="tel" value={form.phone} onChange={(e) => set("phone")(e.target.value)} autoComplete="off" />
         </Field>
         <Field label="Temporary password" hint="At least 8 characters. Share it out of band.">
-          <Input type="password" value={form.password} onChange={(e) => set("password")(e.target.value)} autoComplete="new-password" />
+          <Input
+            type="password"
+            value={form.password}
+            onChange={(e) => set("password")(e.target.value)}
+            autoComplete="new-password"
+          />
         </Field>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Role" hint={STAFF.includes(form.role) ? `Staff accounts need an @${STAFF_EMAIL_DOMAIN} email.` : undefined}>
+          <Field
+            label="Role"
+            hint={STAFF.includes(form.role) ? `Staff accounts need an @${STAFF_EMAIL_DOMAIN} email.` : undefined}
+          >
             <Select value={form.role} onChange={(e) => set("role")(e.target.value)}>
               <optgroup label="Platform staff">
                 {STAFF.map((role) => (

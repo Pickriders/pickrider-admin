@@ -60,22 +60,40 @@ const COLUMNS: ColumnDef<Row, unknown>[] = [
     id: "channel",
     header: "Channel",
     meta: meta({ width: "6rem", skeleton: "badge", csv: { key: "channel", label: "Channel" } }),
-    cell: ({ row }) => <Badge tone={MESSAGE_CHANNEL_TONE[row.original.channel] ?? "neutral"}>{label(MESSAGE_CHANNEL_LABEL, row.original.channel)}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={MESSAGE_CHANNEL_TONE[row.original.channel] ?? "neutral"}>
+        {label(MESSAGE_CHANNEL_LABEL, row.original.channel)}
+      </Badge>
+    ),
   },
   {
     id: "to",
     header: "To",
     meta: meta({ csv: { key: "to", label: "To" } }),
-    cell: ({ row }) => <span className="block max-w-[14rem] truncate font-mono text-xs text-ink" title={row.original.to}>{row.original.to}</span>,
+    cell: ({ row }) => (
+      <span className="block max-w-[14rem] truncate font-mono text-xs text-ink" title={row.original.to}>
+        {row.original.to}
+      </span>
+    ),
   },
   {
     id: "template",
     header: "Template",
-    meta: meta({ hideBelow: "lg", skeleton: "lines", csv: { key: "templateKey", label: "Template", value: (r) => (r as Row).templateKey ?? (r as Row).templateName ?? "" } }),
+    meta: meta({
+      hideBelow: "lg",
+      skeleton: "lines",
+      csv: {
+        key: "templateKey",
+        label: "Template",
+        value: (r) => (r as Row).templateKey ?? (r as Row).templateName ?? "",
+      },
+    }),
     cell: ({ row }) => (
       <span className="block max-w-[13rem] leading-tight">
         <span className="block truncate text-sm font-semibold text-ink">
-          {row.original.templateKey ? templateTitle(row.original.templateKey) : row.original.templateName || <span className="text-ink-faint">Custom</span>}
+          {row.original.templateKey
+            ? templateTitle(row.original.templateKey)
+            : row.original.templateName || <span className="text-ink-faint">Custom</span>}
         </span>
         <span className="block text-[11px] text-ink-muted">{label(MESSAGE_PURPOSE_LABEL, row.original.purpose)}</span>
       </span>
@@ -89,9 +107,15 @@ const COLUMNS: ColumnDef<Row, unknown>[] = [
       const headline = messageHeadline(row.original);
       return (
         <span className="block max-w-[22rem] leading-tight">
-          <span className={cx("block truncate text-sm", headline ? "text-ink" : "text-ink-faint")}>{headline || "Open to read the message"}</span>
-          {row.original.status === "FAILED" && row.original.error ? <span className="block truncate text-[11px] font-medium text-danger">{row.original.error}</span> : null}
-          {row.original.status === "SKIPPED" ? <span className="block truncate text-[11px] font-medium text-ink-muted">{skipLine(row.original)}</span> : null}
+          <span className={cx("block truncate text-sm", headline ? "text-ink" : "text-ink-faint")}>
+            {headline || "Open to read the message"}
+          </span>
+          {row.original.status === "FAILED" && row.original.error ? (
+            <span className="block truncate text-[11px] font-medium text-danger">{row.original.error}</span>
+          ) : null}
+          {row.original.status === "SKIPPED" ? (
+            <span className="block truncate text-[11px] font-medium text-ink-muted">{skipLine(row.original)}</span>
+          ) : null}
         </span>
       );
     },
@@ -133,7 +157,11 @@ function SummaryStrip() {
   };
 
   if (summary.isError) {
-    return <p className="mb-4 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2 text-xs font-semibold text-danger">Summary unavailable: {errorMessage(summary.error)}</p>;
+    return (
+      <p className="mb-4 rounded-xl border border-danger/30 bg-danger-soft px-3 py-2 text-xs font-semibold text-danger">
+        Summary unavailable: {errorMessage(summary.error)}
+      </p>
+    );
   }
 
   return (
@@ -181,14 +209,22 @@ function SummaryStrip() {
         />
         <StatCard
           label="Termii balance"
-          value={data?.termiiBalance ? termiiBalanceLabel(data.termiiBalance) : <span className="text-ink-faint">Not reported</span>}
+          value={
+            data?.termiiBalance ? (
+              termiiBalanceLabel(data.termiiBalance)
+            ) : (
+              <span className="text-ink-faint">Not reported</span>
+            )
+          }
           icon={Coins}
           loading={loading}
           hint={data?.termiiBalance ? `As of ${when(data.termiiBalance.seenAt)}` : "Shows after the next SMS"}
         />
       </div>
       <p className="mt-2 text-[11px] text-ink-faint">
-        {table.state.from || table.state.to ? `Counts for ${windowLabel}, Lagos time.` : `Counts for the last 7 days (${windowLabel}). Pick dates on the table to change the window.`}
+        {table.state.from || table.state.to
+          ? `Counts for ${windowLabel}, Lagos time.`
+          : `Counts for the last 7 days (${windowLabel}). Pick dates on the table to change the window.`}
       </p>
     </div>
   );
@@ -213,7 +249,12 @@ function ScopeBar() {
           </Link>
         </span>
       ) : null}
-      <Button size="sm" variant="ghost" icon={X} onClick={() => table.update({ userId: undefined, orderId: undefined })}>
+      <Button
+        size="sm"
+        variant="ghost"
+        icon={X}
+        onClick={() => table.update({ userId: undefined, orderId: undefined })}
+      >
         Show all
       </Button>
     </div>
@@ -271,7 +312,9 @@ export function MessagesHub() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-1.5">
-                <Badge tone={MESSAGE_CHANNEL_TONE[row.channel] ?? "neutral"}>{label(MESSAGE_CHANNEL_LABEL, row.channel)}</Badge>
+                <Badge tone={MESSAGE_CHANNEL_TONE[row.channel] ?? "neutral"}>
+                  {label(MESSAGE_CHANNEL_LABEL, row.channel)}
+                </Badge>
                 <MessageStatusBadge status={row.status} attempts={row.attempts} />
               </span>
               <span className="text-[11px] text-ink-faint">{when(row.createdAt)}</span>
@@ -281,7 +324,9 @@ export function MessagesHub() {
               {row.templateKey ? templateTitle(row.templateKey) : row.templateName || "Custom"}
               {messageHeadline(row) ? ` · ${messageHeadline(row)}` : ""}
             </p>
-            {row.status === "SKIPPED" ? <p className="truncate text-[11px] font-medium text-ink-muted">{skipLine(row)}</p> : null}
+            {row.status === "SKIPPED" ? (
+              <p className="truncate text-[11px] font-medium text-ink-muted">{skipLine(row)}</p>
+            ) : null}
           </div>
         )}
       />
