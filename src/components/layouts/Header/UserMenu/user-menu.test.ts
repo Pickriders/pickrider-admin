@@ -1,7 +1,7 @@
 import { ACCOUNT_LINKS } from "./index";
 
 jest.mock("@/lib/admin/hooks", () => ({ useMe: () => ({ data: undefined, isLoading: false }) }));
-jest.mock("@/hooks", () => ({ useQueryModal: () => ({ setParam: jest.fn() }) }));
+jest.mock("@/hooks", () => ({ useSetQueryParam: () => jest.fn() }));
 
 describe("user menu", () => {
   it("points Profile and Security at the Settings tabs", () => {
