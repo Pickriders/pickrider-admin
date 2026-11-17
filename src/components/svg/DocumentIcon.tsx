@@ -1,10 +1,6 @@
 import { SvgProps } from "./Svg.type";
 
-export const DocumentIcon = ({
-  className,
-  height = 22,
-  width = 20,
-}: SvgProps) => {
+export const DocumentIcon = ({ className, height = 22, width = 20 }: SvgProps) => {
   return (
     <svg
       className={className}

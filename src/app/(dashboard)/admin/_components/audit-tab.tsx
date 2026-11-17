@@ -17,7 +17,14 @@ import { JsonView, pageFilter } from "./fields";
  * Every audited request, newest first. The endpoint only paginates and takes a
  * date range, so the search box narrows the page that is on screen.
  */
-const SOURCE_TONE: Record<string, Tone> = { ADMIN: "brand", BUSINESS: "info", DEVELOPER: "info", SYSTEM: "neutral", USER: "warning", TEAM: "neutral" };
+const SOURCE_TONE: Record<string, Tone> = {
+  ADMIN: "brand",
+  BUSINESS: "info",
+  DEVELOPER: "info",
+  SYSTEM: "neutral",
+  USER: "warning",
+  TEAM: "neutral",
+};
 const METHOD_CLASS: Record<string, string> = {
   GET: "text-info",
   POST: "text-success",
@@ -55,7 +62,11 @@ const COLUMNS: ColumnDef<AuditLogRow, unknown>[] = [
     id: "source",
     header: "Source",
     meta: meta({ csv: { key: "actionType", label: "Source" } }),
-    cell: ({ row }) => <Badge tone={SOURCE_TONE[row.original.actionType ?? ""] ?? "neutral"}>{row.original.actionType ?? "Unknown"}</Badge>,
+    cell: ({ row }) => (
+      <Badge tone={SOURCE_TONE[row.original.actionType ?? ""] ?? "neutral"}>
+        {row.original.actionType ?? "Unknown"}
+      </Badge>
+    ),
   },
   {
     id: "request",
@@ -63,8 +74,15 @@ const COLUMNS: ColumnDef<AuditLogRow, unknown>[] = [
     meta: meta({ hideBelow: "md", csv: { key: "requestUrl", label: "URL" } }),
     cell: ({ row }) => (
       <span className="flex items-center gap-2">
-        <span className={cx("text-[11px] font-black", METHOD_CLASS[row.original.requestMethod ?? ""] ?? "text-ink-muted")}>{row.original.requestMethod}</span>
-        <span className="block max-w-[18rem] truncate font-mono text-[11px] text-ink-muted" title={row.original.requestUrl}>
+        <span
+          className={cx("text-[11px] font-black", METHOD_CLASS[row.original.requestMethod ?? ""] ?? "text-ink-muted")}
+        >
+          {row.original.requestMethod}
+        </span>
+        <span
+          className="block max-w-[18rem] truncate font-mono text-[11px] text-ink-muted"
+          title={row.original.requestUrl}
+        >
           {row.original.requestUrl}
         </span>
       </span>
@@ -74,7 +92,8 @@ const COLUMNS: ColumnDef<AuditLogRow, unknown>[] = [
     id: "result",
     header: "Result",
     meta: meta({ csv: { key: "actionSuccessful", label: "Succeeded" } }),
-    cell: ({ row }) => (row.original.actionSuccessful === false ? <Badge tone="danger">Failed</Badge> : <Badge tone="success">OK</Badge>),
+    cell: ({ row }) =>
+      row.original.actionSuccessful === false ? <Badge tone="danger">Failed</Badge> : <Badge tone="success">OK</Badge>,
   },
   {
     id: "ip",
@@ -105,7 +124,19 @@ export function AuditTab() {
   const logs = useAuditLogRows(query);
   const [selected, setSelected] = useState<AuditLogRow | null>(null);
   const data = useMemo(
-    () => (logs.data ? { ...logs.data, items: pageFilter(logs.data.items, table.state.search, (r) => [r.action, r.requestUrl, r.actionBy, r.ipAddress, r.actionType]) } : undefined),
+    () =>
+      logs.data
+        ? {
+            ...logs.data,
+            items: pageFilter(logs.data.items, table.state.search, (r) => [
+              r.action,
+              r.requestUrl,
+              r.actionBy,
+              r.ipAddress,
+              r.actionType,
+            ]),
+          }
+        : undefined,
     [logs.data, table.state.search],
   );
 
@@ -138,7 +169,13 @@ export function AuditTab() {
           </div>
         )}
       />
-      <Drawer open={Boolean(selected)} onClose={() => setSelected(null)} title={selected?.action || "Audit entry"} subtitle={selected ? when(selected.createdAt) : undefined} width="lg">
+      <Drawer
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        title={selected?.action || "Audit entry"}
+        subtitle={selected ? when(selected.createdAt) : undefined}
+        width="lg"
+      >
         {selected ? (
           <div className="space-y-5">
             <KeyValue
@@ -148,7 +185,15 @@ export function AuditTab() {
                 { label: "Method", value: selected.requestMethod },
                 { label: "IP", value: selected.ipAddress },
                 { label: "URL", value: <span className="font-mono text-xs">{selected.requestUrl}</span> },
-                { label: "Actor", value: selected.actionBy && selected.actionBy !== selected.actionType ? <span className="font-mono text-xs">{selected.actionBy}</span> : "No session" },
+                {
+                  label: "Actor",
+                  value:
+                    selected.actionBy && selected.actionBy !== selected.actionType ? (
+                      <span className="font-mono text-xs">{selected.actionBy}</span>
+                    ) : (
+                      "No session"
+                    ),
+                },
               ]}
             />
             <JsonView title="Request" value={selected.requestData} />

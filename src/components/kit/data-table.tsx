@@ -1,13 +1,17 @@
 "use client";
 
+import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type Row } from "@tanstack/react-table";
 import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-  type Row,
-} from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Download, Search, SlidersHorizontal, X } from "lucide-react";
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Paged } from "@/lib/admin/api";
@@ -151,7 +155,13 @@ export function DataTable<T extends Record<string, unknown>>({
     const shaped = rows.map((row) =>
       Object.fromEntries(specs.map((s) => [s.key, s.value ? s.value(row) : (row as Record<string, unknown>)[s.key]])),
     );
-    downloadCsv(`${csvName}.csv`, toCsv(shaped, specs.map((s) => ({ key: s.key, label: s.label }))));
+    downloadCsv(
+      `${csvName}.csv`,
+      toCsv(
+        shaped,
+        specs.map((s) => ({ key: s.key, label: s.label })),
+      ),
+    );
   };
 
   const activeFilterEntries = Object.entries(state.filters).filter(([key]) => filters.some((f) => f.key === key));
@@ -164,7 +174,15 @@ export function DataTable<T extends Record<string, unknown>>({
   const hasControls = Boolean(filters.length || dateFilter || table.activeFilterCount);
   const hasExtras = Boolean(liveHint || toolbarExtra || csvName);
   const exportButton = (className: string, label = true) => (
-    <Button variant="outline" size="md" icon={Download} onClick={exportCsv} disabled={!rows.length} className={className} aria-label="Export CSV">
+    <Button
+      variant="outline"
+      size="md"
+      icon={Download}
+      onClick={exportCsv}
+      disabled={!rows.length}
+      className={className}
+      aria-label="Export CSV"
+    >
       {label ? <span>Export</span> : null}
     </Button>
   );
@@ -193,7 +211,9 @@ export function DataTable<T extends Record<string, unknown>>({
               Filters{activeFilterEntries.length ? ` · ${activeFilterEntries.length}` : ""}
             </Button>
           ) : null}
-          {dateFilter ? <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} /> : null}
+          {dateFilter ? (
+            <DateRangeButton from={state.from} to={state.to} onChange={(from, to) => table.setRange(from, to)} />
+          ) : null}
           {table.activeFilterCount ? (
             <Button variant="ghost" size="md" icon={X} onClick={table.clear}>
               Clear
@@ -259,7 +279,15 @@ export function DataTable<T extends Record<string, unknown>>({
             className={cx("inline-flex items-center gap-1 hover:text-ink", active && "text-ink")}
           >
             {flexRender(header.column.columnDef.header, header.getContext())}
-            {active ? (state.order === "ASC" ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
+            {active ? (
+              state.order === "ASC" ? (
+                <ArrowUp size={12} />
+              ) : (
+                <ArrowDown size={12} />
+              )
+            ) : (
+              <ArrowUpDown size={12} className="opacity-50" />
+            )}
           </button>
         ) : (
           flexRender(header.column.columnDef.header, header.getContext())
@@ -278,7 +306,11 @@ export function DataTable<T extends Record<string, unknown>>({
           if (onRowClick) onRowClick(row.original);
           else if (href) router.push(href);
         }}
-        className={cx("border-b border-line last:border-0 transition-colors", clickable && "cursor-pointer hover:bg-surface/80", rowClassName?.(row.original))}
+        className={cx(
+          "border-b border-line last:border-0 transition-colors",
+          clickable && "cursor-pointer hover:bg-surface/80",
+          rowClassName?.(row.original),
+        )}
       >
         {row.getVisibleCells().map((cell) => {
           const meta = (cell.column.columnDef.meta ?? {}) as ColumnMeta;
@@ -341,7 +373,11 @@ export function DataTable<T extends Record<string, unknown>>({
                           if (onRowClick) onRowClick(row);
                           else if (href) router.push(href);
                         }}
-                        className={cx("px-4 py-3", (onRowClick || href) && "cursor-pointer active:bg-surface", rowClassName?.(row))}
+                        className={cx(
+                          "px-4 py-3",
+                          (onRowClick || href) && "cursor-pointer active:bg-surface",
+                          rowClassName?.(row),
+                        )}
                       >
                         {mobileCard(row)}
                       </div>
@@ -413,7 +449,15 @@ export function DataTable<T extends Record<string, unknown>>({
   return bare ? <div>{body}</div> : <Panel className="overflow-hidden">{body}</Panel>;
 }
 
-export function Pager({ page, totalPages, onPage }: { page: number; totalPages: number; onPage: (page: number) => void }) {
+export function Pager({
+  page,
+  totalPages,
+  onPage,
+}: {
+  page: number;
+  totalPages: number;
+  onPage: (page: number) => void;
+}) {
   const pages = useMemo(() => {
     const items: (number | "…")[] = [];
     const add = (n: number) => items.push(n);
@@ -431,7 +475,13 @@ export function Pager({ page, totalPages, onPage }: { page: number; totalPages: 
 
   return (
     <div className="flex items-center gap-1">
-      <Button variant="ghost" size="icon" aria-label="Previous page" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Previous page"
+        disabled={page <= 1}
+        onClick={() => onPage(page - 1)}
+      >
         <ChevronLeft size={16} />
       </Button>
       {pages.map((item, index) =>
@@ -453,7 +503,13 @@ export function Pager({ page, totalPages, onPage }: { page: number; totalPages: 
           </button>
         ),
       )}
-      <Button variant="ghost" size="icon" aria-label="Next page" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Next page"
+        disabled={page >= totalPages}
+        onClick={() => onPage(page + 1)}
+      >
         <ChevronRight size={16} />
       </Button>
     </div>

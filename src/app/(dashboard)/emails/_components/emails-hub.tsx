@@ -3,10 +3,28 @@
 import { ChevronRight, MailSearch, Search, Send, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Badge, Button, Chip, EmptyState, ErrorState, Input, PageHeader, Panel, ScrollRow, Skeleton, cx } from "@/components/kit";
+import {
+  Badge,
+  Button,
+  Chip,
+  EmptyState,
+  ErrorState,
+  Input,
+  PageHeader,
+  Panel,
+  ScrollRow,
+  Skeleton,
+  cx,
+} from "@/components/kit";
 import type { EmailTemplate } from "@/lib/admin/api";
 import { controlFor, type ControlLike } from "@/lib/admin/email-controls";
-import { EMAIL_AUDIENCE_LABEL, EMAIL_AUDIENCE_ORDER, audienceCounts, groupTemplates, templateTitle } from "@/lib/admin/emails";
+import {
+  EMAIL_AUDIENCE_LABEL,
+  EMAIL_AUDIENCE_ORDER,
+  audienceCounts,
+  groupTemplates,
+  templateTitle,
+} from "@/lib/admin/emails";
 import { useEmailControls, useEmailTemplates } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
@@ -41,7 +59,10 @@ export function EmailsHub() {
   useEffect(() => {
     if (search === (table.state.search ?? "")) return;
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => table.update({ search: search.trim() || undefined }, { resetPage: false }), 300);
+    timer.current = window.setTimeout(
+      () => table.update({ search: search.trim() || undefined }, { resetPage: false }),
+      300,
+    );
     return () => window.clearTimeout(timer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
@@ -62,7 +83,12 @@ export function EmailsHub() {
         description="Every email Pickriders sends, rendered live from the current templates with sample data, and whether each one is sending right now."
         actions={
           canSend ? (
-            <Button icon={Send} variant="outline" onClick={() => setSending(selected ? "one" : "all")} disabled={!all.length}>
+            <Button
+              icon={Send}
+              variant="outline"
+              onClick={() => setSending(selected ? "one" : "all")}
+              disabled={!all.length}
+            >
               Send test emails
             </Button>
           ) : null
@@ -89,7 +115,13 @@ export function EmailsHub() {
                     All {all.length ? <span className="opacity-70">{all.length}</span> : null}
                   </Chip>
                   {EMAIL_AUDIENCE_ORDER.filter((value) => counts[value]).map((value) => (
-                    <Chip key={value} active={audience === value} onClick={() => table.update({ audience: audience === value ? undefined : value }, { resetPage: false })}>
+                    <Chip
+                      key={value}
+                      active={audience === value}
+                      onClick={() =>
+                        table.update({ audience: audience === value ? undefined : value }, { resetPage: false })
+                      }
+                    >
                       {EMAIL_AUDIENCE_LABEL[value]} <span className="opacity-70">{counts[value]}</span>
                     </Chip>
                   ))}
@@ -117,7 +149,15 @@ export function EmailsHub() {
                   title="No emails match"
                   description="Try another word, or show every audience."
                   action={
-                    <Button size="sm" variant="outline" icon={X} onClick={() => { setSearch(""); table.update({ search: undefined, audience: undefined }, { resetPage: false }); }}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      icon={X}
+                      onClick={() => {
+                        setSearch("");
+                        table.update({ search: undefined, audience: undefined }, { resetPage: false });
+                      }}
+                    >
                       Clear search
                     </Button>
                   }
@@ -168,7 +208,9 @@ export function EmailsHub() {
             <Panel>
               <EmptyState
                 icon={MailSearch}
-                title={selectedKey && templates.data ? "That email is not in the registry" : "Pick an email to preview it"}
+                title={
+                  selectedKey && templates.data ? "That email is not in the registry" : "Pick an email to preview it"
+                }
                 description="The preview is rendered by the core from the templates it ships, with sample data. Switch between desktop and mobile widths, light and dark, or the plain-text part."
               />
             </Panel>
@@ -204,25 +246,52 @@ function TemplateRow({
 }) {
   // The switch sits beside the row's button, not inside it: a switch cannot nest in a button.
   return (
-    <div className={cx("group flex w-full items-start gap-2 rounded-xl px-2.5 py-2.5 transition-colors", active ? "bg-ink text-card" : "hover:bg-surface")}>
-      <button type="button" onClick={onSelect} aria-current={active ? "true" : undefined} className="flex min-w-0 flex-1 items-start gap-2 text-left">
+    <div
+      className={cx(
+        "group flex w-full items-start gap-2 rounded-xl px-2.5 py-2.5 transition-colors",
+        active ? "bg-ink text-card" : "hover:bg-surface",
+      )}
+    >
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-current={active ? "true" : undefined}
+        className="flex min-w-0 flex-1 items-start gap-2 text-left"
+      >
         <span className="min-w-0 flex-1">
-          <span className={cx("block truncate text-sm font-bold", active ? "text-card" : "text-ink")}>{templateTitle(template.key)}</span>
-          <span className={cx("mt-0.5 line-clamp-2 block text-xs", active ? "text-card/75" : "text-ink-muted")}>{template.description}</span>
+          <span className={cx("block truncate text-sm font-bold", active ? "text-card" : "text-ink")}>
+            {templateTitle(template.key)}
+          </span>
+          <span className={cx("mt-0.5 line-clamp-2 block text-xs", active ? "text-card/75" : "text-ink-muted")}>
+            {template.description}
+          </span>
           <StatusLine control={control} onDark={active} className="mt-1" />
           <span className="mt-1.5 flex flex-wrap items-center gap-1">
             <KindChip control={control} onDark={active} />
-            <Badge tone={active ? "neutral" : "brand"} className={active ? "border-transparent bg-card/15 text-card" : undefined}>
+            <Badge
+              tone={active ? "neutral" : "brand"}
+              className={active ? "border-transparent bg-card/15 text-card" : undefined}
+            >
               {EMAIL_AUDIENCE_LABEL[template.audience] ?? template.audience}
             </Badge>
             {template.channels.map((channel) => (
-              <Badge key={channel} tone={active ? "neutral" : CHANNEL_CHIP[channel]?.tone ?? "neutral"} className={active ? "border-transparent bg-card/15 text-card" : undefined}>
+              <Badge
+                key={channel}
+                tone={active ? "neutral" : (CHANNEL_CHIP[channel]?.tone ?? "neutral")}
+                className={active ? "border-transparent bg-card/15 text-card" : undefined}
+              >
                 {CHANNEL_CHIP[channel]?.label ?? channel}
               </Badge>
             ))}
           </span>
         </span>
-        {canManage ? null : <ChevronRight size={16} className={cx("mt-0.5 shrink-0", active ? "text-card" : "text-ink-faint group-hover:text-ink")} aria-hidden />}
+        {canManage ? null : (
+          <ChevronRight
+            size={16}
+            className={cx("mt-0.5 shrink-0", active ? "text-card" : "text-ink-faint group-hover:text-ink")}
+            aria-hidden
+          />
+        )}
       </button>
       {canManage ? (
         <span className="shrink-0 pt-0.5">

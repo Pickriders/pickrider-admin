@@ -38,7 +38,10 @@ describe("Lagos day boundaries", () => {
     expect(messagesRange({})).toEqual({});
     expect(messagesRange({ from: "2026-11-01" })).toEqual({ dateFrom: "2026-10-31T23:00:00.000Z" });
     expect(messagesRange({ to: "2026-11-14" })).toEqual({ dateTo: "2026-11-14T22:59:59.999Z" });
-    expect(messagesRange({ from: "2026-11-01", to: "2026-11-14" })).toEqual({ dateFrom: "2026-10-31T23:00:00.000Z", dateTo: "2026-11-14T22:59:59.999Z" });
+    expect(messagesRange({ from: "2026-11-01", to: "2026-11-14" })).toEqual({
+      dateFrom: "2026-10-31T23:00:00.000Z",
+      dateTo: "2026-11-14T22:59:59.999Z",
+    });
   });
 });
 
@@ -53,7 +56,15 @@ describe("messagesQuery", () => {
         page: 3,
         limit: 50,
         search: " 0803 123 ",
-        filters: { channel: "SMS", status: "FAILED", provider: "TERMII", purpose: "SECURITY", template: "verification-code", userId: "u1", orderId: "o1" },
+        filters: {
+          channel: "SMS",
+          status: "FAILED",
+          provider: "TERMII",
+          purpose: "SECURITY",
+          template: "verification-code",
+          userId: "u1",
+          orderId: "o1",
+        },
       }),
     );
     expect(query).toEqual({
@@ -71,7 +82,14 @@ describe("messagesQuery", () => {
   });
 
   it("keeps the drawer id, the tab, sorting and blank values out of the request", () => {
-    const query = messagesQuery(state({ sortBy: "createdAt", order: "ASC", search: "   ", filters: { id: "m1", tab: "x", channel: " ", status: "SENT" } }));
+    const query = messagesQuery(
+      state({
+        sortBy: "createdAt",
+        order: "ASC",
+        search: "   ",
+        filters: { id: "m1", tab: "x", channel: " ", status: "SENT" },
+      }),
+    );
     expect(query).toEqual({ page: 1, limit: 20, status: "SENT" });
   });
 
@@ -85,7 +103,16 @@ describe("messagesQuery", () => {
   });
 
   it("only knows the filters the endpoint reads", () => {
-    expect([...MESSAGE_FILTER_KEYS].sort()).toEqual(["channel", "orderId", "provider", "purpose", "skipReason", "status", "template", "userId"]);
+    expect([...MESSAGE_FILTER_KEYS].sort()).toEqual([
+      "channel",
+      "orderId",
+      "provider",
+      "purpose",
+      "skipReason",
+      "status",
+      "template",
+      "userId",
+    ]);
   });
 });
 
@@ -130,14 +157,21 @@ describe("row helpers", () => {
   it("says why a skipped message was held back, and nothing for any other status", () => {
     expect(skipLine({ status: "SKIPPED", skipReason: "PAUSED_MARKETING" })).toBe("Held back: marketing emails paused");
     expect(skipLine({ status: "SKIPPED", skipReason: "DISABLED_BY_ADMIN" })).toBe("Held back: turned off by an admin");
-    expect(skipLine({ status: "SKIPPED", skipReason: "PAUSED_NON_ESSENTIAL" })).toBe("Held back: non-essential emails paused");
+    expect(skipLine({ status: "SKIPPED", skipReason: "PAUSED_NON_ESSENTIAL" })).toBe(
+      "Held back: non-essential emails paused",
+    );
     expect(skipLine({ status: "SKIPPED" })).toBe("Held back by the email controls");
     expect(skipLine({ status: "SKIPPED", skipReason: "SOMETHING_NEW" })).toBe("Held back: something new");
     expect(skipLine({ status: "SENT", skipReason: "PAUSED_MARKETING" })).toBe("");
   });
 
   it("puts the skip reason in the list query only when set", () => {
-    expect(messagesQuery(state({ filters: { status: "SKIPPED", skipReason: "DISABLED_BY_ADMIN" } }))).toEqual({ page: 1, limit: 20, status: "SKIPPED", skipReason: "DISABLED_BY_ADMIN" });
+    expect(messagesQuery(state({ filters: { status: "SKIPPED", skipReason: "DISABLED_BY_ADMIN" } }))).toEqual({
+      page: 1,
+      limit: 20,
+      status: "SKIPPED",
+      skipReason: "DISABLED_BY_ADMIN",
+    });
     expect(messagesQuery(state({ filters: { skipReason: " " } }))).not.toHaveProperty("skipReason");
   });
 

@@ -19,7 +19,7 @@ export type TableState = {
   filters: Record<string, string>;
 };
 
-const RESERVED = new Set(["page", "limit", "sortBy", "order", "search", "from", "to", "tab", "open"]);
+const RESERVED = new Set(["page", "limit", "sortBy", "order", "search", "from", "to", "tab", "mode"]);
 /** Earlier than any record on the platform; anchors "everything up to <date>" ranges. */
 const EARLIEST_DAY = "2023-01-01";
 
@@ -60,7 +60,10 @@ export function useTableState(defaults: { limit?: number; sortBy?: string; order
     [params, pathname, router],
   );
 
-  const setPage = useCallback((page: number) => update({ page: page > 1 ? page : undefined }, { resetPage: false }), [update]);
+  const setPage = useCallback(
+    (page: number) => update({ page: page > 1 ? page : undefined }, { resetPage: false }),
+    [update],
+  );
   const setSort = useCallback(
     (sortBy: string) => {
       const flip = state.sortBy === sortBy && state.order === "DESC" ? "ASC" : "DESC";
@@ -88,7 +91,8 @@ export function useTableState(defaults: { limit?: number; sortBy?: string; order
     [state],
   );
 
-  const activeFilterCount = Object.keys(state.filters).length + (state.search ? 1 : 0) + (state.from || state.to ? 1 : 0);
+  const activeFilterCount =
+    Object.keys(state.filters).length + (state.search ? 1 : 0) + (state.from || state.to ? 1 : 0);
 
   return { state, query, update, setPage, setSort, setSearch, setRange, setFilter, clear, activeFilterCount };
 }
@@ -114,23 +118,24 @@ export function useTabParam<T extends string>(fallback: T, allowed: readonly T[]
 }
 
 /**
- * The record open in a drawer, as `?open=<id>`: shareable and kept on refresh, but not a table filter,
- * so opening one keeps the page, isn't counted under "Clear", and survives a tab change.
+ * One page-level param that is not a table filter, e.g. `?mode=live` on a developer team: shareable
+ * and kept on refresh, but not counted under "Clear" and it doesn't reset the page. Its name must
+ * be in RESERVED so useTableState leaves it alone.
  */
-export function useOpenParam() {
+export function useQueryParam(name: "mode") {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
-  const open = params.get("open");
-  const setOpen = useCallback(
-    (id: string | null) => {
+  const value = params.get(name);
+  const setValue = useCallback(
+    (next: string | null) => {
       const search = new URLSearchParams(params.toString());
-      if (id) search.set("open", id);
-      else search.delete("open");
+      if (next) search.set(name, next);
+      else search.delete(name);
       const query = search.toString();
       router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     },
-    [params, pathname, router],
+    [name, params, pathname, router],
   );
-  return [open, setOpen] as const;
+  return [value, setValue] as const;
 }

@@ -118,7 +118,8 @@ export function AnnouncementFormDrawer({
   if (action) {
     if (action.label.length < 2) problems.push("The button needs a label.");
     if (mode === AnnouncementActionType.INTERNAL && !screen) problems.push("Pick the screen to open.");
-    if (mode === AnnouncementActionType.EXTERNAL && !/^https:\/\/\S+$/i.test(action.target)) problems.push("The link must be an https:// URL.");
+    if (mode === AnnouncementActionType.EXTERNAL && !/^https:\/\/\S+$/i.test(action.target))
+      problems.push("The link must be an https:// URL.");
   }
   if (startsAt && endsAt && new Date(endsAt) <= new Date(startsAt)) problems.push("The end must be after the start.");
   const ready = problems.length === 0;
@@ -177,7 +178,11 @@ export function AnnouncementFormDrawer({
       onClose={onClose}
       width="lg"
       title={editing ? "Edit announcement" : "New announcement"}
-      subtitle={editing ? "Changes reach people the next time the app opens." : "Pops on launch for everyone in the audience until they close it for good."}
+      subtitle={
+        editing
+          ? "Changes reach people the next time the app opens."
+          : "Pops on launch for everyone in the audience until they close it for good."
+      }
       footer={
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0 space-y-0.5">
@@ -197,10 +202,21 @@ export function AnnouncementFormDrawer({
               </Button>
             ) : (
               <>
-                <Button variant="outline" icon={Save} onClick={() => submit(AnnouncementStatus.DRAFT)} disabled={!ready} loading={create.isPending}>
+                <Button
+                  variant="outline"
+                  icon={Save}
+                  onClick={() => submit(AnnouncementStatus.DRAFT)}
+                  disabled={!ready}
+                  loading={create.isPending}
+                >
                   Save draft
                 </Button>
-                <Button icon={Send} onClick={() => submit(AnnouncementStatus.ACTIVE)} disabled={!ready} loading={create.isPending}>
+                <Button
+                  icon={Send}
+                  onClick={() => submit(AnnouncementStatus.ACTIVE)}
+                  disabled={!ready}
+                  loading={create.isPending}
+                >
                   Publish now
                 </Button>
               </>
@@ -226,7 +242,12 @@ export function AnnouncementFormDrawer({
                 </span>
               }
             >
-              <Input value={title} maxLength={TITLE_MAX} onChange={(e) => setTitle(e.target.value)} placeholder="Know the price before you order" />
+              <Input
+                value={title}
+                maxLength={TITLE_MAX}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Know the price before you order"
+              />
             </Field>
             <Field
               label={
@@ -239,7 +260,13 @@ export function AnnouncementFormDrawer({
               }
               hint="Two or three short lines work best."
             >
-              <Textarea value={body} maxLength={BODY_MAX} onChange={(e) => setBody(e.target.value)} className="min-h-28" placeholder="Try the new price calculator: get an estimate for any trip before you book." />
+              <Textarea
+                value={body}
+                maxLength={BODY_MAX}
+                onChange={(e) => setBody(e.target.value)}
+                className="min-h-28"
+                placeholder="Try the new price calculator: get an estimate for any trip before you book."
+              />
             </Field>
             <Field label="Emoji" hint="Shown large above the title when there is no image.">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -258,7 +285,14 @@ export function AnnouncementFormDrawer({
                   </button>
                 ))}
                 <span className="block w-20">
-                  <Input value={emoji} maxLength={8} onChange={(e) => setEmoji(e.target.value)} className="text-center" aria-label="Custom emoji" placeholder="Other" />
+                  <Input
+                    value={emoji}
+                    maxLength={8}
+                    onChange={(e) => setEmoji(e.target.value)}
+                    className="text-center"
+                    aria-label="Custom emoji"
+                    placeholder="Other"
+                  />
                 </span>
               </div>
             </Field>
@@ -272,7 +306,10 @@ export function AnnouncementFormDrawer({
             {mode !== "NONE" ? (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {mode === AnnouncementActionType.INTERNAL ? (
-                  <Field label="Screen" hint={screens.isLoading ? "Loading screens…" : "Only screens that exist in the app are listed."}>
+                  <Field
+                    label="Screen"
+                    hint={screens.isLoading ? "Loading screens…" : "Only screens that exist in the app are listed."}
+                  >
                     <Select value={screen} onChange={(e) => setScreen(e.target.value)} disabled={screens.isLoading}>
                       <option value="">Pick a screen</option>
                       {screenOptions.map((s) => (
@@ -284,7 +321,11 @@ export function AnnouncementFormDrawer({
                   </Field>
                 ) : (
                   <Field label="Link" hint="Opens inside the app, not in Safari or Chrome.">
-                    <Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://pickriders.com/blog/…" />
+                    <Input
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                      placeholder="https://pickriders.com/blog/…"
+                    />
                   </Field>
                 )}
                 <Field
@@ -297,13 +338,22 @@ export function AnnouncementFormDrawer({
                     </span>
                   }
                 >
-                  <Input value={label} maxLength={LABEL_MAX} onChange={(e) => setLabel(e.target.value)} placeholder="Try it now" />
+                  <Input
+                    value={label}
+                    maxLength={LABEL_MAX}
+                    onChange={(e) => setLabel(e.target.value)}
+                    placeholder="Try it now"
+                  />
                 </Field>
               </div>
             ) : null}
           </Section>
 
-          <Section step={4} title="When it shows" hint="Both optional. Empty means as soon as it is live, until it is archived.">
+          <Section
+            step={4}
+            title="When it shows"
+            hint="Both optional. Empty means as soon as it is live, until it is archived."
+          >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Start showing">
                 <Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
@@ -316,7 +366,14 @@ export function AnnouncementFormDrawer({
         </div>
 
         <div className="md:sticky md:top-0 md:self-start">
-          <AnnouncementPreview emoji={emoji} title={title} body={body} imageUrl={imageUrl.trim() || null} audience={audience} action={action} />
+          <AnnouncementPreview
+            emoji={emoji}
+            title={title}
+            body={body}
+            imageUrl={imageUrl.trim() || null}
+            audience={audience}
+            action={action}
+          />
         </div>
       </div>
 
@@ -343,7 +400,9 @@ function Section({ step, title, hint, children }: { step: number; title: string;
   return (
     <section className="space-y-4">
       <div className="flex items-start gap-3">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-ink text-xs font-black text-card">{step}</span>
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-ink text-xs font-black text-card">
+          {step}
+        </span>
         <div className="min-w-0">
           <h3 className="text-sm font-bold text-ink">{title}</h3>
           <p className="text-xs text-ink-muted">{hint}</p>
@@ -372,7 +431,11 @@ function Choice<T extends string>({
 }) {
   const stacked = options.length > 2;
   return (
-    <div role="radiogroup" aria-label={label} className={cx("grid gap-2", stacked ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={cx("grid gap-2", stacked ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}
+    >
       {options.map((option) => {
         const active = option.id === value;
         const Icon = option.icon;
@@ -388,7 +451,12 @@ function Choice<T extends string>({
               active ? "border-brand bg-brand-soft/60" : "border-line bg-card hover:bg-surface",
             )}
           >
-            <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-xl", active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted")}>
+            <span
+              className={cx(
+                "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
+                active ? "bg-brand text-brand-ink" : "bg-surface text-ink-muted",
+              )}
+            >
               <Icon size={17} />
             </span>
             <span className="min-w-0 flex-1">

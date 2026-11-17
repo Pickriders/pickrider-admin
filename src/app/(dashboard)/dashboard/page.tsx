@@ -59,14 +59,21 @@ function Overview() {
     return (
       <>
         <PageHeader title="Overview" description="Everything happening across Pickriders at a glance." />
-        <ErrorState message={errorMessage(overview.error, "Could not load the overview.")} onRetry={() => void overview.refetch()} />
+        <ErrorState
+          message={errorMessage(overview.error, "Could not load the overview.")}
+          onRetry={() => void overview.refetch()}
+        />
       </>
     );
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Overview" description={`Everything across Pickriders, ${range.label}. Money in naira, times in Lagos.`} actions={<RangeTabs value={range.value} onChange={range.setValue} />} />
+      <PageHeader
+        title="Overview"
+        description={`Everything across Pickriders, ${range.label}. Money in naira, times in Lagos.`}
+        actions={<RangeTabs value={range.value} onChange={range.setValue} />}
+      />
 
       <AttentionStrip />
 

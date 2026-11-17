@@ -9,9 +9,31 @@ import { useMarkSeen, useTransaction, useTransactions } from "@/lib/admin/hooks"
 import { naira, when } from "@/lib/admin/format";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
-import { Badge, DataTable, Drawer, ErrorState, KeyValue, LinkButton, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import {
+  Badge,
+  DataTable,
+  Drawer,
+  ErrorState,
+  KeyValue,
+  LinkButton,
+  Skeleton,
+  cx,
+  statusTone,
+  type ColumnMeta,
+  type FilterSpec,
+} from "@/components/kit";
 import { PersonCard, PersonInline, ownerHref } from "@/components/users/person-card";
-import { TX_CATEGORIES, TX_PURPOSES, TX_STATUSES, TX_TYPES, destinationOf, orderIdOf, ownerLabel, purposeLabel, titleCase } from "./lib";
+import {
+  TX_CATEGORIES,
+  TX_PURPOSES,
+  TX_STATUSES,
+  TX_TYPES,
+  destinationOf,
+  orderIdOf,
+  ownerLabel,
+  purposeLabel,
+  titleCase,
+} from "./lib";
 
 /**
  * The transactions ledger. Every filter lives in the URL so the dashboard can
@@ -53,7 +75,11 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
   const data = useTransactions(query);
 
   const filters = useMemo<FilterSpec[]>(() => {
-    const status = { key: "status", label: "Status", options: TX_STATUSES.map((s) => ({ value: s, label: titleCase(s) })) };
+    const status = {
+      key: "status",
+      label: "Status",
+      options: TX_STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
+    };
     const purpose = { key: "purpose", label: "Purpose", options: TX_PURPOSES };
     if (preset === "withdrawals") return [status, purpose];
     return [
@@ -68,8 +94,18 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
     const reference: ColumnDef<Transaction, unknown> = {
       id: "reference",
       header: "Reference",
-      cell: ({ row }) => <span className="block max-w-[180px] truncate font-mono text-xs text-ink">{row.original.reference || row.original._id}</span>,
-      meta: meta({ csv: { key: "reference", label: "Reference", value: (r) => (r as Transaction).reference ?? (r as Transaction)._id } }),
+      cell: ({ row }) => (
+        <span className="block max-w-[180px] truncate font-mono text-xs text-ink">
+          {row.original.reference || row.original._id}
+        </span>
+      ),
+      meta: meta({
+        csv: {
+          key: "reference",
+          label: "Reference",
+          value: (r) => (r as Transaction).reference ?? (r as Transaction)._id,
+        },
+      }),
     };
     const created: ColumnDef<Transaction, unknown> = {
       id: "createdAt",
@@ -92,7 +128,11 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
       cell: ({ row }) => <SignedAmount tx={row.original} />,
       meta: meta({
         align: "right",
-        csv: { key: "amount", label: "Amount (kobo, signed)", value: (r) => ((r as Transaction).type === "DEBIT" ? -1 : 1) * ((r as Transaction).amount ?? 0) },
+        csv: {
+          key: "amount",
+          label: "Amount (kobo, signed)",
+          value: (r) => ((r as Transaction).type === "DEBIT" ? -1 : 1) * ((r as Transaction).amount ?? 0),
+        },
       }),
     };
     const status: ColumnDef<Transaction, unknown> = {
@@ -108,8 +148,16 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
     const charge: ColumnDef<Transaction, unknown> = {
       id: "charge",
       header: "Charge",
-      cell: ({ row }) => <span className="whitespace-nowrap tabular-nums text-ink-muted">{row.original.charge ? naira(row.original.charge, 2) : ""}</span>,
-      meta: meta({ align: "right", hideBelow: "xl", csv: { key: "charge", label: "Charge (kobo)", value: (r) => (r as Transaction).charge ?? 0 } }),
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap tabular-nums text-ink-muted">
+          {row.original.charge ? naira(row.original.charge, 2) : ""}
+        </span>
+      ),
+      meta: meta({
+        align: "right",
+        hideBelow: "xl",
+        csv: { key: "charge", label: "Charge (kobo)", value: (r) => (r as Transaction).charge ?? 0 },
+      }),
     };
 
     if (preset === "withdrawals") {
@@ -120,8 +168,15 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
         {
           id: "destination",
           header: "Destination",
-          cell: ({ row }) => <span className="block max-w-[260px] truncate text-ink-muted">{destinationOf(row.original) || "Not recorded"}</span>,
-          meta: meta({ hideBelow: "lg", csv: { key: "destination", label: "Destination", value: (r) => destinationOf(r as Transaction) } }),
+          cell: ({ row }) => (
+            <span className="block max-w-[260px] truncate text-ink-muted">
+              {destinationOf(row.original) || "Not recorded"}
+            </span>
+          ),
+          meta: meta({
+            hideBelow: "lg",
+            csv: { key: "destination", label: "Destination", value: (r) => destinationOf(r as Transaction) },
+          }),
         },
         {
           id: "purpose",
@@ -141,7 +196,9 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
       {
         id: "purpose",
         header: "Purpose",
-        cell: ({ row }) => <span className="whitespace-nowrap text-sm text-ink">{purposeLabel(row.original.purpose)}</span>,
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-sm text-ink">{purposeLabel(row.original.purpose)}</span>
+        ),
         meta: meta({ csv: { key: "purpose", label: "Purpose" } }),
       },
       {
@@ -153,7 +210,9 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
       {
         id: "type",
         header: "Type",
-        cell: ({ row }) => <Badge tone={row.original.type === "CREDIT" ? "success" : "danger"}>{titleCase(row.original.type)}</Badge>,
+        cell: ({ row }) => (
+          <Badge tone={row.original.type === "CREDIT" ? "success" : "danger"}>{titleCase(row.original.type)}</Badge>
+        ),
         meta: meta({ hideBelow: "lg", csv: { key: "type", label: "Type" } }),
       },
       amount,
@@ -162,7 +221,9 @@ export function TransactionsTab({ preset }: { preset: Preset }) {
       {
         id: "balanceAfter",
         header: "Balance after",
-        cell: ({ row }) => <span className="whitespace-nowrap tabular-nums text-ink-muted">{naira(row.original.balanceAfter, 2)}</span>,
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap tabular-nums text-ink-muted">{naira(row.original.balanceAfter, 2)}</span>
+        ),
         meta: meta({ align: "right", hideBelow: "lg", csv: { key: "balanceAfter", label: "Balance after (kobo)" } }),
       },
     ];
@@ -266,7 +327,10 @@ function TransactionDrawer({ id, onClose }: { id: string | null; onClose: () => 
           <Skeleton className="h-24 w-full" />
         </div>
       ) : tx.isError || !t ? (
-        <ErrorState message={tx.isError ? errorMessage(tx.error) : "This transaction could not be found."} onRetry={() => void tx.refetch()} />
+        <ErrorState
+          message={tx.isError ? errorMessage(tx.error) : "This transaction could not be found."}
+          onRetry={() => void tx.refetch()}
+        />
       ) : (
         <div className="space-y-5">
           {t.owner ? <PersonCard person={t.owner} label="Wallet owner" /> : null}
@@ -274,7 +338,12 @@ function TransactionDrawer({ id, onClose }: { id: string | null; onClose: () => 
           <div className="flex items-end justify-between gap-3 rounded-2xl border border-line bg-surface p-4">
             <div>
               <p className="text-xs font-semibold text-ink-muted">{titleCase(t.type)}</p>
-              <p className={cx("mt-1 text-2xl font-black tracking-tight tabular-nums", t.type === "CREDIT" ? "text-success" : "text-danger")}>
+              <p
+                className={cx(
+                  "mt-1 text-2xl font-black tracking-tight tabular-nums",
+                  t.type === "CREDIT" ? "text-success" : "text-danger",
+                )}
+              >
                 {t.type === "CREDIT" ? "+" : "-"}
                 {naira(t.amount, 2)}
               </p>
@@ -309,7 +378,9 @@ function TransactionDrawer({ id, onClose }: { id: string | null; onClose: () => 
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Metadata</p>
             {metadata ? (
-              <pre className="admin-scroll mt-1 max-h-72 overflow-auto rounded-xl border border-line bg-surface p-3 font-mono text-xs leading-5 text-ink">{metadata}</pre>
+              <pre className="admin-scroll mt-1 max-h-72 overflow-auto rounded-xl border border-line bg-surface p-3 font-mono text-xs leading-5 text-ink">
+                {metadata}
+              </pre>
             ) : (
               <p className="mt-1 text-xs text-ink-faint">Nothing attached to this transaction.</p>
             )}

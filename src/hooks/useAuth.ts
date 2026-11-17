@@ -11,13 +11,18 @@ export const useAuth = () => {
   const redirect = searchParams.get("redirect");
 
   /** Where a successful sign-in lands: the page the person was on, or the dashboard. */
-  const destination = () => (redirect && redirect.startsWith("/") && !redirect.startsWith("/auth") ? redirect : "/dashboard");
+  const destination = () =>
+    redirect && redirect.startsWith("/") && !redirect.startsWith("/auth") ? redirect : "/dashboard";
 
   /**
    * Stores the tokens from a sign-in or MFA challenge and moves on. A session the core restricted
    * to MFA setup (the grace period ended) goes to the setup-only screen first.
    */
-  const login = (tokens: SessionTokens & { mfaSetupRestricted?: boolean }, rememberMe?: boolean, options: { quiet?: boolean } = {}) => {
+  const login = (
+    tokens: SessionTokens & { mfaSetupRestricted?: boolean },
+    rememberMe?: boolean,
+    options: { quiet?: boolean } = {},
+  ) => {
     saveSession(tokens, rememberMe);
     const next = destination();
     if (tokens.mfaSetupRestricted) {

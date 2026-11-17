@@ -105,7 +105,7 @@ function Windows({ m }: { m: DeveloperMonitoring }) {
   );
 }
 
-export function DeveloperMonitoringPanel({ onOpenTeam }: { onOpenTeam: (teamId: string) => void }) {
+export function DeveloperMonitoringPanel() {
   const query = useDeveloperMonitoring();
   const m = query.data;
 
@@ -215,9 +215,8 @@ export function DeveloperMonitoringPanel({ onOpenTeam }: { onOpenTeam: (teamId: 
               <ul className="divide-y divide-line">
                 {m?.errorTeams.map((team) => (
                   <li key={team.teamId}>
-                    <button
-                      type="button"
-                      onClick={() => onOpenTeam(team.teamId)}
+                    <Link
+                      href={`/developers/${team.teamId}?tab=requests&mode=live`}
                       className="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:text-brand-dark"
                     >
                       <span className="min-w-0 truncate text-sm font-semibold text-ink">
@@ -227,7 +226,7 @@ export function DeveloperMonitoringPanel({ onOpenTeam }: { onOpenTeam: (teamId: 
                         {count(team.requests)} requests
                         <Badge tone="danger">{count(team.errors)} errors</Badge>
                       </span>
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>

@@ -17,7 +17,15 @@ export type TemplateLike = {
   subject?: string;
 };
 
-export const EMAIL_CATEGORY_ORDER = ["ACCOUNT", "ORDERS", "PAYMENTS", "RIDERS", "DEVELOPERS", "ALERTS", "MARKETING"] as const;
+export const EMAIL_CATEGORY_ORDER = [
+  "ACCOUNT",
+  "ORDERS",
+  "PAYMENTS",
+  "RIDERS",
+  "DEVELOPERS",
+  "ALERTS",
+  "MARKETING",
+] as const;
 
 export const EMAIL_CATEGORY_LABEL: Record<string, string> = {
   ACCOUNT: "Account and security",
@@ -44,7 +52,10 @@ export const EMAIL_AUDIENCE_LABEL: Record<string, string> = {
 export function matchesTemplate(template: TemplateLike, search: string | undefined | null) {
   const terms = (search ?? "").toLowerCase().split(/\s+/).filter(Boolean);
   if (!terms.length) return true;
-  const haystack = [template.name, template.key, template.subject, template.description, template.trigger].filter(Boolean).join(" ").toLowerCase();
+  const haystack = [template.name, template.key, template.subject, template.description, template.trigger]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
   return terms.every((term) => haystack.includes(term));
 }
 
@@ -120,10 +131,13 @@ export type PreviewDevice = keyof typeof PREVIEW_WIDTH;
  */
 export const SAMPLE_DATA_MAX_CHARS = 20_000;
 
-export function parseSampleVariables(text: string): { ok: true; value: Record<string, unknown> } | { ok: false; error: string } {
+export function parseSampleVariables(
+  text: string,
+): { ok: true; value: Record<string, unknown> } | { ok: false; error: string } {
   const trimmed = text.trim();
-  if (!trimmed) return { ok: false, error: "Add the sample data as a JSON object, for example {\"name\": \"Ada\"}." };
-  if (trimmed.length > SAMPLE_DATA_MAX_CHARS) return { ok: false, error: "That is too much sample data. Keep it under 20,000 characters." };
+  if (!trimmed) return { ok: false, error: 'Add the sample data as a JSON object, for example {"name": "Ada"}.' };
+  if (trimmed.length > SAMPLE_DATA_MAX_CHARS)
+    return { ok: false, error: "That is too much sample data. Keep it under 20,000 characters." };
   let value: unknown;
   try {
     value = JSON.parse(trimmed);
@@ -159,13 +173,20 @@ export function summariseQueued(queued: readonly Queued[] | null | undefined) {
 }
 
 /** The toast after a test send: how many went out, to whom, and anything that did not. */
-export function testSendMessage(result: { count: number; queued: readonly Queued[] } | null | undefined, recipients: readonly string[]) {
+export function testSendMessage(
+  result: { count: number; queued: readonly Queued[] } | null | undefined,
+  recipients: readonly string[],
+) {
   const summary = summariseQueued(result?.queued);
   const total = result?.count ?? result?.queued.length ?? 0;
   const to = recipients.length === 1 ? recipients[0] : `${recipients.length} addresses`;
   const accepted = summary.queued + summary.sent;
-  const head = total === 1 ? `Test email on its way to ${to}` : `${accepted} of ${total} test emails on their way to ${to}`;
-  const notes = [summary.failed ? `${summary.failed} failed` : "", summary.duplicate ? `${summary.duplicate} already sent` : ""].filter(Boolean);
+  const head =
+    total === 1 ? `Test email on its way to ${to}` : `${accepted} of ${total} test emails on their way to ${to}`;
+  const notes = [
+    summary.failed ? `${summary.failed} failed` : "",
+    summary.duplicate ? `${summary.duplicate} already sent` : "",
+  ].filter(Boolean);
   return notes.length ? `${head} (${notes.join(", ")})` : head;
 }
 

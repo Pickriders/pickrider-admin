@@ -31,7 +31,8 @@ describe("ScrollRow", () => {
     container.remove();
   });
 
-  const arrows = () => Array.from(container.querySelectorAll("button[aria-label^='Scroll']")).map((b) => b.getAttribute("aria-label"));
+  const arrows = () =>
+    Array.from(container.querySelectorAll("button[aria-label^='Scroll']")).map((b) => b.getAttribute("aria-label"));
   const scroller = () => container.querySelector("[role='group'], .overflow-x-auto") as HTMLDivElement;
 
   it("shows nothing when the content fits", () => {

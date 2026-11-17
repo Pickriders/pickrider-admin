@@ -1,4 +1,13 @@
-import { SUPPORT_EMAILS_MAX, addSupportEmails, cleanSupportEmails, isEmail, sameEmails, splitEmails, supportEmailErrors, testEmailSentMessage } from "./support-emails";
+import {
+  SUPPORT_EMAILS_MAX,
+  addSupportEmails,
+  cleanSupportEmails,
+  isEmail,
+  sameEmails,
+  splitEmails,
+  supportEmailErrors,
+  testEmailSentMessage,
+} from "./support-emails";
 
 describe("support emails", () => {
   it("recognises email addresses", () => {
@@ -47,7 +56,9 @@ describe("support emails", () => {
     expect(supportEmailErrors([])).toEqual([]);
     expect(supportEmailErrors(["a@x.com"])).toEqual([]);
     expect(supportEmailErrors(["a@x.com", "bad"])).toEqual(["Not an email address: bad."]);
-    expect(supportEmailErrors(["a@x.com", "b@x.com", "c@x.com", "d@x.com", "e@x.com", "f@x.com"])).toEqual(["Up to 5 support emails."]);
+    expect(supportEmailErrors(["a@x.com", "b@x.com", "c@x.com", "d@x.com", "e@x.com", "f@x.com"])).toEqual([
+      "Up to 5 support emails.",
+    ]);
     expect(supportEmailErrors(["a@x.com", "A@x.com"])).toEqual(["A support email is listed twice."]);
   });
 

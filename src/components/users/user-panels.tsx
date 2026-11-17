@@ -19,8 +19,22 @@ import {
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 
-import { Avatar, Badge, Button, DataTable, EmptyState, Panel, PanelHeader, Skeleton, cx, statusTone, type ColumnMeta, type FilterSpec, type Tone } from "@/components/kit";
-import type { KycStatus, Order, Transaction, User } from "@/lib/admin/api";
+import {
+  Avatar,
+  Badge,
+  Button,
+  DataTable,
+  EmptyState,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  cx,
+  statusTone,
+  type ColumnMeta,
+  type FilterSpec,
+  type Tone,
+} from "@/components/kit";
+import type { KycStatus, Order, Query, Transaction, User } from "@/lib/admin/api";
 import { ago, day, fullName, naira, orderPaymentDisplay, statusLabel, when } from "@/lib/admin/format";
 import { useOrders, useTransactions } from "@/lib/admin/hooks";
 import { useTableState } from "@/lib/admin/url-state";
@@ -75,10 +89,23 @@ export function bucketLabel(bucket: "day" | "week" | "month" | undefined) {
 // ── Header ────────────────────────────────────────────────────────────────────
 
 /** One labelled line under the header: a small icon, a caption and the value. */
-function HeaderFact({ icon: Icon, label, children, className }: { icon: LucideIcon; label: string; children: ReactNode; className?: string }) {
+function HeaderFact({
+  icon: Icon,
+  label,
+  children,
+  className,
+}: {
+  icon: LucideIcon;
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <div className={cx("flex min-w-0 items-center gap-2.5", className)}>
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-card text-ink-muted" aria-hidden>
+      <span
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-card text-ink-muted"
+        aria-hidden
+      >
         <Icon size={14} />
       </span>
       <div className="min-w-0 flex-1">
@@ -173,7 +200,7 @@ export function UserHeader({
   if (loading || !user) return <UserHeaderSkeleton />;
   const name = fullName(user) || "Unnamed user";
   // Stored numbers vary (0803..., 234803..., +234803...); show and copy the international form.
-  const phone = user.phone ? normalizePhone(user.phone) ?? phoneLabel(user.phone) : "";
+  const phone = user.phone ? (normalizePhone(user.phone) ?? phoneLabel(user.phone)) : "";
   return (
     <Panel className="overflow-hidden">
       <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
@@ -184,14 +211,20 @@ export function UserHeader({
             </span>
             {online !== undefined ? (
               <span
-                className={cx("absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-[3px] border-card", online ? "bg-success" : "bg-line-strong")}
+                className={cx(
+                  "absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-[3px] border-card",
+                  online ? "bg-success" : "bg-line-strong",
+                )}
                 title={online ? "Online now" : "Offline"}
                 aria-label={online ? "Online now" : "Offline"}
               />
             ) : null}
           </span>
           <div className="min-w-0 flex-1 pt-0.5">
-            <h1 className="line-clamp-2 text-xl font-black leading-tight tracking-tight text-ink [overflow-wrap:anywhere] sm:text-2xl" title={name}>
+            <h1
+              className="line-clamp-2 text-xl font-black leading-tight tracking-tight text-ink [overflow-wrap:anywhere] sm:text-2xl"
+              title={name}
+            >
               {name}
             </h1>
             {subtitle ? <p className="mt-1 text-sm text-ink-muted">{subtitle}</p> : null}
@@ -213,7 +246,9 @@ export function UserHeader({
               <a href={`tel:${phone}`} className="min-w-0 truncate tabular-nums hover:underline">
                 {phone}
               </a>
-              {user.phoneVerified ? <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Phone verified" /> : null}
+              {user.phoneVerified ? (
+                <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Phone verified" />
+              ) : null}
               <CopyButton text={phone} label="Copy phone number" size="md" inline />
             </>
           ) : (
@@ -223,10 +258,16 @@ export function UserHeader({
         <HeaderFact icon={Mail} label="Email">
           {formatEmail(user.email) ? (
             <>
-              <a href={`mailto:${formatEmail(user.email)}`} className="min-w-0 truncate hover:underline" title={formatEmail(user.email)}>
+              <a
+                href={`mailto:${formatEmail(user.email)}`}
+                className="min-w-0 truncate hover:underline"
+                title={formatEmail(user.email)}
+              >
                 {formatEmail(user.email)}
               </a>
-              {user.emailVerified ? <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Email verified" /> : null}
+              {user.emailVerified ? (
+                <BadgeCheck size={14} className="shrink-0 text-success" aria-label="Email verified" />
+              ) : null}
               <CopyButton text={formatEmail(user.email)} label="Copy email address" size="md" inline />
             </>
           ) : (
@@ -266,7 +307,10 @@ export function UserHeader({
 
 // ── Orders table ──────────────────────────────────────────────────────────────
 
-const ORDER_STATUS_OPTIONS = ["INITIATED", "ACCEPTED", "ON_GOING", "COMPLETED", "CANCELLED"].map((value) => ({ value, label: statusLabel(value) }));
+const ORDER_STATUS_OPTIONS = ["INITIATED", "ACCEPTED", "ON_GOING", "COMPLETED", "CANCELLED"].map((value) => ({
+  value,
+  label: statusLabel(value),
+}));
 const ORDER_TYPE_OPTIONS = ["SINGLE", "BATCH", "BULK"].map((value) => ({ value, label: statusLabel(value) }));
 
 const orderColumns: ColumnDef<Order, unknown>[] = [
@@ -301,23 +345,40 @@ const orderColumns: ColumnDef<Order, unknown>[] = [
     id: "amount",
     header: "Amount",
     cell: ({ row }) => <span className="font-semibold tabular-nums">{naira(row.original.totalAmountPayable)}</span>,
-    meta: { align: "right", csv: { key: "amount", label: "Amount (kobo)", value: (r) => (r as Order).totalAmountPayable } } satisfies ColumnMeta,
+    meta: {
+      align: "right",
+      csv: { key: "amount", label: "Amount (kobo)", value: (r) => (r as Order).totalAmountPayable },
+    } satisfies ColumnMeta,
   },
   {
     id: "payment",
     header: "Payment",
     cell: ({ row }) => {
       if (!row.original.paymentStatus) return null;
-      const payment = orderPaymentDisplay({ ...row.original, channel: typeof row.original.channel === "string" ? row.original.channel : undefined });
+      const payment = orderPaymentDisplay({
+        ...row.original,
+        channel: typeof row.original.channel === "string" ? row.original.channel : undefined,
+      });
       return (
-        <span title={payment.hint} className={cx(payment.hint ? "cursor-help" : "", payment.tone === "info" ? "text-info" : "text-ink-muted")}>
+        <span
+          title={payment.hint}
+          className={cx(payment.hint ? "cursor-help" : "", payment.tone === "info" ? "text-info" : "text-ink-muted")}
+        >
           {payment.label}
         </span>
       );
     },
     meta: {
       hideBelow: "lg",
-      csv: { key: "paymentStatus", label: "Payment", value: (r) => orderPaymentDisplay({ ...(r as Order), channel: typeof (r as Order).channel === "string" ? ((r as Order).channel as string) : undefined }).label },
+      csv: {
+        key: "paymentStatus",
+        label: "Payment",
+        value: (r) =>
+          orderPaymentDisplay({
+            ...(r as Order),
+            channel: typeof (r as Order).channel === "string" ? ((r as Order).channel as string) : undefined,
+          }).label,
+      },
     } satisfies ColumnMeta,
   },
   {
@@ -367,6 +428,22 @@ function OrderCard({ order }: { order: Order }) {
 
 /** Orders placed by a user. Filter keys are prefixed in the URL so they never collide with the transactions tab. */
 export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: string }) {
+  const scope = useMemo(() => ({ byUserId: userId }), [userId]);
+  return (
+    <OrdersTable scope={scope} csvName={csvName} emptyDescription="Orders this customer places will show up here." />
+  );
+}
+
+/** Orders narrowed by `scope` (a customer, or a developer team's API orders), with the usual filters. */
+export function OrdersTable({
+  scope,
+  csvName,
+  emptyDescription,
+}: {
+  scope: Query;
+  csvName: string;
+  emptyDescription: string;
+}) {
   const table = useTableState({ limit: 20, sortBy: "createdAt", order: "DESC" });
   const { state } = table;
   const query = useMemo(
@@ -375,20 +452,27 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       limit: state.limit,
       sortBy: state.sortBy,
       order: state.order,
-      byUserId: userId,
+      ...scope,
       orderNumber: state.search,
       status: state.filters.orderStatus,
       type: state.filters.orderType,
       isScheduled: state.filters.orderScheduled,
       dateRange: table.query.dateRange,
     }),
-    [state, userId, table.query.dateRange],
+    [state, scope, table.query.dateRange],
   );
   const orders = useOrders(query);
   const filters: FilterSpec[] = [
     { key: "orderStatus", label: "Status", options: ORDER_STATUS_OPTIONS },
     { key: "orderType", label: "Type", options: ORDER_TYPE_OPTIONS },
-    { key: "orderScheduled", label: "Scheduled", options: [{ value: "true", label: "Scheduled only" }, { value: "false", label: "Not scheduled" }] },
+    {
+      key: "orderScheduled",
+      label: "Scheduled",
+      options: [
+        { value: "true", label: "Scheduled only" },
+        { value: "false", label: "Not scheduled" },
+      ],
+    },
   ];
   return (
     <DataTable
@@ -403,7 +487,7 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
       defaultSort={{ sortBy: "createdAt", order: "DESC" }}
       emptyIcon={Package}
       emptyTitle="No orders yet"
-      emptyDescription="Orders this customer places will show up here."
+      emptyDescription={emptyDescription}
       rowHref={(row) => `/orders/${row._id}`}
       mobileCard={(row) => <OrderCard order={row} />}
     />
@@ -412,7 +496,10 @@ export function UserOrdersTable({ userId, csvName }: { userId: string; csvName: 
 
 // ── Transactions table ────────────────────────────────────────────────────────
 
-const TX_STATUS_OPTIONS = ["SUCCESS", "PROCESSING", "FAILED", "CANCELLED"].map((value) => ({ value, label: statusLabel(value) }));
+const TX_STATUS_OPTIONS = ["SUCCESS", "PROCESSING", "FAILED", "CANCELLED"].map((value) => ({
+  value,
+  label: statusLabel(value),
+}));
 const TX_TYPE_OPTIONS = [
   { value: "CREDIT", label: "Credit" },
   { value: "DEBIT", label: "Debit" },
@@ -438,12 +525,20 @@ const transactionColumns: ColumnDef<Transaction, unknown>[] = [
       const credit = row.original.type === "CREDIT";
       return (
         <div className="flex items-center gap-2.5">
-          <span className={credit ? "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-success-soft text-success" : "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-danger-soft text-danger"}>
+          <span
+            className={
+              credit
+                ? "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-success-soft text-success"
+                : "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-danger-soft text-danger"
+            }
+          >
             {credit ? <ArrowDownLeft size={15} /> : <ArrowUpRight size={15} />}
           </span>
           <div className="min-w-0">
             <p className="font-semibold text-ink">{statusLabel(row.original.purpose)}</p>
-            <p className="truncate text-xs text-ink-faint">{row.original.reference ?? row.original.description ?? ""}</p>
+            <p className="truncate text-xs text-ink-faint">
+              {row.original.reference ?? row.original.description ?? ""}
+            </p>
           </div>
         </div>
       );
@@ -454,7 +549,13 @@ const transactionColumns: ColumnDef<Transaction, unknown>[] = [
     id: "amount",
     header: "Amount",
     cell: ({ row }) => (
-      <span className={row.original.type === "CREDIT" ? "font-semibold tabular-nums text-success" : "font-semibold tabular-nums text-ink"}>
+      <span
+        className={
+          row.original.type === "CREDIT"
+            ? "font-semibold tabular-nums text-success"
+            : "font-semibold tabular-nums text-ink"
+        }
+      >
         {row.original.type === "CREDIT" ? "+" : "-"}
         {naira(row.original.amount)}
       </span>
@@ -464,8 +565,16 @@ const transactionColumns: ColumnDef<Transaction, unknown>[] = [
   {
     id: "balanceAfter",
     header: "Balance after",
-    cell: ({ row }) => <span className="tabular-nums text-ink-muted">{row.original.balanceAfter != null ? naira(row.original.balanceAfter) : ""}</span>,
-    meta: { align: "right", hideBelow: "lg", csv: { key: "balanceAfter", label: "Balance after (kobo)" } } satisfies ColumnMeta,
+    cell: ({ row }) => (
+      <span className="tabular-nums text-ink-muted">
+        {row.original.balanceAfter != null ? naira(row.original.balanceAfter) : ""}
+      </span>
+    ),
+    meta: {
+      align: "right",
+      hideBelow: "lg",
+      csv: { key: "balanceAfter", label: "Balance after (kobo)" },
+    } satisfies ColumnMeta,
   },
   {
     id: "status",
@@ -549,7 +658,13 @@ export function UserTransactionsTable({
     if (!transactions.data) return undefined;
     const needle = state.search?.trim().toLowerCase();
     if (!needle) return transactions.data;
-    const items = transactions.data.items.filter((t) => [t.reference, t.description, t.purpose].some((v) => String(v ?? "").toLowerCase().includes(needle)));
+    const items = transactions.data.items.filter((t) =>
+      [t.reference, t.description, t.purpose].some((v) =>
+        String(v ?? "")
+          .toLowerCase()
+          .includes(needle),
+      ),
+    );
     return { ...transactions.data, items };
   }, [transactions.data, state.search]);
 
@@ -591,11 +706,25 @@ const PER_PAGE = 10;
  * Orders are only available for customers (the orders list has no rider
  * filter), so riders get transactions and the sign-in only.
  */
-export function ActivityFeed({ user, includeOrders, enabled }: { user: User | undefined; includeOrders: boolean; enabled: boolean }) {
+export function ActivityFeed({
+  user,
+  includeOrders,
+  enabled,
+}: {
+  user: User | undefined;
+  includeOrders: boolean;
+  enabled: boolean;
+}) {
   const [page, setPage] = useState(1);
   const userId = user?._id ?? "";
-  const orders = useOrders({ byUserId: userId, limit: 25, order: "DESC", sortBy: "createdAt" }, { enabled: enabled && includeOrders && Boolean(userId) });
-  const transactions = useTransactions({ entityId: userId, limit: 25, order: "DESC", sortBy: "createdAt" }, enabled && Boolean(userId));
+  const orders = useOrders(
+    { byUserId: userId, limit: 25, order: "DESC", sortBy: "createdAt" },
+    { enabled: enabled && includeOrders && Boolean(userId) },
+  );
+  const transactions = useTransactions(
+    { entityId: userId, limit: 25, order: "DESC", sortBy: "createdAt" },
+    enabled && Boolean(userId),
+  );
 
   const items = useMemo<ActivityItem[]>(() => {
     const out: ActivityItem[] = [];
@@ -611,7 +740,10 @@ export function ActivityFeed({ user, includeOrders, enabled }: { user: User | un
 
   return (
     <Panel>
-      <PanelHeader title="Recent activity" subtitle={includeOrders ? "Latest orders, wallet movements and sign-in" : "Latest wallet movements and sign-in"} />
+      <PanelHeader
+        title="Recent activity"
+        subtitle={includeOrders ? "Latest orders, wallet movements and sign-in" : "Latest wallet movements and sign-in"}
+      />
       <div className="px-5 pb-5 pt-4">
         {loading ? (
           <div className="space-y-3">
@@ -620,14 +752,25 @@ export function ActivityFeed({ user, includeOrders, enabled }: { user: User | un
             ))}
           </div>
         ) : !items.length ? (
-          <EmptyState compact icon={Clock} title="Nothing yet" description="Activity appears once this account is used." />
+          <EmptyState
+            compact
+            icon={Clock}
+            title="Nothing yet"
+            description="Activity appears once this account is used."
+          />
         ) : (
           <>
             <ol className="relative space-y-4 border-l border-line pl-5">
               {visible.map((item, index) => (
                 <li key={`${item.kind}-${index}-${item.date}`} className="relative">
                   <span className="absolute -left-[27px] top-1 grid h-4 w-4 place-items-center rounded-full border border-line bg-card text-ink-faint">
-                    {item.kind === "login" ? <LogIn size={9} /> : item.kind === "tx" ? <Receipt size={9} /> : <Package size={9} />}
+                    {item.kind === "login" ? (
+                      <LogIn size={9} />
+                    ) : item.kind === "tx" ? (
+                      <Receipt size={9} />
+                    ) : (
+                      <Package size={9} />
+                    )}
                   </span>
                   {item.kind === "login" ? (
                     <>
@@ -691,10 +834,17 @@ export function ActivityFeed({ user, includeOrders, enabled }: { user: User | un
  * total, count and share of everything that moved, so two purposes read as
  * two tiles and eight purposes wrap, instead of a tall sidebar beside the table.
  */
-export function MoneyByPurpose({ data, loading }: { data: Record<string, { amount: number; count: number }> | undefined; loading?: boolean }) {
+export function MoneyByPurpose({
+  data,
+  loading,
+}: {
+  data: Record<string, { amount: number; count: number }> | undefined;
+  loading?: boolean;
+}) {
   const rows = useMemo(() => Object.entries(data ?? {}).sort((a, b) => b[1].amount - a[1].amount), [data]);
   const total = rows.reduce((sum, [, v]) => sum + v.amount, 0) || 1;
-  const columns = rows.length <= 2 ? "sm:grid-cols-2" : rows.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2 xl:grid-cols-4";
+  const columns =
+    rows.length <= 2 ? "sm:grid-cols-2" : rows.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2 xl:grid-cols-4";
   return (
     <Panel>
       <PanelHeader title="Money by purpose" subtitle="Lifetime, successful transactions only" />
@@ -706,15 +856,28 @@ export function MoneyByPurpose({ data, loading }: { data: Record<string, { amoun
             ))}
           </div>
         ) : !rows.length ? (
-          <EmptyState compact icon={Receipt} title="No money moved yet" description="Totals appear after the first successful transaction." />
+          <EmptyState
+            compact
+            icon={Receipt}
+            title="No money moved yet"
+            description="Totals appear after the first successful transaction."
+          />
         ) : (
           <ul className={`grid grid-cols-1 gap-3 ${columns}`}>
             {rows.map(([purpose, value], index) => {
               const share = Math.round((value.amount / total) * 100);
               return (
-                <li key={purpose} className={`rounded-2xl border p-4 ${index === 0 ? "border-brand/30 bg-brand-soft/40" : "border-line bg-surface"}`}>
-                  <p className="truncate text-[11px] font-bold uppercase tracking-wide text-ink-muted">{statusLabel(purpose)}</p>
-                  <p className="mt-1.5 text-xl font-black leading-none tracking-tight tabular-nums text-ink" title={naira(value.amount)}>
+                <li
+                  key={purpose}
+                  className={`rounded-2xl border p-4 ${index === 0 ? "border-brand/30 bg-brand-soft/40" : "border-line bg-surface"}`}
+                >
+                  <p className="truncate text-[11px] font-bold uppercase tracking-wide text-ink-muted">
+                    {statusLabel(purpose)}
+                  </p>
+                  <p
+                    className="mt-1.5 text-xl font-black leading-none tracking-tight tabular-nums text-ink"
+                    title={naira(value.amount)}
+                  >
                     {naira(value.amount)}
                   </p>
                   <div className="mt-2.5 flex items-center gap-2">

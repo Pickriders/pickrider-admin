@@ -38,11 +38,27 @@ export function LockoutsPanel() {
 
   return (
     <Panel>
-      <PanelHeader title="Locked out" subtitle="Five wrong passwords or codes lock a sign-in for a growing wait. Look an email up and clear the lock." />
+      <PanelHeader
+        title="Locked out"
+        subtitle="Five wrong passwords or codes lock a sign-in for a growing wait. Look an email up and clear the lock."
+      />
       <div className="px-6 pb-6 pt-4">
         <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row">
-          <Input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="ops@pickriders.com" left={<Search size={14} />} aria-label="Email to look up" className="sm:max-w-sm" />
-          <Button type="submit" variant="outline" disabled={!draft.trim()} loading={status.isFetching && Boolean(email)}>
+          <Input
+            type="email"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="ops@pickriders.com"
+            left={<Search size={14} />}
+            aria-label="Email to look up"
+            className="sm:max-w-sm"
+          />
+          <Button
+            type="submit"
+            variant="outline"
+            disabled={!draft.trim()}
+            loading={status.isFetching && Boolean(email)}
+          >
             Look up
           </Button>
         </form>
@@ -52,12 +68,18 @@ export function LockoutsPanel() {
             {status.isLoading ? (
               <Skeleton className="h-20 w-full" />
             ) : status.isError ? (
-              <p className="text-sm font-semibold text-danger">{errorMessage(status.error, "Could not look this email up.")}</p>
+              <p className="text-sm font-semibold text-danger">
+                {errorMessage(status.error, "Could not look this email up.")}
+              </p>
             ) : data ? (
               <div className="rounded-xl border border-line bg-surface px-4 py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="flex items-center gap-2 text-sm font-bold text-ink">
-                    {data.locked ? <LockKeyhole size={15} className="text-danger" /> : <LockKeyholeOpen size={15} className="text-success" />}
+                    {data.locked ? (
+                      <LockKeyhole size={15} className="text-danger" />
+                    ) : (
+                      <LockKeyholeOpen size={15} className="text-success" />
+                    )}
                     {email}
                   </p>
                   <Badge tone={data.locked ? "danger" : "success"} dot>
@@ -75,7 +97,13 @@ export function LockoutsPanel() {
                   />
                 </div>
                 {(data.locked || data.failures > 0) && can("security.unlock") ? (
-                  <Button size="sm" variant="outline" icon={LockKeyholeOpen} className="mt-3" onClick={() => setConfirm(true)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    icon={LockKeyholeOpen}
+                    className="mt-3"
+                    onClick={() => setConfirm(true)}
+                  >
                     {data.locked ? "Unlock sign-in" : "Reset attempts"}
                   </Button>
                 ) : data.locked ? (

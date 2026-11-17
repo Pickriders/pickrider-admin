@@ -3,7 +3,18 @@
 import { CheckCircle2, ShoppingBag, TrendingUp, Wallet, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { BarsChart, ChartCard, DonutChart, RangeTabs, StatCard, StatGrid, TrendChart, presetRange, rangeToQuery, type RangeValue } from "@/components/kit";
+import {
+  BarsChart,
+  ChartCard,
+  DonutChart,
+  RangeTabs,
+  StatCard,
+  StatGrid,
+  TrendChart,
+  presetRange,
+  rangeToQuery,
+  type RangeValue,
+} from "@/components/kit";
 import type { OrderWindow } from "@/lib/admin/api";
 import { count, naira, nairaCompact, percent, statusLabel, trend } from "@/lib/admin/format";
 import { useOverview, useSeries } from "@/lib/admin/hooks";
@@ -53,7 +64,10 @@ export function AnalysisTab() {
         .map(([key, value]) => ({ name: statusLabel(key), value })),
     [current],
   );
-  const typeMix = useMemo(() => breakdown(current?.byType, (key) => TYPE_LABEL[key as keyof typeof TYPE_LABEL] ?? key), [current]);
+  const typeMix = useMemo(
+    () => breakdown(current?.byType, (key) => TYPE_LABEL[key as keyof typeof TYPE_LABEL] ?? key),
+    [current],
+  );
   const paymentMix = useMemo(() => breakdown(current?.byPaymentStatus, paymentLabel), [current]);
 
   const windowLabel = range.all ? "All time" : `Last ${days} days`;
@@ -104,7 +118,11 @@ export function AnalysisTab() {
         />
         <StatCard
           label="Per day"
-          value={days ? (Math.round(((current?.orders ?? 0) / days) * 10) / 10).toLocaleString("en-NG") : count(current?.orders)}
+          value={
+            days
+              ? (Math.round(((current?.orders ?? 0) / days) * 10) / 10).toLocaleString("en-NG")
+              : count(current?.orders)
+          }
           icon={TrendingUp}
           loading={loading}
           hint={`${count(current?.customers)} customers, ${count(current?.riders)} riders`}
@@ -113,8 +131,20 @@ export function AnalysisTab() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ChartCard title="Order volume" subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`} height={280} loading={series.isLoading} empty={!points.length}>
-            <TrendChart data={points} xKey="bucket" kind="area" xFormat={bucketLabel} series={[{ key: "orders", label: "Orders" }]} />
+          <ChartCard
+            title="Order volume"
+            subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`}
+            height={280}
+            loading={series.isLoading}
+            empty={!points.length}
+          >
+            <TrendChart
+              data={points}
+              xKey="bucket"
+              kind="area"
+              xFormat={bucketLabel}
+              series={[{ key: "orders", label: "Orders" }]}
+            />
           </ChartCard>
         </div>
         <ChartCard title="Status mix" subtitle={windowLabel} height={280} loading={loading} empty={!statusMix.length}>
@@ -124,7 +154,13 @@ export function AnalysisTab() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ChartCard title="Orders by type" subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`} height={260} loading={series.isLoading} empty={!points.length}>
+          <ChartCard
+            title="Orders by type"
+            subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`}
+            height={260}
+            loading={series.isLoading}
+            empty={!points.length}
+          >
             <BarsChart
               data={points}
               xKey="bucket"
@@ -144,7 +180,13 @@ export function AnalysisTab() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <ChartCard title="Completed vs cancelled" subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`} height={240} loading={series.isLoading} empty={!points.length}>
+        <ChartCard
+          title="Completed vs cancelled"
+          subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`}
+          height={240}
+          loading={series.isLoading}
+          empty={!points.length}
+        >
           <TrendChart
             data={points}
             xKey="bucket"
@@ -156,7 +198,13 @@ export function AnalysisTab() {
             ]}
           />
         </ChartCard>
-        <ChartCard title="Money through orders" subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`} height={240} loading={series.isLoading} empty={!points.length}>
+        <ChartCard
+          title="Money through orders"
+          subtitle={`${bucketWord}, ${windowLabel.toLowerCase()}`}
+          height={240}
+          loading={series.isLoading}
+          empty={!points.length}
+        >
           <TrendChart
             data={points}
             xKey="bucket"
@@ -170,8 +218,18 @@ export function AnalysisTab() {
             ]}
           />
         </ChartCard>
-        <ChartCard title="Payment status" subtitle={windowLabel} height={240} loading={loading} empty={!paymentMix.length}>
-          <DonutChart data={paymentMix} centerValue={nairaCompact(current?.completedVolume)} centerLabel="Completed volume" />
+        <ChartCard
+          title="Payment status"
+          subtitle={windowLabel}
+          height={240}
+          loading={loading}
+          empty={!paymentMix.length}
+        >
+          <DonutChart
+            data={paymentMix}
+            centerValue={nairaCompact(current?.completedVolume)}
+            centerLabel="Completed volume"
+          />
         </ChartCard>
       </div>
     </div>

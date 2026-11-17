@@ -117,7 +117,11 @@ export function ChargesTab() {
           tone="brand"
           label="Made from charges"
           value={loading ? "" : nairaCompact(cur?.total)}
-          hint={loading ? "" : `${nairaCompact(cur?.riderCommission)} from riders, ${nairaCompact(cur?.serviceCharge)} from customers`}
+          hint={
+            loading
+              ? ""
+              : `${nairaCompact(cur?.riderCommission)} from riders, ${nairaCompact(cur?.serviceCharge)} from customers`
+          }
           trend={cur && prev ? trend(cur.total, prev.total) : null}
           icon={CircleDollarSign}
           loading={loading}
@@ -125,7 +129,11 @@ export function ChargesTab() {
         <StatCard
           label="Rider commission"
           value={loading ? "" : nairaCompact(cur?.riderCommission)}
-          hint={loading ? "" : `Taken on ${count(cur?.tripsCharged)} of ${count(cur?.trips)} paid trips (${commissionRate}%)`}
+          hint={
+            loading
+              ? ""
+              : `Taken on ${count(cur?.tripsCharged)} of ${count(cur?.trips)} paid trips (${commissionRate}%)`
+          }
           trend={cur && prev ? trend(cur.riderCommission, prev.riderCommission) : null}
           icon={Percent}
           loading={loading}
@@ -181,7 +189,11 @@ function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
   const sortValue = `${table.state.sortBy ?? "charges"}:${table.state.order ?? "DESC"}`;
   const { dateRange: _ignored, ...rest } = table.query as Record<string, unknown> & { dateRange?: string };
   void _ignored;
-  const data = useRiderCharges({ ...(rest as Record<string, string | number | undefined>), ...query, search: table.state.search });
+  const data = useRiderCharges({
+    ...(rest as Record<string, string | number | undefined>),
+    ...query,
+    search: table.state.search,
+  });
 
   const columns = useMemo<ColumnDef<RiderChargeRow, unknown>[]>(
     () => [
@@ -197,9 +209,17 @@ function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
               <span className="min-w-0">
                 <span className="flex items-center gap-2">
                   <span className="truncate text-sm font-bold text-ink">{name}</span>
-                  {r.entityType === "BUSINESS" ? <Badge tone="info">Business</Badge> : r.rider?.isOnline ? <Badge tone="success" dot>Online</Badge> : null}
+                  {r.entityType === "BUSINESS" ? (
+                    <Badge tone="info">Business</Badge>
+                  ) : r.rider?.isOnline ? (
+                    <Badge tone="success" dot>
+                      Online
+                    </Badge>
+                  ) : null}
                 </span>
-                <span className="block truncate text-xs text-ink-muted">{r.rider?.phone ?? r.business?.phone ?? ""}</span>
+                <span className="block truncate text-xs text-ink-muted">
+                  {r.rider?.phone ?? r.business?.phone ?? ""}
+                </span>
               </span>
             </span>
           );
@@ -217,18 +237,29 @@ function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
         id: "earned",
         header: "Earned",
         cell: ({ row }) => <span className="tabular-nums text-ink">{naira(row.original.earned)}</span>,
-        meta: meta({ sortKey: "earned", align: "right", hideBelow: "md", csv: { key: "earned", label: "Earned (kobo)" } }),
+        meta: meta({
+          sortKey: "earned",
+          align: "right",
+          hideBelow: "md",
+          csv: { key: "earned", label: "Earned (kobo)" },
+        }),
       },
       {
         id: "charges",
         header: "Commission",
-        cell: ({ row }) => <span className="font-black tabular-nums text-brand-dark">{naira(row.original.charges)}</span>,
+        cell: ({ row }) => (
+          <span className="font-black tabular-nums text-brand-dark">{naira(row.original.charges)}</span>
+        ),
         meta: meta({ sortKey: "charges", align: "right", csv: { key: "charges", label: "Commission (kobo)" } }),
       },
       {
         id: "rate",
         header: "Rate",
-        cell: ({ row }) => <span className="text-xs tabular-nums text-ink-muted">{row.original.earned ? percent((row.original.charges / row.original.earned) * 100) : "0%"}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs tabular-nums text-ink-muted">
+            {row.original.earned ? percent((row.original.charges / row.original.earned) * 100) : "0%"}
+          </span>
+        ),
         meta: meta({ align: "right", hideBelow: "lg" }),
       },
       {
@@ -311,7 +342,15 @@ function RidersTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
 }
 
 /** One rider's paid trips in the window, with the commission taken on each. */
-function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | null; query: ReturnType<typeof rangeToQuery>; onClose: () => void }) {
+function RiderChargesDrawer({
+  row,
+  query,
+  onClose,
+}: {
+  row: RiderChargeRow | null;
+  query: ReturnType<typeof rangeToQuery>;
+  onClose: () => void;
+}) {
   const [page, setPage] = useState(1);
   const dateRange = "all" in query ? undefined : [query.from, query.to].filter(Boolean).join(",") || undefined;
   const history = useTransactions(
@@ -340,7 +379,10 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
     >
       {row ? (
         <div className="space-y-4">
-          <PersonCard person={rowOwner(row)} label={row.entityType === "BUSINESS" ? "Paid through this business" : "Rider"} />
+          <PersonCard
+            person={rowOwner(row)}
+            label={row.entityType === "BUSINESS" ? "Paid through this business" : "Rider"}
+          />
           <div className="grid grid-cols-3 gap-2">
             <Figure label="Earned" value={nairaCompact(row.earned)} />
             <Figure label="Commission" value={nairaCompact(row.charges)} tone="text-brand-dark" />
@@ -355,7 +397,9 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
                 ))}
               </div>
             ) : !rows.length ? (
-              <p className="rounded-xl bg-surface px-4 py-6 text-center text-xs text-ink-muted">No paid trips in this window.</p>
+              <p className="rounded-xl bg-surface px-4 py-6 text-center text-xs text-ink-muted">
+                No paid trips in this window.
+              </p>
             ) : (
               <ul className="divide-y divide-line rounded-2xl border border-line">
                 {rows.map((tx) => {
@@ -366,7 +410,10 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
                         <p className="text-sm font-semibold text-ink">
                           Trip paid {naira(tx.amount)}
                           {orderId ? (
-                            <Link href={`/orders/${orderId}`} className="ml-2 text-xs font-bold text-brand-dark hover:underline">
+                            <Link
+                              href={`/orders/${orderId}`}
+                              className="ml-2 text-xs font-bold text-brand-dark hover:underline"
+                            >
                               View order
                             </Link>
                           ) : null}
@@ -377,8 +424,17 @@ function RiderChargesDrawer({ row, query, onClose }: { row: RiderChargeRow | nul
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className={cx("text-sm font-black tabular-nums", tx.charge ? "text-brand-dark" : "text-ink-faint")}>{tx.charge ? `-${naira(tx.charge)}` : "No charge"}</p>
-                        <p className="text-[11px] text-ink-faint">rider kept {naira((tx.amount ?? 0) - (tx.charge ?? 0))}</p>
+                        <p
+                          className={cx(
+                            "text-sm font-black tabular-nums",
+                            tx.charge ? "text-brand-dark" : "text-ink-faint",
+                          )}
+                        >
+                          {tx.charge ? `-${naira(tx.charge)}` : "No charge"}
+                        </p>
+                        <p className="text-[11px] text-ink-faint">
+                          rider kept {naira((tx.amount ?? 0) - (tx.charge ?? 0))}
+                        </p>
                       </div>
                     </li>
                   );
@@ -425,7 +481,9 @@ function HistoryTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
             {CHARGE_LABEL[row.original.purpose] ?? purposeLabel(row.original.purpose)}
           </Badge>
         ),
-        meta: meta({ csv: { key: "purpose", label: "Purpose", value: (row) => purposeLabel((row as Transaction).purpose) } }),
+        meta: meta({
+          csv: { key: "purpose", label: "Purpose", value: (row) => purposeLabel((row as Transaction).purpose) },
+        }),
       },
       {
         id: "order",
@@ -433,7 +491,11 @@ function HistoryTable({ query }: { query: ReturnType<typeof rangeToQuery> }) {
         cell: ({ row }) => {
           const orderId = orderIdOf(row.original);
           return orderId ? (
-            <Link href={`/orders/${orderId}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline">
+            <Link
+              href={`/orders/${orderId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-xs font-bold text-brand-dark hover:underline"
+            >
               View order <ExternalLink size={11} />
             </Link>
           ) : (

@@ -52,7 +52,13 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
   const orders = useOrders({ status: "INITIATED,ACCEPTED,ON_GOING", limit: 100, order: "DESC" }, { poll: true });
   const rows = useMemo(() => orders.data?.items ?? [], [orders.data]);
   const grouped = useMemo(() => {
-    const map: Record<OrderStatus, OrderRow[]> = { INITIATED: [], ACCEPTED: [], ON_GOING: [], COMPLETED: [], CANCELLED: [] };
+    const map: Record<OrderStatus, OrderRow[]> = {
+      INITIATED: [],
+      ACCEPTED: [],
+      ON_GOING: [],
+      COMPLETED: [],
+      CANCELLED: [],
+    };
     for (const row of rows as OrderRow[]) map[row.status]?.push(row);
     // Oldest first inside a column: the ones waiting longest need eyes first.
     for (const key of Object.keys(map) as OrderStatus[]) {
@@ -73,17 +79,49 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
           loading={overview.isLoading && orders.isLoading}
           hint={
             (live?.awaitingRiderStale ?? staleCount) > 0 ? (
-              <span className="font-semibold text-warning">{count(live?.awaitingRiderStale ?? staleCount)} waiting over {STALE_AFTER_MINUTES} min</span>
+              <span className="font-semibold text-warning">
+                {count(live?.awaitingRiderStale ?? staleCount)} waiting over {STALE_AFTER_MINUTES} min
+              </span>
             ) : (
               "All recent"
             )
           }
         />
-        <StatCard label="Rider assigned" value={count(live?.accepted ?? grouped.ACCEPTED.length)} icon={Bike} loading={overview.isLoading && orders.isLoading} />
-        <StatCard label="In transit" value={count(live?.ongoing ?? grouped.ON_GOING.length)} icon={Truck} loading={overview.isLoading && orders.isLoading} />
-        <StatCard label="Completed today" value={count(live?.completedToday)} icon={CheckCircle2} loading={overview.isLoading} onClick={() => onShowAll("COMPLETED")} hint="Open the list" />
-        <StatCard label="Cancelled today" value={count(live?.cancelledToday)} icon={XCircle} loading={overview.isLoading} onClick={() => onShowAll("CANCELLED")} hint="Open the list" />
-        <StatCard label="Riders online" value={count(live?.ridersOnline)} icon={Clock} loading={overview.isLoading} hint={`${count(live?.placedToday)} placed today`} />
+        <StatCard
+          label="Rider assigned"
+          value={count(live?.accepted ?? grouped.ACCEPTED.length)}
+          icon={Bike}
+          loading={overview.isLoading && orders.isLoading}
+        />
+        <StatCard
+          label="In transit"
+          value={count(live?.ongoing ?? grouped.ON_GOING.length)}
+          icon={Truck}
+          loading={overview.isLoading && orders.isLoading}
+        />
+        <StatCard
+          label="Completed today"
+          value={count(live?.completedToday)}
+          icon={CheckCircle2}
+          loading={overview.isLoading}
+          onClick={() => onShowAll("COMPLETED")}
+          hint="Open the list"
+        />
+        <StatCard
+          label="Cancelled today"
+          value={count(live?.cancelledToday)}
+          icon={XCircle}
+          loading={overview.isLoading}
+          onClick={() => onShowAll("CANCELLED")}
+          hint="Open the list"
+        />
+        <StatCard
+          label="Riders online"
+          value={count(live?.ridersOnline)}
+          icon={Clock}
+          loading={overview.isLoading}
+          hint={`${count(live?.placedToday)} placed today`}
+        />
       </StatGrid>
 
       {orders.isError ? (
@@ -114,7 +152,11 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
                   ) : items.length ? (
                     items.map((order) => <BoardCard key={order._id} order={order} />)
                   ) : (
-                    <EmptyState compact title="Nothing here" description={`Orders will appear as soon as one is ${column.title.toLowerCase()}.`} />
+                    <EmptyState
+                      compact
+                      title="Nothing here"
+                      description={`Orders will appear as soon as one is ${column.title.toLowerCase()}.`}
+                    />
                   )}
                 </div>
               </Panel>
@@ -125,7 +167,11 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
       {orders.data && orders.data.total > rows.length ? (
         <p className="text-xs text-ink-faint">
           Showing the {count(rows.length)} most recent of {count(orders.data.total)} live orders.{" "}
-          <button type="button" className="font-semibold text-brand-dark hover:underline" onClick={() => onShowAll("INITIATED")}>
+          <button
+            type="button"
+            className="font-semibold text-brand-dark hover:underline"
+            onClick={() => onShowAll("INITIATED")}
+          >
             Open the full list
           </button>
         </p>
@@ -187,7 +233,9 @@ function BoardCard({ order }: { order: OrderRow }) {
       ) : null}
       {stale ? (
         <p className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-warning">
-          <Clock size={12} /> Waiting {Math.round((Date.now() - new Date(order.scheduleDispatchedAt ?? order.createdAt).getTime()) / 60_000)} min for a rider
+          <Clock size={12} /> Waiting{" "}
+          {Math.round((Date.now() - new Date(order.scheduleDispatchedAt ?? order.createdAt).getTime()) / 60_000)} min
+          for a rider
         </p>
       ) : null}
       <div className="mt-3 grid grid-cols-1 gap-2.5 rounded-lg bg-surface/70 px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">

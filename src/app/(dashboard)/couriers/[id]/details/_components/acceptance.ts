@@ -2,7 +2,8 @@ import type { RiderRequestStats } from "@/lib/admin/api";
 import { count, percent } from "@/lib/admin/format";
 
 /** Shown on hover over the Acceptance tile's label. */
-export const ACCEPTANCE_HELP = "How often this rider takes the requests they're offered. Passing ('Not now') has no penalty.";
+export const ACCEPTANCE_HELP =
+  "How often this rider takes the requests they're offered. Passing ('Not now') has no penalty.";
 
 /**
  * The Acceptance tile's figure. The core sends `acceptanceRate` as a percentage (0..100, one

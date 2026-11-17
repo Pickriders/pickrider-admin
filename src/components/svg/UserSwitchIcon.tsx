@@ -1,11 +1,5 @@
 export const UserSwitchIcon = () => (
-  <svg
-    width="108"
-    height="118"
-    viewBox="0 0 108 118"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="108" height="118" viewBox="0 0 108 118" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       className="redraw-path"
       d="M19.6106 43.1836C16.0737 45.0982 6.80009 49.0077 12.4483 53.8997C15.2074 56.2892 18.2804 57.9982 22.1438 57.9982H44.1895C48.0529 57.9982 51.1257 56.2892 53.8852 53.8997C59.5332 49.0077 50.2597 45.0982 46.7227 43.1836C38.4287 38.694 27.9046 38.694 19.6106 43.1836Z"

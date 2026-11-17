@@ -30,7 +30,12 @@ function RiderFilter() {
       <span className="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface pl-1.5 pr-1 text-sm">
         <Avatar src={rider.data?.photo} name={name} size={28} />
         <span className="max-w-[10rem] truncate font-semibold text-ink">{name}</span>
-        <button type="button" aria-label="Clear rider filter" onClick={() => table.setFilter("rider", undefined)} className="grid h-8 w-8 place-items-center rounded-lg text-ink-faint hover:bg-card hover:text-ink">
+        <button
+          type="button"
+          aria-label="Clear rider filter"
+          onClick={() => table.setFilter("rider", undefined)}
+          className="grid h-8 w-8 place-items-center rounded-lg text-ink-faint hover:bg-card hover:text-ink"
+        >
           <X size={14} />
         </button>
       </span>
@@ -55,7 +60,11 @@ function RiderFilter() {
           setPicking(false);
         }}
       />
-      <button type="button" onClick={() => setPicking(false)} className="absolute right-0 top-0 text-xs font-semibold text-ink-muted hover:text-ink">
+      <button
+        type="button"
+        onClick={() => setPicking(false)}
+        className="absolute right-0 top-0 text-xs font-semibold text-ink-muted hover:text-ink"
+      >
         Close
       </button>
     </span>
@@ -93,14 +102,30 @@ function HandoffsHub() {
       <div className="mb-4 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
         <StatCard
           label="Awaiting support"
-          value={s ? <span className={s.awaitingSupport ? "text-danger" : undefined}>{count(s.awaitingSupport)}</span> : ""}
+          value={
+            s ? <span className={s.awaitingSupport ? "text-danger" : undefined}>{count(s.awaitingSupport)}</span> : ""
+          }
           icon={LifeBuoy}
           loading={loading}
           hint="Accidents, search not started"
           onClick={() => setTab("live")}
         />
-        <StatCard label="Searching" value={s ? count(s.searching) : ""} icon={Radar} loading={loading} hint="Ringing nearby riders" onClick={() => setTab("live")} />
-        <StatCard label="Rider on the way" value={s ? count(s.accepted) : ""} icon={UserCheck} loading={loading} hint="Accepted, heading to the swap" onClick={() => setTab("live")} />
+        <StatCard
+          label="Searching"
+          value={s ? count(s.searching) : ""}
+          icon={Radar}
+          loading={loading}
+          hint="Ringing nearby riders"
+          onClick={() => setTab("live")}
+        />
+        <StatCard
+          label="Rider on the way"
+          value={s ? count(s.accepted) : ""}
+          icon={UserCheck}
+          loading={loading}
+          hint="Accepted, heading to the swap"
+          onClick={() => setTab("live")}
+        />
         <StatCard
           label="Pending review"
           value={s ? count(s.pendingReview) : ""}
@@ -110,8 +135,22 @@ function HandoffsHub() {
           hint="Flagged swaps"
           onClick={() => setTab("review")}
         />
-        <StatCard label="Held bonuses" value={s ? count(s.heldBonuses) : ""} icon={Gift} loading={loading} hint="Waiting for release or forfeit" onClick={() => setTab("review")} />
-        <StatCard label="Completed today" value={s ? count(s.completedToday) : ""} icon={CheckCheck} loading={loading} hint="Since midnight, Lagos time" onClick={() => setTab("all")} />
+        <StatCard
+          label="Held bonuses"
+          value={s ? count(s.heldBonuses) : ""}
+          icon={Gift}
+          loading={loading}
+          hint="Waiting for release or forfeit"
+          onClick={() => setTab("review")}
+        />
+        <StatCard
+          label="Completed today"
+          value={s ? count(s.completedToday) : ""}
+          icon={CheckCheck}
+          loading={loading}
+          hint="Since midnight, Lagos time"
+          onClick={() => setTab("all")}
+        />
       </div>
 
       <Tabs

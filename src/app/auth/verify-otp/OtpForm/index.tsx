@@ -18,10 +18,7 @@ export const OtpForm = () => {
     <FormWrapper>
       <form onSubmit={onSubmit}>
         <div className="text-center">
-          <label
-            htmlFor="Enter OTP"
-            className="text-xs text-center font-montserrat text-primary-gray"
-          >
+          <label htmlFor="Enter OTP" className="text-xs text-center font-montserrat text-primary-gray">
             Enter OTP
           </label>
           <div className="mt-1 mx-auto  max-w-96">

@@ -330,7 +330,11 @@ function IssueDetail({ id }: { id: string }) {
                     setAssignee(next);
                     setAssignTarget({
                       adminId: next || null,
-                      label: !next ? "nobody" : member?._id === me.data?._id ? "you" : fullName(member) || formatEmail(member?.email) || "this admin",
+                      label: !next
+                        ? "nobody"
+                        : member?._id === me.data?._id
+                          ? "you"
+                          : fullName(member) || formatEmail(member?.email) || "this admin",
                     });
                   }}
                 >

@@ -8,7 +8,11 @@ const STATUS_BY_SLUG: Record<string, string> = {
   pending: "INITIATED",
 };
 
-export default function MoreOrdersRedirect({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
+export default function MoreOrdersRedirect({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const slug = searchParams?.["order-status"];
   const status = STATUS_BY_SLUG[String(Array.isArray(slug) ? slug[0] : (slug ?? "")).toLowerCase()];
   redirect(status ? `/orders?tab=all&status=${status}` : "/orders?tab=all");

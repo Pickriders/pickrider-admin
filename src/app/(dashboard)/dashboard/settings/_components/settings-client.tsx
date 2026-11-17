@@ -42,16 +42,28 @@ import { SecurityTab } from "./security-tab";
  */
 const META: Record<SettingsTab, { label: string; icon: LucideIcon; description: string }> = {
   profile: { label: "Profile", icon: UserRound, description: "Your photo, your details and what your account can do." },
-  appearance: { label: "Appearance", icon: Palette, description: "Theme and font, saved to your profile so they follow you." },
+  appearance: {
+    label: "Appearance",
+    icon: Palette,
+    description: "Theme and font, saved to your profile so they follow you.",
+  },
   password: { label: "Password", icon: KeyRound, description: "Change the password you sign in with." },
-  security: { label: "Security", icon: ShieldCheck, description: "Your authenticator app, recovery codes and every device signed in to your account." },
+  security: {
+    label: "Security",
+    icon: ShieldCheck,
+    description: "Your authenticator app, recovery codes and every device signed in to your account.",
+  },
   team: { label: "Team", icon: Users, description: "Platform staff, business and developer teams." },
   "app-settings": {
     label: "App settings",
     icon: SlidersHorizontal,
     description: "Countries, states, pricing, dispatch, support emails and referral knobs.",
   },
-  audit: { label: "Audit log", icon: ScrollText, description: "Every admin and system request, with what was sent and what came back." },
+  audit: {
+    label: "Audit log",
+    icon: ScrollText,
+    description: "Every admin and system request, with what was sent and what came back.",
+  },
   logs: { label: "Data logs", icon: Terminal, description: "Structured system logs and errors the API recorded." },
 };
 

@@ -5,8 +5,27 @@ import { Check, Minus, Scale, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
-import { Badge, Button, ConfirmDialog, DataTable, Field, Select, Textarea, cx, type ColumnMeta, type FilterSpec } from "@/components/kit";
-import { HandoffBonusAction, HandoffReviewDecision, handoffs, type Handoff, type HandoffBulkReviewResult, type Paged, type Query } from "@/lib/admin/api";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  DataTable,
+  Field,
+  Select,
+  Textarea,
+  cx,
+  type ColumnMeta,
+  type FilterSpec,
+} from "@/components/kit";
+import {
+  HandoffBonusAction,
+  HandoffReviewDecision,
+  handoffs,
+  type Handoff,
+  type HandoffBulkReviewResult,
+  type Paged,
+  type Query,
+} from "@/lib/admin/api";
 import { count, fullName, naira } from "@/lib/admin/format";
 import { useAction, useHandoffs } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
@@ -47,10 +66,18 @@ const STATUS_FILTER: FilterSpec = {
   label: "Status",
   options: Object.entries(HANDOFF_STATUS_LABEL).map(([value, label]) => ({ value, label })),
 };
-const FLAGGED_FILTER: FilterSpec = { key: "flagged", label: "Flags", options: [{ value: "true", label: "Flagged only" }] };
+const FLAGGED_FILTER: FilterSpec = {
+  key: "flagged",
+  label: "Flags",
+  options: [{ value: "true", label: "Flagged only" }],
+};
 
 /** The query the list endpoint gets for a mode and the table's URL state. Exported for the test. */
-export function handoffsQuery(mode: HandoffsMode, state: { page: number; limit: number; from?: string; to?: string; filters: Record<string, string> }, riderId?: string): Query {
+export function handoffsQuery(
+  mode: HandoffsMode,
+  state: { page: number; limit: number; from?: string; to?: string; filters: Record<string, string> },
+  riderId?: string,
+): Query {
   const { status, flagged, rider } = state.filters;
   return {
     page: state.page,
@@ -63,7 +90,19 @@ export function handoffsQuery(mode: HandoffsMode, state: { page: number; limit: 
   };
 }
 
-function CheckBox({ checked, indeterminate, onChange, label, disabled }: { checked: boolean; indeterminate?: boolean; onChange: () => void; label: string; disabled?: boolean }) {
+function CheckBox({
+  checked,
+  indeterminate,
+  onChange,
+  label,
+  disabled,
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  label: string;
+  disabled?: boolean;
+}) {
   return (
     <button
       type="button"
@@ -77,7 +116,9 @@ function CheckBox({ checked, indeterminate, onChange, label, disabled }: { check
       }}
       className={cx(
         "grid h-[18px] w-[18px] place-items-center rounded-md border transition-colors disabled:opacity-40",
-        checked || indeterminate ? "border-transparent bg-brand text-brand-ink" : "border-line-strong bg-card hover:border-brand",
+        checked || indeterminate
+          ? "border-transparent bg-brand text-brand-ink"
+          : "border-line-strong bg-card hover:border-brand",
       )}
     >
       {indeterminate ? <Minus size={12} strokeWidth={3} /> : checked ? <Check size={12} strokeWidth={3} /> : null}
@@ -91,16 +132,43 @@ function roleFor(handoff: Handoff, riderId: string) {
   return { label: "Rung", tone: "neutral" as const };
 }
 
-function buildColumns(mode: HandoffsMode, opts: { selection?: { ids: Set<string>; toggle: (id: string) => void; all: boolean; some: boolean; toggleAll: () => void; selectable: number }; riderId?: string }): ColumnDef<HandoffRow, unknown>[] {
+function buildColumns(
+  mode: HandoffsMode,
+  opts: {
+    selection?: {
+      ids: Set<string>;
+      toggle: (id: string) => void;
+      all: boolean;
+      some: boolean;
+      toggleAll: () => void;
+      selectable: number;
+    };
+    riderId?: string;
+  },
+): ColumnDef<HandoffRow, unknown>[] {
   const cols: ColumnDef<HandoffRow, unknown>[] = [];
   const sel = opts.selection;
   if (sel) {
     cols.push({
       id: "select",
-      header: () => <CheckBox checked={sel.all} indeterminate={!sel.all && sel.some} onChange={sel.toggleAll} label="Select all on this page" disabled={!sel.selectable} />,
+      header: () => (
+        <CheckBox
+          checked={sel.all}
+          indeterminate={!sel.all && sel.some}
+          onChange={sel.toggleAll}
+          label="Select all on this page"
+          disabled={!sel.selectable}
+        />
+      ),
       meta: meta({ width: "2.75rem", skeleton: "none" }),
       cell: ({ row }) =>
-        needsReview(row.original) ? <CheckBox checked={sel.ids.has(row.original.id)} onChange={() => sel.toggle(row.original.id)} label={`Select order ${row.original.orderNumber ?? ""}`} /> : null,
+        needsReview(row.original) ? (
+          <CheckBox
+            checked={sel.ids.has(row.original.id)}
+            onChange={() => sel.toggle(row.original.id)}
+            label={`Select order ${row.original.orderNumber ?? ""}`}
+          />
+        ) : null,
     });
   }
   cols.push(
@@ -111,20 +179,38 @@ function buildColumns(mode: HandoffsMode, opts: { selection?: { ids: Set<string>
       cell: ({ row }) => (
         <span className="flex flex-col items-start gap-1">
           <OrderLink handoff={row.original} />
-          {opts.riderId ? <Badge tone={roleFor(row.original, opts.riderId).tone}>{roleFor(row.original, opts.riderId).label}</Badge> : null}
+          {opts.riderId ? (
+            <Badge tone={roleFor(row.original, opts.riderId).tone}>{roleFor(row.original, opts.riderId).label}</Badge>
+          ) : null}
         </span>
       ),
     },
     {
       id: "riders",
       header: "From rider to rider",
-      meta: meta({ skeleton: "person", csv: { key: "riders", label: "Riders", value: (row) => `${fullName((row as Handoff).fromRider)} -> ${fullName((row as Handoff).toRider) || "nobody"}` } }),
+      meta: meta({
+        skeleton: "person",
+        csv: {
+          key: "riders",
+          label: "Riders",
+          value: (row) =>
+            `${fullName((row as Handoff).fromRider)} -> ${fullName((row as Handoff).toRider) || "nobody"}`,
+        },
+      }),
       cell: ({ row }) => <RiderSwap handoff={row.original} stacked />,
     },
     {
       id: "reason",
       header: "Reason",
-      meta: meta({ hideBelow: "lg", skeleton: "lines", csv: { key: "reason", label: "Reason", value: (row) => HANDOFF_REASON_LABEL[(row as Handoff).reason] ?? (row as Handoff).reason } }),
+      meta: meta({
+        hideBelow: "lg",
+        skeleton: "lines",
+        csv: {
+          key: "reason",
+          label: "Reason",
+          value: (row) => HANDOFF_REASON_LABEL[(row as Handoff).reason] ?? (row as Handoff).reason,
+        },
+      }),
       cell: ({ row }) => <ReasonCell handoff={row.original} />,
     },
     {
@@ -179,7 +265,15 @@ function buildColumns(mode: HandoffsMode, opts: { selection?: { ids: Set<string>
   return cols;
 }
 
-export function HandoffCard({ handoff, riderId, selection }: { handoff: Handoff; riderId?: string; selection?: ReactNode }) {
+export function HandoffCard({
+  handoff,
+  riderId,
+  selection,
+}: {
+  handoff: Handoff;
+  riderId?: string;
+  selection?: ReactNode;
+}) {
   return (
     <div className="space-y-2.5">
       <div className="flex items-start justify-between gap-2">
@@ -258,7 +352,9 @@ export function HandoffsTable({
                 return next;
               }),
             toggleAll: () =>
-              setSelected((current) => (reviewable.every((row) => current.has(row.id)) ? new Set() : new Set(reviewable.map((row) => row.id)))),
+              setSelected((current) =>
+                reviewable.every((row) => current.has(row.id)) ? new Set() : new Set(reviewable.map((row) => row.id)),
+              ),
           }
         : undefined,
     [bulk, selected, reviewable],
@@ -284,11 +380,21 @@ export function HandoffsTable({
           <HandoffCard
             handoff={row}
             riderId={riderId}
-            selection={selection && needsReview(row) ? <CheckBox checked={selected.has(row.id)} onChange={() => selection.toggle(row.id)} label={`Select order ${row.orderNumber ?? ""}`} /> : undefined}
+            selection={
+              selection && needsReview(row) ? (
+                <CheckBox
+                  checked={selected.has(row.id)}
+                  onChange={() => selection.toggle(row.id)}
+                  label={`Select order ${row.orderNumber ?? ""}`}
+                />
+              ) : undefined
+            }
           />
         )}
         emptyIcon={mode === "review" ? Scale : HandoffIcon}
-        emptyTitle={mode === "live" ? "No live handoffs" : mode === "review" ? "Review queue is clear" : "No handoffs yet"}
+        emptyTitle={
+          mode === "live" ? "No live handoffs" : mode === "review" ? "Review queue is clear" : "No handoffs yet"
+        }
         emptyDescription={
           mode === "live"
             ? "When a rider asks to hand an order over, it shows up here until another rider has it."
@@ -299,7 +405,14 @@ export function HandoffsTable({
                 : "Handoffs riders ask for after pickup show up here."
         }
       />
-      {bulk && selected.size ? <BulkBar ids={[...selected]} rows={reviewable} onDone={() => setSelected(new Set())} onClear={() => setSelected(new Set())} /> : null}
+      {bulk && selected.size ? (
+        <BulkBar
+          ids={[...selected]}
+          rows={reviewable}
+          onDone={() => setSelected(new Set())}
+          onClear={() => setSelected(new Set())}
+        />
+      ) : null}
     </div>
   );
 }
@@ -317,7 +430,17 @@ export function bulkSummary(results: HandoffBulkReviewResult[]) {
   };
 }
 
-function BulkBar({ ids, rows, onDone, onClear }: { ids: string[]; rows: Handoff[]; onDone: () => void; onClear: () => void }) {
+function BulkBar({
+  ids,
+  rows,
+  onDone,
+  onClear,
+}: {
+  ids: string[];
+  rows: Handoff[];
+  onDone: () => void;
+  onClear: () => void;
+}) {
   const [decision, setDecision] = useState<HandoffReviewDecision | null>(null);
   const [bonus, setBonus] = useState<"" | HandoffBonusAction>("");
   const [note, setNote] = useState("");
@@ -332,7 +455,10 @@ function BulkBar({ ids, rows, onDone, onClear }: { ids: string[]; rows: Handoff[
       const held = vars.bonus ? ids.filter((id) => heldIds.includes(id)) : [];
       const rest = ids.filter((id) => !held.includes(id));
       const calls: Promise<HandoffBulkReviewResult>[] = [];
-      if (held.length) calls.push(handoffs.bulkReview({ ids: held, decision: vars.decision, bonus: vars.bonus || undefined, note: vars.note }));
+      if (held.length)
+        calls.push(
+          handoffs.bulkReview({ ids: held, decision: vars.decision, bonus: vars.bonus || undefined, note: vars.note }),
+        );
       if (rest.length) calls.push(handoffs.bulkReview({ ids: rest, decision: vars.decision, note: vars.note }));
       return bulkSummary(await Promise.all(calls));
     },
@@ -355,15 +481,30 @@ function BulkBar({ ids, rows, onDone, onClear }: { ids: string[]; rows: Handoff[
         <div className="pointer-events-auto flex w-full max-w-2xl flex-wrap items-center gap-2 rounded-2xl border border-line bg-ink px-4 py-3 text-card shadow-pop sm:flex-nowrap">
           <span className="mr-auto text-sm font-bold">
             {count(ids.length)} selected
-            {heldIds.length ? <span className="ml-2 text-xs font-semibold text-card/70">{`${count(heldIds.length)} with a held bonus`}</span> : null}
+            {heldIds.length ? (
+              <span className="ml-2 text-xs font-semibold text-card/70">{`${count(heldIds.length)} with a held bonus`}</span>
+            ) : null}
           </span>
-          <button type="button" onClick={() => setDecision(HandoffReviewDecision.COUNT)} className="h-9 rounded-xl bg-danger px-3.5 text-sm font-bold text-white hover:brightness-95">
+          <button
+            type="button"
+            onClick={() => setDecision(HandoffReviewDecision.COUNT)}
+            className="h-9 rounded-xl bg-danger px-3.5 text-sm font-bold text-white hover:brightness-95"
+          >
             Count
           </button>
-          <button type="button" onClick={() => setDecision(HandoffReviewDecision.WAIVE)} className="h-9 rounded-xl bg-success px-3.5 text-sm font-bold text-white hover:brightness-95">
+          <button
+            type="button"
+            onClick={() => setDecision(HandoffReviewDecision.WAIVE)}
+            className="h-9 rounded-xl bg-success px-3.5 text-sm font-bold text-white hover:brightness-95"
+          >
             Waive
           </button>
-          <button type="button" aria-label="Clear selection" onClick={onClear} className="grid h-9 w-9 place-items-center rounded-xl text-card/70 hover:bg-card/10 hover:text-card">
+          <button
+            type="button"
+            aria-label="Clear selection"
+            onClick={onClear}
+            className="grid h-9 w-9 place-items-center rounded-xl text-card/70 hover:bg-card/10 hover:text-card"
+          >
             <X size={16} />
           </button>
         </div>
@@ -372,7 +513,11 @@ function BulkBar({ ids, rows, onDone, onClear }: { ids: string[]; rows: Handoff[
         open={decision !== null}
         onClose={() => (run.isPending ? undefined : setDecision(null))}
         onConfirm={() => decision && run.mutate({ decision, bonus, note: note.trim() || undefined })}
-        title={decision === HandoffReviewDecision.COUNT ? `Count ${count(ids.length)} handoffs?` : `Waive ${count(ids.length)} handoffs?`}
+        title={
+          decision === HandoffReviewDecision.COUNT
+            ? `Count ${count(ids.length)} handoffs?`
+            : `Waive ${count(ids.length)} handoffs?`
+        }
         description={
           decision === HandoffReviewDecision.COUNT
             ? `Each one counts as a cancellation for the rider who handed it over.${flagged ? ` ${count(flagged)} of them are flagged.` : ""}`
@@ -385,7 +530,10 @@ function BulkBar({ ids, rows, onDone, onClear }: { ids: string[]; rows: Handoff[
       >
         <div className="space-y-3">
           {heldIds.length ? (
-            <Field label={`Held bonuses (${count(heldIds.length)}, ${naira(heldTotal)})`} hint="Applies only to the selected handoffs with a held bonus.">
+            <Field
+              label={`Held bonuses (${count(heldIds.length)}, ${naira(heldTotal)})`}
+              hint="Applies only to the selected handoffs with a held bonus."
+            >
               <Select value={bonus} onChange={(e) => setBonus(e.target.value as "" | HandoffBonusAction)}>
                 <option value="">Leave held</option>
                 <option value={HandoffBonusAction.RELEASE}>Release them</option>

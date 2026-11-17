@@ -24,23 +24,35 @@ export function PeakHours({ query, callout }: { query: RangeQuery; callout?: boo
     if (!cells.length) return null;
     const best = cells.reduce((a, b) => (b.count > a.count ? b : a));
     if (!best.count) return null;
-    const byDay = DAYS.map((label, day) => ({ label, total: cells.filter((c) => c.day === day).reduce((s, c) => s + c.count, 0) }));
+    const byDay = DAYS.map((label, day) => ({
+      label,
+      total: cells.filter((c) => c.day === day).reduce((s, c) => s + c.count, 0),
+    }));
     const bestDay = byDay.reduce((a, b) => (b.total > a.total ? b : a));
-    return { hour: `${DAYS[best.day]} around ${hourLabel(best.hour)}`, hourCount: best.count, day: bestDay.label, dayCount: bestDay.total };
+    return {
+      hour: `${DAYS[best.day]} around ${hourLabel(best.hour)}`,
+      hourCount: best.count,
+      day: bestDay.label,
+      dayCount: bestDay.total,
+    };
   }, [cells]);
 
   return (
     <Panel>
       <PanelHeader
         title="When orders come in"
-        subtitle={busiest ? `Busiest: ${busiest.hour} (${count(busiest.hourCount)} orders)` : "By weekday and hour, Lagos time"}
+        subtitle={
+          busiest ? `Busiest: ${busiest.hour} (${count(busiest.hourCount)} orders)` : "By weekday and hour, Lagos time"
+        }
       />
       {callout && busiest ? (
         <div className="mx-5 mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div className="rounded-xl bg-brand-soft px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-dark">Busiest hour</p>
             <p className="mt-0.5 text-sm font-black text-ink">{busiest.hour}</p>
-            <p className="text-xs text-ink-muted">{count(busiest.hourCount)} orders placed in that hour across the window</p>
+            <p className="text-xs text-ink-muted">
+              {count(busiest.hourCount)} orders placed in that hour across the window
+            </p>
           </div>
           <div className="rounded-xl bg-surface px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Busiest day</p>
@@ -50,7 +62,14 @@ export function PeakHours({ query, callout }: { query: RangeQuery; callout?: boo
         </div>
       ) : null}
       <div className="p-5 pt-3">
-        {loading ? <Skeleton className="h-44 w-full" /> : <Heatmap cells={cells} maxHint={cells.length ? "Darker means more orders placed in that block." : "No orders in this window yet."} />}
+        {loading ? (
+          <Skeleton className="h-44 w-full" />
+        ) : (
+          <Heatmap
+            cells={cells}
+            maxHint={cells.length ? "Darker means more orders placed in that block." : "No orders in this window yet."}
+          />
+        )}
       </div>
     </Panel>
   );

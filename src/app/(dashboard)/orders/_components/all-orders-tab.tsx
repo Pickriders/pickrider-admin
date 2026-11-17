@@ -4,15 +4,41 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { PackageSearch } from "lucide-react";
 import { useMemo } from "react";
 
-import { DataTable, Skeleton, SkeletonLine, SkeletonOrder, SkeletonPerson, type ColumnMeta, type FilterSpec } from "@/components/kit";
+import {
+  DataTable,
+  Skeleton,
+  SkeletonLine,
+  SkeletonOrder,
+  SkeletonPerson,
+  type ColumnMeta,
+  type FilterSpec,
+} from "@/components/kit";
 import type { OrderRow, Paged } from "@/lib/admin/api";
-import { ORDER_SOURCE_LABEL, ago, fullName, naira, orderPaymentDisplay, orderSource, statusLabel, when } from "@/lib/admin/format";
+import {
+  ORDER_SOURCE_LABEL,
+  ago,
+  fullName,
+  naira,
+  orderPaymentDisplay,
+  orderSource,
+  statusLabel,
+  when,
+} from "@/lib/admin/format";
 import { useOrders } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, statusAt, totalDistanceKm } from "../lib";
-import { CourierCell, CustomerCell, OrderCell, OrderPaymentBadge, OrderStatusBadge, PartiesLine, PaymentLine, StatusWithTime } from "./order-cells";
+import {
+  CourierCell,
+  CustomerCell,
+  OrderCell,
+  OrderPaymentBadge,
+  OrderStatusBadge,
+  PartiesLine,
+  PaymentLine,
+  StatusWithTime,
+} from "./order-cells";
 
 /**
  * Every order the platform has seen, server paginated. Search is by order
@@ -20,7 +46,11 @@ import { CourierCell, CustomerCell, OrderCell, OrderPaymentBadge, OrderStatusBad
  * range are URL filters so a view can be shared.
  */
 const FILTERS: FilterSpec[] = [
-  { key: "status", label: "Status", options: ORDER_STATUSES.map((status) => ({ value: status, label: statusLabel(status) })) },
+  {
+    key: "status",
+    label: "Status",
+    options: ORDER_STATUSES.map((status) => ({ value: status, label: statusLabel(status) })),
+  },
   { key: "type", label: "Type", options: ORDER_TYPES.map((type) => ({ value: type, label: TYPE_LABEL[type] })) },
   {
     key: "isScheduled",
@@ -52,7 +82,8 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
       csv: {
         key: "orderNumber",
         label: "Order number (source)",
-        value: (row) => `${orderNumber(row as OrderRow)} (${ORDER_SOURCE_LABEL[orderSource((row as OrderRow).channel)]})`,
+        value: (row) =>
+          `${orderNumber(row as OrderRow)} (${ORDER_SOURCE_LABEL[orderSource((row as OrderRow).channel)]})`,
       },
     }),
     cell: ({ row }) => <OrderCell order={row.original} />,
@@ -60,7 +91,14 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "customer",
     header: "Customer",
-    meta: meta({ skeleton: "person", csv: { key: "customer", label: "Customer", value: (row) => (row as OrderRow).developerTeam?.name ?? fullName((row as OrderRow).user) } }),
+    meta: meta({
+      skeleton: "person",
+      csv: {
+        key: "customer",
+        label: "Customer",
+        value: (row) => (row as OrderRow).developerTeam?.name ?? fullName((row as OrderRow).user),
+      },
+    }),
     cell: ({ row }) => (
       <CustomerCell
         order={row.original}
@@ -73,23 +111,39 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "rider",
     header: "Courier",
-    meta: meta({ hideBelow: "lg", skeleton: "person", csv: { key: "courier", label: "Courier", value: (row) => fullName((row as OrderRow).rider) } }),
+    meta: meta({
+      hideBelow: "lg",
+      skeleton: "person",
+      csv: { key: "courier", label: "Courier", value: (row) => fullName((row as OrderRow).rider) },
+    }),
     cell: ({ row }) => (
       <span className="block max-w-[200px]">
-        <CourierCell order={row.original} href={row.original.rider ? `/couriers/${row.original.rider._id}/details` : undefined} />
+        <CourierCell
+          order={row.original}
+          href={row.original.rider ? `/couriers/${row.original.rider._id}/details` : undefined}
+        />
       </span>
     ),
   },
   {
     id: "amount",
     header: "Amount",
-    meta: meta({ width: "120px", align: "right", skeleton: "lines", csv: { key: "total", label: "Total (kobo)", value: (row) => (row as OrderRow).totalAmountPayable ?? 0 } }),
+    meta: meta({
+      width: "120px",
+      align: "right",
+      skeleton: "lines",
+      csv: { key: "total", label: "Total (kobo)", value: (row) => (row as OrderRow).totalAmountPayable ?? 0 },
+    }),
     cell: ({ row }) => (
       <span className="flex flex-col items-end leading-tight tabular-nums">
         <span className="text-[13px] font-bold text-ink">{naira(row.original.totalAmountPayable)}</span>
-        <span className="mt-1 whitespace-nowrap text-[11px] text-ink-muted">Rider {naira(row.original.negotiatedAmount)}</span>
+        <span className="mt-1 whitespace-nowrap text-[11px] text-ink-muted">
+          Rider {naira(row.original.negotiatedAmount)}
+        </span>
         {(row.original.discountAmount ?? 0) > 0 ? (
-          <span className="whitespace-nowrap text-[11px] text-success">Discount {naira(row.original.discountAmount)}</span>
+          <span className="whitespace-nowrap text-[11px] text-success">
+            Discount {naira(row.original.discountAmount)}
+          </span>
         ) : null}
         <PaymentLine order={row.original} className="max-w-[120px] 2xl:hidden" />
       </span>
@@ -98,11 +152,20 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "payment",
     header: "Payment",
-    meta: meta({ width: "150px", hideBelow: "2xl", skeleton: "badge", csv: { key: "paymentStatus", label: "Payment", value: (row) => orderPaymentDisplay(row as OrderRow).label } }),
+    meta: meta({
+      width: "150px",
+      hideBelow: "2xl",
+      skeleton: "badge",
+      csv: { key: "paymentStatus", label: "Payment", value: (row) => orderPaymentDisplay(row as OrderRow).label },
+    }),
     cell: ({ row }) => (
       <span className="flex flex-col items-start gap-1 leading-tight">
         <OrderPaymentBadge order={row.original} />
-        {row.original.paidDate ? <span className="whitespace-nowrap text-[11px] tabular-nums text-ink-faint">{when(row.original.paidDate)}</span> : null}
+        {row.original.paidDate ? (
+          <span className="whitespace-nowrap text-[11px] tabular-nums text-ink-faint">
+            {when(row.original.paidDate)}
+          </span>
+        ) : null}
       </span>
     ),
   },
@@ -119,13 +182,28 @@ const COLUMNS: ColumnDef<OrderRow, unknown>[] = [
   {
     id: "distance",
     header: "Distance",
-    meta: meta({ width: "88px", hideBelow: "2xl", align: "right", csv: { key: "distanceKm", label: "Distance (km)", value: (row) => totalDistanceKm(row as OrderRow).toFixed(1) } }),
-    cell: ({ row }) => <span className="whitespace-nowrap text-[13px] tabular-nums text-ink-muted">{totalDistanceKm(row.original).toFixed(1)} km</span>,
+    meta: meta({
+      width: "88px",
+      hideBelow: "2xl",
+      align: "right",
+      csv: { key: "distanceKm", label: "Distance (km)", value: (row) => totalDistanceKm(row as OrderRow).toFixed(1) },
+    }),
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap text-[13px] tabular-nums text-ink-muted">
+        {totalDistanceKm(row.original).toFixed(1)} km
+      </span>
+    ),
   },
   {
     id: "createdAt",
     header: "Placed",
-    meta: meta({ width: "128px", sortKey: "createdAt", hideBelow: "lg", skeleton: "lines", csv: { key: "createdAt", label: "Placed" } }),
+    meta: meta({
+      width: "128px",
+      sortKey: "createdAt",
+      hideBelow: "lg",
+      skeleton: "lines",
+      csv: { key: "createdAt", label: "Placed" },
+    }),
     cell: ({ row }) => (
       <span className="flex flex-col leading-tight tabular-nums">
         <span className="whitespace-nowrap text-[13px] text-ink">{when(row.original.createdAt)}</span>

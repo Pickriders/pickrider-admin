@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by git blame (git config blame.ignoreRevsFile .git-blame-ignore-revs).
+# style: format the codebase with prettier
+4deec19b06463722bd57d5e9cacd43af3a1137db
+# Merge origin/dev into chore/prettier (formatted #175's files)
+d6fb9a7bf36a0159bced501e42ba6c4351d5095a

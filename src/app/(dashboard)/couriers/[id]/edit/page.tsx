@@ -4,7 +4,18 @@ import { ArrowLeft, Info, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { Avatar, Badge, ErrorState, KeyValue, LinkButton, PageHeader, Panel, PanelHeader, Skeleton, statusTone } from "@/components/kit";
+import {
+  Avatar,
+  Badge,
+  ErrorState,
+  KeyValue,
+  LinkButton,
+  PageHeader,
+  Panel,
+  PanelHeader,
+  Skeleton,
+  statusTone,
+} from "@/components/kit";
 import { UserActions, phoneLabel } from "@/components/users/user-actions";
 import { LICENCE_LABEL, licenceOf, licenceTone } from "@/components/users/user-panels";
 import { day, fullName, statusLabel, when } from "@/lib/admin/format";
@@ -83,15 +94,26 @@ function CourierProfile({ id }: { id: string }) {
                   { label: "First name", value: u.firstname },
                   { label: "Last name", value: u.lastname },
                   { label: "Middle name", value: u.middlename },
-                  { label: "Phone", value: u.phone ? `${phoneLabel(u.phone)}${u.phoneVerified ? " (verified)" : ""}` : undefined },
-                  { label: "Email", value: formatEmail(u.email) ? `${formatEmail(u.email)}${u.emailVerified ? " (verified)" : ""}` : undefined },
+                  {
+                    label: "Phone",
+                    value: u.phone ? `${phoneLabel(u.phone)}${u.phoneVerified ? " (verified)" : ""}` : undefined,
+                  },
+                  {
+                    label: "Email",
+                    value: formatEmail(u.email)
+                      ? `${formatEmail(u.email)}${u.emailVerified ? " (verified)" : ""}`
+                      : undefined,
+                  },
                   { label: "Gender", value: u.gender ? statusLabel(u.gender) : undefined },
                   { label: "Date of birth", value: typeof raw.dob === "string" && raw.dob ? day(raw.dob) : undefined },
                   { label: "NIN", value: u.nin },
                   { label: "BVN", value: u.bvnVerified ? "Verified" : "Not verified" },
                   { label: "Licence number", value: licence.number || undefined },
                   { label: "Country / state", value: [u.country, u.state].filter(Boolean).join(" / ") || undefined },
-                  { label: "Roles", value: u.roles?.length ? u.roles.map((r) => statusLabel(r)).join(", ") : undefined },
+                  {
+                    label: "Roles",
+                    value: u.roles?.length ? u.roles.map((r) => statusLabel(r)).join(", ") : undefined,
+                  },
                   { label: "Joined", value: day(u.createdAt) },
                   { label: "Last sign-in", value: u.lastLoginDate ? when(u.lastLoginDate) : "Never" },
                   { label: "Business", value: u.businessId ? String(u.businessId) : undefined },
@@ -103,7 +125,10 @@ function CourierProfile({ id }: { id: string }) {
       </Panel>
 
       <Panel>
-        <PanelHeader title="Account actions" subtitle="What the admin can change on this record. Every action is audited." />
+        <PanelHeader
+          title="Account actions"
+          subtitle="What the admin can change on this record. Every action is audited."
+        />
         <div className="px-5 pb-5 pt-4">
           {u ? <UserActions user={u} wallet={wallet} showDispatch /> : <Skeleton className="h-10 w-full" />}
           <div className="mt-4 flex items-start gap-3 rounded-xl border border-info/30 bg-info-soft px-4 py-3 text-xs text-ink">

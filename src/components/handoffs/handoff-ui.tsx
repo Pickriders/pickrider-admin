@@ -58,8 +58,16 @@ export const BONUS_STATUS: Record<string, { label: string; tone: Tone }> = {
 };
 
 export const COUNT_DECISION: Record<string, { label: string; tone: Tone; hint: string }> = {
-  PENDING_REVIEW: { label: "Needs review", tone: "warning", hint: "Flagged. Decide whether it counts against the handing-over rider." },
-  RULE_WAIVED: { label: "Not counted", tone: "success", hint: "The rules waived it (reason, or the rider's first in 30 days)." },
+  PENDING_REVIEW: {
+    label: "Needs review",
+    tone: "warning",
+    hint: "Flagged. Decide whether it counts against the handing-over rider.",
+  },
+  RULE_WAIVED: {
+    label: "Not counted",
+    tone: "success",
+    hint: "The rules waived it (reason, or the rider's first in 30 days).",
+  },
   RULE_COUNTED: { label: "Counted", tone: "danger", hint: "The rules counted it as the rider's cancellation." },
   COUNTED: { label: "Counted by staff", tone: "danger", hint: "Staff counted it as the rider's cancellation." },
   WAIVED: { label: "Waived by staff", tone: "success", hint: "Staff decided it does not count." },
@@ -73,7 +81,9 @@ export function isLive(handoff: Pick<Handoff, "status">) {
 
 /** Completed and waiting on staff: a count decision or a held bonus. */
 export function needsReview(handoff: Pick<Handoff, "status" | "countDecision" | "bonusStatus">) {
-  return handoff.status === "COMPLETED" && (handoff.countDecision === "PENDING_REVIEW" || handoff.bonusStatus === "HELD");
+  return (
+    handoff.status === "COMPLETED" && (handoff.countDecision === "PENDING_REVIEW" || handoff.bonusStatus === "HELD")
+  );
 }
 
 /** Re-renders on an interval so "4m ago" and "searching 3 min" stay true without a refetch. */
@@ -128,7 +138,8 @@ export function BonusBadge({ status }: { status: string }) {
 }
 
 export function CountBadge({ handoff }: { handoff: Pick<Handoff, "countDecision" | "status"> }) {
-  if (handoff.status !== "COMPLETED" || !handoff.countDecision) return <span className="text-xs text-ink-faint">Not decided</span>;
+  if (handoff.status !== "COMPLETED" || !handoff.countDecision)
+    return <span className="text-xs text-ink-faint">Not decided</span>;
   const info = COUNT_DECISION[handoff.countDecision];
   return (
     <span title={info?.hint} className="inline-flex cursor-help">
@@ -138,18 +149,34 @@ export function CountBadge({ handoff }: { handoff: Pick<Handoff, "countDecision"
 }
 
 /** One rider with a profile link and a tap-to-call number. */
-export function HandoffRiderCell({ rider, fallback, size = 28 }: { rider: HandoffRider | null | undefined; fallback: string; size?: number }) {
+export function HandoffRiderCell({
+  rider,
+  fallback,
+  size = 28,
+}: {
+  rider: HandoffRider | null | undefined;
+  fallback: string;
+  size?: number;
+}) {
   if (!rider) return <span className="text-xs text-ink-faint">{fallback}</span>;
   const name = fullName(rider) || "Unnamed rider";
   return (
     <span className="flex min-w-0 items-center gap-2">
       <Avatar src={rider.photo} name={name} size={size} />
       <span className="min-w-0 leading-tight">
-        <Link href={`/couriers/${rider.id}/details`} onClick={stop} className="block truncate text-[13px] font-semibold text-ink hover:text-brand-dark hover:underline">
+        <Link
+          href={`/couriers/${rider.id}/details`}
+          onClick={stop}
+          className="block truncate text-[13px] font-semibold text-ink hover:text-brand-dark hover:underline"
+        >
           {name}
         </Link>
         {rider.phone ? (
-          <a href={phoneHref(rider.phone)} onClick={stop} className="mt-0.5 inline-flex items-center gap-1 text-[11px] tabular-nums text-ink-muted hover:text-ink">
+          <a
+            href={phoneHref(rider.phone)}
+            onClick={stop}
+            className="mt-0.5 inline-flex items-center gap-1 text-[11px] tabular-nums text-ink-muted hover:text-ink"
+          >
             <Phone size={10} aria-hidden />
             {displayPhone(rider.phone)}
           </a>
@@ -161,7 +188,12 @@ export function HandoffRiderCell({ rider, fallback, size = 28 }: { rider: Handof
 
 /** "A → B" on one line; B reads "Finding a rider" while nobody has taken it. */
 export function RiderSwap({ handoff, stacked }: { handoff: Handoff; stacked?: boolean }) {
-  const waiting = handoff.status === "SEARCHING" ? "Finding a rider" : handoff.status === "AWAITING_SUPPORT" ? "Search not started" : "Nobody took it";
+  const waiting =
+    handoff.status === "SEARCHING"
+      ? "Finding a rider"
+      : handoff.status === "AWAITING_SUPPORT"
+        ? "Search not started"
+        : "Nobody took it";
   return (
     <span className={cx("flex min-w-0 gap-2", stacked ? "flex-col items-start" : "items-center")}>
       <span className="min-w-0 sm:max-w-[13rem]">
@@ -185,7 +217,9 @@ export function ReasonCell({ handoff }: { handoff: Pick<Handoff, "reason" | "not
         {handoff.initiatedBy === "ADMIN" ? <Badge tone="info">By staff</Badge> : null}
         {handoff.sequence > 1 ? <Badge tone="neutral">{`Handoff ${handoff.sequence}`}</Badge> : null}
       </span>
-      {handoff.note ? <span className="mt-0.5 block break-words text-[11px] text-ink-muted">&ldquo;{handoff.note}&rdquo;</span> : null}
+      {handoff.note ? (
+        <span className="mt-0.5 block break-words text-[11px] text-ink-muted">&ldquo;{handoff.note}&rdquo;</span>
+      ) : null}
     </span>
   );
 }
@@ -214,13 +248,17 @@ export function TimingCell({ handoff }: { handoff: Handoff }) {
   return (
     <span className="block leading-tight">
       <span className={cx("block whitespace-nowrap text-[13px] font-semibold tabular-nums", tone)}>{headline}</span>
-      <span className="mt-0.5 block whitespace-nowrap text-[11px] tabular-nums text-ink-faint" title={when(handoff.createdAt)}>
+      <span
+        className="mt-0.5 block whitespace-nowrap text-[11px] tabular-nums text-ink-faint"
+        title={when(handoff.createdAt)}
+      >
         Asked {time(handoff.createdAt)}
         {handoff.status === "SEARCHING" && handoff.expiresAt ? ` · expires ${time(handoff.expiresAt)}` : ""}
       </span>
       {handoff.status === "SEARCHING" || handoff.status === "AWAITING_SUPPORT" ? (
         <span className="mt-0.5 block whitespace-nowrap text-[11px] tabular-nums text-ink-faint">
-          {count(handoff.rungCount)} rung · {handoff.searchRadiusKm} km{handoff.declinedCount ? ` · ${count(handoff.declinedCount)} declined` : ""}
+          {count(handoff.rungCount)} rung · {handoff.searchRadiusKm} km
+          {handoff.declinedCount ? ` · ${count(handoff.declinedCount)} declined` : ""}
         </span>
       ) : null}
     </span>
@@ -230,7 +268,11 @@ export function TimingCell({ handoff }: { handoff: Handoff }) {
 /** What each rider earns from the trip (gross, before commission), locked at the swap. */
 export function SplitCell({ handoff }: { handoff: Handoff }) {
   if (handoff.fromShare == null || handoff.toShare == null) {
-    return <span className="text-xs text-ink-faint">{handoff.status === "COMPLETED" ? "No split recorded" : "Set at the swap"}</span>;
+    return (
+      <span className="text-xs text-ink-faint">
+        {handoff.status === "COMPLETED" ? "No split recorded" : "Set at the swap"}
+      </span>
+    );
   }
   return (
     <span className="block leading-tight">
@@ -258,7 +300,10 @@ export function BonusCell({ handoff }: { handoff: Handoff }) {
       <span className="text-[13px] font-semibold tabular-nums text-ink">{naira(handoff.bonusAmount)}</span>
       <BonusBadge status={handoff.bonusStatus} />
       {handoff.compensationAmount ? (
-        <span className="text-[11px] text-ink-muted" title="Paid to the taking rider when the handoff was called off after they accepted">
+        <span
+          className="text-[11px] text-ink-muted"
+          title="Paid to the taking rider when the handoff was called off after they accepted"
+        >
           {naira(handoff.compensationAmount)} compensation
         </span>
       ) : null}
@@ -268,7 +313,11 @@ export function BonusCell({ handoff }: { handoff: Handoff }) {
 
 export function OrderLink({ handoff }: { handoff: Pick<Handoff, "orderId" | "orderNumber"> }) {
   return (
-    <Link href={`/orders/${handoff.orderId}#handoffs`} onClick={stop} className="whitespace-nowrap text-[13px] font-bold tabular-nums text-ink hover:text-brand-dark hover:underline">
+    <Link
+      href={`/orders/${handoff.orderId}#handoffs`}
+      onClick={stop}
+      className="whitespace-nowrap text-[13px] font-bold tabular-nums text-ink hover:text-brand-dark hover:underline"
+    >
       {handoff.orderNumber ? `#${handoff.orderNumber}` : "View order"}
     </Link>
   );

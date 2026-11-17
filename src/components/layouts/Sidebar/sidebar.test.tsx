@@ -40,7 +40,7 @@ jest.mock("@/lib/admin/hooks", () => ({
   }),
 }));
 const mockSetParam = jest.fn();
-jest.mock("@/hooks", () => ({ useQueryModal: () => ({ setParam: mockSetParam }) }));
+jest.mock("@/hooks", () => ({ useSetQueryParam: () => mockSetParam }));
 jest.mock("@/lib/admin-access", () => ({
   getAdminRoles: () => ["PLATFORM_OPERATION"],
   canAccessSection: (href: string) => !mockHidden.includes(href),

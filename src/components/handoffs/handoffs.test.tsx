@@ -20,10 +20,23 @@ jest.mock("@/lib/admin/hooks", () => ({
 }));
 let allowed = true;
 jest.mock("@/lib/admin/use-can", () => ({ useCan: () => ({ can: () => allowed, roles: [], ready: true }) }));
-jest.mock("next/navigation", () => ({ useRouter: () => ({ push: jest.fn(), replace: jest.fn() }), usePathname: () => "/handoffs", useSearchParams: () => new URLSearchParams() }));
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => "/handoffs",
+  useSearchParams: () => new URLSearchParams(),
+}));
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href, prefetch: _prefetch, ...rest }: { children: React.ReactNode; href: string; prefetch?: boolean }) => (
+  default: ({
+    children,
+    href,
+    prefetch: _prefetch,
+    ...rest
+  }: {
+    children: React.ReactNode;
+    href: string;
+    prefetch?: boolean;
+  }) => (
     <a href={href} {...rest}>
       {children}
     </a>
@@ -58,9 +71,32 @@ describe("handoff rules on the client", () => {
   it("knows which handoffs are live and which wait for review", () => {
     expect(isLive(handoff({ status: "AWAITING_SUPPORT" as Handoff["status"] }))).toBe(true);
     expect(isLive(handoff({ status: "COMPLETED" as Handoff["status"] }))).toBe(false);
-    expect(needsReview(handoff({ status: "COMPLETED" as Handoff["status"], countDecision: "PENDING_REVIEW" as Handoff["countDecision"] }))).toBe(true);
-    expect(needsReview(handoff({ status: "COMPLETED" as Handoff["status"], countDecision: "RULE_WAIVED" as Handoff["countDecision"], bonusStatus: "HELD" as Handoff["bonusStatus"] }))).toBe(true);
-    expect(needsReview(handoff({ status: "COMPLETED" as Handoff["status"], countDecision: "COUNTED" as Handoff["countDecision"], bonusStatus: "PAID" as Handoff["bonusStatus"] }))).toBe(false);
+    expect(
+      needsReview(
+        handoff({
+          status: "COMPLETED" as Handoff["status"],
+          countDecision: "PENDING_REVIEW" as Handoff["countDecision"],
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      needsReview(
+        handoff({
+          status: "COMPLETED" as Handoff["status"],
+          countDecision: "RULE_WAIVED" as Handoff["countDecision"],
+          bonusStatus: "HELD" as Handoff["bonusStatus"],
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      needsReview(
+        handoff({
+          status: "COMPLETED" as Handoff["status"],
+          countDecision: "COUNTED" as Handoff["countDecision"],
+          bonusStatus: "PAID" as Handoff["bonusStatus"],
+        }),
+      ),
+    ).toBe(false);
     // A live one with a pending decision is not reviewable until the swap completes.
     expect(needsReview(handoff({ countDecision: "PENDING_REVIEW" as Handoff["countDecision"] }))).toBe(false);
   });
@@ -78,7 +114,12 @@ describe("handoff rules on the client", () => {
     expect(canStartHandoff(order, [handoff({ status: "ACCEPTED" as Handoff["status"] })])).toBe(false);
     expect(canStartHandoff(order, [handoff({ status: "CANCELLED" as Handoff["status"] })])).toBe(true);
     expect(canStartHandoff({ ...order, status: "ACCEPTED" } as OrderRow)).toBe(false);
-    expect(canStartHandoff({ ...order, locations: [{ _id: "p", type: "PICKUP", status: "ARRIVED" }] } as unknown as OrderRow)).toBe(false);
+    expect(
+      canStartHandoff({
+        ...order,
+        locations: [{ _id: "p", type: "PICKUP", status: "ARRIVED" }],
+      } as unknown as OrderRow),
+    ).toBe(false);
     expect(canStartHandoff({ ...order, rider: null } as OrderRow)).toBe(false);
   });
 });
@@ -98,7 +139,9 @@ describe("handoffs list query", () => {
   });
 
   it("passes the rider filter, a fixed rider and the date range through", () => {
-    expect(handoffsQuery("all", { ...state, from: "2026-11-01", to: "2026-11-09", filters: { rider: "r1" } })).toMatchObject({ riderId: "r1", from: "2026-11-01", to: "2026-11-09", status: undefined });
+    expect(
+      handoffsQuery("all", { ...state, from: "2026-11-01", to: "2026-11-09", filters: { rider: "r1" } }),
+    ).toMatchObject({ riderId: "r1", from: "2026-11-01", to: "2026-11-09", status: undefined });
     expect(handoffsQuery("all", { ...state, filters: { rider: "r1" } }, "fixed").riderId).toBe("fixed");
   });
 });
@@ -107,10 +150,26 @@ describe("bulk review summary", () => {
   it("adds up both calls and names the first failure", () => {
     expect(bulkSummary([{ updated: 3, results: [] }]).message).toBe("3 handoffs reviewed.");
     const mixed = bulkSummary([
-      { updated: 2, results: [{ id: "1", ok: true }, { id: "2", ok: true }] },
-      { updated: 1, results: [{ id: "3", ok: true }, { id: "4", ok: false, error: "Only a completed handoff can be reviewed." }] },
+      {
+        updated: 2,
+        results: [
+          { id: "1", ok: true },
+          { id: "2", ok: true },
+        ],
+      },
+      {
+        updated: 1,
+        results: [
+          { id: "3", ok: true },
+          { id: "4", ok: false, error: "Only a completed handoff can be reviewed." },
+        ],
+      },
     ]);
-    expect(mixed).toEqual({ updated: 3, failed: 1, message: "3 updated, 1 not: Only a completed handoff can be reviewed." });
+    expect(mixed).toEqual({
+      updated: 3,
+      failed: 1,
+      message: "3 updated, 1 not: Only a completed handoff can be reviewed.",
+    });
   });
 });
 
@@ -139,7 +198,19 @@ describe("handoff cells and actions", () => {
   });
 
   it("shows the locked split in naira once the swap happened", () => {
-    act(() => root.render(<SplitCell handoff={handoff({ status: "COMPLETED" as Handoff["status"], fromShare: 120000, toShare: 180000, sharePct: 40, splitBase: 300000 })} />));
+    act(() =>
+      root.render(
+        <SplitCell
+          handoff={handoff({
+            status: "COMPLETED" as Handoff["status"],
+            fromShare: 120000,
+            toShare: 180000,
+            sharePct: 40,
+            splitBase: 300000,
+          })}
+        />,
+      ),
+    );
     expect(container.textContent).toContain("40% to A");
     expect(container.textContent?.replace(/\s/g, "")).toContain("₦1,200/₦1,800");
     act(() => root.render(<SplitCell handoff={handoff()} />));
@@ -147,16 +218,39 @@ describe("handoff cells and actions", () => {
   });
 
   it("offers the right levers for each state", () => {
-    act(() => root.render(<HandoffActions handoff={handoff({ status: "AWAITING_SUPPORT" as Handoff["status"] })} variant="buttons" />));
+    act(() =>
+      root.render(
+        <HandoffActions handoff={handoff({ status: "AWAITING_SUPPORT" as Handoff["status"] })} variant="buttons" />,
+      ),
+    );
     expect(labels()).toEqual(["Start search", "Assign rider", "Raise bonus", "Cancel handoff"]);
 
-    act(() => root.render(<HandoffActions handoff={handoff({ status: "ACCEPTED" as Handoff["status"], toRider: rider("b", "Bola") })} variant="buttons" />));
+    act(() =>
+      root.render(
+        <HandoffActions
+          handoff={handoff({ status: "ACCEPTED" as Handoff["status"], toRider: rider("b", "Bola") })}
+          variant="buttons"
+        />,
+      ),
+    );
     expect(labels()).toEqual(["Raise bonus", "Drop rider", "Cancel handoff"]);
 
-    act(() => root.render(<HandoffActions handoff={handoff({ status: "COMPLETED" as Handoff["status"], countDecision: "PENDING_REVIEW" as Handoff["countDecision"] })} variant="buttons" />));
+    act(() =>
+      root.render(
+        <HandoffActions
+          handoff={handoff({
+            status: "COMPLETED" as Handoff["status"],
+            countDecision: "PENDING_REVIEW" as Handoff["countDecision"],
+          })}
+          variant="buttons"
+        />,
+      ),
+    );
     expect(labels()).toEqual(["Review"]);
 
-    act(() => root.render(<HandoffActions handoff={handoff({ status: "EXPIRED" as Handoff["status"] })} variant="buttons" />));
+    act(() =>
+      root.render(<HandoffActions handoff={handoff({ status: "EXPIRED" as Handoff["status"] })} variant="buttons" />),
+    );
     expect(labels()).toEqual([]);
   });
 
@@ -168,7 +262,9 @@ describe("handoff cells and actions", () => {
 
   it("confirms before cancelling the handoff", () => {
     act(() => root.render(<HandoffActions handoff={handoff()} variant="buttons" />));
-    const cancel = Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes("Cancel handoff"))!;
+    const cancel = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Cancel handoff"),
+    )!;
     act(() => cancel.click());
     expect(mutate).not.toHaveBeenCalled();
     const dialog = document.body.querySelector("[role='alertdialog']") as HTMLElement;

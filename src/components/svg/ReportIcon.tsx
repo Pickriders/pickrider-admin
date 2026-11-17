@@ -1,12 +1,6 @@
 export const ReportIcon = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="17"
-      viewBox="0 0 16 20"
-      fill="none"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 16 20" fill="none">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

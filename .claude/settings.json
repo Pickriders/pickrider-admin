@@ -12,9 +12,6 @@
       "Bash(git branch:*)",
       "Bash(git show:*)"
     ],
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)"
-    ]
+    "deny": ["Read(./.env)", "Read(./.env.*)"]
   }
 }

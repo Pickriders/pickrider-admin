@@ -1,2 +1,2 @@
-export * from './apiService'
-export * from './queryService'
+export * from "./apiService";
+export * from "./queryService";

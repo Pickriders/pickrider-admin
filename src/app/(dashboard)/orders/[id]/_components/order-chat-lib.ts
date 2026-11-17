@@ -15,9 +15,13 @@ export function mayHaveChat(order: Omit<ChatOrder, "_id">) {
   return orderSource(order.channel) === "APP" && !order.teamId && order.livemode !== false;
 }
 
-export function threadState(thread: Pick<OrderChatThread, "open" | "readOnlyUntil">, now = Date.now()): { label: string; tone: Tone } {
+export function threadState(
+  thread: Pick<OrderChatThread, "open" | "readOnlyUntil">,
+  now = Date.now(),
+): { label: string; tone: Tone } {
   if (thread.open) return { label: "Open", tone: "success" };
-  if (thread.readOnlyUntil && new Date(thread.readOnlyUntil).getTime() > now) return { label: `Read-only until ${when(thread.readOnlyUntil)}`, tone: "warning" };
+  if (thread.readOnlyUntil && new Date(thread.readOnlyUntil).getTime() > now)
+    return { label: `Read-only until ${when(thread.readOnlyUntil)}`, tone: "warning" };
   return { label: "Closed", tone: "neutral" };
 }
 
@@ -43,9 +47,15 @@ export function tallyLine(counts: Tally) {
   return detail.length ? `${parts[0]}: ${detail.join(", ")}` : parts[0];
 }
 
-export function participantFor(message: Pick<OrderMessage, "senderId" | "senderRole">, participants: ChatParticipant[]) {
+export function participantFor(
+  message: Pick<OrderMessage, "senderId" | "senderRole">,
+  participants: ChatParticipant[],
+) {
   if (message.senderRole === "SYSTEM") return undefined;
-  return participants.find((person) => person.id === message.senderId) ?? (message.senderRole === "CUSTOMER" ? participants.find((person) => person.role === "CUSTOMER") : undefined);
+  return (
+    participants.find((person) => person.id === message.senderId) ??
+    (message.senderRole === "CUSTOMER" ? participants.find((person) => person.role === "CUSTOMER") : undefined)
+  );
 }
 
 export function senderName(message: Pick<OrderMessage, "senderId" | "senderRole">, participants: ChatParticipant[]) {
@@ -58,13 +68,18 @@ export function senderName(message: Pick<OrderMessage, "senderId" | "senderRole"
  * The newest message from each side the other side has read up to: the customer's read marker
  * says which rider messages were seen, the rider's marker which customer messages were.
  */
-export function seenSeqs(messages: Pick<OrderMessage, "seq" | "senderRole" | "kind">[], thread: Pick<OrderChatThread, "customerLastReadSeq" | "riderLastReadSeq">) {
+export function seenSeqs(
+  messages: Pick<OrderMessage, "seq" | "senderRole" | "kind">[],
+  thread: Pick<OrderChatThread, "customerLastReadSeq" | "riderLastReadSeq">,
+) {
   let customer = 0;
   let rider = 0;
   for (const message of messages) {
     if (message.kind !== "TEXT") continue;
-    if (message.senderRole === "CUSTOMER" && message.seq <= thread.riderLastReadSeq) customer = Math.max(customer, message.seq);
-    if (message.senderRole === "RIDER" && message.seq <= thread.customerLastReadSeq) rider = Math.max(rider, message.seq);
+    if (message.senderRole === "CUSTOMER" && message.seq <= thread.riderLastReadSeq)
+      customer = Math.max(customer, message.seq);
+    if (message.senderRole === "RIDER" && message.seq <= thread.customerLastReadSeq)
+      rider = Math.max(rider, message.seq);
   }
   return new Set([customer, rider].filter(Boolean));
 }
@@ -77,7 +92,10 @@ export type TranscriptItem =
  * Messages in seq order with a day line wherever the Lagos date changes. `first` marks the start of
  * a run from one sender, where the bubble shows the name (and the rider's photo).
  */
-export function transcriptItems(messages: OrderMessage[], thread: Pick<OrderChatThread, "customerLastReadSeq" | "riderLastReadSeq">): TranscriptItem[] {
+export function transcriptItems(
+  messages: OrderMessage[],
+  thread: Pick<OrderChatThread, "customerLastReadSeq" | "riderLastReadSeq">,
+): TranscriptItem[] {
   const ordered = [...messages].sort((a, b) => a.seq - b.seq);
   const seen = seenSeqs(ordered, thread);
   const out: TranscriptItem[] = [];
@@ -98,7 +116,11 @@ export function transcriptItems(messages: OrderMessage[], thread: Pick<OrderChat
 }
 
 /** Plain text for the clipboard: a header, then one line per message with the time and who said it. */
-export function transcriptText(thread: Pick<OrderChatThread, "orderNumber" | "participants">, messages: OrderMessage[], truncated = false) {
+export function transcriptText(
+  thread: Pick<OrderChatThread, "orderNumber" | "participants">,
+  messages: OrderMessage[],
+  truncated = false,
+) {
   const lines = [`Order ${thread.orderNumber} chat`];
   if (truncated) lines.push("(the latest 1,000 messages)");
   let lastDay = "";
@@ -109,7 +131,9 @@ export function transcriptText(thread: Pick<OrderChatThread, "orderNumber" | "pa
       lastDay = label;
     }
     const who =
-      message.senderRole === "SYSTEM" ? "Pickriders" : `${senderName(message, thread.participants)} (${message.senderRole === "CUSTOMER" ? "customer" : "rider"})`;
+      message.senderRole === "SYSTEM"
+        ? "Pickriders"
+        : `${senderName(message, thread.participants)} (${message.senderRole === "CUSTOMER" ? "customer" : "rider"})`;
     lines.push(`${time(message.createdAt)}  ${who}: ${message.body}`);
   }
   return lines.join("\n");

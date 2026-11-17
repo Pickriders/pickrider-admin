@@ -26,7 +26,10 @@ import { useCan } from "@/lib/admin/use-can";
  * split of the rider fee, the bonus and whether it counts. Live ones carry the same actions as the
  * Handoffs page. Staff can start one for an order on the way that has been picked up.
  */
-export function canStartHandoff(order: Pick<OrderRow, "status" | "rider" | "locations">, rows: Pick<Handoff, "status">[] = []) {
+export function canStartHandoff(
+  order: Pick<OrderRow, "status" | "rider" | "locations">,
+  rows: Pick<Handoff, "status">[] = [],
+) {
   const pickedUp = (order.locations ?? []).some((stop) => stop.type === "PICKUP" && stop.status === "COMPLETED");
   return order.status === "ON_GOING" && Boolean(order.rider) && pickedUp && !rows.some(isLive);
 }
@@ -36,8 +39,15 @@ const ENDED_BY: Record<string, string> = { RIDER: "by the rider", ADMIN: "by sta
 type Step = { label: string; at?: string; tone: "done" | "live" | "bad"; detail?: string };
 
 function steps(handoff: Handoff, now: number): Step[] {
-  const out: Step[] = [{ label: handoff.initiatedBy === "ADMIN" ? "Staff opened it" : "Rider asked", at: handoff.createdAt, tone: "done" }];
-  if (handoff.status === "AWAITING_SUPPORT") out.push({ label: "Waiting for support to start the search", tone: "bad", detail: minutes((now - new Date(handoff.createdAt).getTime()) / 60_000) });
+  const out: Step[] = [
+    { label: handoff.initiatedBy === "ADMIN" ? "Staff opened it" : "Rider asked", at: handoff.createdAt, tone: "done" },
+  ];
+  if (handoff.status === "AWAITING_SUPPORT")
+    out.push({
+      label: "Waiting for support to start the search",
+      tone: "bad",
+      detail: minutes((now - new Date(handoff.createdAt).getTime()) / 60_000),
+    });
   if (handoff.searchingSince) {
     const searching = handoff.status === "SEARCHING";
     out.push({
@@ -47,8 +57,14 @@ function steps(handoff: Handoff, now: number): Step[] {
       detail: `${count(handoff.rungCount)} rung within ${handoff.searchRadiusKm} km${handoff.declinedCount ? `, ${count(handoff.declinedCount)} declined` : ""}${handoff.droppedRiderIds.length ? `, ${count(handoff.droppedRiderIds.length)} dropped` : ""}`,
     });
   }
-  if (handoff.acceptedAt) out.push({ label: `${fullName(handoff.toRider) || "A rider"} accepted`, at: handoff.acceptedAt, tone: handoff.status === "ACCEPTED" ? "live" : "done" });
-  if (handoff.lockedUntil && new Date(handoff.lockedUntil).getTime() > now) out.push({ label: "Swap locked after wrong codes", tone: "bad", detail: `until ${time(handoff.lockedUntil)}` });
+  if (handoff.acceptedAt)
+    out.push({
+      label: `${fullName(handoff.toRider) || "A rider"} accepted`,
+      at: handoff.acceptedAt,
+      tone: handoff.status === "ACCEPTED" ? "live" : "done",
+    });
+  if (handoff.lockedUntil && new Date(handoff.lockedUntil).getTime() > now)
+    out.push({ label: "Swap locked after wrong codes", tone: "bad", detail: `until ${time(handoff.lockedUntil)}` });
   if (handoff.completedAt) {
     out.push({
       label: "Swapped",
@@ -58,7 +74,10 @@ function steps(handoff: Handoff, now: number): Step[] {
     });
   } else if (handoff.endedAt) {
     out.push({
-      label: handoff.status === "EXPIRED" ? "Expired, nobody took it" : `Cancelled ${ENDED_BY[handoff.endedBy ?? ""] ?? ""}`.trim(),
+      label:
+        handoff.status === "EXPIRED"
+          ? "Expired, nobody took it"
+          : `Cancelled ${ENDED_BY[handoff.endedBy ?? ""] ?? ""}`.trim(),
       at: handoff.endedAt,
       tone: "bad",
       detail: handoff.endNote,
@@ -74,19 +93,29 @@ function Timeline({ handoff }: { handoff: Handoff }) {
     <ol className="space-y-2.5">
       {list.map((step, index) => (
         <li key={`${step.label}-${index}`} className="relative flex gap-3">
-          {index < list.length - 1 ? <span aria-hidden className="absolute left-[4.5px] top-4 h-[calc(100%+2px)] w-px bg-line" /> : null}
+          {index < list.length - 1 ? (
+            <span aria-hidden className="absolute left-[4.5px] top-4 h-[calc(100%+2px)] w-px bg-line" />
+          ) : null}
           <span
             aria-hidden
             className={cx(
               "relative mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full",
-              step.tone === "done" ? "bg-success" : step.tone === "live" ? "bg-warning admin-live-dot text-warning" : "bg-danger",
+              step.tone === "done"
+                ? "bg-success"
+                : step.tone === "live"
+                  ? "bg-warning admin-live-dot text-warning"
+                  : "bg-danger",
             )}
           />
           <div className="min-w-0 text-xs leading-snug">
             <p className="font-semibold text-ink">
               {step.label}
               {step.at ? (
-                <time dateTime={step.at} title={when(step.at)} className="ml-1.5 font-normal tabular-nums text-ink-muted">
+                <time
+                  dateTime={step.at}
+                  title={when(step.at)}
+                  className="ml-1.5 font-normal tabular-nums text-ink-muted"
+                >
                   {time(step.at)}
                 </time>
               ) : null}
@@ -108,11 +137,18 @@ function HandoffItem({ handoff }: { handoff: Handoff }) {
         ? "Not recorded"
         : "Set at the swap";
   return (
-    <li className={cx("rounded-2xl border p-4", live ? "border-warning/40 bg-warning-soft/40" : "border-line bg-surface/60")}>
+    <li
+      className={cx(
+        "rounded-2xl border p-4",
+        live ? "border-warning/40 bg-warning-soft/40" : "border-line bg-surface/60",
+      )}
+    >
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-black tracking-tight text-ink">{`Handoff ${handoff.sequence}`}</span>
         <HandoffStatusBadge status={handoff.status} />
-        <Badge tone={handoff.reason === "ACCIDENT" ? "danger" : "neutral"}>{HANDOFF_REASON_LABEL[handoff.reason] ?? handoff.reason}</Badge>
+        <Badge tone={handoff.reason === "ACCIDENT" ? "danger" : "neutral"}>
+          {HANDOFF_REASON_LABEL[handoff.reason] ?? handoff.reason}
+        </Badge>
         {handoff.initiatedBy === "ADMIN" ? <Badge tone="info">By staff</Badge> : null}
         <FlagChips flags={handoff.flags} />
       </div>
@@ -141,7 +177,9 @@ function HandoffItem({ handoff }: { handoff: Handoff }) {
                 ),
               },
               { label: "Counts against A", value: <CountBadge handoff={handoff} /> },
-              ...(handoff.compensationAmount ? [{ label: "Cancel compensation", value: naira(handoff.compensationAmount) }] : []),
+              ...(handoff.compensationAmount
+                ? [{ label: "Cancel compensation", value: naira(handoff.compensationAmount) }]
+                : []),
               ...(handoff.failedAttempts ? [{ label: "Wrong codes", value: count(handoff.failedAttempts) }] : []),
               ...(handoff.reviewNote ? [{ label: "Review note", value: handoff.reviewNote }] : []),
             ]}
@@ -162,7 +200,9 @@ export function HandoffPanel({ order }: { order: OrderRow }) {
   const relevant = order.status === "ON_GOING" || (order.handoffCount ?? 0) > 0;
   const query = useOrderHandoffs(order._id, relevant);
   const [starting, setStarting] = useState(false);
-  const rows = [...(query.data ?? [])].sort((a, b) => a.sequence - b.sequence || a.createdAt.localeCompare(b.createdAt));
+  const rows = [...(query.data ?? [])].sort(
+    (a, b) => a.sequence - b.sequence || a.createdAt.localeCompare(b.createdAt),
+  );
   const startable = canStartHandoff(order, rows) && can("handoff.manage");
 
   // The "Handed off" chip on the order lists links here with #handoffs.
@@ -180,7 +220,11 @@ export function HandoffPanel({ order }: { order: OrderRow }) {
     <Panel id="handoffs" className="scroll-mt-24">
       <PanelHeader
         title="Handoffs"
-        subtitle={rows.length ? "Riders who handed this order on after pickup, oldest first" : "If the rider cannot finish, another rider can take it from them"}
+        subtitle={
+          rows.length
+            ? "Riders who handed this order on after pickup, oldest first"
+            : "If the rider cannot finish, another rider can take it from them"
+        }
         action={
           startable ? (
             <Button size="sm" variant="outline" icon={Plus} onClick={() => setStarting(true)}>
@@ -213,11 +257,19 @@ export function HandoffPanel({ order }: { order: OrderRow }) {
           </ol>
         ) : (
           <p className="text-sm text-ink-muted">
-            No handoffs on this order. Start one when {fullName(order.rider) || "the rider"} calls in and cannot finish the delivery; their app has the same option.
+            No handoffs on this order. Start one when {fullName(order.rider) || "the rider"} calls in and cannot finish
+            the delivery; their app has the same option.
           </p>
         )}
       </div>
-      {startable ? <StartHandoffDialog orderId={order._id} riderName={fullName(order.rider) || "the rider"} open={starting} onClose={() => setStarting(false)} /> : null}
+      {startable ? (
+        <StartHandoffDialog
+          orderId={order._id}
+          riderName={fullName(order.rider) || "the rider"}
+          open={starting}
+          onClose={() => setStarting(false)}
+        />
+      ) : null}
     </Panel>
   );
 }

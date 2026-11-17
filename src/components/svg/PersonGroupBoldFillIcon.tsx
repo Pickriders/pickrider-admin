@@ -1,17 +1,8 @@
 import { SvgProps } from "./Svg.type";
 
-export const PersonGroupBoldFillIcon = ({
-  height = 32,
-  width = 32,
-}: SvgProps) => {
+export const PersonGroupBoldFillIcon = ({ height = 32, width = 32 }: SvgProps) => {
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={width} height={height} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M21.7429 12.1364C21.7429 10.1281 19.92 8.5 17.6714 8.5C15.4228 8.5 13.6 10.1281 13.6 12.1364C13.6 14.1447 15.4228 15.7727 17.6714 15.7727C19.92 15.7727 21.7429 14.1447 21.7429 12.1364Z"
         fill="white"
