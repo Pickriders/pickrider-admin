@@ -63,7 +63,8 @@ src/
 │   ├── http.ts           errorMessage()
 │   ├── session.ts        access + refresh token cookies, X-Device-Id (localStorage), MFA grace deadline
 │   ├── auth-errors.ts    core error codes (LOGIN_LOCKED, SESSION_REVOKED, MFA_*) + one voice for sign-in copy
-│   ├── refresh.ts        single in-flight refresh queue used by apiService on 401
+│   ├── refresh.ts        refresh shared per tab (queue) and across tabs (Web Lock + BroadcastChannel),
+│   │                     the proactive session keeper, and which refresh failures end a session
 │   ├── step-up.ts        bridge between apiService (428 MFA_STEP_UP_REQUIRED) and the StepUpDialog
 │   ├── url-state.ts      useTableState / useTabParam — table + tab state in the URL
 │   └── format.ts         naira/count/when/… display helpers
@@ -81,8 +82,11 @@ src/
 (the email confirmation page and the MFA setup-only screen) is reachable with or without a session.
 
 **Sessions:** the core issues a 15-minute admin access token plus a rotating refresh token.
-`src/services/apiService/index.ts` owns the lifecycle: `X-Device-Id` on every request, one shared
-refresh on 401 then a single retry, sign-out with a reason (`expired`, `revoked`) when that fails,
+`src/services/apiService/index.ts` owns the lifecycle: `X-Device-Id` on every request, a refresh about a
+minute before the access token expires (`SessionKeeper` in the dashboard shell), one shared refresh on 401
+(one per tab and one across tabs) then a single retry, sign-out with a reason (`expired`, `revoked`) only
+when the refresh route answers 401 or there is no refresh token (a network error, 5xx, 429 or 403 keeps
+the session and retries with backoff; a refresh answer without `refreshToken` keeps the cookie),
 a 428 `MFA_STEP_UP_REQUIRED` prompt (StepUpDialog in the dashboard layout) retried once with
 `X-MFA-Code`, and a 403 `MFA_SETUP_REQUIRED` redirect to `/security/setup`. Sign-in is
 password -> MFA challenge (`src/app/auth/login/LoginForm`); the admin's own authenticator and
