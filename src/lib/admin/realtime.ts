@@ -1,12 +1,13 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { getCookie } from "cookies-next";
 import { useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
-import { BASE_URL, STORAGE } from "@/constant";
+import { BASE_URL } from "@/constant";
 import type { AdminAlert } from "@/lib/admin/api";
+import { getAccessToken } from "@/lib/admin/session";
+import { onSessionRefreshed } from "@/services/apiService";
 
 /**
  * Live feed from the core orders gateway. Staff sockets are put in the
@@ -28,6 +29,7 @@ export type AlertEvent =
   | { kind: "digest"; digest: AlertDigest };
 
 let socket: Socket | null = null;
+let stopReconnectOnRefresh: (() => void) | null = null;
 const listeners = new Set<(state: LiveState) => void>();
 const alertListeners = new Set<(event: AlertEvent) => void>();
 
@@ -44,17 +46,23 @@ function emit(patch: Partial<LiveState>) {
 
 function ensureSocket(onOrder: (payload: unknown) => void) {
   if (socket) return socket;
-  const token = getCookie(STORAGE.accessToken)?.toString();
-  if (!token || !BASE_URL) return null;
+  if (!getAccessToken() || !BASE_URL) return null;
   socket = io(`${BASE_URL}/orders`, {
     transports: ["websocket"],
-    // The gateway verifies handshake.auth.token as a raw JWT.
-    auth: { token },
+    // The gateway verifies handshake.auth.token as a raw JWT. A function, so every reconnect
+    // sends the token in the cookie now, not the one from when the page loaded.
+    auth: (cb) => cb({ token: getAccessToken() }),
     reconnectionDelayMax: 10_000,
   });
   socket.on("connect", () => emit({ connected: true }));
   socket.on("disconnect", () => emit({ connected: false }));
   socket.on("connect_error", () => emit({ connected: false }));
+  // A socket the server turned away (an expired token) does not retry by itself: try again once
+  // the session has a fresh token, here or in another tab.
+  stopReconnectOnRefresh?.();
+  stopReconnectOnRefresh = onSessionRefreshed(() => {
+    if (socket && !socket.connected && !socket.active) socket.connect();
+  });
   socket.on("admin:order_updated", (payload) => {
     emit({ lastEventAt: Date.now(), events: state.events + 1 });
     onOrder(payload);
@@ -129,6 +137,8 @@ export function useAdminAlertEvents(handler?: (event: AlertEvent) => void) {
 }
 
 export function disconnectRealtime() {
+  stopReconnectOnRefresh?.();
+  stopReconnectOnRefresh = null;
   socket?.disconnect();
   socket = null;
   emit({ connected: false });
