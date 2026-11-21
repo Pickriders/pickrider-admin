@@ -5,6 +5,7 @@ import { AdminPrefsProvider } from "@/components/kit/prefs";
 import { Layout } from "@/components/layouts";
 import { AccessGuard } from "@/components/layouts/AccessGuard";
 import { MfaGraceBanner } from "@/components/security/mfa-grace-banner";
+import { SessionKeeper } from "@/components/security/session-keeper";
 import { StepUpDialog } from "@/components/security/step-up-dialog";
 
 import { EmailPauseBanner } from "./emails/_components/email-pauses";
@@ -40,6 +41,8 @@ export default function Dashboard({ children }: Readonly<{ children: React.React
         </Suspense>
         {/* Asked for by the API client when a request needs a fresh authenticator code (428). */}
         <StepUpDialog />
+        {/* Refreshes the session ahead of expiry and keeps the open tabs in step. */}
+        <SessionKeeper />
       </div>
     </AdminPrefsProvider>
   );
