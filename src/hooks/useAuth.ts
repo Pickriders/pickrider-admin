@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 import { auth } from "@/lib/admin/api";
 import { clearSession, saveSession, type SessionTokens } from "@/lib/admin/session";
-import { MFA_SETUP_PATH } from "@/services";
+import { announceSignedOut, MFA_SETUP_PATH } from "@/services";
 
 export const useAuth = () => {
   const router = useRouter();
@@ -41,6 +41,7 @@ export const useAuth = () => {
       // The cookies go either way; a dead session cannot be signed out twice.
     }
     clearSession();
+    announceSignedOut();
     router.push("/auth/login?reason=signed-out");
   };
 
