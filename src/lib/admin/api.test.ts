@@ -79,6 +79,13 @@ const CASES: Case[] = [
     params: { from: "a", to: "b", bucket: "day" },
   },
   {
+    name: "stats.testOrders",
+    call: () => api.stats.testOrders({ from: "2026-09-01", to: "2026-09-17" }),
+    method: "GET",
+    path: `${P}/admins/stats/test-orders`,
+    params: { from: "2026-09-01", to: "2026-09-17" },
+  },
+  {
     name: "stats.topRiders",
     call: () => api.stats.topRiders({ all: true, limit: 5 }),
     method: "GET",

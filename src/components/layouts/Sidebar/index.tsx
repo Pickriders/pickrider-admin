@@ -11,6 +11,7 @@ import {
   Calculator,
   Car,
   ClipboardList,
+  FlaskConical,
   Code2,
   LayoutDashboard,
   LifeBuoy,
@@ -68,6 +69,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Alerts", href: "/alerts", icon: Siren, badge: (a) => a.alertsOpen },
       { label: "Orders", href: "/orders", icon: ClipboardList, badge: (a) => a.ordersAwaitingRiderStale },
+      { label: "Test orders", href: "/test-orders", icon: FlaskConical },
       { label: "Handoffs", href: "/handoffs", icon: ArrowLeftRight, badge: (a) => a.handoffsWaiting },
       { label: "Couriers", href: "/couriers", icon: Bike, badge: (a) => a.licencesAwaitingReview },
       { label: "Vehicles", href: "/vehicles", icon: Car, badge: (a) => a.vehiclesPendingVerification },

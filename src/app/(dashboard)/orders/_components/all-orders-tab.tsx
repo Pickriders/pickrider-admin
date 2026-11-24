@@ -29,6 +29,7 @@ import { errorMessage } from "@/lib/admin/http";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { ORDER_STATUSES, ORDER_TYPES, TYPE_LABEL, orderNumber, statusAt, totalDistanceKm } from "../lib";
+import { type OrdersMode, livemodeQuery } from "../mode";
 import {
   CourierCell,
   CustomerCell,
@@ -272,14 +273,14 @@ export function OrderCardSkeleton() {
   );
 }
 
-export function AllOrdersTab() {
+export function AllOrdersTab({ mode = "live" }: { mode?: OrdersMode }) {
   const table = useTableState({ limit: 20 });
   const query = useMemo(() => {
     // The API sorts by createdAt only; `order` is the one sort knob it reads.
     const { sortBy: _ignored, ...rest } = table.query;
     void _ignored;
-    return { ...rest, search: table.state.search };
-  }, [table.query, table.state.search]);
+    return { ...rest, search: table.state.search, ...livemodeQuery(mode) };
+  }, [table.query, table.state.search, mode]);
   const orders = useOrders(query);
   const data = orders.data as Paged<OrderRow> | undefined;
 
@@ -292,7 +293,7 @@ export function AllOrdersTab() {
       onRetry={() => void orders.refetch()}
       filters={FILTERS}
       searchPlaceholder="Order number, customer or rider name, phone or email"
-      csvName="orders"
+      csvName={mode === "test" ? "test-orders" : "orders"}
       defaultSort={{ sortBy: "createdAt", order: "DESC" }}
       emptyIcon={PackageSearch}
       emptyTitle="No orders match"
