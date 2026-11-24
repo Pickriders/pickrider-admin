@@ -21,10 +21,11 @@ import {
 } from "@/components/kit";
 import type { OrderRow, OrderStatus } from "@/lib/admin/api";
 import { ago, count, naira, orderSource, when } from "@/lib/admin/format";
-import { useOrders, useOverview } from "@/lib/admin/hooks";
+import { useOrders } from "@/lib/admin/hooks";
 import { errorMessage } from "@/lib/admin/http";
 
 import { STALE_AFTER_MINUTES, isStale, typeLabel } from "../lib";
+import { type OrdersMode, livemodeQuery, useOrdersOverview } from "../mode";
 import { CourierCell, CustomerCell, OrderCell, OrderPaymentBadge } from "./order-cells";
 
 /**
@@ -44,12 +45,21 @@ const COLUMN_BAR: Record<(typeof COLUMNS)[number]["tone"], string> = {
   info: "bg-info",
 };
 
-export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => void }) {
+export function BoardTab({
+  mode = "live",
+  onShowAll,
+}: {
+  mode?: OrdersMode;
+  onShowAll: (status: OrderStatus) => void;
+}) {
   const liveQuery = useMemo(() => rangeToQuery(presetRange(7)), []);
-  const overview = useOverview(liveQuery);
+  const overview = useOrdersOverview(mode, liveQuery);
   const live = overview.data?.live;
 
-  const orders = useOrders({ status: "INITIATED,ACCEPTED,ON_GOING", limit: 100, order: "DESC" }, { poll: true });
+  const orders = useOrders(
+    { status: "INITIATED,ACCEPTED,ON_GOING", limit: 100, order: "DESC", ...livemodeQuery(mode) },
+    { poll: true },
+  );
   const rows = useMemo(() => orders.data?.items ?? [], [orders.data]);
   const grouped = useMemo(() => {
     const map: Record<OrderStatus, OrderRow[]> = {
@@ -115,13 +125,24 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
           onClick={() => onShowAll("CANCELLED")}
           hint="Open the list"
         />
-        <StatCard
-          label="Riders online"
-          value={count(live?.ridersOnline)}
-          icon={Clock}
-          loading={overview.isLoading}
-          hint={`${count(live?.placedToday)} placed today`}
-        />
+        {mode === "test" ? (
+          // Test orders never reach riders, so riders online would say nothing here.
+          <StatCard
+            label="Placed today"
+            value={count(live?.placedToday)}
+            icon={Clock}
+            loading={overview.isLoading}
+            hint="Through Developer API test keys"
+          />
+        ) : (
+          <StatCard
+            label="Riders online"
+            value={count(live?.ridersOnline)}
+            icon={Clock}
+            loading={overview.isLoading}
+            hint={`${count(live?.placedToday)} placed today`}
+          />
+        )}
       </StatGrid>
 
       {orders.isError ? (
@@ -166,7 +187,8 @@ export function BoardTab({ onShowAll }: { onShowAll: (status: OrderStatus) => vo
       )}
       {orders.data && orders.data.total > rows.length ? (
         <p className="text-xs text-ink-faint">
-          Showing the {count(rows.length)} most recent of {count(orders.data.total)} live orders.{" "}
+          Showing the {count(rows.length)} most recent of {count(orders.data.total)}{" "}
+          {mode === "test" ? "open test orders" : "live orders"}.{" "}
           <button
             type="button"
             className="font-semibold text-brand-dark hover:underline"

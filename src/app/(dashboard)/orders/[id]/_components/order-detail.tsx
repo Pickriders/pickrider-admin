@@ -166,14 +166,16 @@ export function OrderDetail({ orderId }: { orderId: string }) {
   const payment = orderPaymentDisplay(order);
   const storefront = orderSource(order.channel) === "STORE";
   const distance = totalDistanceKm(order);
+  // Developer API test orders live on their own page; the way back goes there.
+  const test = order.livemode === false;
 
   return (
     <div className="space-y-4">
       <PageHeader
         breadcrumb={
           <span>
-            <Link href="/orders" className="hover:text-ink">
-              Orders
+            <Link href={test ? "/test-orders" : "/orders"} className="hover:text-ink">
+              {test ? "Test orders" : "Orders"}
             </Link>{" "}
             / {orderNumber(order)}
           </span>
@@ -184,6 +186,7 @@ export function OrderDetail({ orderId }: { orderId: string }) {
             <OrderStatusBadge status={order.status} />
             <OrderPaymentBadge order={order} />
             <SourceBadge channel={order.channel} />
+            {test ? <Badge tone="warning">Test order</Badge> : null}
             <TypeBadge type={order.type} />
             {order.isScheduled ? (
               <Badge tone="brand">Scheduled {order.scheduledFor ? when(order.scheduledFor) : ""}</Badge>

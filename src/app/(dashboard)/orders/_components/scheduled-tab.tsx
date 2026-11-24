@@ -25,6 +25,7 @@ import { useCan } from "@/lib/admin/use-can";
 import { useTableState } from "@/lib/admin/url-state";
 
 import { orderNumber } from "../lib";
+import { type OrdersMode, livemodeQuery } from "../mode";
 import { CustomerCell, OrderPaymentBadge, ReleasedChip, SourcePill, TypeBadge, bidsOf } from "./order-cells";
 
 /**
@@ -119,9 +120,11 @@ function RingButton({ order, size = "sm" }: { order: OrderRow; size?: "sm" | "md
   );
 }
 
-export function ScheduledTab() {
+export function ScheduledTab({ mode = "live" }: { mode?: OrdersMode }) {
   const table = useTableState({ sortBy: "scheduledFor", order: "ASC" });
   const { can } = useCan();
+  // Test orders never ring real riders, so there is nothing to ring by hand.
+  const canRing = mode === "live" && can("order.cancel");
   const [phase, setPhase] = useState<Phase | "all">("all");
 
   const query = useMemo(
@@ -131,8 +134,9 @@ export function ScheduledTab() {
       status: "INITIATED",
       search: table.state.search,
       limit: table.state.limit || 50,
+      ...livemodeQuery(mode),
     }),
-    [table.query, table.state.search, table.state.limit],
+    [table.query, table.state.search, table.state.limit, mode],
   );
   const data = useOrders(query, { poll: true });
 
@@ -251,16 +255,16 @@ export function ScheduledTab() {
       {
         id: "actions",
         header: "",
-        meta: meta({ align: "right", skeleton: can("order.cancel") ? "button" : "none" }),
+        meta: meta({ align: "right", skeleton: canRing ? "button" : "none" }),
         cell: ({ row }) =>
-          can("order.cancel") ? (
+          canRing ? (
             <span onClick={(e) => e.stopPropagation()}>
               <RingButton order={row.original} />
             </span>
           ) : null,
       },
     ],
-    [can],
+    [canRing],
   );
 
   return (
@@ -349,7 +353,7 @@ export function ScheduledTab() {
             <div className="rounded-xl bg-surface/70 px-2.5 py-2">
               <CustomerCell order={row} fallback="Unknown customer" size={24} />
             </div>
-            {can("order.cancel") ? (
+            {canRing ? (
               <div onClick={(e) => e.stopPropagation()} className="[&_button]:w-full">
                 <RingButton order={row} size="md" />
               </div>
@@ -369,12 +373,16 @@ export function ScheduledTab() {
             <div className="rounded-xl bg-surface/70 px-2.5 py-2">
               <SkeletonPerson size={24} />
             </div>
-            {can("order.cancel") ? <Skeleton className="h-10 w-full rounded-xl" /> : null}
+            {canRing ? <Skeleton className="h-10 w-full rounded-xl" /> : null}
           </div>
         }
         emptyIcon={CalendarClock}
         emptyTitle={phase === "all" ? "No scheduled orders waiting" : `Nothing ${PHASE_LABEL[phase].toLowerCase()}`}
-        emptyDescription="Customers' prepaid bookings show here until a rider accepts them."
+        emptyDescription={
+          mode === "test"
+            ? "Scheduled Developer API test orders show here until they move on."
+            : "Customers' prepaid bookings show here until a rider accepts them."
+        }
       />
     </div>
   );

@@ -352,6 +352,9 @@ export type Overview = {
   };
 };
 
+/** GET admins/stats/test-orders: the overview's order window and board counts, Developer API test orders only. */
+export type TestOrdersOverview = Pick<Overview, "range" | "current" | "previous" | "live">;
+
 export type SeriesPoint = {
   bucket: string;
   orders: number;
@@ -526,8 +529,10 @@ export type ProviderFeeRow = Omit<import("@/services").ProviderFeeRowDto, "owner
 
 export const stats = {
   overview: (range: RangeQuery) => as<Overview>(apiService.overview(params(range))),
-  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }) =>
+  /** `livemode: "false"` charts Developer API test orders only (order counts and amounts). */
+  series: (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string; livemode?: "false" }) =>
     as<Series>(apiService.series(params(range))),
+  testOrders: (range: RangeQuery) => as<TestOrdersOverview>(apiService.testOrders(params(range))),
   topRiders: (range: RangeQuery & { limit?: number }) => as<TopRider[]>(apiService.topRiders(params(range))),
   peakHours: (range: RangeQuery) => as<PeakHours>(apiService.peakHours(params(range))),
   attention: () => as<Attention>(apiService.attention()),
