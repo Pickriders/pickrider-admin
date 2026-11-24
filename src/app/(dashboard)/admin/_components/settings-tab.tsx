@@ -802,7 +802,8 @@ function draftFromState(state: CountryState | undefined): StateDraft {
       handoffBonusAmount: c.handoffBonusAmount ?? 30000,
       handoffCancelCompensation: c.handoffCancelCompensation ?? 20000,
       handoffConfirmRadiusM: c.handoffConfirmRadiusM ?? 150,
-      handoffsPerOrder: c.handoffsPerOrder ?? 2,
+      // An order is handed off once at most (the API caps it at 1); older states saved 2.
+      handoffsPerOrder: Math.min(c.handoffsPerOrder ?? 1, 1),
       supportEmails: cleanSupportEmails(c.supportEmails),
       // Rider releases ("Can't make it"): the core's defaults when a state has never set them.
       ...releaseKnobs(c),
@@ -862,7 +863,7 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
     if (c.handoffMinSharePct < 0 || c.handoffMaxSharePct > 100 || c.handoffMinSharePct > c.handoffMaxSharePct)
       out.push("Handoff shares must be 0 to 100 percent, minimum below maximum.");
     if (c.handoffConfirmRadiusM < 1) out.push("Swap distance must be at least 1 metre.");
-    if (c.handoffsPerOrder < 0) out.push("Handoffs per order cannot be negative.");
+    if (c.handoffsPerOrder < 0 || c.handoffsPerOrder > 1) out.push("Handoffs per order must be 0 or 1.");
     out.push(...releaseKnobErrors(c));
     out.push(...supportEmailErrors(c.supportEmails));
     return out;
@@ -1265,8 +1266,9 @@ function StateDrawer({ countryId, stateId, onClose }: { countryId: string; state
             />
             <NumberInput
               label="Handoffs per order"
-              hint="0 turns them off for every order"
+              hint="1: an order is handed off once at most. 0 turns rider handoffs off"
               min={0}
+              max={1}
               step={1}
               value={c.handoffsPerOrder}
               onChange={(v) => set("handoffsPerOrder", Math.round(v))}
