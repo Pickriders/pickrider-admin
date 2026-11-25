@@ -4,6 +4,9 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Banknote,
+  Bike,
+  Building2,
+  Code2,
   Coins,
   Landmark,
   Link2,
@@ -53,6 +56,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 function shortDay(value: string) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("en-NG", { day: "numeric", month: "short" });
+}
+
+function walletsHint(wallets: number | undefined) {
+  return wallets === undefined ? undefined : `${count(wallets)} ${wallets === 1 ? "wallet" : "wallets"}`;
 }
 
 export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } = {}) {
@@ -110,6 +117,54 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
         <WalletHero status={status.data} wallet={wallet.data} loading={setupLoading} />
         <SettlementCard status={status.data} loading={status.isLoading} onChange={() => setDrawer("bank")} />
         <PinCard status={status.data} loading={status.isLoading} onChange={() => setDrawer("pin")} />
+      </div>
+
+      <div>
+        <div className="mb-3">
+          <h2 className="text-base font-black tracking-tight text-ink">Money we hold</h2>
+          <p className="text-xs text-ink-muted">
+            What sits in people&apos;s wallets right now, not windowed. The platform wallet and test-mode wallets are
+            left out.
+          </p>
+        </div>
+        <StatGrid columns={5}>
+          <StatCard
+            label="Total held"
+            value={naira(wallets.totalBalances)}
+            icon={Wallet}
+            tone="dark"
+            hint={walletsHint(wallets.totalWallets)}
+            loading={overview.isLoading}
+          />
+          <StatCard
+            label="Customers"
+            value={naira(wallets.customerBalances)}
+            icon={Users}
+            hint={walletsHint(wallets.customerWallets)}
+            loading={overview.isLoading}
+          />
+          <StatCard
+            label="Riders"
+            value={naira(wallets.riderBalances)}
+            icon={Bike}
+            hint={walletsHint(wallets.riderWallets)}
+            loading={overview.isLoading}
+          />
+          <StatCard
+            label="Businesses"
+            value={naira(wallets.businessBalances)}
+            icon={Building2}
+            hint={walletsHint(wallets.businessWallets)}
+            loading={overview.isLoading}
+          />
+          <StatCard
+            label="Developers"
+            value={naira(wallets.developerBalances)}
+            icon={Code2}
+            hint={walletsHint(wallets.developerWallets)}
+            loading={overview.isLoading}
+          />
+        </StatGrid>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -205,7 +260,7 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
         </ChartCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:gap-4 lg:grid-cols-2">
+      <div>
         <Panel>
           <PanelHeader title="Successful transactions" subtitle="Totals from the transactions ledger for this window" />
           <div className="px-5 pb-5 pt-4">
@@ -228,22 +283,6 @@ export function OverviewTab({ onProviderFees }: { onProviderFees?: () => void } 
                 ]}
               />
             )}
-          </div>
-        </Panel>
-
-        <Panel>
-          <PanelHeader title="Wallets held" subtitle="Balances sitting in wallets right now, not windowed" />
-          <div className="px-5 pb-5 pt-4">
-            <KeyValue
-              columns={2}
-              items={[
-                { label: "Customer and rider balances", value: overview.isLoading ? "…" : naira(wallets.userBalances) },
-                { label: "User wallets", value: overview.isLoading ? "…" : count(wallets.userWallets) },
-                { label: "Business balances", value: overview.isLoading ? "…" : naira(wallets.businessBalances) },
-                { label: "Business wallets", value: overview.isLoading ? "…" : count(wallets.businessWallets) },
-                { label: "Platform balance", value: overview.isLoading ? "…" : naira(wallets.platformBalance) },
-              ]}
-            />
           </div>
         </Panel>
       </div>
