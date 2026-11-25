@@ -50,14 +50,27 @@ export const POLL_MS = 20_000;
 const keep = { placeholderData: keepPreviousData } as const;
 
 // Stats
-export const useOverview = (range: RangeQuery) =>
+export const useOverview = (range: RangeQuery, enabled = true) =>
   useQuery({
     queryKey: ["stats", "overview", range],
     queryFn: () => stats.overview(range),
     refetchInterval: POLL_MS,
     placeholderData: keepPreviousData,
+    enabled,
   });
-export const useSeries = (range: RangeQuery & { bucket?: string; riderId?: string; userId?: string }, enabled = true) =>
+/** The Test Orders page's tiles and board counts: Developer API test orders only. */
+export const useTestOrdersOverview = (range: RangeQuery, enabled = true) =>
+  useQuery({
+    queryKey: ["stats", "test-orders", range],
+    queryFn: () => stats.testOrders(range),
+    refetchInterval: POLL_MS,
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+export const useSeries = (
+  range: RangeQuery & { bucket?: string; riderId?: string; userId?: string; livemode?: "false" },
+  enabled = true,
+) =>
   useQuery({
     queryKey: ["stats", "series", range],
     queryFn: () => stats.series(range),

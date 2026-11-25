@@ -17,9 +17,10 @@ import {
 } from "@/components/kit";
 import type { OrderWindow } from "@/lib/admin/api";
 import { count, naira, nairaCompact, percent, statusLabel, trend } from "@/lib/admin/format";
-import { useOverview, useSeries } from "@/lib/admin/hooks";
+import { useSeries } from "@/lib/admin/hooks";
 
 import { TYPE_LABEL, paymentLabel } from "../lib";
+import { type OrdersMode, useOrdersOverview } from "../mode";
 
 /**
  * Volume, mix and outcomes for a window. Series and the overview both come
@@ -40,11 +41,11 @@ function breakdown(map: Record<string, number> | undefined, label: (key: string)
 
 const CHART_STATUS = ["COMPLETED", "ON_GOING", "ACCEPTED", "INITIATED", "CANCELLED"];
 
-export function AnalysisTab() {
+export function AnalysisTab({ mode = "live" }: { mode?: OrdersMode }) {
   const [range, setRange] = useState<RangeValue>(() => presetRange(30));
   const query = useMemo(() => rangeToQuery(range), [range]);
-  const overview = useOverview(query);
-  const series = useSeries(query);
+  const overview = useOrdersOverview(mode, query);
+  const series = useSeries(mode === "test" ? { ...query, livemode: "false" } : query);
 
   const current: OrderWindow | undefined = overview.data?.current;
   const previous: OrderWindow | undefined = overview.data?.previous;

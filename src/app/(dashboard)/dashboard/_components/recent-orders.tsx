@@ -18,7 +18,8 @@ function customerOf(order: Order): User | undefined {
 }
 
 export function RecentOrders({ limit = 8 }: { limit?: number }) {
-  const orders = useOrders({ limit, order: "DESC" }, { poll: true });
+  // Live orders only, as on the Orders page; test orders have their own page.
+  const orders = useOrders({ limit, order: "DESC", livemode: "true" }, { poll: true });
   const rows = orders.data?.items ?? [];
   const loading = orders.isLoading && !orders.data;
 
