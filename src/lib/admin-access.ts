@@ -40,6 +40,7 @@ const SECTION_ACCESS: Record<string, AdminRole[]> = {
   "/dashboard": PLATFORM_STAFF_ROLES,
   "/analytics": PLATFORM_STAFF_ROLES,
   "/orders": PLATFORM_STAFF_ROLES,
+  "/test-orders": PLATFORM_STAFF_ROLES,
   "/couriers": PLATFORM_STAFF_ROLES,
   "/vehicles": PLATFORM_STAFF_ROLES,
   "/customers": PLATFORM_STAFF_ROLES,
